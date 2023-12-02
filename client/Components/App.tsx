@@ -12,6 +12,9 @@ import Costume from './Costume';
 import EventPage from './EventPage';
 import ProtectedRoutes from './ProtectedRoutes'
 
+// NOTE: mainforum, costume, and event page were supposed to be babies of their parent elements, 
+// cant figure out how to route to them tho.... 
+
 const App = () => {
 
   // add user loader data 
@@ -21,17 +24,14 @@ const App = () => {
     createRoutesFromElements(
       <Route>
         {/* <Route element={<ProtectedRoutes />}>  */}
-          <Route path='/homepage' element={<HomePage />} >
-            <Route path='mainforum' element={<MainForum />} />
-            <Route path='costume' element={<Costume />} />
-          </Route>
+          <Route path='/homepage' element={<HomePage />} />
+          <Route path='/mainforum' element={<MainForum />} />
+          <Route path='/costume' element={<Costume />} />
           <Route path='/mappage' element={<MapPage />} />
-          <Route path='/feedpage' element={<FeedPage />} >
-            <Route path='eventpage' element={<EventPage />} />
-          </Route>  
-          <Route path='/userpage' element={<UserPage />} >
-            <Route path='eventpage' element={<EventPage />} />
-          </Route>  
+          <Route path='/feedpage' element={<FeedPage />} />
+          <Route path='eventpage' element={<EventPage />} />
+          <Route path='/userpage' element={<UserPage />} />
+          <Route path='eventpage' element={<EventPage />} />
           <Route path='/login' element={<Login />} />
         {/* </Route> */}
           <Route path='/' element={<Login />} />
