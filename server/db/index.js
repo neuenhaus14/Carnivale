@@ -1,12 +1,14 @@
-const { Sequelize } = require('sequelize')
+const { Sequelize } = require('sequelize');
+
+const config = require('../config.js');
 
 const HOST = "localhost";
 const db = new Sequelize({
   host: HOST,
   dialect: "postgres",
-  username: "postgres",
+  username: config.DATABASE_USERNAME,
   database: "carnivale",
-  password: " ",
+  password: config.DATABASE_PASSWORD,
 });
 
 db.authenticate()
