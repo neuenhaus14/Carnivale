@@ -31,8 +31,8 @@ const User = db.define(
     phone: Sequelize.STRING,
     firstName: Sequelize.STRING,
     lastName: Sequelize.STRING,
-    longitude: Sequelize.INTEGER,
-    latitude: Sequelize.INTEGER,
+    longitude: Sequelize.DECIMAL,
+    latitude: Sequelize.DECIMAL,
   },
   { timestamps: true }
 );
@@ -48,8 +48,8 @@ const Event = db.define(
     name: Sequelize.STRING,
     time: Sequelize.DATE,
     description: Sequelize.STRING,
-    longitude: Sequelize.INTEGER,
-    latitude: Sequelize.INTEGER,
+    longitude: Sequelize.DECIMAL,
+    latitude: Sequelize.DECIMAL,
     address: Sequelize.STRING,
     link: Sequelize.STRING,
     system: Sequelize.BOOLEAN,
