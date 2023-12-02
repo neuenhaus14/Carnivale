@@ -5,12 +5,13 @@ import {Route, RouterProvider, createBrowserRouter, createRoutesFromElements} fr
 import FeedPage from './FeedPage'
 import HomePage from './HomePage'
 import MapPage from './MapPage'
-import UserPage from './MapPage'
+import UserPage from './UserPage'
 import Login from './Login'
 import MainForum from './MainForum';
 import Costume from './Costume';
 import EventPage from './EventPage';
-import ProtectedRoutes from './ProtectedRoutes'
+import NavBar from './NavBar'
+//import ProtectedRoutes from './ProtectedRoutes'
 
 // NOTE: mainforum, costume, and event page were supposed to be babies of their parent elements, 
 // cant figure out how to route to them tho.... 
@@ -24,14 +25,13 @@ const App = () => {
     createRoutesFromElements(
       <Route>
         {/* <Route element={<ProtectedRoutes />}>  */}
-          <Route path='/homepage' element={<HomePage />} />
-          <Route path='/mainforum' element={<MainForum />} />
-          <Route path='/costume' element={<Costume />} />
-          <Route path='/mappage' element={<MapPage />} />
-          <Route path='/feedpage' element={<FeedPage />} />
-          <Route path='eventpage' element={<EventPage />} />
-          <Route path='/userpage' element={<UserPage />} />
-          <Route path='eventpage' element={<EventPage />} />
+          <Route path='/homepage' element={<div><HomePage /> <NavBar /></div>} />
+          <Route path='/mainforum' element={<div><MainForum /> <NavBar /></div>} />
+          <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
+          <Route path='/mappage' element={<div><MapPage /> <NavBar /></div>} />
+          <Route path='/feedpage' element={<div><FeedPage /> <NavBar /></div>} />
+          <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
+          <Route path='/userpage' element={<div><UserPage /> <NavBar /></div>} />
           <Route path='/login' element={<Login />} />
         {/* </Route> */}
           <Route path='/' element={<Login />} />
