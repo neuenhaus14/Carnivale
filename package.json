@@ -6,8 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.config.js --watch",
-    "start": "nodemon server/index.ts",
-    "seed": "node server/db/seed.js"
+    "start": "nodemon server/index.js",
+    "seed": "npx sequelize db:drop && npx sequelize db:create && node server/db/seed.js && npx sequelize db:seed:all"
+
   },
   "repository": {
     "type": "git",

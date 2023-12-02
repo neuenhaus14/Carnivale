@@ -28,12 +28,11 @@ const User = db.define(
       primaryKey: true,
     },
     email: Sequelize.STRING,
-    name: Sequelize.STRING,
     phone: Sequelize.STRING,
     firstName: Sequelize.STRING,
     lastName: Sequelize.STRING,
-    longitude: Sequelize.INTEGER,
-    latitude: Sequelize.INTEGER,
+    longitude: Sequelize.DECIMAL,
+    latitude: Sequelize.DECIMAL,
   },
   { timestamps: true }
 );
@@ -49,11 +48,16 @@ const Event = db.define(
     name: Sequelize.STRING,
     time: Sequelize.DATE,
     description: Sequelize.STRING,
-    longitude: Sequelize.INTEGER,
-    latitude: Sequelize.INTEGER,
+    longitude: Sequelize.DECIMAL,
+    latitude: Sequelize.DECIMAL,
     address: Sequelize.STRING,
     link: Sequelize.STRING,
     system: Sequelize.BOOLEAN,
+    invitedCount: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+    },
+
     attendingCount: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
@@ -81,8 +85,8 @@ const Pin = db.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    longitude: Sequelize.INTEGER,
-    latitude: Sequelize.INTEGER,
+    longitude: Sequelize.DECIMAL,
+    latitude: Sequelize.DECIMAL,
     isToilet: Sequelize.BOOLEAN,
     isFood: Sequelize.BOOLEAN,
     isPersonal: Sequelize.BOOLEAN,
@@ -134,11 +138,12 @@ const Photo = db.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    longitude: Sequelize.INTEGER,
-    latitude: Sequelize.INTEGER,
+    longitude: Sequelize.DECIMAL,
+    latitude: Sequelize.DECIMAL,
     description: Sequelize.STRING,
     photoURL: Sequelize.STRING,
     isCostume: Sequelize.BOOLEAN,
+    isThrow: Sequelize.BOOLEAN,
     upvotes: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
@@ -154,8 +159,9 @@ const Photo = db.define(
   { timestamps: true }
 );
 
-const join_event_participants = db.define(
-  "join event partcipants",
+
+const Join_event_participant = db.define(
+  "join_event_participant",
   {
     id: {
       type: Sequelize.INTEGER,
@@ -180,8 +186,9 @@ const join_event_participants = db.define(
   { timestamps: true }
 );
 
-const join_event_invitees = db.define(
-  "join event invitees",
+
+const Join_event_invitee = db.define(
+  "join_event_invitee",
   {
     id: {
       type: Sequelize.INTEGER,
@@ -206,8 +213,11 @@ const join_event_invitees = db.define(
   { timestamps: true }
 );
 
-const join_friends = db.define(
-  "join friends",
+
+// may need to alter schema to indicate both that a request
+// is pending/complete and that a request is confirmed/denied
+const Join_friend = db.define(
+  "join_friend",
   {
     id: {
       type: Sequelize.INTEGER,
@@ -233,8 +243,9 @@ const join_friends = db.define(
   { timestamps: true }
 );
 
-const join_pin_photos = db.define(
-  "join pin photos",
+
+const Join_pin_photo = db.define(
+  "join_pin_photo",
   {
     id: {
       type: Sequelize.INTEGER,
@@ -259,8 +270,9 @@ const join_pin_photos = db.define(
   { timestamps: true }
 );
 
-const join_comment_votes = db.define(
-  "join comment votes",
+
+const Join_comment_vote = db.define(
+  "join_comment_vote",
   {
     id: {
       type: Sequelize.INTEGER,
@@ -286,8 +298,9 @@ const join_comment_votes = db.define(
   { timestamps: true }
 );
 
-const join_pin_votes = db.define(
-  "join pin votes",
+
+const Join_pin_vote = db.define(
+  "join_pin_vote",
   {
     id: {
       type: Sequelize.INTEGER,
@@ -313,8 +326,9 @@ const join_pin_votes = db.define(
   { timestamps: true }
 );
 
-const join_photo_votes = db.define(
-  "join photo votes",
+
+const Join_photo_vote = db.define(
+  "join_photo_vote",
   {
     id: {
       type: Sequelize.INTEGER,
@@ -340,8 +354,9 @@ const join_photo_votes = db.define(
   { timestamps: true }
 );
 
-const join_shared_posts = db.define(
-  "join shared posts",
+
+const Join_shared_post = db.define(
+  "join_shared_post",
   {
     id: {
       type: Sequelize.INTEGER,
@@ -394,12 +409,12 @@ module.exports = {
   Pin,
   Comment,
   Photo,
-  join_event_participants,
-  join_event_invitees,
-  join_friends,
-  join_pin_photos,
-  join_comment_votes,
-  join_pin_votes,
-  join_photo_votes,
-  join_shared_posts,
+  Join_event_participant,
+  Join_event_invitee,
+  Join_friend,
+  Join_pin_photo,
+  Join_comment_vote,
+  Join_pin_vote,
+  Join_photo_vote,
+  Join_shared_post,
 };
