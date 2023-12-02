@@ -28,7 +28,6 @@ const User = db.define(
       primaryKey: true,
     },
     email: Sequelize.STRING,
-    name: Sequelize.STRING,
     phone: Sequelize.STRING,
     firstName: Sequelize.STRING,
     lastName: Sequelize.STRING,
