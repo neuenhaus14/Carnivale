@@ -57,6 +57,7 @@ const Event = db.define(
       type: Sequelize.INTEGER,
       defaultValue: 0,
     },
+
     attendingCount: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
@@ -158,6 +159,7 @@ const Photo = db.define(
   { timestamps: true }
 );
 
+
 const Join_event_participant = db.define(
   "join_event_participant",
   {
@@ -184,6 +186,7 @@ const Join_event_participant = db.define(
   { timestamps: true }
 );
 
+
 const Join_event_invitee = db.define(
   "join_event_invitee",
   {
@@ -209,6 +212,7 @@ const Join_event_invitee = db.define(
   },
   { timestamps: true }
 );
+
 
 // may need to alter schema to indicate both that a request
 // is pending/complete and that a request is confirmed/denied
@@ -239,6 +243,7 @@ const Join_friend = db.define(
   { timestamps: true }
 );
 
+
 const Join_pin_photo = db.define(
   "join_pin_photo",
   {
@@ -264,6 +269,7 @@ const Join_pin_photo = db.define(
   },
   { timestamps: true }
 );
+
 
 const Join_comment_vote = db.define(
   "join_comment_vote",
@@ -292,6 +298,7 @@ const Join_comment_vote = db.define(
   { timestamps: true }
 );
 
+
 const Join_pin_vote = db.define(
   "join_pin_vote",
   {
@@ -319,6 +326,7 @@ const Join_pin_vote = db.define(
   { timestamps: true }
 );
 
+
 const Join_photo_vote = db.define(
   "join_photo_vote",
   {
@@ -345,6 +353,7 @@ const Join_photo_vote = db.define(
   },
   { timestamps: true }
 );
+
 
 const Join_shared_post = db.define(
   "join_shared_post",
