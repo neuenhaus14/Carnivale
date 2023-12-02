@@ -1,9 +1,18 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+//import HtmlWebpackPlugin from 'html-webpack-plugin';
 //const webpack = require('webpack');
 const WebpackBar = require('webpackbar');
+//import WebpackBar from 'webpackbar'
 const path = require('path');
+//import path from 'path'
+//import { fileURLToPath } from 'url';
 const Dotenv = require('dotenv-webpack');
+//import Dotenv from 'dotenv-webpack'
 const autoprefixer = require('autoprefixer');
+//import autoprefixer from 'autoprefixer'
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 const SRC_DIR = path.resolve(__dirname, 'client');
 const DIST_DIR = path.resolve(__dirname, 'dist');
@@ -11,7 +20,7 @@ const DIST_DIR = path.resolve(__dirname, 'dist');
 module.exports = {
 
   entry: {
-    app: path.resolve(SRC_DIR, 'index.jsx'),
+    app: path.resolve(SRC_DIR, 'index.tsx'),
   },
 
   output: {
@@ -19,6 +28,7 @@ module.exports = {
     filename: '[name].bundle.js',
   },
   mode: "none",
+  devtool: 'inline-source-map',
 
   plugins: [
     // Creates a loading bar
@@ -91,6 +101,8 @@ module.exports = {
       },
     ],
   },
-    
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
   
 }
