@@ -1,26 +1,25 @@
-
 /** @type {import{'sequelize-cli'}.Migration} */
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkInsert('users', [
+    await queryInterface.bulkInsert("users", [
       {
         id: 1,
-        email: 'a@b.com',
-        phone: '123-456-7890',
-        firstName: 'Bob',
-        lastName: 'Johnson',
+        email: "a@b.com",
+        phone: "123-456-7890",
+        firstName: "Bob",
+        lastName: "Johnson",
         latitude: 29.963864,
-        longitude: -90.052130,
+        longitude: -90.05213,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         id: 2,
-        email: 'c@d.com',
-        phone: '223-456-7890',
-        firstName: 'John',
-        lastName: 'Erikson',
+        email: "c@d.com",
+        phone: "223-456-7890",
+        firstName: "John",
+        lastName: "Erikson",
         latitude: 29.974952,
         longitude: -90.052869,
         createdAt: new Date(),
@@ -28,26 +27,26 @@ module.exports = {
       },
       {
         id: 3,
-        email: 'e@f.com',
-        phone: '323-456-7890',
-        firstName: 'Erik',
-        lastName: 'Bobson',
+        email: "e@f.com",
+        phone: "323-456-7890",
+        firstName: "Erik",
+        lastName: "Bobson",
         latitude: 29.971376,
         longitude: -90.056863,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
-    await queryInterface.bulkInsert('events', [
+    await queryInterface.bulkInsert("events", [
       {
         id: 1,
-        name: 'Meetup at the Friendly Bar',
-        time: new Date('2023-12-24T18:00'),
-        description: 'Grabbing a pint for old time\'s sake',
+        name: "Meetup at the Friendly Bar",
+        time: new Date("2023-12-24T18:00"),
+        description: "Grabbing a pint for old time's sake",
         longitude: -90.05951,
         latitude: 29.963724,
-        address: '2301 Chartes St., New Orleans LA 70117',
+        address: "2301 Chartes St., New Orleans LA 70117",
         link: null,
         system: false,
         attendingCount: 2,
@@ -59,9 +58,9 @@ module.exports = {
       },
       {
         id: 2,
-        name: 'DJ set at PvF Marker',
-        time: new Date('2023-12-24T21:00'),
-        description: 'Hot tracks by the tracks',
+        name: "DJ set at PvF Marker",
+        time: new Date("2023-12-24T21:00"),
+        description: "Hot tracks by the tracks",
         longitude: -90.048717,
         latitude: 29.964642,
         address: null,
@@ -76,9 +75,9 @@ module.exports = {
       },
       {
         id: 3,
-        name: 'Boil',
-        time: new Date('2023-12-24T14:00'),
-        description: 'Parade pregame',
+        name: "Boil",
+        time: new Date("2023-12-24T14:00"),
+        description: "Parade pregame",
         longitude: -90.052452,
         latitude: 29.964846,
         address: null,
@@ -91,9 +90,9 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
-    await queryInterface.bulkInsert('join_event_participants', [
+    await queryInterface.bulkInsert("join_event_participants", [
       {
         participant_userId: 1,
         eventId: 1,
@@ -142,18 +141,18 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
-    await queryInterface.bulkInsert('join_event_invitees', [
+    await queryInterface.bulkInsert("join_event_invitees", [
       {
         invitee_userId: 3,
         eventId: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
-    await queryInterface.bulkInsert('pins', [
+    await queryInterface.bulkInsert("pins", [
       {
         id: 1,
         longitude: -90.054261,
@@ -206,9 +205,9 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
-    await queryInterface.bulkInsert('join_pin_votes', [
+    await queryInterface.bulkInsert("join_pin_votes", [
       {
         id: 1,
         isUpvoted: true,
@@ -233,15 +232,16 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
-    await queryInterface.bulkInsert('photos', [
+    await queryInterface.bulkInsert("photos", [
       {
         id: 1,
         longitude: -90.054261,
         latitude: 29.964735,
         description: "A free toilet!",
-        photoURL: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Toilet_photo.jpg/1920px-Toilet_photo.jpg',
+        photoURL:
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Toilet_photo.jpg/1920px-Toilet_photo.jpg",
         isCostume: false,
         isThrow: false,
         upvotes: 1,
@@ -254,7 +254,8 @@ module.exports = {
         longitude: -90.053976,
         latitude: 29.963373,
         description: "An expensive toilet!",
-        photoURL: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Toilet_photo.jpg/1920px-Toilet_photo.jpg',
+        photoURL:
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Toilet_photo.jpg/1920px-Toilet_photo.jpg",
         isCostume: false,
         isThrow: false,
         upvotes: 0,
@@ -267,7 +268,8 @@ module.exports = {
         longitude: -90.055103,
         latitude: 29.963286,
         description: "Delicious hotdogs at the food stall!",
-        photoURL: 'https://carolynquinn.files.wordpress.com/2014/08/michellekonderich.jpg',
+        photoURL:
+          "https://carolynquinn.files.wordpress.com/2014/08/michellekonderich.jpg",
         isCostume: false,
         isThrow: false,
         upvotes: 0,
@@ -280,7 +282,8 @@ module.exports = {
         longitude: -90.055103,
         latitude: 29.963286,
         description: "There's a long line at the hotdogs!",
-        photoURL: 'https://carolynquinn.files.wordpress.com/2014/08/michellekonderich.jpg',
+        photoURL:
+          "https://carolynquinn.files.wordpress.com/2014/08/michellekonderich.jpg",
         isCostume: false,
         isThrow: false,
         upvotes: 1,
@@ -292,8 +295,9 @@ module.exports = {
         id: 5,
         longitude: -90.055187,
         latitude: 29.963212,
-        description: 'Left my keys in the bush',
-        photoURL: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Cytisus_scoparius2.jpg/1200px-Cytisus_scoparius2.jpg',
+        description: "Left my keys in the bush",
+        photoURL:
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Cytisus_scoparius2.jpg/1200px-Cytisus_scoparius2.jpg",
         isCostume: false,
         isThrow: false,
         upvotes: 0,
@@ -305,8 +309,9 @@ module.exports = {
         id: 6,
         longitude: -90.055109,
         latitude: 29.963299,
-        description: 'Check out my costume',
-        photoURL: 'https://upload.wikimedia.org/wikipedia/commons/4/46/Inflatable_costume.jpg',
+        description: "Check out my costume",
+        photoURL:
+          "https://upload.wikimedia.org/wikipedia/commons/4/46/Inflatable_costume.jpg",
         isCostume: true,
         isThrow: false,
         upvotes: 1,
@@ -318,8 +323,9 @@ module.exports = {
         id: 7,
         longitude: -90.055155,
         latitude: 29.963277,
-        description: 'Oh yeah! Thank you, Muses',
-        photoURL: 'https://upload.wikimedia.org/wikipedia/commons/4/45/Red_High_Heel_Pumps.jpg',
+        description: "Oh yeah! Thank you, Muses",
+        photoURL:
+          "https://upload.wikimedia.org/wikipedia/commons/4/45/Red_High_Heel_Pumps.jpg",
         isCostume: false,
         isThrow: true,
         upvotes: 1,
@@ -327,9 +333,9 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
-    await queryInterface.bulkInsert('join_photo_votes', [
+    await queryInterface.bulkInsert("join_photo_votes", [
       {
         id: 1,
         isUpvoted: true,
@@ -362,9 +368,9 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
-    await queryInterface.bulkInsert('join_pin_photos', [
+    await queryInterface.bulkInsert("join_pin_photos", [
       {
         id: 1,
         photoId: 1,
@@ -400,10 +406,9 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    
-    ])
+    ]);
 
-    await queryInterface.bulkInsert('comments', [
+    await queryInterface.bulkInsert("comments", [
       {
         id: 1,
         comment: "I'm having a good time",
@@ -414,7 +419,7 @@ module.exports = {
       },
       {
         id: 2,
-        comment:  "Dead horse on the corner!",
+        comment: "Dead horse on the corner!",
         upvotes: -1,
         ownerId: 2,
         createdAt: new Date(),
@@ -430,15 +435,16 @@ module.exports = {
       },
       {
         id: 4,
-        comment: "Where should I get some food? Somebody friend request me and share a good pin!",
+        comment:
+          "Where should I get some food? Somebody friend request me and share a good pin!",
         upvotes: 0,
         ownerId: 2,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
-    await queryInterface.bulkInsert('join_comment_votes', [
+    await queryInterface.bulkInsert("join_comment_votes", [
       {
         id: 1,
         isUpvoted: true, // true is upvote, false is downvote
@@ -487,9 +493,9 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
-    await queryInterface.bulkInsert('join_friends', [
+    await queryInterface.bulkInsert("join_friends", [
       {
         id: 1,
         requester_userId: 1,
@@ -514,9 +520,9 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
-    await queryInterface.bulkInsert('join_shared_posts', [
+    await queryInterface.bulkInsert("join_shared_posts", [
       {
         id: 1,
         sender_userId: 2,
@@ -557,16 +563,10 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
-
-
-
-
-
-
+    ]);
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('users', null, {});
-    await queryInterface.bulkDelete('')
-  }
-}
+    await queryInterface.bulkDelete("users", null, {});
+    await queryInterface.bulkDelete("");
+  },
+};

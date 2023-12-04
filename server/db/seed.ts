@@ -1,7 +1,6 @@
-const { db } = require("./index.ts");
+import { db } from "./index";
 
-db.sync()
-  .then(() => console.log("database synchronized"))
-  .catch((err) => {
-    console.error(err);
-  });
+(async () => {
+  await db.sync();
+  console.log("database sync");
+})();

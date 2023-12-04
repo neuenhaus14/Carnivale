@@ -2,12 +2,12 @@
   "name": "carnivale",
   "description": "Thesis for Foxtrot Senior",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.jsx",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.config.js --watch",
     "start": "nodemon server/index.ts",
-    "seed": "npx sequelize db:drop && npx sequelize db:create && node server/db/seed.js && npx sequelize db:seed:all"
+    "seed": "npx sequelize db:drop && npx sequelize db:create && ts-node server/db/seed.ts && npx sequelize db:seed:all"
   },
   "repository": {
     "type": "git",
