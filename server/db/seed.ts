@@ -1,4 +1,4 @@
-const { db } = require("./index");
+const { db } = require("./index.ts");
 
 db.sync()
   .then(() => console.log("database synchronized"))
