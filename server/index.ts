@@ -82,20 +82,22 @@ import { Request, Response } from 'express';
 const app = express();
 const port = 4000;
 
-const routeHandler = express.Router()
-const distPath = path.resolve(__dirname, '..', 'dist');
+const routeHandler = Router();
+const distPath = path.resolve(__dirname, "..", "dist");
 
-app.use(express.static(distPath)); 
-app.use('/', routeHandler)
+app.use(express.static(distPath));
+app.use("/", routeHandler);
 
-
-app.get('/*', function(req: Request, res: Response) {
-  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'), function(err) {
-    if (err) {
-      res.status(500).send(err)
+app.get("/*", function (req: Request, res: Response) {
+  res.sendFile(
+    path.join(__dirname, "..", "dist", "index.html"),
+    function (err: Error) {
+      if (err) {
+        res.status(500).send(err);
+      }
     }
-  })
-})
+  );
+});
 
 // SERVER CONNECTION
 app.listen(port, () => {
