@@ -1,11 +1,12 @@
 import React from 'react';
-import MapComponent from './MapComponent'
+import MapPageMap from './MapPageMap'
+
 const MapPage = () => {
 
   return (
     <div>
       <h1>MapPage!</h1>
-      <MapComponent />
+      <MapPageMap />
     </div>
   )
 
