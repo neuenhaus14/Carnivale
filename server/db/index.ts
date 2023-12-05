@@ -15,6 +15,7 @@ const db = new Sequelize({
   username: config.DATABASE_USERNAME,
   database: "carnivale",
   password: config.DATABASE_PASSWORD,
+  logging: false,
 });
 
 db.authenticate()
