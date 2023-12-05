@@ -9,41 +9,47 @@ const MapPageMap = () => {
 
   const [markers, setMarkers] = useState([])
   const [viewState, setViewState] = useState({
-    latitude: 29.9275524,
-    longitude: -90.1137725,
+    latitude: 29.964735,
+    longitude: -90.054261,
     zoom: 12,
   });
 
-  // const getPins = () => {
-  //   axios.get('/api/pins/get-pins')
-  //   .then((response) => {
-  //     //console.log(response.data)
-  //     setMarkers(response.data)
-  //   })
-  //   .catch((err) => {
-  //     console.error(err)
-  //   })
-  // }
 
+  //loads pins immediately on page render, once
   useEffect(() => {
+    getPins()
+  }, [])
+
+  const getPins = () => {
     axios.get('/api/pins/get-pins')
     .then((response) => {
-      // console.log(response.data)
+      //console.log(response.data)
       setMarkers(response.data)
     })
     .catch((err) => {
       console.error(err)
     })
-  }, [setMarkers])
-
-  // console.log(markers)
+  }
 
   const clickedMarker = (e) => {
     const currMarkerLng = e._lngLat.lng;
     const currMarkerLat = e._lngLat.lat;
+    let clickedPin;
 
     console.log(e._lngLat.lng, e._lngLat.lat);
   
+    // create axios request and do this logic server side??? 
+    // send the details as params to get the clicked Pin
+
+    // for (let i = 0; i < markers.length; i++){
+    //   if (markers[i].longitude === currMarkerLng){
+    //     console.log(markers[i])
+    //     clickedPin = markers[i]
+    //     return clickedPin
+    //   }
+    // }
+
+    // console.log(clickedPin)
   };
 
   const mapRef = useRef(null);
