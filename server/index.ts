@@ -9,6 +9,7 @@ import Pins from '../server/routes/Pins';
 import FriendsRoutes from './routes/Friends'
 
 
+import WeatherRouter from "./routes/WeatherApi";
 
 //this is declaring db as an obj so it can be ran when server starts
 type db = { db: object };
@@ -27,6 +28,7 @@ app.use(express.json());
 
 app.use('/friends', FriendsRoutes)
 
+app.use('/weather', WeatherRouter)
 app.use("/", routeHandler);
 app.use('/api/pins', Pins)
 
