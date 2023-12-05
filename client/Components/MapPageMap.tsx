@@ -6,7 +6,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MapPageMap = () => {
-  
+
   const [markers, setMarkers] = useState([])
   const [viewState, setViewState] = useState({
     latitude: 29.9275524,
@@ -14,6 +14,29 @@ const MapPageMap = () => {
     zoom: 13.5,
   });
 
+  // const getPins = () => {
+  //   axios.get('/api/pins/get-pins')
+  //   .then((response) => {
+  //     //console.log(response.data)
+  //     setMarkers(response.data)
+  //   })
+  //   .catch((err) => {
+  //     console.error(err)
+  //   })
+  // }
+
+  useEffect(() => {
+    axios.get('/api/pins/get-pins')
+    .then((response) => {
+      // console.log(response.data)
+      setMarkers(response.data)
+    })
+    .catch((err) => {
+      console.error(err)
+    })
+  }, [setMarkers])
+
+  // console.log(markers)
 
   const markerClicked = () => {
     window.alert('the marker was clicked');
@@ -24,7 +47,6 @@ const MapPageMap = () => {
   return (
     <div>
       <div id='map-page-filter' >
-
       </div>
       <Map
         ref={mapRef}
@@ -34,9 +56,21 @@ const MapPageMap = () => {
         style={{ position: 'relative', bottom: '0px', width: '100vw', height: 475 }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
       >
-        <Marker onClick={() => markerClicked()} longitude={-90.1162186} latitude={29.9222337} anchor="bottom"> <BsFillPinFill style={{ width: 25, height: 50}} /> </Marker>
-        <Marker onClick={() => markerClicked()} longitude={-90.1201669} latitude={29.9262878} anchor="bottom"> <BsFillPinFill style={{ width: 25, height: 50}} /> </Marker>
-        <NavigationControl />
+      <div id='map-markers'>
+        {
+          markers.map((marker) => (
+            <Marker 
+            key={marker.id}
+            onClick={() => markerClicked()} 
+            longitude={marker.longitude} latitude={marker.latitude}
+            anchor="bottom"> 
+            <BsFillPinFill style={{ width: 25, height: 50}} /> 
+            </Marker>
+          ))
+        }
+      </div>
+
+      <NavigationControl />
 
       </Map>
     </div>
