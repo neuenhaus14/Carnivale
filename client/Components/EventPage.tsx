@@ -1,9 +1,15 @@
 import React from 'react';
+import EventMapComponent from './EventMapComponent';
+
 
 const EventPage = () => {
 
   return (
-  <h1>EventPage!</h1>
+    <div>
+      <h1>EventPage!</h1>
+      <EventMapComponent />
+    </div>
+  
 )
 
 };
