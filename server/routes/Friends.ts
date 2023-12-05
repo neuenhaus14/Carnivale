@@ -73,9 +73,10 @@ Friends.post('/api/requestFriend', async (req: Request, res: Response) => {
   }
 })
 
-// accept or reject a friend request
+// accept or reject a friend request, will update relationship 
+// eventually add some kind of thing that disallows 
 Friends.patch('/api/answerFriendRequest', async (req: Request, res: Response) => {
-
+  
   const { requester_userId, recipient_userId, isConfirmed } = req.body.friendRequestAnswer
 
   try {
@@ -91,8 +92,6 @@ Friends.patch('/api/answerFriendRequest', async (req: Request, res: Response) =>
     res.status(500).send(err);
   }
 })
-
-
 
 
 export default Friends;
