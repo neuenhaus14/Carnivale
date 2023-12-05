@@ -3,7 +3,7 @@ import {
   Card,
 } from "react-bootstrap";
 import axios from 'axios';
-import { WEATHER_API_KEY } from '../../server/config';
+import  WEATHER_API_KEY  from '../../server/config'
 
 const HomePage = () => {
 
@@ -11,14 +11,14 @@ const HomePage = () => {
   const location = '51.52, -0.11'
   
   const getWeather = ()=> {
-    axios.get(`http://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${location}&aqi=no`)
+    axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${location}&aqi=no`)
       .then((data)=>{
         console.log(data);
       })
       .catch((err) => console.error(err))
   }
 
-  useEffect(getWeather, [])
+  getWeather();
 
 return (
   <div>
