@@ -2,6 +2,7 @@ import express, { Request, Response, Router } from "express";
 import path from "path";
 import { db } from "./db";
 import dotenv from "dotenv";
+import Pins from '../server/routes/Pins';
 
 //this is declaring db as an obj so it can be ran when server starts
 type db = { db: object };
@@ -17,11 +18,7 @@ const distPath = path.resolve(__dirname, "..", "dist");
 
 app.use(express.static(distPath));
 app.use("/", routeHandler);
-
-app.get('/api/get-pins', (req: Request, res: Response) => {
-  
-
-}) 
+app.use('/api/pins', Pins)
 
 app.get("/*", function (req: Request, res: Response) {
   res.sendFile(
