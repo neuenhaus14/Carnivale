@@ -11,7 +11,7 @@ const MapPageMap = () => {
   const [viewState, setViewState] = useState({
     latitude: 29.9275524,
     longitude: -90.1137725,
-    zoom: 13.5,
+    zoom: 12,
   });
 
   // const getPins = () => {
@@ -38,8 +38,12 @@ const MapPageMap = () => {
 
   // console.log(markers)
 
-  const markerClicked = () => {
-    window.alert('the marker was clicked');
+  const clickedMarker = (e) => {
+    const currMarkerLng = e._lngLat.lng;
+    const currMarkerLat = e._lngLat.lat;
+
+    console.log(e._lngLat.lng, e._lngLat.lat);
+  
   };
 
   const mapRef = useRef(null);
@@ -61,7 +65,8 @@ const MapPageMap = () => {
           markers.map((marker) => (
             <Marker 
             key={marker.id}
-            onClick={() => markerClicked()} 
+            // onClick={(e) => markerClicked(e.target._map._markers[marker.id])} 
+            onClick={(e) => clickedMarker(e.target)} 
             longitude={marker.longitude} latitude={marker.latitude}
             anchor="bottom"> 
             <BsFillPinFill style={{ width: 25, height: 50}} /> 
