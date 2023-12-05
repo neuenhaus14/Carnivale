@@ -104,8 +104,11 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
-    //TODO: polyfill issue fix?
-    //fallback:  {"crypto": require.resolve("crypto-browserify"), "buffer": require.resolve("buffer/"), "os": require.resolve("os-browserify/browser"), "path": require.resolve("path-browserify"), "stream": require.resolve("stream-browserify") }
+      fallback: {
+        // "fs": false,
+        "os": false,
+        "path": false,
+        "crypto": false
+      }
   },
-  
 }
