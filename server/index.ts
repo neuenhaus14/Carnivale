@@ -88,6 +88,11 @@ const distPath = path.resolve(__dirname, "..", "dist");
 app.use(express.static(distPath));
 app.use("/", routeHandler);
 
+app.get('/api/get-pins', (req: Request, res: Response) => {
+  
+
+}) 
+
 app.get("/*", function (req: Request, res: Response) {
   res.sendFile(
     path.join(__dirname, "..", "dist", "index.html"),
