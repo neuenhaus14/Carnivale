@@ -6,15 +6,15 @@ import {
   CreationOptional,
   DataTypes,
 } from "sequelize";
-import config from "../config";
+import { DATABASE_USERNAME, DATABASE_PASSWORD } from "../config";
 
 const HOST = "localhost";
 const db = new Sequelize({
   host: HOST,
   dialect: "postgres",
-  username: config.DATABASE_USERNAME,
+  username: DATABASE_USERNAME,
   database: "carnivale",
-  password: config.DATABASE_PASSWORD,
+  password: DATABASE_PASSWORD,
   logging: false,
 });
 
