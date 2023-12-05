@@ -1,9 +1,11 @@
-const dotenv = require('dotenv');
-
+// const dotenv = require('dotenv');
+import dotenv  from  'dotenv'
 
 dotenv.config();
 
-module.exports = {
+
+export default {
+
   DATABASE_PASSWORD : process.env.DATABASE_PASSWORD,
   DATABASE_USERNAME : process.env.DATABASE_USERNAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
