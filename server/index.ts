@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import FriendsRoutes from './routes/Friends'
 
 import Pins from '../server/routes/Pins';
+import FriendsRoutes from './routes/Friends'
+
 
 //this is declaring db as an obj so it can be ran when server starts
 type db = { db: object };
