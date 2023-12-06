@@ -89,6 +89,7 @@ const MapPageMap = () => {
 
   return (
     <div>
+      { createPin ? <CreatePin change={createPinState}/> : null }
       <div id='map-page-filter' >
       </div>
       <Map
@@ -115,7 +116,6 @@ const MapPageMap = () => {
       </div>
       <NavigationControl />
       </Map>
-      { createPin? <CreatePin change={createPinState}/> : null }
     </div>
   )
 }
