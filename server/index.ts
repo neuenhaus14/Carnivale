@@ -10,7 +10,7 @@ import WeatherRoutes from "./routes/WeatherApi";
 import EventsRoutes from './routes/Events'
 import HomeRoutes from "./routes/Home";
 import FeedRoutes from "./routes/Feed";
-
+import ImageRouter from './routes/PhotoUpload'
 
 //this is declaring db as an obj so it can be ran when server starts
 type db = { db: object };
@@ -34,6 +34,7 @@ app.use('/api/weather', WeatherRoutes)
 app.use("/", routeHandler);
 app.use("/api/pins", Pins);
 app.use("/api/feed", FeedRoutes);
+app.use('/api/images', ImageRouter)
 
 app.get("/*", function (req: Request, res: Response) {
   res.sendFile(
@@ -66,7 +67,7 @@ app.use(express.urlencoded({limit: '50mb', extended: true}));
 //TODO: Alert team of the proxy port
 
 app.get('/api/images', async (req, res) => {
-  const {resources} = await cloudinary.search.expression('folder:dev_setups')
+  const {resources} = await cloudinary.search.expression('folder:Carnivale')
   .sort_by('public_id', 'desc')
   .max_results(30)
   .execute();
@@ -88,9 +89,11 @@ app.post('/api/images', async (req, res) => {
   }
 })
 
+
+
 //console.log(process.env)
 
-const port = 4000 || 3001;
+// const port = 4000 || 3001;
 // app.listen(3001, () => {
 //   console.log(`Listening on port ${port}`)
 // });
@@ -109,9 +112,9 @@ const port = 4000 || 3001;
 
 
 
-// SERVER CONNECTION
-app.listen(port, () => {
-  console.log(`
-  Listening at: http://127.0.0.1:${port}
-  `);
-});
+// // SERVER CONNECTION
+// app.listen(port, () => {
+//   console.log(`
+//   Listening at: http://127.0.0.1:${port}
+//   `);
+// });

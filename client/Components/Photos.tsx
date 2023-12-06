@@ -25,7 +25,7 @@ export default function Upload() {
   const uploadImage = async (base64EncodedImage: any) => {
     console.log(base64EncodedImage);
     try {
-      await axios.post('/api/images', {
+      await axios.post('/api/images/upload', {
         method: 'POST',
         body: JSON.stringify({data: base64EncodedImage})
         //Headers: {'Content-type': 'application/json'}),
