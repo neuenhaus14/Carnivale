@@ -4,8 +4,9 @@ import { db, Join_shared_post, User } from "./db";
 import dotenv from "dotenv";
 import Pins from '../server/routes/Pins';
 import FriendsRoutes from './routes/Friends'
-import WeatherRouter from "./routes/WeatherApi";
+import WeatherRoutes from "./routes/WeatherApi";
 import EventsRoutes from './routes/Events'
+import HomeRoutes from "./routes/Home";
 
 //this is declaring db as an obj so it can be ran when server starts
 type db = { db: object };
@@ -21,9 +22,10 @@ const distPath = path.resolve(__dirname, "..", "dist");
 
 app.use(express.static(distPath));
 app.use(express.json());
+app.use('/api/home', HomeRoutes)
 app.use('/api/friends', FriendsRoutes)
 app.unsubscribe('/api/events', EventsRoutes)
-app.use('/weather', WeatherRouter)
+app.use('/api/weather', WeatherRoutes)
 app.use("/", routeHandler);
 app.use('/api/pins', Pins)
 
