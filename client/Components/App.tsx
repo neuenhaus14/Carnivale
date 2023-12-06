@@ -12,6 +12,7 @@ import Costume from './Costume';
 import EventPage from './EventPage';
 import NavBar from './NavBar';
 import CreatePin from './CreatePin';
+import Photos from './Photos'
 //import ProtectedRoutes from './ProtectedRoutes'
 
 // NOTE: mainforum, costume, and event page were supposed to be babies of their parent elements, 
@@ -35,6 +36,7 @@ const App = () => {
           <Route path='/feedpage' element={<div><FeedPage /> <NavBar /></div>} />
           <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
           <Route path='/userpage' element={<div><UserPage coolThing = 'string1'/> <NavBar /></div>} />
+          <Route path='/photo' element={<div><Photos /> <NavBar /></div>} />
           <Route path='/login' element={<Login />} />
         {/* </Route> */}
           <Route path='/' element={<Login />} />
