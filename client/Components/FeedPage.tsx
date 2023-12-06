@@ -29,30 +29,33 @@ const FeedPage = () => {
 
   useEffect(() => {
     axios
-      .get("/api/shared-posts/1")
+      .get("/api/feed/shared-posts/1")
       .then((response) => setSharedPosts(response.data))
       .catch((error) => console.error("Error fetching shared posts:", error));
 
     axios
-      .get("/api/user/1")
+      .get("/api/feed/user/1")
       .then((response) => setCurrentUser(response.data))
       .catch((error) => console.error("Error fetching current user:", error));
   }, []);
 
-  const getSenderName = async (userId: number) => {
-    try {
-      const response = await axios.get(`/api/user/${userId}`);
-      const senderName = `${response.data.firstName} ${response.data.lastName}`;
-      setSenderNames((prevNames) => ({ ...prevNames, [userId]: senderName }));
-    } catch (error) {
-      console.error(`Error fetching user ${userId} information:`, error);
-    }
-  };
-
   useEffect(() => {
+    const fetchSenderName = async (userId: number) => {
+      try {
+        const response = await axios.get(`/api/feed/user/${userId}`);
+        const senderName = `${response.data.firstName} ${response.data.lastName}`;
+        setSenderNames((prevNames) => ({
+          ...prevNames,
+          [userId]: senderName,
+        }));
+      } catch (error) {
+        console.error(`Error fetching user ${userId} information:`, error);
+      }
+    };
+
     sharedPosts.forEach((post) => {
       if (!senderNames[post.sender_userId]) {
-        getSenderName(post.sender_userId);
+        fetchSenderName(post.sender_userId);
       }
     });
   }, [sharedPosts, senderNames]);
@@ -67,19 +70,23 @@ const FeedPage = () => {
         !
       </h1>
       <ul>
-        {sharedPosts.map((post) => (
-          <li key={post.id}>
-            <p>Sender: {senderNames[post.sender_userId]}</p>
-            {post.shared_commentId && (
-              <p>Shared Comment ID: {post.shared_commentId}</p>
-            )}
-            {post.shared_pinId && <p>Shared Pin ID: {post.shared_pinId}</p>}
-            {post.shared_photoId && (
-              <p>Shared Photo ID: {post.shared_photoId}</p>
-            )}
-            <p>Created At: {post.createdAt}</p>
-          </li>
-        ))}
+        {Array.isArray(sharedPosts) && sharedPosts.length > 0 ? (
+          sharedPosts.map((post) => (
+            <li key={post.id}>
+              <p>Sender: {senderNames[post.sender_userId]}</p>
+              {post.shared_commentId && (
+                <p>Shared Comment ID: {post.shared_commentId}</p>
+              )}
+              {post.shared_pinId && <p>Shared Pin ID: {post.shared_pinId}</p>}
+              {post.shared_photoId && (
+                <p>Shared Photo ID: {post.shared_photoId}</p>
+              )}
+              <p>Created At: {post.createdAt}</p>
+            </li>
+          ))
+        ) : (
+          <p>No shared posts available.</p>
+        )}
       </ul>
     </div>
   );
