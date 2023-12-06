@@ -1,8 +1,20 @@
 import React, {useState, useEffect} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
-
-const CreatePin = ( change: any ) => {
+import { useParams} from 'react-router-dom'
+ 
+const CreatePin = ( change: any, searchParams: any ) => {
    const [isShow, setShow] = useState(true);
+   const { lng } = useParams()
+   const { lat } = useParams()
+
+  //  console.log(lng, lat)
+  //  console.log(searchParams)
+
+    const urlSearchString = window.location.search;
+    const params = new URLSearchParams(urlSearchString);
+    console.log(params)
+   
+    
 
   const initModal = () => {
     setShow(!isShow); 
@@ -11,8 +23,9 @@ const CreatePin = ( change: any ) => {
   };
 
   const saveCreatedPin = (e: any) => {
-    const selectedCategory = e.target.value
-    console.log(e)
+    const selectedCategory = e.target.value // "isToilet"
+    console.log(e.target)
+    console.log(e.target.value)
   }
 
   return (

@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 import { Map, Marker, NavigationControl, Layer, Source } from 'react-map-gl';
 import { BsFillPinFill } from "react-icons/bs";
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -14,6 +14,7 @@ import CreatePin from './CreatePin';
 // }
 
 const MapPageMap = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [createPin, setCreatePin] = useState(false);
   const [markers, setMarkers] = useState([]);
   const [droppedPin, setDroppedPin] = useState({
@@ -25,8 +26,6 @@ const MapPageMap = () => {
     longitude: -90.054261,
     zoom: 14,
   });
-
-  const navigate = useNavigate();
 
   //loads pins immediately on page render, once
   useEffect(() => {
@@ -47,35 +46,16 @@ const MapPageMap = () => {
     setDroppedPin({
       lng: e.lngLat.lng,
       lat: e.lngLat.lat})
-    //handlePinNavigation()
+
     createPinState()
+    setSearchParams({lng:`${e.lngLat.lng}` , lat:`${e.lngLat.lat}`})  
+
   }
+
 
   const createPinState = () => {
     setCreatePin(!createPin)
   }
-
-  // const handlePinNavigation = () => {
-  //   //navigate(`/createpin/${droppedPin.lng}/${droppedPin.lat}`)
-  //   <Link to={`/mappage/createpin/${droppedPin.lng}/${droppedPin.lat}`} />
-  //   setDroppedPin({
-  //     lng: null,
-  //     lat: null
-  //   });
-    
-  // };
-
-  useEffect(() => {
-    <Link to={`/mappage/createpin/${droppedPin.lng}/${droppedPin.lat}`} />
-    // if (droppedPin.lng !== null && droppedPin.lat !== null) {
-    //   navigate(`createpin/${droppedPin.lng}/${droppedPin.lat}`)
-    //     setDroppedPin({
-    //       lng: null,
-    //       lat: null
-    //     });
-    // }
-  }, [droppedPin]);
-
 
   const clickedMarker = (e: any) => {
     const currMarkerLng = e._lngLat.lng;
@@ -89,7 +69,7 @@ const MapPageMap = () => {
 
   return (
     <div>
-      { createPin ? <CreatePin change={createPinState}/> : null }
+      { createPin ? <CreatePin change={createPinState} searchParams={searchParams} /> : null }
       <div id='map-page-filter' >
       </div>
       <Map
