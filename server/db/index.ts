@@ -59,13 +59,13 @@ interface Event
   extends Model<InferAttributes<Event>, InferCreationAttributes<Event>> {
   id: CreationOptional<number>;
   name: string;
-  date: number;
   description: string;
-  lastName: string;
   longitude: number;
   latitude: number;
   address: string;
   link: string;
+  startTime: Date;
+  endTime: Date;
   inviteCount: number;
   attendingCount: number;
   upvotes: number;
