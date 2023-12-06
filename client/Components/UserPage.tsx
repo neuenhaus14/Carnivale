@@ -1,11 +1,21 @@
-import React from 'react';
+import React, { ReactPropTypes }from 'react';
+import { useParams } from "react-router-dom";
 
-const UserPage = () => {
+const UserPage = ({ coolThing }: UserPageProps ) => {
+
+  const { id } = useParams();
 
   return (
-    <h1>UserPage!!!</h1>
+    <div>
+      <h1>UserPage!!!</h1>
+      <p>  { id } </p>
+      <p> { coolThing } </p>
+    </div>
   )
-
 };
+
+interface UserPageProps {
+  coolThing: string
+}
 
 export default UserPage;

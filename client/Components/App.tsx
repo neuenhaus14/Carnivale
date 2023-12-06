@@ -21,6 +21,7 @@ const App = () => {
 
   // add user loader data 
   // is logged in loader to pass to private routes to make sure user is logged in
+  const userId = '1'
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -33,7 +34,7 @@ const App = () => {
           <Route path='/createpin' element={<div><CreatePin /> <NavBar /></div>} />
           <Route path='/feedpage' element={<div><FeedPage /> <NavBar /></div>} />
           <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
-          <Route path='/userpage' element={<div><UserPage /> <NavBar /></div>} />
+          <Route path='/userpage' element={<div><UserPage coolThing = 'string1'/> <NavBar /></div>} />
           <Route path='/login' element={<Login />} />
         {/* </Route> */}
           <Route path='/' element={<Login />} />
