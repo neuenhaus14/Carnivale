@@ -2,10 +2,12 @@ import express, { Request, Response, Router } from "express";
 import path from "path";
 import { db, Join_shared_post, User } from "./db";
 import dotenv from "dotenv";
+
 import FriendsRoutes from './routes/Friends'
 
 import Pins from '../server/routes/Pins';
 import FriendsRoutes from './routes/Friends'
+
 
 
 //this is declaring db as an obj so it can be ran when server starts
@@ -26,6 +28,7 @@ app.use(express.json());
 app.use('/friends', FriendsRoutes)
 
 app.use("/", routeHandler);
+app.use('/api/pins', Pins)
 
 app.get("/api/shared-posts/:user_id", async (req: Request, res: Response) => {
   try {
