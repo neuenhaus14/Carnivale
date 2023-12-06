@@ -177,7 +177,7 @@ Events.post('/answerEventInvite', async (req: Request, res: Response) => {
   }
 })
 
-Events.delete('/deleteEvent/:eventId', async (req, res)=> {
+Events.delete('/deleteEvent/:eventId', async (req: Request, res: Response)=> {
   const { eventId } = req.params;
 
   try {
@@ -213,6 +213,26 @@ Events.delete('/deleteEvent/:eventId', async (req, res)=> {
   }
 
 
+})
+
+
+Events.post('/inviteToEvent', async (req: Request, res: Response) => {
+  // invitees is array of userIds
+  const { eventId, invitees } = req.body.invitations;
+
+  try {
+    const invitations: any = invitees.map((invitee_userId: number) => {
+      return { eventId, invitee_userId }
+    })
+    const invitationsResponse = await Join_event_invitee.bulkCreate(invitations);
+
+    console.log('here', invitationsResponse)
+    res.status(201).send(invitationsResponse)
+
+  } catch (err) {
+    console.error("SERVER ERROR: could not POST event invitations", err);
+    res.status(500).send(err);
+  }
 })
 
 
