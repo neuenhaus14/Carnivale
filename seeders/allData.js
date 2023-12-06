@@ -36,6 +36,17 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        id: 4,
+        email: "g@h.com",
+        phone: "323-426-7890",
+        firstName: "Lonely",
+        lastName: "Joe",
+        latitude: 29.971336,
+        longitude: -90.056263,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
 
     await queryInterface.bulkInsert("events", [

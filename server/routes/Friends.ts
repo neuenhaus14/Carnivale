@@ -62,10 +62,15 @@ Friends.get('/getFriends/:id', async (req: Request, res: Response) => {
 // all useful data are in request body
 Friends.post('/requestFriend', async (req: Request, res: Response) => {
 
-  const { requester_userId, recipient_userId } = req.body.friendRequest
+  const { requester_userId, recipient_phoneNumber } = req.body.friendRequest
 
   try {
-    const newRelationship: Model = await Join_friend.create({ requester_userId, recipient_userId, isConfirmed: null })
+
+    const userWithPhoneNumber: any = await User.findOne({ where : { phone: recipient_phoneNumber}})
+
+    console.log('uWPN', userWithPhoneNumber);
+
+    const newRelationship: Model = await Join_friend.create({ requester_userId, recipient_userId: userWithPhoneNumber.id, isConfirmed: null })
     res.status(201).send(newRelationship)
   } catch (err) {
     console.error('SERVER ERROR: could not POST friend request', err);
