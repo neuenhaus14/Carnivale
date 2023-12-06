@@ -36,13 +36,25 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        id: 4,
+        email: "g@h.com",
+        phone: "323-426-7890",
+        firstName: "Lonely",
+        lastName: "Joe",
+        latitude: 29.971336,
+        longitude: -90.056263,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
 
     await queryInterface.bulkInsert("events", [
       {
         id: 1,
         name: "Meetup at the Friendly Bar",
-        time: new Date("2023-12-24T18:00"),
+        startTime: new Date("2023-12-24T18:00"),
+        endTime: new Date("2023-12-24T19:00"),
         description: "Grabbing a pint for old time's sake",
         longitude: -90.05951,
         latitude: 29.963724,
@@ -59,7 +71,8 @@ module.exports = {
       {
         id: 2,
         name: "DJ set at PvF Marker",
-        time: new Date("2023-12-24T21:00"),
+        startTime: new Date("2023-12-24T21:00"),
+        endTime: new Date("2023-12-24T22:00"),
         description: "Hot tracks by the tracks",
         longitude: -90.048717,
         latitude: 29.964642,
@@ -76,7 +89,8 @@ module.exports = {
       {
         id: 3,
         name: "Boil",
-        time: new Date("2023-12-24T14:00"),
+        startTime: new Date("2023-12-24T14:00"),
+        endTime: new Date("2023-12-24T15:00"),
         description: "Parade pregame",
         longitude: -90.052452,
         latitude: 29.964846,
