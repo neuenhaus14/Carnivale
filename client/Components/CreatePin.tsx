@@ -1,23 +1,28 @@
 import React, {useState, useEffect} from 'react'
 import { Modal, Button } from 'react-bootstrap'
 
-const CreatePin = ({isShow}) => {
-  const [isShown, setShow] = useState(isShow);
+const CreatePin = ({ change }) => {
+   const [isShow, setShow] = useState(true);
 
   const initModal = () => {
-    setShow(!isShown); 
-    console.log(isShown)
-   
+    setShow(!isShow); 
+    change(!isShow)
+    console.log(isShow)
   };
 
-  console.log(isShown)
+  // useEffect (() => {
+  //   setShow(true)
+  //   console.log(isShow)
+  // }, [])
+
+  // console.log(isShow)
 
   return (
     <>
       {/* <Button variant="success" onClick={initModal}>
         Open Modal
       </Button> */}
-      <Modal show={isShown} onHide={initModal}>
+      <Modal show={isShow} onHide={initModal}>
         <Modal.Header closeButton >
           <Modal.Title>React Modal Popover Example</Modal.Title>
         </Modal.Header>

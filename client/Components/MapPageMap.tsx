@@ -47,16 +47,14 @@ const MapPageMap = () => {
     setDroppedPin({
       lng: e.lngLat.lng,
       lat: e.lngLat.lat})
-
-  //handlePinNavigation()
-   // setCreatePin(false)
-     console.log(createPin)
+    //handlePinNavigation()
+    createPinState()
   }
 
-  useEffect (() => {
-    setCreatePin(false)
-    console.log(createPin)
-  }, [createPin])
+  const createPinState = () => {
+    setCreatePin(!createPin)
+  }
+
   // const handlePinNavigation = () => {
   //   //navigate(`/createpin/${droppedPin.lng}/${droppedPin.lat}`)
   //   <Link to={`/mappage/createpin/${droppedPin.lng}/${droppedPin.lat}`} />
@@ -89,18 +87,15 @@ const MapPageMap = () => {
 
   const mapRef = useRef(null);
 
-  // console.log(createPin)
-
   return (
     <div>
       <div id='map-page-filter' >
       </div>
-      {/* <CreatePin /> */}
       <Map
         ref={mapRef}
         {...viewState}
         onMove={(e) => setViewState(e.viewState)}
-        onClick={(e) => {dropPin(e); setCreatePin(true)}}
+        onClick={(e) => {dropPin(e)}}
         mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
         style={{ position: 'relative', bottom: '0px', width: '100vw', height: 475 }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
@@ -120,7 +115,7 @@ const MapPageMap = () => {
       </div>
       <NavigationControl />
       </Map>
-      { createPin? <CreatePin isShow={true}/> : null }
+      { createPin? <CreatePin change={createPinState}/> : null }
     </div>
   )
 }
