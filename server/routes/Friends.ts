@@ -18,7 +18,7 @@ interface Relationship extends Model {
 // and returns all User records where
 // id is either request or recipient 
 // AND isConfirmed is true
-Friends.get('/api/getFriends/:id', async (req: Request, res: Response) => {
+Friends.get('/getFriends/:id', async (req: Request, res: Response) => {
   const { id } = req.params
   try {
   // getting relationships where friendship is confirmed
@@ -60,7 +60,7 @@ Friends.get('/api/getFriends/:id', async (req: Request, res: Response) => {
 
 // add a friend request from a user to a recipient (who is not a friend)
 // all useful data are in request body
-Friends.post('/api/requestFriend', async (req: Request, res: Response) => {
+Friends.post('/requestFriend', async (req: Request, res: Response) => {
 
   const { requester_userId, recipient_userId } = req.body.friendRequest
 
@@ -75,7 +75,7 @@ Friends.post('/api/requestFriend', async (req: Request, res: Response) => {
 
 // accept or reject a friend request, will update relationship 
 // eventually add some kind of thing that disallows 
-Friends.patch('/api/answerFriendRequest', async (req: Request, res: Response) => {
+Friends.patch('/answerFriendRequest', async (req: Request, res: Response) => {
   
   const { requester_userId, recipient_userId, isConfirmed } = req.body.friendRequestAnswer
 
