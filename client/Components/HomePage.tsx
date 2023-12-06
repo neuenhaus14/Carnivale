@@ -10,7 +10,7 @@ const HomePage = () => {
 
   const getWeather = async () => {
     try {
-      const { data } = await axios.get(`/weather/${location}`);
+      const { data } = await axios.get(`/api/weather/${location}`);
       setCurrWeather(data.current.condition.text);
       setCurrTemp(data.current.temp_f);
       setAvgTemp(data.forecast.forecastday[0].day.avgtemp_f);

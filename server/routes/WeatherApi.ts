@@ -1,11 +1,10 @@
-import express, { Request, Response } from 'express';
+import {Router, Request, Response } from 'express';
 import axios from 'axios';
-//const {WEATHER_API_KEY} = require('../config');
 import { WEATHER_API_KEY } from '../config';
 
-const WeatherRouter = express.Router();
+const WeatherRoutes = Router();
 
-WeatherRouter.get('/:location', async (req: Request, res: Response) => {
+WeatherRoutes.get('/:location', async (req: Request, res: Response) => {
   const { location } = req.params;
   try {
     const { data } = await axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${location}&aqi=no&alerts=no`);
@@ -17,4 +16,4 @@ WeatherRouter.get('/:location', async (req: Request, res: Response) => {
   }
 });
 
-export default WeatherRouter;
+export default WeatherRoutes;
