@@ -57,7 +57,7 @@ const MapPageMap = () => {
   }
 
 
-  const clickedMarker = (e) => {
+  const clickedMarker = (e: any) => {
     const currMarkerLng = e._lngLat.lng;
     const currMarkerLat = e._lngLat.lat;
     let clickedPin;
