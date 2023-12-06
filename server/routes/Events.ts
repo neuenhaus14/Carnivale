@@ -140,6 +140,80 @@ Events.post('/createEvent', async (req: Request, res: Response) => {
   }
 })
 
+// request will have instructions whether to attend or not, invitee_userId and eventId
+// The record inside JOIN_EVENT_INVITEES gets deleted every time--will need to refactor
+// to be able to change your mind after RSVP'ing
+Events.post('/answerEventInvite', async (req: Request, res: Response) => {
+  const { eventId, invitee_userId, isGoing } = req.body.answer
+
+  try{
+    // init this var, which will be assigned if the user confirms the invitation
+    let eventParticipating: any = null;
+    
+    // if the user RSVP's to an event they're invited to, add
+    // record to event_participant table, 
+    if (isGoing === true) {
+      eventParticipating = await Join_event_participant.create({
+        eventId, participant_userId: invitee_userId
+      })
+    }
+    // always delete the record of the 
+    // invitation after an answer is provided
+    const eventInviteDeletion: any = await Join_event_invitee.destroy({
+      where: {
+        eventId, invitee_userId
+      }
+    })
+    // send info below back to client: the record added to Join_events_participants
+    // and the number of records deleted from Join_event_invitee
+    const response = {
+      participating: eventParticipating,
+      invitesRemoved: eventInviteDeletion,
+    }
+    res.status(201).send(response)
+  } catch (err) {
+    console.error("SERVER ERROR: could not POST event answer", err);
+    res.status(500).send(err);
+  }
+})
+
+Events.delete('/deleteEvent/:eventId', async (req, res)=> {
+  const { eventId } = req.params;
+
+  try {
+    // delete invites before event, since invite references event
+    const deletedInvites = await Join_event_invitee.destroy({
+      where: {
+        eventId
+      }
+    })
+    const deletedParticipants = await Join_event_participant.destroy({
+      where: {
+        eventId
+      }
+    })
+
+    const deletedEvent = await Event.destroy({
+      where: {
+        id: eventId
+      }
+    })
+    const response = {
+      deletedEventCount: deletedEvent,
+      deletedInviteCount: deletedInvites,
+      deletedParticipants: deletedParticipants,
+    }
+
+    console.log('dE', deletedEvent, 'dI', deletedInvites, 'dP', deletedParticipants);
+    res.status(202).send(response);
+
+  } catch (err) {
+    console.error("SERVER ERROR: could not DELETE event records", err);
+    res.status(500).send(err);
+  }
+
+
+})
 
 
 
