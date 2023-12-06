@@ -30,6 +30,9 @@ const App = () => {
           <Route path='/homepage' element={<div><HomePage /> <NavBar /></div>} />
           <Route path='/mainforum' element={<div><MainForum /> <NavBar /></div>} />
           <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
+          {/* <Route path='/mappage' element={<div><MapPage /> <NavBar /></div>}>
+            <Route path='createpin/:lng/:lat' element={<div><CreatePin /> <NavBar /></div>} />
+          </Route> */}
           <Route path='/mappage' element={<div><MapPage /> <NavBar /></div>} />
           <Route path='/createpin' element={<div><CreatePin /> <NavBar /></div>} />
           <Route path='/feedpage' element={<div><FeedPage /> <NavBar /></div>} />
