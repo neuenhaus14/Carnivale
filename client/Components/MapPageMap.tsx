@@ -6,6 +6,7 @@ import { Outlet, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import CreatePin from './CreatePin';
 
 // type DroppedPin = {
 //     lng: number,
@@ -13,6 +14,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 // }
 
 const MapPageMap = () => {
+  const [createPin, setCreatePin] = useState(false);
   const [markers, setMarkers] = useState([]);
   const [droppedPin, setDroppedPin] = useState({
     lng: null,
@@ -21,7 +23,7 @@ const MapPageMap = () => {
   const [viewState, setViewState] = useState({
     latitude: 29.964735,
     longitude: -90.054261,
-    zoom: 12,
+    zoom: 14,
   });
 
   const navigate = useNavigate();
@@ -40,36 +42,21 @@ const MapPageMap = () => {
     }
   }
 
-  // const addPins = () => {
-  //   // set state and need all the details from a form????
-  //   axios.post('/api/pins/post-pins', {
-  //     options: {
-  //       newPin
-  //     }
-  //   })
-  //   .then((response) => {
-  //     console.log(response)
-  //   })
-  //   .catch((err) => {
-  //     console.error(err)
-  //   })
-  // }
-
-
   const dropPin = (e: any) => {
     console.log(e.lngLat.lng, e.lngLat.lat)
     setDroppedPin({
       lng: e.lngLat.lng,
       lat: e.lngLat.lat})
 
-  //callPinNavigation()
+  //handlePinNavigation()
+   // setCreatePin(false)
+     console.log(createPin)
   }
 
-
-  // const callPinNavigation = () => {
-  //   handlePinNavigation()
-  // }
-
+  useEffect (() => {
+    setCreatePin(false)
+    console.log(createPin)
+  }, [createPin])
   // const handlePinNavigation = () => {
   //   //navigate(`/createpin/${droppedPin.lng}/${droppedPin.lat}`)
   //   <Link to={`/mappage/createpin/${droppedPin.lng}/${droppedPin.lat}`} />
@@ -102,16 +89,18 @@ const MapPageMap = () => {
 
   const mapRef = useRef(null);
 
+  // console.log(createPin)
 
   return (
     <div>
       <div id='map-page-filter' >
       </div>
+      {/* <CreatePin /> */}
       <Map
         ref={mapRef}
         {...viewState}
         onMove={(e) => setViewState(e.viewState)}
-        onClick={(e) => {dropPin(e)}}
+        onClick={(e) => {dropPin(e); setCreatePin(true)}}
         mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
         style={{ position: 'relative', bottom: '0px', width: '100vw', height: 475 }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
@@ -131,6 +120,7 @@ const MapPageMap = () => {
       </div>
       <NavigationControl />
       </Map>
+      { createPin? <CreatePin isShow={true}/> : null }
     </div>
   )
 }
