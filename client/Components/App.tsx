@@ -36,9 +36,9 @@ const App = () => {
           <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
           <Route path='/userpage' element={<div><UserPage coolThing = 'string1'/> <NavBar /></div>} />
           <Route path='/photo' element={<div><Photos /> <NavBar /></div>} />
-          <Route path='/login' element={<Login />} />
-        {/* </Route> */}
           <Route path='/' element={<Login />} />
+        {/* </Route> */}
+          <Route path='/login'/>
       </Route>,
     ),
   );
