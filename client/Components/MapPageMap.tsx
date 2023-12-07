@@ -42,7 +42,7 @@ const MapPageMap = () => {
   }
 
   const dropPin = (e: any) => {
-    console.log(e.lngLat.lng, e.lngLat.lat)
+    //console.log(e.lngLat.lng, e.lngLat.lat)
     setDroppedPin({
       lng: e.lngLat.lng,
       lat: e.lngLat.lat})
