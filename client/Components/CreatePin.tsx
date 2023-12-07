@@ -3,23 +3,19 @@ import { Modal, Button, Form } from 'react-bootstrap'
 import { useParams} from 'react-router-dom'
  
 const CreatePin = ( change: any, searchParams: any ) => {
-   const [isShow, setShow] = useState(true);
-   const { lng } = useParams()
-   const { lat } = useParams()
+  const [isShow, setShow] = useState(true);
+  
+  const urlSearchString = window.location.search.substring(1);
+  const parsedParams = JSON.parse('{"' + urlSearchString.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+  
+  const { lng } = parsedParams;
+  const { lat } = parsedParams;
 
-  //  console.log(lng, lat)
-  //  console.log(searchParams)
-
-    const urlSearchString = window.location.search;
-    const params = new URLSearchParams(urlSearchString);
-    console.log(params)
-   
-    
 
   const initModal = () => {
     setShow(!isShow); 
-    change(!isShow)
-    console.log(isShow)
+    change(!isShow);
+    console.log(isShow);
   };
 
   const saveCreatedPin = (e: any) => {
