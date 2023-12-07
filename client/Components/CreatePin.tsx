@@ -1,9 +1,14 @@
 import React, {useState, useEffect} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import { useParams} from 'react-router-dom'
+import axios from 'axios'
  
 const CreatePin = ( change: any, searchParams: any ) => {
   const [isShow, setShow] = useState(true);
+  const [isToilet, setIsToilet] =useState(false);
+  const [isFood, setIsFood] =useState(false);
+  const [isPersonal, setIsPersonal] =useState(false);
+  const [isFree, setIsFree] =useState(false);
   
   const urlSearchString = window.location.search.substring(1);
   const parsedParams = JSON.parse('{"' + urlSearchString.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
@@ -18,12 +23,34 @@ const CreatePin = ( change: any, searchParams: any ) => {
     console.log(isShow);
   };
 
-  const saveCreatedPin = (e: any) => {
-    const selectedCategory = e.target.value // "isToilet"
-    console.log(e.target)
-    console.log(e.target.value)
+  const resetBooleanState = () => {
+    setIsFree(false)
+    setIsToilet(false)
+    setIsFood(false)
+    setIsPersonal(false)
+    // console.log('inside', isFree, isToilet, isFood, isPersonal)
   }
 
+
+  const saveCreatedPin = async () => {
+    try{
+      axios.post(`/api/pins/create-pin/${1}`, {
+        options: {
+          longitude: lng,
+          latitude: lat,
+          isToilet,
+          isFood,
+          isPersonal,
+          isFree,
+        }
+      })
+      console.log('whish! pin sent to database')
+    } catch (err)  {
+      console.error(err)
+    }
+  }
+  
+  // console.log('outside', isFree, isToilet, isFood, isPersonal)
   return (
     <>
       {/* <Button variant="success" onClick={initModal}>
@@ -39,19 +66,19 @@ const CreatePin = ( change: any, searchParams: any ) => {
             <Form.Group className ='mb-3' controlId="pinType">
               <Form.Check type="radio" id="freeToilet" name="pin-cat" 
                 label="Free Toilet" value="isFree" inline isValid 
-                onClick={(e) => {saveCreatedPin(e)} }
+                onClick={() => {resetBooleanState(); setIsFree(!isFree)} }
                 />
               <Form.Check type="radio" id="toilet" name="pin-cat" 
                 label="Toilet" value="isToilet" inline isValid 
-                onClick={(e) => {saveCreatedPin(e)} }
+                onClick={() => {resetBooleanState(); setIsToilet(!isToilet)} }
                 />
               <Form.Check type="radio" id="food" name="pin-cat" 
                 label="Food" value="isFood" inline isValid 
-                onClick={(e) => {saveCreatedPin(e)} }
+                onClick={() => {resetBooleanState(); setIsFood(!isFood)} }
                 />
               <Form.Check type="radio" id="personal" name="pin-cat" 
                 label="Personal" value="isPersonal" inline isValid 
-                onClick={(e) => {saveCreatedPin(e)} }
+                onClick={() => {resetBooleanState(); setIsPersonal(!isPersonal)} }
                 />
             </Form.Group>
             <Form.Group className="mb-3" controlId="picture spot" >
@@ -62,7 +89,7 @@ const CreatePin = ( change: any, searchParams: any ) => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={initModal}> Close </Button>
-          <Button variant="dark" onClick={initModal}> Save </Button>
+          <Button variant="dark" onClick={() => {saveCreatedPin(); initModal} }> Save </Button>
         </Modal.Footer>
       </Modal>
     </>
