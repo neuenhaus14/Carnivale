@@ -62,11 +62,17 @@ const MapPageMap = () => {
     console.log(e._lngLat.lng, e._lngLat.lat);
   };
 
-
+  console.log('mappage', markers)
 
   return (
     <div>
-      { createPin ? <CreatePin change={createPinState} searchParams={searchParams} /> : null }
+      { createPin ? 
+      <CreatePin 
+      change={createPinState} 
+      markers={markers}
+      setMarkers={setMarkers}
+      /> 
+      : null }
       <div id='map-page-filter' >
       </div>
       <Map
