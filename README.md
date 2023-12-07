@@ -59,7 +59,7 @@ The repo's name, as of writing, is Carnivale.
 
 This will be designated as your origin, so you'll push and pull to origin main. We tried our best to avoid adding and committing to the instance through git, since it seems like it'd be a pain to resolve conflicts in an editor in the instance.
 
-Change your directory and run npm install:
+Change your directory and run npm install to pull in the dependencies:
 
 > cd Carnivale
 > npm install
@@ -110,10 +110,29 @@ Run that command on all items in the list below:
 
 |  Env. Var.   |   Value   | Notes |
 | ------------ | --------- | ----- |
-| DATABASE_USERNAME | 'postgres' |
-| DATABASE_PASSWORD | 'password' |
+| DATABASE_USERNAME | 'postgres' | 'postgres' is default user |
+| DATABASE_PASSWORD | 'password' | You've have to set this value |
 | WEATHER_API_KEY | << string of alphanumerics >> | You'll probably need a new one |
 | CLOUDINARY_API_KEY | << string of digits >> | Samesies |
 | CLOUDINARY_API_SECRET | << string of alphanumerics >> | Samesies |
 
+### 6. Building & Running
 
+Thus far we've done the following:
+
+1. Launched an AWS instance
+2. Installed nvm and node
+3. Cloned the repo down and installed dependencies
+4. Installed and configured postgres
+5. Defined environment variables
+
+Now run the build and start scripts:
+
+> npm run build
+> npm run start
+
+Next, navigate to the instance's public IPv4 address in your browser. From the instance panel in AWS, there's a link 'open address', which will take you to an 'https://...' address, so switch that to 'http://...' and add the port to the end of the url to access the site, like so:
+
+> http://some.AWS.address.numbers:4000
+
+Should be good.

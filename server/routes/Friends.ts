@@ -41,14 +41,14 @@ Friends.get('/getFriends/:id', async (req: Request, res: Response) => {
         return friendship.requester_userId === Number(id) ? friendship.recipient_userId : friendship.requester_userId
       });
       // getting info of users: looking for all id's that are in allFriendsIds
-      const allFriendsProfiles: Array<Model> = await User.findAll({
+      const allFriendsUsers: Array<Model> = await User.findAll({
         where: {
           id: {
             [Op.or]: [...allFriendsIds]
           }
         }
       })
-      res.status(200).send(allFriendsProfiles);
+      res.status(200).send(allFriendsUsers);
     } else { // else if allFriendships is empty...
       res.status(404).send('Resource not found. You have no friends.')
     }
@@ -56,6 +56,62 @@ Friends.get('/getFriends/:id', async (req: Request, res: Response) => {
     console.error('SERVER ERROR: could not GET friends', err);
     res.status(500).send(err);
   }
+})
+
+Friends.get('/getFriendRequests/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const requestsMade: Array<Model> = await Join_friend.findAll({
+      where: {
+        requester_userId: id,
+        isConfirmed: null
+      }
+    })
+
+    const requestsMadeIds = requestsMade.map((request: any) => {
+      return request.recipient_userId
+    })
+
+    const requestsMadeUsers : Array<Model> = await User.findAll({
+      where: {
+        id: {
+          [Op.or]: [...requestsMadeIds]
+        }
+      }
+    });
+
+    const requestsReceived: Array<Model> = await Join_friend.findAll({
+      where: {
+        recipient_userId: id,
+        isConfirmed: null
+      }
+    })
+
+    const requestsReceivedIds = requestsReceived.map((request: any) => {
+      return request.requester_userId
+    }) 
+
+    const requestsReceivedUsers : Array<Model> = await User.findAll({
+      where: {
+        id: {
+          [Op.or]: [...requestsReceivedIds]
+        }
+      }
+    });
+
+    const response = {
+      requestsMadeUsers,
+      requestsReceivedUsers
+    }
+    res.status(200).send(response);
+  } catch (err) {
+    console.error('SERVER ERROR: could not GET friend requests', err);
+    res.status(500).send(err);
+  }
+    
+
+
 })
 
 // add a friend request from a user to a recipient (who is not a friend)
@@ -66,7 +122,7 @@ Friends.post('/requestFriend', async (req: Request, res: Response) => {
 
   try {
 
-    const userWithPhoneNumber: any = await User.findOne({ where : { phone: recipient_phoneNumber}})
+    const userWithPhoneNumber: any = await User.findOne({ where: { phone: recipient_phoneNumber } })
 
     console.log('uWPN', userWithPhoneNumber);
 
