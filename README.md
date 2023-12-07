@@ -4,12 +4,14 @@ Thesis for Foxtrot Senior
 
 # Deployment
 
-We've deployed to an AWS EC2 Ubuntu 22.04
+Deploy this bad boy to an AWS EC2 Ubuntu 22.04
 
 ## Inbound Traffic Rules
 
+Set the following at some point after launching the instance.
+
 |     TYPE      |  PORT RANGE   |     SOURCE    |      WHY?    |   NOTES   |
-| ------------- | ------------- | ------------- | ------------ |
+| ------------- | ------------- | ------------- | ------------ | --------- |
 | SSH           |  22           | Local-Dev-IP/32  |  SSH into instance from your computer | N/A |
 | Custom TCP    | server port (4000)  | 0.0.0.0/0 | User access from internet | N/A |
 | PostgreSQL    | 5432         |  VM-public-IP/32 | Instance Postgres server access | There's a preset for Postgres in the Type dropdown
@@ -18,7 +20,7 @@ We've deployed to an AWS EC2 Ubuntu 22.04
 
 ### 1. Launch a fresh instance!
 
-Then save a key where you'll find it and PuTtY or SSH into the instance. More detailed instructions are available by clicking the 'Connect' button on the instance's main panel. This opens a 'Connect to Instance' page which provides instructions for accessing your instance. Mac users can run the following command in the terminal from the directory in which the instance's key is saved: 
+Then save a key where you'll find it and PuTtY or SSH into the instance. More detailed instructions are available by clicking the 'Connect' button on the instance's main panel. This opens a 'Connect to Instance' page which provides instructions for accessing your instance. Mac users can run the following command in the terminal from the directory in which the instance's key is saved:
 
 > ssh -i "your-Key.pem" ubuntu@public-DNS-Address
 
@@ -32,9 +34,9 @@ Install nvm as follows:
 
 Then run the three commands as directed in the terminal. They are as follows:
 
-> export NVM_DIR="$HOME/.nvm"  
-> [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  
-> [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" 
+> export NVM_DIR="$HOME/.nvm"
+> [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+> [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 Next install Node version 20.9.0, which was used to develop this project:
 
@@ -42,10 +44,10 @@ Next install Node version 20.9.0, which was used to develop this project:
 
 You can check your versions with the next commands:
 
->git --version  
->nvm --version  
->node --version  
->npm --version  
+>git --version
+>nvm --version
+>node --version
+>npm --version
 
 ### 3. Next, clone your repo down and install packages
 
@@ -64,7 +66,7 @@ Change your directory and run npm install:
 
 ### 4. Install and configuring postgres
 
-To install postgres locally, using instructions gleaned from these posts: 
+To install postgres locally, using instructions gleaned from these posts:
 https://medium.com/ruralscript/install-and-setuppostgresql-on-ubuntu-amazon-ec2-5d1af79b4fca
 https://ubuntu.com/server/docs/databases-postgresql
 
@@ -107,10 +109,11 @@ There are a number of environment variables that support the app, and they must 
 Run that command on all items in the list below:
 
 |  Env. Var.   |   Value   | Notes |
+| ------------ | --------- | ----- |
 | DATABASE_USERNAME | 'postgres' |
 | DATABASE_PASSWORD | 'password' |
-| WEATHER_API_KEY | '6eddca4ea784cccac0225303230412' | You'll probably need a new one |
-| CLOUDINARY_API_KEY | '671614832327674' | Samesies | 
-| CLOUDINARY_API_SECRET | 'QFRxp5IYfFuLhf2cDQ3J5mpPQ1o' | Samesies | 
+| WEATHER_API_KEY | << string of alphanumerics >> | You'll probably need a new one |
+| CLOUDINARY_API_KEY | << string of digits >> | Samesies |
+| CLOUDINARY_API_SECRET | << string of alphanumerics >> | Samesies |
 
 
