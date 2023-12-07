@@ -6,7 +6,9 @@ import { Photo } from '../db'
 
 //Multer provides us with two storage options: disk and memory storage. In the below snippet, we start by selecting the storage option we want for our Multer instance. We choose the memory storage option because we do not want to store parsed files on our server; instead, we want them temporarily stored on the RAM so that we can quickly upload them to Cloudinary.
 const storage = multer.memoryStorage();
+console.log('storage', storage)
 const upload = multer({ storage });
+console.log('upload', upload)
 const myUploadMiddleware = upload.single("sample_file");
 const ImageRouter = express.Router()
 
@@ -21,16 +23,21 @@ function runMiddleware(req: any, res: any, fn: any) {
   });
 }
 
-//TODO:Take the res from the post and manipulate that data into the db somehow
 
+//Post logic that takes an image from the front page and adds the image to cloudinary and posts the reference url to our local database as well
 ImageRouter.post('/upload', async (req: Request, res: Response) => {
   try {
     await runMiddleware(req, res, myUploadMiddleware);
     const b64 = Buffer.from(req.file.buffer).toString("base64");
     const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
     const cldRes = await handleUpload(dataURI);
-    //console.log('backend', cldRes.secure_url)
+    console.log('backend', cldRes)
+    const url = cldRes.secure_url
     res.json(cldRes);
+    const photoURL = url
+    const newPhoto = await Photo.create({
+      photoURL
+    })
   } catch (error) {
     console.log(error);
     res.send({
@@ -39,16 +46,23 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
   }
  })
 
- ImageRouter.post('/photo', async (req: Request, res: Response) => {
-  const { url } = req.body
-  try {
-    const post = await Photo.create(url)
-    res.status(200);
-  } catch (err) {
-    console.error(err);
-    res.sendStatus(500);
-  }
-});
+//  ImageRouter.post('/photo', async (req: Request, res: Response) => {
+//   const { longitude, latitude, description, photoURL, isCostume, isThrow, upvotes, ownerId } = req.body
+//   //console.log(req.body)
+//   try {
+//     const newPhoto = await Photo.create({
+//       longitude, latitude, description, photoURL, isCostume, isThrow, upvotes, ownerId
+//     })
+//     res.sendStatus(200);
+//   } catch (err) {
+//     console.error('posting error', err);
+//     res.sendStatus(500);
+//   }
+// });
+
+
+//getbyid and send everything back
+
 /////////////////////////
 // Uploads an image file
 /////////////////////////
