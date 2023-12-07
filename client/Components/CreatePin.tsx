@@ -3,13 +3,20 @@ import { Modal, Button, Form } from 'react-bootstrap'
 import { useParams} from 'react-router-dom'
 import axios from 'axios'
  
-const CreatePin = ( change: any, searchParams: any ) => {
+interface Props {
+  change: any
+  markers: any
+  setMarkers: any 
+}
+
+const CreatePin: React.FC<Props> = ( {change, markers, setMarkers} ) => {
   const [isShow, setShow] = useState(true);
   const [isToilet, setIsToilet] =useState(false);
   const [isFood, setIsFood] =useState(false);
   const [isPersonal, setIsPersonal] =useState(false);
   const [isFree, setIsFree] =useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  //const [marker, setMarkers] = useState([markers]);
   
   const urlSearchString = window.location.search.substring(1);
   const parsedParams = JSON.parse('{"' + urlSearchString.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
@@ -24,6 +31,10 @@ const CreatePin = ( change: any, searchParams: any ) => {
     console.log(isShow);
   };
 
+  // useEffect(() => {
+  //   getPins()
+  // }, [setMarkers])
+
   const resetBooleanState = () => {
     setIsFree(false)
     setIsToilet(false)
@@ -37,7 +48,7 @@ const CreatePin = ( change: any, searchParams: any ) => {
     // TODO - DECONSTRUCT DATA FROM THE RESPONSE AND ADD THAT TO THE MARKERS ARRAY
     // AS USER CREATED PINS??? IF YOU KEEP THEM SEPARATE IN THESE COMPONENTS? EH... IDK
     try{
-      const response = await axios.post(`/api/pins/create-pin/${1}`, {
+      const { data } = await axios.post(`/api/pins/create-pin/${1}`, {
         options: {
           longitude: lng,
           latitude: lat,
@@ -48,12 +59,15 @@ const CreatePin = ( change: any, searchParams: any ) => {
         }
       })
       console.log('whish! pin sent to database')
-      console.log(response)
+      console.log(data)
+      setMarkers(markers.concat([data]))
     } catch (err)  {
       console.error(err)
     }
   }
   
+  console.log('createpin', markers)
+  console.log('createpin', markers)
   // console.log('outside', isFree, isToilet, isFood, isPersonal)
   return (
     <>
