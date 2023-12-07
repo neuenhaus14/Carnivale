@@ -4,9 +4,13 @@ import axios from 'axios'
 export default function Upload() {
   const [fileInputState, setFileInputState] = useState('');
   const [selectedFile, setSelectedFile] = useState('');
-  const [previewSource, setPreviewSource] = useState()
-  const handleFileInputChange = (e) => {
+  const [previewSource, setPreviewSource] = useState();
+  const [loading, setLoading] = useState(false);
+  const [res, setRes] = useState({});
+  const [file, setFile] = useState(null);
+  const handleSelectFile = (e) => {
     const file = e.target.files[0];
+    setFile(file);
     previewFile(file);
   };
   const previewFile = (file) => {
@@ -17,40 +21,56 @@ export default function Upload() {
       }
   };
 //set up a useEffect that makes an axios request
-  const handleSubmitFile = (e) => {
+  const uploadFile = async (e: any) => {
+    setLoading(true);
     e.preventDefault();
-    if(!previewSource) return;
-    uploadImage(previewSource);
-  };
-  const uploadImage = async (base64EncodedImage: any) => {
-    console.log(base64EncodedImage);
+    const data = new FormData();
+    console.log('file', file);
+    data.set("sample_file", file);
+    console.log('data', data)
     try {
-      await axios.post('/api/images/upload', {
-        method: 'POST',
-        body: JSON.stringify({data: base64EncodedImage})
-        //Headers: {'Content-type': 'application/json'}),
-      })
+      const res = await axios.post("/api/images/upload", data);
+      console.log('front end data', data)
+      setRes(res.data);
     } catch (error) {
-      console.error('failed to upload', error);
+      console.log('upload error', error);
+    } finally {
+      setLoading(false);
     }
   };
   return (
-    <div>
-      <h1>Upload</h1>
-      <form onSubmit={handleSubmitFile}
-      className="form">
-        <input
-          type="file"
-          name="image"
-          onChange={handleFileInputChange}
-          value={fileInputState}
-          className="form-input" />
-        <button className="btn" type="submit">Submit</button>
-      </form>
-      {previewSource && (
-        <img src={previewSource} alt="chosen"
-        style={{height: '400px'}}/>
+    <div className="App">
+      <label htmlFor="file" className="btn-grey">
+        {" "}
+        select file
+      </label>
+      <input
+        id="file"
+        type="file"
+        onChange={handleSelectFile}
+        multiple={false}
+      />
+      {file && <p className="file_name">{file.name}</p>}
+      <code>
+        {Object.keys(res).map(
+          (key) =>
+            key && (
+              <p className="output-item" key={key}>
+                <span>{key}:</span>
+                <span>
+                  {typeof res[key] === "object" ? "object" : res[key]}
+                </span>
+              </p>
+            )
+        )}
+      </code>
+      {file && (
+        <>
+          <button className="btn-green" onClick={uploadFile}>
+            {loading ? "uploading..." : "upload to Cloudinary"}
+          </button>
+        </>
       )}
     </div>
-  )
+  );
 }

@@ -66,28 +66,28 @@ app.use(express.urlencoded({limit: '50mb', extended: true}));
 
 //TODO: Alert team of the proxy port
 
-app.get('/api/images', async (req, res) => {
-  const {resources} = await cloudinary.search.expression('folder:Carnivale')
-  .sort_by('public_id', 'desc')
-  .max_results(30)
-  .execute();
-  const publicIds = resources.map( (file: any) => file.public_id);
-   res.send(publicIds);
-})
+// app.get('/api/images', async (req, res) => {
+//   const {resources} = await cloudinary.search.expression('folder:Carnivale')
+//   .sort_by('public_id', 'desc')
+//   .max_results(30)
+//   .execute();
+//   const publicIds = resources.map( (file: any) => file.public_id);
+//    res.send(publicIds);
+// })
 
-app.post('/api/images', async (req, res) => {
-  try {
-    const fileStr = req.body.data;
-    const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
-      upload_preset: 'samples'
-    })
-    console.log(uploadedResponse)
-    res.json({msg: 'YAY'})
-  } catch (error) {
-    console.error('test', error);
-    res.status(500).json({err: 'Something went wrong with uploading'})
-  }
-})
+// app.post('/api/images', async (req, res) => {
+//   try {
+//     const fileStr = req.body.data;
+//     const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
+//       upload_preset: 'samples'
+//     })
+//     console.log(uploadedResponse)
+//     res.json({msg: 'YAY'})
+//   } catch (error) {
+//     console.error('test', error);
+//     res.status(500).json({err: 'Something went wrong with uploading'})
+//   }
+// })
 
 
 

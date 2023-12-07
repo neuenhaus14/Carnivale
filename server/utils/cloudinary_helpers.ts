@@ -15,14 +15,15 @@ import { v2 as cloudinary } from 'cloudinary';
   secure: true
 });
 
-// export async function handleUpload(file: any) {
-//   const res = await cloudinary.uploader.upload(file, {
-//     resource_type: "auto",
-//   });
-//   return res;
-// }
+export async function handleUpload(file: any) {
+  const res = await cloudinary.uploader.upload(file, {
+    resource_type: "auto",
+  });
+  console.log('REZZZZ0', res)
+  return res;
+}
 
-export default cloudinary 
+export default handleUpload
 
 
 // cloudinary.config({

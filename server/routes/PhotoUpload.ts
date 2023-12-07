@@ -1,5 +1,5 @@
 import  { v2 as cloudinary }  from "cloudinary" //grabbing reference to an already configured cloudinary object
-//import   handleUpload   from "../utils/cloudinary_helpers" //grabbing reference to an already configured cloudinary object
+import handleUpload from "../utils/cloudinary_helpers" 
 import express, { Request, Response, Router } from "express";
 import multer from 'multer';
 
@@ -20,34 +20,20 @@ function runMiddleware(req: any, res: any, fn: any) {
   });
 }
 
-// const handler = async (req, res) => {
-//   try {
-//     await runMiddleware(req, res, myUploadMiddleware);
-//     const b64 = Buffer.from(req.file.buffer).toString("base64");
-//     const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
-//     const cldRes = await handleUpload(dataURI);
-//     res.json(cldRes);
-//   } catch (error) {
-//     console.log(error);
-//     res.send({
-//       message: error.message,
-//     });
-//   }
-// };
+
 
 ImageRouter.post('/upload', async (req, res) => {
   try {
-    const fileStr = req.body.body;
-    console.log('fileStr', fileStr)
-    uploadImage(fileStr)
-    const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
-      upload_preset: 'Carnivale'
-    })
-    console.log(uploadedResponse)
-    res.json({msg: 'YAY'})
+    await runMiddleware(req, res, myUploadMiddleware);
+    const b64 = Buffer.from(req.file.buffer).toString("base64");
+    const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+    const cldRes = await handleUpload(dataURI);
+    res.json(cldRes);
   } catch (error) {
-    console.error('PHOTOUPLOAD', error);
-    res.status(500).json({err: 'Something went wrong with uploading'})
+    console.log(error);
+    res.send({
+      message: error.message,
+    });
   }
  })
 
@@ -73,7 +59,7 @@ const uploadImage = async (imagePath: string) => {
     console.log(result);
     return result.public_id;
   } catch (error) {
-    console.error(error);
+    console.error('upload image', error);
   }
 };
 
@@ -142,7 +128,11 @@ const createImageTag = (publicId: string, ...colors: (string | number)[]) => {
   console.log(imageTag);
 
 })//();
-
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 export default ImageRouter;
 //{uploadImage, getAssetInfo, createImageTag}
