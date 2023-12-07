@@ -29,4 +29,19 @@ Pins.post('/create-pin/:ownerId', async(req: Request, res: Response) => {
 })
 
 
+Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) => {
+  const  {lng} = req.params;
+  const  {lat}  = req.params;
+
+  try {
+    const clickedPin = await Pin.findOne({where: {longitude: lng, latitude: lat}})
+    console.log(clickedPin)
+    res.status(200).send('got the pin')
+  } catch (err) {
+    console.error('SERVER ERROR: could not GET clicked pin', err);
+    res.status(500).send(err);
+  }
+})
+
+
 export default Pins

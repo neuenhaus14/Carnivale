@@ -1,39 +1,105 @@
-import React, { useState, useEffect } from 'react';
-import MapPageMap from './MapPageMap'
-import { Outlet, Link } from 'react-router-dom';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useRef, useState } from "react";
+import { Map, Marker, NavigationControl } from 'react-map-gl';
+import { BsFillPinFill } from "react-icons/bs";
+import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import CreatePin from './CreatePin';
 
 const MapPage = () => {
-  const [showOutlet, setShowOutlet] = useState(false);
-  const [newPin, setNewPin] = useState({
-    longitude: null,
-    latitude: null,
-    isToilet: false,
-    isFood: false,
-    isPersonal: false,
-    isFree: true,
-    ownerId: null,
+  const mapRef = useRef(null);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [createPin, setCreatePin] = useState(false);
+  const [selectPin, setSelectPin] = useState({})
+  const [markers, setMarkers] = useState([]);
+  const [viewState, setViewState] = useState({
+    latitude: 29.964735,
+    longitude: -90.054261,
+    zoom: 14,
   });
 
-  const buttonClick = () => {
-    setShowOutlet(true);
+  //loads pins immediately on page render
+  useEffect(() => {
+    getPins();
+  }, [setMarkers]);
+
+  //gets pins from database
+  const getPins = async () => {
+    try {
+      const response = await axios.get('/api/pins/get-pins')
+      setMarkers(response.data)
+    } catch (err)  {
+      console.error(err)
+    }
+  }
+
+  //this sets the map touch coordinates to the url as params
+  const dropPin = (e: any) => {
+    createPinState()
+    setSearchParams({lng:`${e.lngLat.lng}` , lat:`${e.lngLat.lat}`})  
+  }
+
+  // used to pass down createPin state into modal component as prop
+  const createPinState = () => {
+    setCreatePin(!createPin)
+  }
+
+  const clickedMarker = async (e: any) => {
+    const currMarkerLng = e._lngLat.lng;
+    const currMarkerLat = e._lngLat.lat;
+
+    try {
+      const { data } = await axios.get(`/api/pins/get-clicked-marker/${currMarkerLng}/${currMarkerLat}`)
+      console.log('clickedMarkerRes', data)
+    } catch (err)  {
+      console.error(err)
+    }
+
+    console.log(e._lngLat.lng, e._lngLat.lat);
+    console.log("currMarkerLng", currMarkerLng)
+    console.log("currMarkerLat", currMarkerLat)
   };
 
   return (
     <div>
       <h1>MapPage!</h1>
-      <MapPageMap />
-      <div id='create-pin'>
-        <p>Add a Pin Below!</p>
-        <div id="create-pin-buttons">
-          <Link to='/createpin'>
-            <button type="button" onClick={buttonClick}>Add Pin</button>
-          </Link>
-          </div>
-        </div> 
+      { createPin ? 
+      <CreatePin 
+      change={createPinState} 
+      markers={markers}
+      setMarkers={setMarkers}
+      /> 
+      : null }
+      <div id='map-page-filter' >
+      </div>
+      <Map
+        ref={mapRef}
+        {...viewState}
+        onMove={(e) => setViewState(e.viewState)}
+        onClick={(e) => {dropPin(e)}}
+        mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
+        style={{ position: 'relative', bottom: '0px', width: '100vw', height: 475 }}
+        mapStyle="mapbox://styles/mapbox/streets-v9"
+      >
+      <div id='map-markers'>
+        {
+          markers.map((marker) => (
+            <Marker 
+            key={marker.id}
+            onClick={(e) => clickedMarker(e.target)} 
+            longitude={marker.longitude} latitude={marker.latitude}
+            anchor="bottom"> 
+            <BsFillPinFill style={{ width: 25, height: 50}} /> 
+            </Marker>
+          ))
+        }
+      </div>
+      <NavigationControl />
+      </Map>
     </div>
   )
-
-};
+}
 
 export default MapPage;

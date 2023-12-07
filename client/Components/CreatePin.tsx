@@ -59,15 +59,12 @@ const CreatePin: React.FC<Props> = ( {change, markers, setMarkers} ) => {
         }
       })
       console.log('whish! pin sent to database')
-      console.log(data)
       setMarkers(markers.concat([data]))
     } catch (err)  {
       console.error(err)
     }
   }
   
-  console.log('createpin', markers)
-  console.log('createpin', markers)
   // console.log('outside', isFree, isToilet, isFood, isPersonal)
   return (
     <>
