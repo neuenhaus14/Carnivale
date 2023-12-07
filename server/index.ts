@@ -3,7 +3,7 @@ import path from "path";
 import { db, Join_shared_post, User } from "./db";
 import dotenv from "dotenv";
 
-import Pins from '../server/routes/Pins';
+import PinRoutes from './routes/Pins';
 import FriendsRoutes from './routes/Friends'
 import WeatherRoutes from "./routes/WeatherApi";
 import EventsRoutes from './routes/Events'
@@ -31,7 +31,7 @@ app.use('/api/friends', FriendsRoutes)
 app.use("/api/events", EventsRoutes);
 app.use('/api/weather', WeatherRoutes)
 app.use("/", routeHandler);
-app.use("/api/pins", Pins);
+app.use("/api/pins", PinRoutes);
 app.use("/api/feed", FeedRoutes);
 
 app.get("/*", function (req: Request, res: Response) {
