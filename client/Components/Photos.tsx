@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios'
-
+//capturing an image and sending via axios to my backend. on backend making another call to cloudinary to post or retrieve image. So if I need that photo on the front end
 export default function Upload() {
   const [fileInputState, setFileInputState] = useState('');
   const [selectedFile, setSelectedFile] = useState('');
@@ -32,13 +32,20 @@ export default function Upload() {
       const res = await axios.post("/api/images/upload", data);
       console.log('front end data', data)
       setRes(res.data);
+      //maybe have another try catch logic function to handle postind response data to the DB
     } catch (error) {
       console.log('upload error', error);
     } finally {
       setLoading(false);
     }
   };
+  
   return (
+ 
+    // <h1>Upload</h1>
+    // <form onSubmit={handleSubmitFile}
+    // className="form">
+
     <div className="App">
       <label htmlFor="file" className="btn-grey">
         {" "}
@@ -47,6 +54,16 @@ export default function Upload() {
       <input
         id="file"
         type="file"
+    //     name="image"
+    //     onChange={handleFileInputChange}
+    //     value={fileInputState}
+    //     className="form-input" />
+    //   <button className="btn" type="submit">Submit</button>
+    // </form>
+    // {previewSource && (
+    //   <img src={previewSource} alt="chosen"
+    //   style={{height: '400px'}}/>
+
         onChange={handleSelectFile}
         multiple={false}
       />

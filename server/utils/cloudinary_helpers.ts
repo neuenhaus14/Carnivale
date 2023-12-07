@@ -18,8 +18,9 @@ import { v2 as cloudinary } from 'cloudinary';
 export async function handleUpload(file: any) {
   const res = await cloudinary.uploader.upload(file, {
     resource_type: "auto",
+    folder: "Carnivale"
   });
-  console.log('REZZZZ0', res)
+  console.log('handleUpload in cloud helpers response', res)
   return res;
 }
 

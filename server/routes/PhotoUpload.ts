@@ -20,7 +20,7 @@ function runMiddleware(req: any, res: any, fn: any) {
   });
 }
 
-
+//TODO:Take the res from the post and manipulate that data into the db somehow
 
 ImageRouter.post('/upload', async (req, res) => {
   try {
