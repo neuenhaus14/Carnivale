@@ -14,24 +14,23 @@ import CreatePin from './CreatePin';
 // }
 
 const MapPageMap = () => {
+  const mapRef = useRef(null);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [createPin, setCreatePin] = useState(false);
   const [markers, setMarkers] = useState([]);
-  const [droppedPin, setDroppedPin] = useState({
-    lng: null,
-    lat: null
-  })
   const [viewState, setViewState] = useState({
     latitude: 29.964735,
     longitude: -90.054261,
     zoom: 14,
   });
 
-  //loads pins immediately on page render, once
+  //loads pins immediately on page render
   useEffect(() => {
     getPins();
-  }, []);
+  }, [setMarkers]);
 
+  //gets pins from database
   const getPins = async () => {
     try {
       const response = await axios.get('/api/pins/get-pins')
@@ -41,31 +40,29 @@ const MapPageMap = () => {
     }
   }
 
+  //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
-    //console.log(e.lngLat.lng, e.lngLat.lat)
-    setDroppedPin({
-      lng: e.lngLat.lng,
-      lat: e.lngLat.lat})
-
     createPinState()
     setSearchParams({lng:`${e.lngLat.lng}` , lat:`${e.lngLat.lat}`})  
-
   }
 
-
+  // used to pass down createPin state into modal component as prop
   const createPinState = () => {
     setCreatePin(!createPin)
   }
 
   const clickedMarker = (e: any) => {
+    // THIS WILL BE USED WHEN CLICKING ON PINS WILL HAPPEN
+    // WILL NEED TO QUERY DATABASE BASED ON COORDINATES
+    // ITS ALL THE INFO WE CAN GET FROM CLICKED MARKER
+
     const currMarkerLng = e._lngLat.lng;
     const currMarkerLat = e._lngLat.lat;
 
     console.log(e._lngLat.lng, e._lngLat.lat);
-
   };
 
-  const mapRef = useRef(null);
+
 
   return (
     <div>
