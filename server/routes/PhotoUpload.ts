@@ -2,6 +2,7 @@ import  { v2 as cloudinary }  from "cloudinary" //grabbing reference to an alrea
 import handleUpload from "../utils/cloudinary_helpers" 
 import express, { Request, Response, Router } from "express";
 import multer from 'multer';
+import { Photo } from '../db'
 
 //Multer provides us with two storage options: disk and memory storage. In the below snippet, we start by selecting the storage option we want for our Multer instance. We choose the memory storage option because we do not want to store parsed files on our server; instead, we want them temporarily stored on the RAM so that we can quickly upload them to Cloudinary.
 const storage = multer.memoryStorage();
@@ -22,12 +23,13 @@ function runMiddleware(req: any, res: any, fn: any) {
 
 //TODO:Take the res from the post and manipulate that data into the db somehow
 
-ImageRouter.post('/upload', async (req, res) => {
+ImageRouter.post('/upload', async (req: Request, res: Response) => {
   try {
     await runMiddleware(req, res, myUploadMiddleware);
     const b64 = Buffer.from(req.file.buffer).toString("base64");
     const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
     const cldRes = await handleUpload(dataURI);
+    //console.log('backend', cldRes.secure_url)
     res.json(cldRes);
   } catch (error) {
     console.log(error);
@@ -37,7 +39,16 @@ ImageRouter.post('/upload', async (req, res) => {
   }
  })
 
-
+ ImageRouter.post('/photo', async (req: Request, res: Response) => {
+  const { url } = req.body
+  try {
+    const post = await Photo.create(url)
+    res.status(200);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
 /////////////////////////
 // Uploads an image file
 /////////////////////////
@@ -56,7 +67,7 @@ const uploadImage = async (imagePath: string) => {
     // Upload the image
     const result = await cloudinary.uploader.upload(imagePath,
        options);
-    console.log(result);
+    //console.log(result);
     return result.public_id;
   } catch (error) {
     console.error('upload image', error);
@@ -76,7 +87,7 @@ const getAssetInfo = async (publicId: string) => {
   try {
       // Get details about the asset
       const result = await cloudinary.api.resource(publicId, options);
-      console.log(result);
+      //console.log(result);
       return result.colors;
       } catch (error) {
       console.error(error);
@@ -125,7 +136,7 @@ const createImageTag = (publicId: string, ...colors: (string | number)[]) => {
   const imageTag = await createImageTag(publicId, colors[0][0], colors[1][0]);
 
   // Log the image tag to the console
-  console.log(imageTag);
+  //console.log(imageTag);
 
 })//();
 export const config = {
