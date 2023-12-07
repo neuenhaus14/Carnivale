@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 const Pins = express.Router()
-import {Pin} from '../db/index';
+import {Photo, Pin} from '../db/index';
+import { Join_pin_photo } from "../db/index";
 
 // => api/pins/get-pins
 Pins.get('/get-pins', async (req: Request, res: Response) => {
@@ -35,8 +36,15 @@ Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) =>
 
   try {
     const clickedPin = await Pin.findOne({where: {longitude: lng, latitude: lat}})
-    console.log(clickedPin)
-    res.status(200).send('got the pin')
+    const clickedPinId = clickedPin.dataValues.id
+    
+    const joinPinPhotoResults = await Join_pin_photo.findAll({where : {pinId: clickedPinId }})
+    const pinPhotoIds = joinPinPhotoResults.map((pin) => pin.dataValues.photoId)
+    
+    const pinPhotos = await Photo.findAll({where: {id: pinPhotoIds}})
+    //console.log(pinPhotos)
+    res.status(200).send(pinPhotos)
+    
   } catch (err) {
     console.error('SERVER ERROR: could not GET clicked pin', err);
     res.status(500).send(err);
