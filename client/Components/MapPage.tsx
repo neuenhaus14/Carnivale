@@ -5,14 +5,17 @@ import { BsFillPinFill } from "react-icons/bs";
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import CreatePin from './CreatePin';
+import PinModal from './PinModal';
+
 
 const MapPage = () => {
   const mapRef = useRef(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [createPin, setCreatePin] = useState(false);
-  const [selectPin, setSelectPin] = useState({})
+  const [isPinSelected, setIsPinSelected] = useState(false)
+  const [selectedPin, setSelectedPin] = useState({})
+  const [showModal, setShowModal] = useState(false)
   const [markers, setMarkers] = useState([]);
   const [viewState, setViewState] = useState({
     latitude: 29.964735,
@@ -37,14 +40,18 @@ const MapPage = () => {
 
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
-    createPinState()
+    console.log('clicked map')
+    
+    // setCreatePin(false)
+    modalTrigger()
+
     setSearchParams({lng:`${e.lngLat.lng}` , lat:`${e.lngLat.lat}`})  
   }
 
   // used to pass down createPin state into modal component as prop
-  const createPinState = () => {
-    setCreatePin(!createPin)
-  }
+  // const createPinState = () => {
+  //   setCreatePin(!createPin)
+  // }
 
   const clickedMarker = async (e: any) => {
     const currMarkerLng = e._lngLat.lng;
@@ -52,26 +59,43 @@ const MapPage = () => {
 
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-marker/${currMarkerLng}/${currMarkerLat}`)
-      console.log('clickedMarkerRes', data)
+      console.log('clickedMarkerRes', data);
+      setSelectedPin(data);
     } catch (err)  {
-      console.error(err)
+      console.error(err);
     }
 
-    console.log(e._lngLat.lng, e._lngLat.lat);
-    console.log("currMarkerLng", currMarkerLng)
-    console.log("currMarkerLat", currMarkerLat)
+    setIsPinSelected(true);
+    modalTrigger()
   };
+
+  console.log('map ispinselected', isPinSelected)
+
+  const modalTrigger = () => {
+    if (isPinSelected === true){
+      setCreatePin(false)
+      setShowModal(true)
+    } else {
+      setShowModal(true)
+    }
+  }
 
   return (
     <div>
       <h1>MapPage!</h1>
-      { createPin ? 
-      <CreatePin 
-      change={createPinState} 
-      markers={markers}
-      setMarkers={setMarkers}
-      /> 
-      : null }
+      { showModal ? 
+        <PinModal 
+          setShowModal={setShowModal}
+          createPin={createPin}
+          setCreatePin={setCreatePin} 
+          markers={markers}
+          setMarkers={setMarkers}
+          isPinSelected={isPinSelected}
+          // selectedPin={selectedPin}
+          // setSelectedPin={setSelectedPin}
+          setIsPinSelected={setIsPinSelected} 
+        /> 
+        : null }
       <div id='map-page-filter' >
       </div>
       <Map
@@ -88,10 +112,10 @@ const MapPage = () => {
           markers.map((marker) => (
             <Marker 
             key={marker.id}
-            onClick={(e) => clickedMarker(e.target)} 
+            onClick={(e) => {clickedMarker(e.target)}} 
             longitude={marker.longitude} latitude={marker.latitude}
             anchor="bottom"> 
-            <BsFillPinFill style={{ width: 25, height: 50}} /> 
+            <BsFillPinFill style={{ width: 50, height: 100}} /> 
             </Marker>
           ))
         }

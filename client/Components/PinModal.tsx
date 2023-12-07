@@ -4,12 +4,16 @@ import { useParams} from 'react-router-dom'
 import axios from 'axios'
  
 interface Props {
-  change: any
+  setShowModal: any
+  createPin: any
+  setCreatePin: any
   markers: any
   setMarkers: any 
+  isPinSelected: any
+  setIsPinSelected: any
 }
 
-const CreatePin: React.FC<Props> = ( {change, markers, setMarkers} ) => {
+const PinModal: React.FC<Props> = ( {setShowModal, createPin, setCreatePin, markers, setMarkers, isPinSelected, setIsPinSelected} ) => {
   const [isShow, setShow] = useState(true);
   const [isToilet, setIsToilet] =useState(false);
   const [isFood, setIsFood] =useState(false);
@@ -27,26 +31,27 @@ const CreatePin: React.FC<Props> = ( {change, markers, setMarkers} ) => {
 
   const initModal = () => {
     setShow(!isShow); 
-    change(!isShow);
+    setShowModal(!isShow)
+    // setCreatePin(!createPin);
+    setIsPinSelected(false);
+    //resetBooleanState()
     console.log(isShow);
   };
 
-  // useEffect(() => {
-  //   getPins()
-  // }, [setMarkers])
+  console.log('modal ispinselected', isPinSelected)
 
   const resetBooleanState = () => {
     setIsFree(false)
     setIsToilet(false)
     setIsFood(false)
     setIsPersonal(false)
+    // setCreatePin(false);
+    //setIsPinSelected(false);
     // console.log('inside', isFree, isToilet, isFood, isPersonal)
   }
 
 
   const saveCreatedPin = async () => {
-    // TODO - DECONSTRUCT DATA FROM THE RESPONSE AND ADD THAT TO THE MARKERS ARRAY
-    // AS USER CREATED PINS??? IF YOU KEEP THEM SEPARATE IN THESE COMPONENTS? EH... IDK
     try{
       const { data } = await axios.post(`/api/pins/create-pin/${1}`, {
         options: {
@@ -68,9 +73,23 @@ const CreatePin: React.FC<Props> = ( {change, markers, setMarkers} ) => {
   // console.log('outside', isFree, isToilet, isFood, isPersonal)
   return (
     <>
-      {/* <Button variant="success" onClick={initModal}>
-        Open Modal
-      </Button> */}
+    { isPinSelected 
+    ? (
+        <Modal show={isShow} onHide={initModal}>
+          <Modal.Header closeButton >
+            <Modal.Title>Pin Category</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Pin from $User 
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="danger" onClick={initModal}> Close </Button>
+            <Button variant="dark "onClick={initModal}> Add Photo </Button>
+          </Modal.Footer>
+        </Modal>
+      )
+    : 
+    (
       <Modal show={isShow} onHide={initModal}>
         <Modal.Header closeButton >
           <Modal.Title>Create a Pin</Modal.Title>
@@ -108,9 +127,10 @@ const CreatePin: React.FC<Props> = ( {change, markers, setMarkers} ) => {
             
           }
         </Modal.Footer>
-      </Modal>
+      </Modal>)
+      }
     </>
   )
 }
 
-export default CreatePin;
+export default PinModal;
