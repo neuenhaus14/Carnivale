@@ -7,7 +7,6 @@ import { Join_pin_photo } from "../db/index";
 Pins.get('/get-pins', async (req: Request, res: Response) => {
   try {
     const pinResults = await Pin.findAll()
-    // console.log(pinResults)
     res.status(200).send(pinResults)
   } catch (err) {
     console.error('SERVER ERROR: could not GET pins', err);
