@@ -1,7 +1,7 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client' 
 // Import our custom CSS
-//import './styles/styles.scss';
+import './styles/styles.scss';
 
 import App from './Components/App'
 
