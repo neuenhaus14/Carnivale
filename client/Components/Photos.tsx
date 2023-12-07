@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios'
+import { arrayBuffer } from 'stream/consumers';
 //capturing an image and sending via axios to my backend. on backend making another call to cloudinary to post or retrieve image. So if I need that photo on the front end
 export default function Upload() {
   const [fileInputState, setFileInputState] = useState('');
@@ -8,16 +9,18 @@ export default function Upload() {
   const [loading, setLoading] = useState(false);
   const [res, setRes] = useState({});
   const [file, setFile] = useState(null);
-  const handleSelectFile = (e) => {
+  const handleSelectFile = (e: any) => {
+    //console.log('handleSelect', e)
     const file = e.target.files[0];
     setFile(file);
     previewFile(file);
   };
-  const previewFile = (file) => {
+  const previewFile = (file: any) => {
       const reader = new FileReader(); //built into JS API
       reader.readAsDataURL(file) //convert image to a string
       reader.onloadend = () => {
-        setPreviewSource(reader.result); //if set we want to display it
+        //console.log('reader.result', reader.result)
+       // setPreviewSource(reader.result:); //if set we want to display it
       }
   };
 //set up a useEffect that makes an axios request
@@ -25,12 +28,12 @@ export default function Upload() {
     setLoading(true);
     e.preventDefault();
     const data = new FormData();
-    console.log('file', file);
+    //console.log('file', file);
     data.set("sample_file", file);
-    console.log('data', data)
+    //console.log('data', data)
     try {
       const res = await axios.post("/api/images/upload", data);
-      console.log('front end data', data)
+      //console.log('front end data', data)
       setRes(res.data);
       //maybe have another try catch logic function to handle postind response data to the DB
     } catch (error) {
@@ -68,7 +71,7 @@ export default function Upload() {
         multiple={false}
       />
       {file && <p className="file_name">{file.name}</p>}
-      <code>
+      {/* <code>
         {Object.keys(res).map(
           (key) =>
             key && (
@@ -80,7 +83,7 @@ export default function Upload() {
               </p>
             )
         )}
-      </code>
+      </code> */}
       {file && (
         <>
           <button className="btn-green" onClick={uploadFile}>
