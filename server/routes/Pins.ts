@@ -6,7 +6,7 @@ import {Pin} from '../db/index';
 Pins.get('/get-pins', async (req: Request, res: Response) => {
   try {
     const pinResults = await Pin.findAll()
-    console.log(pinResults)
+    // console.log(pinResults)
     res.status(200).send(pinResults)
   } catch (err) {
     console.error('SERVER ERROR: could not GET pins', err);
@@ -21,7 +21,7 @@ Pins.post('/create-pin/:ownerId', async(req: Request, res: Response) => {
   try {
     const result = await Pin.create({ longitude, latitude, isFree, isToilet, isFood, isPersonal, ownerId })
     console.log(result)
-    res.status(200)
+    res.status(200).send(result)
   } catch (err) {
     console.error('SERVER ERROR: could not POST pin', err);
     res.status(500).send(err);
