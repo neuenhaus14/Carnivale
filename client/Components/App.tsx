@@ -11,7 +11,8 @@ import MainForum from './MainForum';
 import Costume from './Costume';
 import EventPage from './EventPage';
 import NavBar from './NavBar';
-import Photos from './Photos'
+import Photos from './Photos';
+import Profile from './Profile'; //added for testing purposes
 
 //import ProtectedRoutes from './ProtectedRoutes'
 
@@ -38,7 +39,8 @@ const App = () => {
           <Route path='/photo' element={<div><Photos /> <NavBar /></div>} />
           <Route path='/' element={<Login />} />
         {/* </Route> */}
-          {/* <Route path='/login'/> */}
+        {/* added for testing */}
+          <Route path='/profile' element={<div><Profile /><NavBar /></div>} />
       </Route>,
     ),
   );
