@@ -5,15 +5,14 @@ import axios from 'axios'
  
 interface Props {
   setShowModal: any
-  createPin: any
-  setCreatePin: any
   markers: any
   setMarkers: any 
   isPinSelected: any
   setIsPinSelected: any
+  selectedPin: any
 }
 
-const PinModal: React.FC<Props> = ( {setShowModal, createPin, setCreatePin, markers, setMarkers, isPinSelected, setIsPinSelected} ) => {
+const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected} ) => {
   const [isShow, setShow] = useState(true);
   const [isToilet, setIsToilet] =useState(false);
   const [isFood, setIsFood] =useState(false);
@@ -28,28 +27,18 @@ const PinModal: React.FC<Props> = ( {setShowModal, createPin, setCreatePin, mark
   const { lng } = parsedParams;
   const { lat } = parsedParams;
 
-
   const initModal = () => {
     setShow(!isShow); 
     setShowModal(!isShow)
-    // setCreatePin(!createPin);
     setIsPinSelected(false);
-    //resetBooleanState()
-    console.log(isShow);
   };
-
-  console.log('modal ispinselected', isPinSelected)
 
   const resetBooleanState = () => {
     setIsFree(false)
     setIsToilet(false)
     setIsFood(false)
     setIsPersonal(false)
-    // setCreatePin(false);
-    //setIsPinSelected(false);
-    // console.log('inside', isFree, isToilet, isFood, isPersonal)
   }
-
 
   const saveCreatedPin = async () => {
     try{
@@ -70,7 +59,6 @@ const PinModal: React.FC<Props> = ( {setShowModal, createPin, setCreatePin, mark
     }
   }
   
-  // console.log('outside', isFree, isToilet, isFood, isPersonal)
   return (
     <>
     { isPinSelected 
@@ -80,7 +68,17 @@ const PinModal: React.FC<Props> = ( {setShowModal, createPin, setCreatePin, mark
             <Modal.Title>Pin Category</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Pin from $User 
+            <div id="pin-photos">
+              <p>Pin from $User</p> 
+              {
+                selectedPin.map((pin: any) => (
+                  <div key={pin.id}>
+                    <img src={pin.photoURL} alt="Pin Photo" height="300" width='300'/> 
+                    <p>{pin.description}</p>
+                  </div>  
+                ))
+              }
+            </div>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="danger" onClick={initModal}> Close </Button>
@@ -124,7 +122,6 @@ const PinModal: React.FC<Props> = ( {setShowModal, createPin, setCreatePin, mark
         <Modal.Footer>
           { isSaved ? <Button variant="danger" onClick={initModal}> Close </Button>
             : <Button variant="dark" onClick={() => {saveCreatedPin(); setIsSaved(true)} }> Save </Button>
-            
           }
         </Modal.Footer>
       </Modal>)

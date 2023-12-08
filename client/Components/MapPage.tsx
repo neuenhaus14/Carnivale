@@ -40,18 +40,9 @@ const MapPage = () => {
 
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
-    console.log('clicked map')
-    
-    // setCreatePin(false)
     modalTrigger()
-
     setSearchParams({lng:`${e.lngLat.lng}` , lat:`${e.lngLat.lat}`})  
   }
-
-  // used to pass down createPin state into modal component as prop
-  // const createPinState = () => {
-  //   setCreatePin(!createPin)
-  // }
 
   const clickedMarker = async (e: any) => {
     const currMarkerLng = e._lngLat.lng;
@@ -61,15 +52,15 @@ const MapPage = () => {
       const { data } = await axios.get(`/api/pins/get-clicked-marker/${currMarkerLng}/${currMarkerLat}`)
       console.log('clickedMarkerRes', data);
       setSelectedPin(data);
+      setIsPinSelected(true);
+      modalTrigger()
     } catch (err)  {
       console.error(err);
     }
 
-    setIsPinSelected(true);
-    modalTrigger()
+    // setIsPinSelected(true);
+    // modalTrigger()
   };
-
-  console.log('map ispinselected', isPinSelected)
 
   const modalTrigger = () => {
     if (isPinSelected === true){
@@ -86,12 +77,10 @@ const MapPage = () => {
       { showModal ? 
         <PinModal 
           setShowModal={setShowModal}
-          createPin={createPin}
-          setCreatePin={setCreatePin} 
           markers={markers}
           setMarkers={setMarkers}
           isPinSelected={isPinSelected}
-          // selectedPin={selectedPin}
+          selectedPin={selectedPin}
           // setSelectedPin={setSelectedPin}
           setIsPinSelected={setIsPinSelected} 
         /> 
@@ -115,7 +104,7 @@ const MapPage = () => {
             onClick={(e) => {clickedMarker(e.target)}} 
             longitude={marker.longitude} latitude={marker.latitude}
             anchor="bottom"> 
-            <BsFillPinFill style={{ width: 50, height: 100}} /> 
+            <BsFillPinFill style={{ width: 50, height: 25}} /> 
             </Marker>
           ))
         }
