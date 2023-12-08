@@ -34,7 +34,7 @@ const Upload: React.FC = () => {
       reader.readAsDataURL(file) //convert image to a string
       reader.onloadend = () => {
         //console.log('reader.result', reader.result)
-        const res = reader.result
+        const res: any = reader.result
         setPreviewSource(res); //if set we want to display it
       }
   };
@@ -104,13 +104,13 @@ const Upload: React.FC = () => {
           </button>
         </>
       )}
-      <Photo 
+      {/* <Photo 
       loading={loading} 
       setLoading={setLoading}
       file={file}
       setFile={setFile}
       
-      />
+      /> */}
       {previewSource && (
       <img src={previewSource} alt="chosen"
       style={{height: '400px'}}/>)}
