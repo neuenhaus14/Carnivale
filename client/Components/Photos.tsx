@@ -35,7 +35,6 @@ export default function Upload() {
       const res = await axios.post("/api/images/upload", data);
       //console.log('front end data', data)
       setRes(res.data);
-      //maybe have another try catch logic function to handle postind response data to the DB
     } catch (error) {
       console.log('upload error', error);
     } finally {

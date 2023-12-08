@@ -31,10 +31,11 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
     const b64 = Buffer.from(req.file.buffer).toString("base64");
     const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
     const cldRes = await handleUpload(dataURI);
-    console.log('backend', cldRes)
+    //console.log('backend', cldRes)
     const url = cldRes.secure_url
     res.json(cldRes);
     const photoURL = url
+    //after posting to cloudinary, we take the cloudResponse (cldRes) and access the secure_url data to our database
     const newPhoto = await Photo.create({
       photoURL
     })
@@ -46,6 +47,7 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
   }
  })
 
+ //keeping this route in case we might need it later for info writing
 //  ImageRouter.post('/photo', async (req: Request, res: Response) => {
 //   const { longitude, latitude, description, photoURL, isCostume, isThrow, upvotes, ownerId } = req.body
 //   //console.log(req.body)
