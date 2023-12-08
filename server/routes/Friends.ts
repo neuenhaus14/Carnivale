@@ -78,7 +78,7 @@ Friends.get('/getFriendRequests/:id', async (req: Request, res: Response) => {
 
     let requestsMadeUsers;
     if (requestsMadeIds.length > 0) {
-      requestsMadeUsers= await User.findAll({
+      requestsMadeUsers = await User.findAll({
         where: {
           id: {
             [Op.or]: [...requestsMadeIds]
@@ -137,13 +137,14 @@ Friends.post('/requestFriend', async (req: Request, res: Response) => {
   const { requester_userId, recipient_phoneNumber } = req.body.friendRequest
 
   try {
-
     const userWithPhoneNumber: any = await User.findOne({ where: { phone: recipient_phoneNumber } })
-
     console.log('uWPN', userWithPhoneNumber);
-
-    const newRelationship: Model = await Join_friend.create({ requester_userId, recipient_userId: userWithPhoneNumber.id, isConfirmed: null })
-    res.status(201).send(newRelationship)
+    if (userWithPhoneNumber === null) {
+      res.status(404).send('No user with that phone number')
+    } else {
+      const newRelationship: Model = await Join_friend.create({ requester_userId, recipient_userId: userWithPhoneNumber.id, isConfirmed: null })
+      res.status(201).send(newRelationship)
+    }
   } catch (err) {
     console.error('SERVER ERROR: could not POST friend request', err);
     res.status(500).send(err);
@@ -154,7 +155,7 @@ Friends.post('/requestFriend', async (req: Request, res: Response) => {
 // eventually add some kind of thing that disallows 
 Friends.patch('/answerFriendRequest', async (req: Request, res: Response) => {
 
-  const { requester_userId, recipient_userId, isConfirmed } = req.body.friendRequestAnswer;
+  const { requester_userId, recipient_userId, isConfirmed } = req.body.answer;
 
   try {
     const updatedRelationship = await Join_friend.update({ isConfirmed: isConfirmed }, {
@@ -170,6 +171,31 @@ Friends.patch('/answerFriendRequest', async (req: Request, res: Response) => {
   }
 })
 
+// cancel friend request
+Friends.delete('/cancelFriendRequest/:requester_userId-:recipient_userId', async (req: Request, res: Response) => {
+  const { requester_userId, recipient_userId } = req.params;
+
+  try {
+    const deleteRecord = await Join_friend.destroy({
+      where: {
+        requester_userId,
+        recipient_userId,
+        isConfirmed: null,
+      }
+    })
+    if (deleteRecord > 0) {
+      res.status(200).send('Friend request deleted');
+    } else {
+      res.status(404).send()
+    }
+  } catch (err) {
+    console.error("SERVER ERROR: could not DELETE friend request", err);
+    res.status(500).send(err);
+  }
+})
+
+
+// unfriend
 Friends.delete('/unfriend/:userId-:friendId', async (req, res) => {
   const { userId, friendId } = req.params;
 
@@ -186,10 +212,8 @@ Friends.delete('/unfriend/:userId-:friendId', async (req, res) => {
       }
     })
 
-    console.log('uI', userId, 'fI', friendId, 'dR', deleteRecord, typeof deleteRecord);
     if (deleteRecord > 0) {
-      console.log('here');
-      res.status(200).send('Record deleted')
+      res.status(200).send('Friendship deleted')
     } else {
       res.sendStatus(404)
     }

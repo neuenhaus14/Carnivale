@@ -1,6 +1,7 @@
 import React, { ReactPropTypes, useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom";
 import axios from 'axios';
+import EventModal from './EventModal';
 
 const UserPage = ({ coolThing }: UserPageProps) => {
 
@@ -13,6 +14,8 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   const [eventsInvited, setEventsInvited] = useState([{ name: 'event2' }]);
   const [phoneForFriendRequest, setPhoneForFriendRequest] = useState('');
 
+  const [selectedEvent, setSelectedEvent] = useState({})
+  const [showModal, setShowModal] = useState(false);
 
   async function getFriends() {
     try {
@@ -56,7 +59,6 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   }
 
   useEffect(() => {
-    console.log('chyeah', searchParams);
     getFriends();
     getEventsParticipating();
     getEventsInvited();
@@ -73,50 +75,88 @@ const UserPage = ({ coolThing }: UserPageProps) => {
 
   let requestsMadeItems = null;
   if (friendRequestsMade.length > 0) {
-    requestsMadeItems = friendRequestsMade.map((friend, index) => {
-      return <li key={index}>{friend.firstName}</li>
+    requestsMadeItems = friendRequestsMade.map((requestee, index: number) => {
+      return <li key={index}>{requestee.firstName} <button onClick={() => cancelFriendRequest(requestee.id)}>Actually, nah...</button></li>
     })
   }
 
   let requestsReceivedItems = null;
   if (friendRequestsReceived.length > 0) {
     requestsReceivedItems = friendRequestsReceived.map((friend, index) => {
-      return <li key={index}>{friend.firstName}</li>
+      return <li key={index}>{friend.firstName} <button onClick={() => answerFriendRequest(friend.id, true)}>Yeah!</button><button onClick={() => answerFriendRequest(friend.id, false)}>Nah...</button></li>
     })
   }
 
   let eventsParticipatingItems = null;
   if (eventsParticipating.length > 0) {
     eventsParticipatingItems = eventsParticipating.map((event: any, index: number) => {
-      return <li key={index}>{event.name} {event.description}</li>
+      return <li key={index} onClick={()=>setShowModal(true)}>{event.name} {event.description}</li>
     })
   }
 
   let eventsInvitedItems = null;
   if (eventsInvited.length > 0) {
    eventsInvitedItems = eventsInvited.map((event: any, index: number) => {
-    return <li key={index}>{event.name} {event.description}</li>
+    return <li key={index}>{event.name} {event.description} <button onClick={() => answerEventInvitation(event.id, true)}>Yeah!</button><button onClick={() => answerEventInvitation(event.id, false)}>Nah...</button></li>
   })}
 
-  async function unfriend(friendId: number) {
-    const deleteResponse = await axios.delete(`/api/friends/unfriend/${userId}-${friendId}`);
-    getFriends();
-    console.log(deleteResponse)
-  }
+// FUNCTIONS FOR DATA ITEMS
 
+  // FRIENDS
   async function requestFriend(){
-    const friendRequestRecord = await axios.post('/api/friends/requestFriend', {
+    const friendRequestResponse = await axios.post('/api/friends/requestFriend', {
       friendRequest: {
         requester_userId: userId,
         recipient_phoneNumber: phoneForFriendRequest,
       }
     })
-    console.log('here', friendRequestRecord);
+    console.log('friedRequestRecord', friendRequestResponse);
     getFriendRequests();
   }
 
-  async function answerEventInvitation(eventId: number) {
+  async function cancelFriendRequest(recipient_userId: number){
+    const deleteResponse = await axios.delete(`/api/friends/cancelFriendRequest/${userId}-${recipient_userId}`)
+    console.log(deleteResponse);
+    getFriendRequests();
+  }
 
+  async function answerFriendRequest(requester_userId: number, isConfirmed: boolean){
+    const updatedRelationship = await axios.patch('/api/friends/answerFriendRequest', {
+      answer: {
+        requester_userId,
+        recipient_userId: userId,
+        isConfirmed
+      }
+    })
+    console.log('updated Relationship',updatedRelationship);
+    getFriends();
+    getFriendRequests();
+  }
+
+  async function unfriend(friendId: number) {
+    const deleteResponse = await axios.delete(`/api/friends/unfriend/${userId}-${friendId}`);
+    console.log(deleteResponse)
+    getFriends();
+  }
+
+  // EVENTS
+  
+  // invitees is array of userId's of friends 
+  async function inviteToEvent(eventId: number, invitees: Array<number>) {
+
+  }
+
+  async function answerEventInvitation(eventId: number, isGoing: boolean) {
+    const eventInviteResponse = await axios.post('/api/events/answerEventInvite', {
+      answer: {
+        eventId,
+        invitee_userId: userId,
+        isGoing
+      }
+    })
+    console.log('eventInviteResponse', eventInviteResponse);
+    getEventsInvited();
+    getEventsParticipating();
   }
 
   function handlePhoneInput(e) {
@@ -128,6 +168,8 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   return (
     <div>
       <h1>UserPage!!!</h1>
+      <EventModal selectedEvent={selectedEvent} setShowModal={setShowModal} showModal={showModal}/>
+
 
       <p> {coolThing} </p>
       <p> {userId} </p>
