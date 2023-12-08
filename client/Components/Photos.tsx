@@ -1,14 +1,28 @@
-import React, {useState, useEffect} from 'react';
-import axios from 'axios'
+import React, {useState, useEffect, Dispatch, SetStateAction} from 'react';
+import axios from 'axios';
+import Photo from './Photo'
 import { arrayBuffer } from 'stream/consumers';
 //capturing an image and sending via axios to my backend. on backend making another call to cloudinary to post or retrieve image. So if I need that photo on the front end
-export default function Upload() {
+
+const Upload: React.FC = () => {
   const [fileInputState, setFileInputState] = useState('');
   const [selectedFile, setSelectedFile] = useState('');
   const [previewSource, setPreviewSource] = useState();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false)
   const [res, setRes] = useState({});
   const [file, setFile] = useState(null);
+// type loading = { loading: boolean; setLoading: Dispatch<SetStateAction<boolean>>; file: boolean; setFile: Dispatch<boolean>; }
+  // const Form: React.FC<Props> = ({
+  //   loading,
+  //   setLoading,
+  //   file,
+  //   setFile,
+  // })
+  // interface TLoad {
+  //   loading: boolean;
+  //   setLoading?: (value: boolean | (loading: boolean) => boolean) => void;
+  // }
+
   const handleSelectFile = (e: any) => {
     //console.log('handleSelect', e)
     const file = e.target.files[0];
@@ -20,7 +34,8 @@ export default function Upload() {
       reader.readAsDataURL(file) //convert image to a string
       reader.onloadend = () => {
         //console.log('reader.result', reader.result)
-       // setPreviewSource(reader.result:); //if set we want to display it
+        const res = reader.result
+        setPreviewSource(res); //if set we want to display it
       }
   };
 //set up a useEffect that makes an axios request
@@ -56,20 +71,19 @@ export default function Upload() {
       <input
         id="file"
         type="file"
-    //     name="image"
-    //     onChange={handleFileInputChange}
+        name="image"
+       //onChange={previewSource}
     //     value={fileInputState}
     //     className="form-input" />
     //   <button className="btn" type="submit">Submit</button>
     // </form>
-    // {previewSource && (
-    //   <img src={previewSource} alt="chosen"
-    //   style={{height: '400px'}}/>
+    
 
         onChange={handleSelectFile}
         multiple={false}
       />
       {file && <p className="file_name">{file.name}</p>}
+      
       {/* <code>
         {Object.keys(res).map(
           (key) =>
@@ -90,6 +104,18 @@ export default function Upload() {
           </button>
         </>
       )}
+      <Photo 
+      loading={loading} 
+      setLoading={setLoading}
+      file={file}
+      setFile={setFile}
+      
+      />
+      {previewSource && (
+      <img src={previewSource} alt="chosen"
+      style={{height: '400px'}}/>)}
     </div>
   );
 }
+
+export default Upload;
