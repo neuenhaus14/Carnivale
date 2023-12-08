@@ -34,9 +34,9 @@ Events.get('/getEventsParticipating/:id', async (req: Request, res: Response) =>
     });
 
     // if user has no events that they're going to
-    if (!userEventsParticipatingRecords) {
-      console.log('No events');
-      res.status(200).send("You aren't going to any events");
+    if (userEventsParticipatingRecords.length === 0) {
+      console.log('No events attending');
+      res.status(200).send([]);
     } else {
       const userEventsParticipatingIds = userEventsParticipatingRecords.map((record: any) => record.eventId);
 
@@ -47,7 +47,7 @@ Events.get('/getEventsParticipating/:id', async (req: Request, res: Response) =>
           }
         }
       });
-      console.log('getEventsAttending', userEventsParticipating);
+      // console.log('getEventsAttending', userEventsParticipating);
       res.status(200).send(userEventsParticipating);
     }
   } catch (err) {
@@ -67,12 +67,13 @@ Events.get('/getEventsInvited/:id', async (req: Request, res: Response) => {
       invitee_userId: id
     }
   })
-
+  console.log('Here', userEventsInvitedRecords)
   // if user has no events that they're invited to...
-  if (!userEventsInvitedRecords) {
-    console.log('No events')
-    res.status(200).send("You aren't invited to any events")
+  if (userEventsInvitedRecords.length === 0) {
+    console.log('No event invitations')
+    res.status(200).send([])
   } else {
+
     const userEventsInvitedIds = userEventsInvitedRecords.map((record: any) => record.eventId)
 
     const userEventsInvited: any = await Event.findAll({
@@ -82,7 +83,7 @@ Events.get('/getEventsInvited/:id', async (req: Request, res: Response) => {
         }
       }
     })
-    console.log('getEventsAttending', userEventsInvited)
+    console.log('getEventsInvited', userEventsInvited)
     res.status(200).send(userEventsInvited);
   }
 } catch (err) {

@@ -1,20 +1,21 @@
-import React, { ReactPropTypes, useEffect, useState }from 'react';
-import { useSearchParams  } from "react-router-dom";
+import React, { ReactPropTypes, useEffect, useState } from 'react';
+import { useSearchParams } from "react-router-dom";
 import axios from 'axios';
 
-const UserPage = ({ coolThing }: UserPageProps ) => {
+const UserPage = ({ coolThing }: UserPageProps) => {
 
   const [searchParams] = useSearchParams();
-  const [ userId ] = useState(Number(searchParams.get('userid')) || 1);
-  const [ friends, setFriends ] = useState([{firstName: 'Gramma'}]); // array of user id's
-  const [ friendRequestsMade, setFriendRequestsMade ] = useState([]);
-  const [ friendRequestsReceived, setFriendRequestsReceived ] = useState([])
-  const [ eventsParticipating, setEventsParticipating ] = useState([{name: 'event1'}]);
-  const [ eventsInvited, setEventsInvited ] = useState([{name: 'event2'}]);
-  
+  const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  const [friends, setFriends] = useState([]); // array of user id's
+  const [friendRequestsMade, setFriendRequestsMade] = useState([]);
+  const [friendRequestsReceived, setFriendRequestsReceived] = useState([])
+  const [eventsParticipating, setEventsParticipating] = useState([{ name: 'event1' }]);
+  const [eventsInvited, setEventsInvited] = useState([{ name: 'event2' }]);
+  const [phoneForFriendRequest, setPhoneForFriendRequest] = useState('');
+
 
   async function getFriends() {
-    try{
+    try {
       const friends = await axios.get(`/api/friends/getFriends/${userId}`)
       // console.log('here', friends.data);
       setFriends(friends.data);
@@ -24,7 +25,7 @@ const UserPage = ({ coolThing }: UserPageProps ) => {
   }
 
   async function getEventsParticipating() {
-    try{
+    try {
       const eventsParticipating = await axios.get(`api/events/getEventsParticipating/${userId}`)
       setEventsParticipating(eventsParticipating.data);
     } catch (err) {
@@ -42,11 +43,12 @@ const UserPage = ({ coolThing }: UserPageProps ) => {
   }
 
   async function getFriendRequests() {
-    try{
-      const friendRequestsData = await axios.get(`api/events/getFriendRequests/:id`);
-      const { requestsMade, requestsReceived } = friendRequestsData.data;
-      setFriendRequestsReceived(requestsReceived);
-      setFriendRequestsMade(requestsMade);
+    try {
+      const friendRequestsData = await axios.get(`api/friends/getFriendRequests/${userId}`);
+      const { requestsMadeUsers, requestsReceivedUsers } = friendRequestsData.data;
+      console.log(requestsMadeUsers, requestsReceivedUsers)
+      setFriendRequestsReceived(requestsReceivedUsers);
+      setFriendRequestsMade(requestsMadeUsers);
     } catch (err) {
       console.error("CLIENT ERROR: could not GET friend requests ", err)
     }
@@ -58,47 +60,93 @@ const UserPage = ({ coolThing }: UserPageProps ) => {
     getFriends();
     getEventsParticipating();
     getEventsInvited();
+    getFriendRequests();
   }, [])
 
-
-    const friendsListItems = friends.map((friend: any, index: number) => {
-      return <li key={index}>{friend.firstName} {friend.lastName}</li>
+  // ALL RENDERED DATA ARE IN LIST ITEMS
+  let userFriendsItems = null;
+  if (friends.length > 0) {
+    userFriendsItems = friends.map((friend: any, index: number) => {
+      return <li key={index}>{friend.firstName} {friend.lastName} <button onClick={()=> unfriend(friend.id)}>Bye bye!</button></li>
     })
+  }
 
-    const requestsMadeListItems = friendRequestsMade.map((request) => {
-      return <li>{request.</li>
+  let requestsMadeItems = null;
+  if (friendRequestsMade.length > 0) {
+    requestsMadeItems = friendRequestsMade.map((friend, index) => {
+      return <li key={index}>{friend.firstName}</li>
     })
+  }
 
-    const eventsParticipatingListItems = eventsParticipating.map((event: any, index: number) => {
+  let requestsReceivedItems = null;
+  if (friendRequestsReceived.length > 0) {
+    requestsReceivedItems = friendRequestsReceived.map((friend, index) => {
+      return <li key={index}>{friend.firstName}</li>
+    })
+  }
+
+  let eventsParticipatingItems = null;
+  if (eventsParticipating.length > 0) {
+    eventsParticipatingItems = eventsParticipating.map((event: any, index: number) => {
       return <li key={index}>{event.name} {event.description}</li>
     })
+  }
 
-    const eventsInvitedListItems = eventsInvited.map((event: any, index: number) => {
-      return <li key={index}>{event.name} {event.description}</li>
+  let eventsInvitedItems = null;
+  if (eventsInvited.length > 0) {
+   eventsInvitedItems = eventsInvited.map((event: any, index: number) => {
+    return <li key={index}>{event.name} {event.description}</li>
+  })}
+
+  async function unfriend(friendId: number) {
+    const deleteResponse = await axios.delete(`/api/friends/unfriend/${userId}-${friendId}`);
+    getFriends();
+    console.log(deleteResponse)
+  }
+
+  async function requestFriend(){
+    const friendRequestRecord = await axios.post('/api/friends/requestFriend', {
+      friendRequest: {
+        requester_userId: userId,
+        recipient_phoneNumber: phoneForFriendRequest,
+      }
     })
+    console.log('here', friendRequestRecord);
+    getFriendRequests();
+  }
+
+  async function answerEventInvitation(eventId: number) {
+
+  }
+
+  function handlePhoneInput(e) {
+    setPhoneForFriendRequest(e.target.value);
+  }
+
 
   console.log('eP', eventsParticipating, 'eI', eventsInvited)
   return (
     <div>
       <h1>UserPage!!!</h1>
 
-      <p> { coolThing } </p>
-      <p> { userId } </p>
+      <p> {coolThing} </p>
+      <p> {userId} </p>
 
       <h3> MON KREWE </h3>
-      <ul>{ friendsListItems }</ul>
-
+      <ul>{userFriendsItems}</ul>
+      <input placeholder='Gimme their digits' value={phoneForFriendRequest} onChange={handlePhoneInput}></input>
+      <button onClick={requestFriend}>B My fwend</button>
       <h3> KREWE REQUESTS MADE </h3>
-
+      <ul>{requestsMadeItems}</ul>
 
       <h3> KREWE REQUESTS RECEIVED </h3>
-
+      <ul>{requestsReceivedItems}</ul>
 
       <h3> EVENTS ATTENDING</h3>
-      <ul>{ eventsParticipatingListItems }</ul>
+      <ul>{eventsParticipatingItems}</ul>
 
       <h3>EVENTS INVITED</h3>
-      <ul>{ eventsInvitedListItems }</ul>
+      <ul>{eventsInvitedItems}</ul>
 
     </div>
   )
