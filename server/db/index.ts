@@ -115,7 +115,7 @@ const Event = db.define(
 
 interface Pin
   extends Model<InferAttributes<Pin>, InferCreationAttributes<Pin>> {
-  id: CreationOptional<number>;
+  id: number;
   longitude: number;
   latitude: number;
   isToilet: boolean;
