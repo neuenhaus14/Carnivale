@@ -69,7 +69,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   let userFriendsItems = null;
   if (friends.length > 0) {
     userFriendsItems = friends.map((friend: any, index: number) => {
-      return <li key={index}>{friend.firstName} {friend.lastName} <button onClick={()=> unfriend(friend.id)}>Bye bye!</button></li>
+      return <li key={index}>{friend.firstName} {friend.lastName} <button onClick={() => unfriend(friend.id)}>Bye bye!</button></li>
     })
   }
 
@@ -90,20 +90,21 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   let eventsParticipatingItems = null;
   if (eventsParticipating.length > 0) {
     eventsParticipatingItems = eventsParticipating.map((event: any, index: number) => {
-      return <li key={index} onClick={()=>setShowModal(true)}>{event.name} {event.description}</li>
+      return <li key={index} onClick={() => { setShowModal(true); setSelectedEvent(event) }}>{event.name} {event.description}</li>
     })
   }
 
   let eventsInvitedItems = null;
   if (eventsInvited.length > 0) {
-   eventsInvitedItems = eventsInvited.map((event: any, index: number) => {
-    return <li key={index}>{event.name} {event.description} <button onClick={() => answerEventInvitation(event.id, true)}>Yeah!</button><button onClick={() => answerEventInvitation(event.id, false)}>Nah...</button></li>
-  })}
+    eventsInvitedItems = eventsInvited.map((event: any, index: number) => {
+      return <li key={index}>{event.name} {event.description} <button onClick={() => answerEventInvitation(event.id, true)}>Yeah!</button><button onClick={() => answerEventInvitation(event.id, false)}>Nah...</button></li>
+    })
+  }
 
-// FUNCTIONS FOR DATA ITEMS
+  // FUNCTIONS FOR DATA ITEMS
 
   // FRIENDS
-  async function requestFriend(){
+  async function requestFriend() {
     const friendRequestResponse = await axios.post('/api/friends/requestFriend', {
       friendRequest: {
         requester_userId: userId,
@@ -114,13 +115,13 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     getFriendRequests();
   }
 
-  async function cancelFriendRequest(recipient_userId: number){
+  async function cancelFriendRequest(recipient_userId: number) {
     const deleteResponse = await axios.delete(`/api/friends/cancelFriendRequest/${userId}-${recipient_userId}`)
     console.log(deleteResponse);
     getFriendRequests();
   }
 
-  async function answerFriendRequest(requester_userId: number, isConfirmed: boolean){
+  async function answerFriendRequest(requester_userId: number, isConfirmed: boolean) {
     const updatedRelationship = await axios.patch('/api/friends/answerFriendRequest', {
       answer: {
         requester_userId,
@@ -128,7 +129,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
         isConfirmed
       }
     })
-    console.log('updated Relationship',updatedRelationship);
+    console.log('updated Relationship', updatedRelationship);
     getFriends();
     getFriendRequests();
   }
@@ -139,13 +140,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     getFriends();
   }
 
-  // EVENTS
-  
-  // invitees is array of userId's of friends 
-  async function inviteToEvent(eventId: number, invitees: Array<number>) {
-
-  }
-
+  // MOVE THIS TO EVENT MODAL
   async function answerEventInvitation(eventId: number, isGoing: boolean) {
     const eventInviteResponse = await axios.post('/api/events/answerEventInvite', {
       answer: {
@@ -168,7 +163,14 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   return (
     <div>
       <h1>UserPage!!!</h1>
-      <EventModal selectedEvent={selectedEvent} setShowModal={setShowModal} showModal={showModal}/>
+      <EventModal
+        selectedEvent={selectedEvent}
+        setSelectedEvent={setSelectedEvent}
+        setShowModal={setShowModal}
+        showModal={showModal}
+        friends={friends}
+        userId={userId}
+      />
 
 
       <p> {coolThing} </p>

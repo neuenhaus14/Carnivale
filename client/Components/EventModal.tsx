@@ -1,39 +1,79 @@
-import React, {useState} from 'react';
-import { Modal, Button, Form } from 'react-bootstrap'
+import React, { useState } from 'react';
+import { Modal, Button, Form, Accordion } from 'react-bootstrap'
 import EventMapComponent from './EventMapComponent';
 import axios from 'axios';
 
 interface EventModalProps {
-  selectedEvent: object,
+  selectedEvent: any,
+  setSelectedEvent: any,
   setShowModal: any,
-  showModal: boolean
+  showModal: boolean,
+  friends: any,
+  userId: number,
 }
 
-const EventModal: React.FC<EventModalProps> = ({selectedEvent, setShowModal, showModal}) => {
-
-
-const handleClose = () => {
-  setShowModal(false); // 
+interface EventInviteAccordionProps {
+  friends: any,
+  userId: number
 }
+
+
+
+// MAYBE ADD A useEffect THAT FETCHES WHO'S ATTENDING
+// AN EVENT WHENEVER SELECTED EVENT CHANGES
+
+const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, userId }) => {
+  
+  const inviteFriend = (invitee_userId: number, eventId: number) => {
+    
+  }
+
+  
+  const friendsItems = friends.map((friend: any, index: number) => {
+    return <li key={index}>{friend.firstName} <button onClick={()=> inviteFriend()}>Invite</button></li>
+  })
+
+  console.log('friends from inside accordion', friends);
+  return (
+    <Accordion>
+      <Accordion.Item eventKey="0">
+        <Accordion.Header>Invite your friends</Accordion.Header>
+        <Accordion.Body>
+          <ul>
+            {friendsItems}
+          </ul>
+        </Accordion.Body>
+      </Accordion.Item>
+    </Accordion>
+  )
+}
+
+const EventModal: React.FC<EventModalProps> = ({ selectedEvent, setShowModal, showModal, setSelectedEvent, friends }) => {
+  const handleClose = () => {
+    setShowModal(false); // goes up to user page and sets to false
+    setSelectedEvent({});
+  }
 
   return (
     <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
-        </Modal.Header>
-        <Modal.Body> 
-          {/* <EventMapComponent /> */}
-          Woohoo, you are reading this text in a modal!
-          </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <Modal.Header closeButton>
+        <Modal.Title>Modal heading</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {/* <EventMapComponent /> */}
+        Woohoo, you are reading this text in a modal!
+        <p>{selectedEvent.name}</p>
+        <EventInviteAccordion friends={friends} />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>
+          Close
+        </Button>
+        <Button variant="primary" onClick={handleClose}>
+          Save Changes
+        </Button>
+      </Modal.Footer>
+    </Modal>
   )
 
 };
