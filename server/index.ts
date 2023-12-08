@@ -56,9 +56,9 @@ app.get('/auth', (req, res) => {
 });
 
 // get user json
-app.get('/profile', requiresAuth(), (req, res) => {
-  res.send(JSON.stringify(req.oidc.user));
-});
+// app.get('/profile', requiresAuth(), (req, res) => {
+//   res.send(JSON.stringify(req.oidc.user));
+// });
 
 
 app.get("/*", function (req: Request, res: Response) {
