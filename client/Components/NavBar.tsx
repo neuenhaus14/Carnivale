@@ -34,6 +34,11 @@ const NavBar = () => {
             UserPage
           </button>
         </span>
+        <span>
+          <button type="button" id="navButton" onClick={() => handleNavigation('/photo')}>
+            Photo
+          </button>
+        </span>
       </nav>
     </div>
   )
