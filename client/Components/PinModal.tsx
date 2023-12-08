@@ -69,10 +69,10 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
           </Modal.Header>
           <Modal.Body>
             <div id="pin-photos">
-              <p>Pin from $User</p> 
               {
                 selectedPin.map((pin: any) => (
                   <div key={pin.id}>
+                    <p>{pin.firstName} {pin.lastName}</p>
                     <img src={pin.photoURL} alt="Pin Photo" height="300" width='300'/> 
                     <p>{pin.description}</p>
                   </div>  

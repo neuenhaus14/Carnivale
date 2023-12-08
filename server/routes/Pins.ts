@@ -42,12 +42,7 @@ Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) =>
     const pinPhotoIds = joinPinPhotoResults.map((pin) => pin.dataValues.photoId)
     
     const pinPhotos = await Photo.findAll({where: {id: pinPhotoIds}})
-    const pinPhotoUserId = pinPhotos.map((pinPhoto) => pinPhoto.dataValues.ownerId)
-
-    const photoUserArr = await User.findAll({where: {id: pinPhotoUserId}})
-    // const photoUserFirstName = photoUserArr.map((user) => user.dataValues.firstName)
-    // const photoUserLastName = photoUserArr.map((user) => user.dataValues.lastName)
-   
+    
     await Promise.all(pinPhotos.map(async (photo) => {
         try {
           const userObj =  await User.findOne({where: {id: photo.dataValues.ownerId}})
@@ -56,12 +51,12 @@ Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) =>
             photo.dataValues.lastName = userObj.dataValues.lastName
           }
         } catch (err) {
-          console.error(err, 'something went wrong ');
+          console.error(err, 'something went wrong with name collection for pins');
         }
       
       }))
 
-    console.log('bananana', pinPhotos)
+    console.log('bananananana', pinPhotos)
 
     res.status(200).send(pinPhotos)
     
