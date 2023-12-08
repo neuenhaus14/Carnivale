@@ -1,20 +1,10 @@
-import React from 'react';
-import { Button } from 'react-bootstrap';
-import {To, useNavigate} from 'react-router-dom';
+import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
-const Login = () => {
-  const navigate = useNavigate();
-  const handleNavigation = (Path: To) => {
-    navigate(Path);
-  }
+const LoginButton = () => {
+  const { loginWithRedirect } = useAuth0();
 
-  return (
-    <div>
-      <h1>Login!</h1>
-      <Button onClick={() => handleNavigation('/auth')}>Login</Button>
-    </div>
-)
-
+  return <button onClick={() => loginWithRedirect()}>Log In</button>;
 };
 
-export default Login;
+export default LoginButton;

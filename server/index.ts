@@ -51,7 +51,8 @@ app.use(auth(config));
 
 // req.isAuthenticated is provided from the auth router
 app.get('/auth', (req, res) => {
-  res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
+  console.log(req.oidc.isAuthenticated());
+  res.render("index", {isAuthenticated: req.oidc.isAuthenticated()});
 });
 
 // get user json

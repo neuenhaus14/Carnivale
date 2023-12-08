@@ -38,7 +38,7 @@ const App = () => {
           <Route path='/photo' element={<div><Photos /> <NavBar /></div>} />
           <Route path='/' element={<Login />} />
         {/* </Route> */}
-          <Route path='/login'/>
+          {/* <Route path='/login'/> */}
       </Route>,
     ),
   );
