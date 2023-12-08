@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 const Pins = express.Router()
 import {Photo, Pin} from '../db/index';
 import { Join_pin_photo } from "../db/index";
+import { User } from '../db/index';
 
 // => api/pins/get-pins
 Pins.get('/get-pins', async (req: Request, res: Response) => {
@@ -41,7 +42,27 @@ Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) =>
     const pinPhotoIds = joinPinPhotoResults.map((pin) => pin.dataValues.photoId)
     
     const pinPhotos = await Photo.findAll({where: {id: pinPhotoIds}})
-    //console.log(pinPhotos)
+    const pinPhotoUserId = pinPhotos.map((pinPhoto) => pinPhoto.dataValues.ownerId)
+
+    const photoUserArr = await User.findAll({where: {id: pinPhotoUserId}})
+    // const photoUserFirstName = photoUserArr.map((user) => user.dataValues.firstName)
+    // const photoUserLastName = photoUserArr.map((user) => user.dataValues.lastName)
+   
+    await Promise.all(pinPhotos.map(async (photo) => {
+        try {
+          const userObj =  await User.findOne({where: {id: photo.dataValues.ownerId}})
+          if (userObj) {
+            photo.dataValues.firstName = userObj.dataValues.firstName
+            photo.dataValues.lastName = userObj.dataValues.lastName
+          }
+        } catch (err) {
+          console.error(err, 'something went wrong ');
+        }
+      
+      }))
+
+    console.log('bananana', pinPhotos)
+
     res.status(200).send(pinPhotos)
     
   } catch (err) {

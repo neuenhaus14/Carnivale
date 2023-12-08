@@ -4,6 +4,7 @@ import { Map, Marker, NavigationControl } from 'react-map-gl';
 import { BsFillPinFill } from "react-icons/bs";
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
 
