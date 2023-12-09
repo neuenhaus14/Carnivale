@@ -20,7 +20,7 @@ Pins.post('/create-pin/:ownerId', async(req: Request, res: Response) => {
   
   try {
     const result = await Pin.create({ longitude, latitude, isFree, isToilet, isFood, isPersonal, ownerId })
-    console.log(result)
+    //console.log(result)
     res.status(200).send(result)
   } catch (err) {
     console.error('SERVER ERROR: could not POST pin', err);

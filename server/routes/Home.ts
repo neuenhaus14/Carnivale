@@ -1,7 +1,19 @@
 import { Router, Request, Response } from 'express';
-import { Comment, Photo } from '../db';
+import { User, Comment, Photo } from '../db';
 import { Op } from 'sequelize';
 const HomeRoutes = Router();
+
+HomeRoutes.post('/user', async (req: Request, res: Response) => {
+  const { user } = req.body;
+  try {
+    const userData = await User.findOrCreate({where: { email: user.email, firstName: user.given_name, lastName: user.family_name } })
+    res.status(200)
+      .send(userData);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
 
 HomeRoutes.get('/posts', async (req: Request, res: Response) => {
   try {

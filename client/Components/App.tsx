@@ -1,6 +1,7 @@
 import React from 'react';
 import {Route, RouterProvider, createBrowserRouter, createRoutesFromElements} from 'react-router-dom'
-
+import { useAuth0 } from '@auth0/auth0-react';
+import ProtectedRoute from './ProtectedRoutes'
 
 import FeedPage from './FeedPage'
 import HomePage from './HomePage'
@@ -11,7 +12,8 @@ import MainForum from './MainForum';
 import Costume from './Costume';
 import EventPage from './EventPage';
 import NavBar from './NavBar';
-import Photos from './Photos'
+import Photos from './Photos';
+import Loading from './Loading';
 
 //import ProtectedRoutes from './ProtectedRoutes'
 
@@ -20,14 +22,18 @@ import Photos from './Photos'
 
 const App = () => {
 
-  // add user loader data 
-  // is logged in loader to pass to private routes to make sure user is logged in
-  const userId = '1'
+  const { isLoading } = useAuth0();
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
 
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
-        {/* <Route element={<ProtectedRoutes />}>  */}
+          <Route path='/' element={<Login />} />
+        <Route element={<ProtectedRoute />}> 
           <Route path='/homepage' element={<div><HomePage /> <NavBar /></div>} />
           <Route path='/mainforum' element={<div><MainForum /> <NavBar /></div>} />
           <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
@@ -36,9 +42,7 @@ const App = () => {
           <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
           <Route path='/userpage' element={<div><UserPage coolThing = 'string1'/> <NavBar /></div>} />
           <Route path='/photo' element={<div><Photos /> <NavBar /></div>} />
-          <Route path='/login' element={<Login />} />
-        {/* </Route> */}
-          <Route path='/' element={<Login />} />
+        </Route> 
       </Route>,
     ),
   );
