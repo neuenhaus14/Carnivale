@@ -93,67 +93,28 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
   }
 
   return (
- 
-    // <h1>Upload</h1>
-    // <form onSubmit={handleSubmitFile}
-    // className="form">
-
     <div className="App">
-      <label htmlFor="file" className="btn-grey">
-        {" "}
-        select file
-      </label>
-      <input
+      {previewSource && (
+      <img src={previewSource} alt="chosen"
+      style={{height: '300'}}/>)}
+       <input
         id="file"
         type="file"
         name="image"
-       //onChange={previewSource}
-    //     value={fileInputState}
-    //     className="form-input" />
-    //   <button className="btn" type="submit">Submit</button>
-    // </form>
-    
-
+        placeholder="Please add a description"
         onChange={handleSelectFile}
         multiple={false}
       />
-      {file && <p className="file_name">{file.name}</p>}
-      
-      {/* <code>
-        {Object.keys(res).map(
-          (key) =>
-            key && (
-              <p className="output-item" key={key}>
-                <span>{key}:</span>
-                <span>
-                  {typeof res[key] === "object" ? "object" : res[key]}
-                </span>
-              </p>
-            )
-        )}
-      </code> */}
-      {file && (
         <>
-        <input 
+        <input
         id="desc"
         type="desc"
         name="descinput"
         onChange={handleDescInput}/>
           <button className="btn-green" onClick={uploadFile}>
-            {loading ? "uploading..." : "upload to Cloudinary"}
+            {loading ? "Saving..." : "Save"}
           </button>
         </>
-      )}
-      {/* <Photo 
-      loading={loading} 
-      setLoading={setLoading}
-      file={file}
-      setFile={setFile}
-      
-      /> */}
-      {previewSource && (
-      <img src={previewSource} alt="chosen"
-      style={{height: 'flex', width: 'flex'}}/>)}
     </div>
   );
 }
