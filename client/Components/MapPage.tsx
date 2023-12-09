@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Map, Marker, NavigationControl } from 'react-map-gl';
 import { BsFillPinFill } from "react-icons/bs";
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -11,6 +11,10 @@ import PinModal from './PinModal';
 
 const MapPage = () => {
   const mapRef = useRef(null);
+    // loader data brings in live data from the google oauth
+    const userData = useLoaderData();
+    const userId = userData
+    console.log('userId', userId)
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [createPin, setCreatePin] = useState(false);
