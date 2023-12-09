@@ -11,6 +11,7 @@ const upload = multer({ storage });
 console.log('upload', upload)
 const myUploadMiddleware = upload.single("sample_file");
 const ImageRouter = express.Router()
+let photoURL : string;
 
 function runMiddleware(req: any, res: any, fn: any) {
   return new Promise((resolve, reject) => {
@@ -26,9 +27,7 @@ function runMiddleware(req: any, res: any, fn: any) {
 
 //Post logic that takes an image from the front page and adds the image to cloudinary and posts the reference url to our local database as well
 ImageRouter.post('/upload', async (req: Request, res: Response) => {
-//  const {latitude, longitude} = req.body.options
-//  console.log(latitude, longitude)
- 
+  
   try {
     await runMiddleware(req, res, myUploadMiddleware);
     const b64 = Buffer.from(req.file.buffer).toString("base64");
@@ -36,14 +35,14 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
     const cldRes = await handleUpload(dataURI);
     //console.log('backend', cldRes)
     const url = cldRes.secure_url
-    const photoURL = url
+    photoURL = url
     //after posting to cloudinary, we take the cloudResponse (cldRes) and access the secure_url data to our database
     const newPhoto = await Photo.create({
       photoURL,
       // latitude,
       // longitude
     })
-    console.log(newPhoto)
+    console.log("newPhoto from cloud", newPhoto)
     res.json(cldRes);
   } catch (error) {
     console.log(error);
@@ -51,6 +50,20 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
       message: error.message,
     });
   }
+ })
+
+
+ ImageRouter.put('/save', async (req: Request, res: Response) => {
+  const {latitude, longitude} = req.body.options
+  console.log(latitude, longitude)
+
+    try{
+      const updatedPhoto = await Photo.update({latitude, longitude}, {where: {photoURL}})
+      console.log('updatedPhoto', updatedPhoto)
+    } catch (error) {
+      console.log(error);
+    }
+
  })
 
  //keeping this route in case we might need it later for info writing
