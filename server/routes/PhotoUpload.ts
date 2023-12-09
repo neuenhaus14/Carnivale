@@ -26,6 +26,9 @@ function runMiddleware(req: any, res: any, fn: any) {
 
 //Post logic that takes an image from the front page and adds the image to cloudinary and posts the reference url to our local database as well
 ImageRouter.post('/upload', async (req: Request, res: Response) => {
+//  const {latitude, longitude} = req.body.options
+//  console.log(latitude, longitude)
+ 
   try {
     await runMiddleware(req, res, myUploadMiddleware);
     const b64 = Buffer.from(req.file.buffer).toString("base64");
@@ -33,12 +36,15 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
     const cldRes = await handleUpload(dataURI);
     //console.log('backend', cldRes)
     const url = cldRes.secure_url
-    res.json(cldRes);
     const photoURL = url
     //after posting to cloudinary, we take the cloudResponse (cldRes) and access the secure_url data to our database
     const newPhoto = await Photo.create({
-      photoURL
+      photoURL,
+      // latitude,
+      // longitude
     })
+    console.log(newPhoto)
+    res.json(cldRes);
   } catch (error) {
     console.log(error);
     res.send({

@@ -4,7 +4,14 @@ import Photo from './Photo'
 import { arrayBuffer } from 'stream/consumers';
 //capturing an image and sending via axios to my backend. on backend making another call to cloudinary to post or retrieve image. So if I need that photo on the front end
 
-const Upload: React.FC = () => {
+interface Props {
+  latitude: any
+  longitude: any
+}
+
+
+
+const Upload: React.FC<Props> = ({latitude, longitude}) => {
   const [fileInputState, setFileInputState] = useState('');
   const [selectedFile, setSelectedFile] = useState('');
   const [previewSource, setPreviewSource] = useState();
@@ -29,6 +36,7 @@ const Upload: React.FC = () => {
     setFile(file);
     previewFile(file);
   };
+
   const previewFile = (file: any) => {
       const reader = new FileReader(); //built into JS API
       reader.readAsDataURL(file) //convert image to a string
@@ -47,9 +55,11 @@ const Upload: React.FC = () => {
     data.set("sample_file", file);
     //console.log('data', data)
     try {
-      const res = await axios.post("/api/images/upload", data);
+      const res = await axios.post("/api/images/upload");
+      
       //console.log('front end data', data)
-      setRes(res.data);
+      //setRes(res.data);
+      // saveToDb()
     } catch (error) {
       console.log('upload error', error);
     } finally {
@@ -57,6 +67,21 @@ const Upload: React.FC = () => {
     }
   };
   
+  // const saveToDb = async () => {
+  //   console.log(latitude, longitude)
+
+  //   try{
+  //     const savePic = await axios.post("/api/images/upload", {
+  //       options: {
+  //         latitude,
+  //         longitude
+  //       }
+  //     });
+  //   }catch (error) {
+  //     console.log('upload error', error);
+  //   }
+  // }
+
   return (
  
     // <h1>Upload</h1>

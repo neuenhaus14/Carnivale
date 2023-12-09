@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import { useParams} from 'react-router-dom'
 import axios from 'axios'
+import Photos from './Photos'
  
 interface Props {
   setShowModal: any
@@ -115,7 +116,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
             </Form.Group>
             <Form.Group className="mb-3" controlId="picture spot" >
               <Form.Label>Placeholder for Picture</Form.Label>
-              <Form.Control as="textarea" rows={5} />
+              <Photos latitude={lat} longitude={lng} />
             </Form.Group>
           </Form>
         </Modal.Body>
