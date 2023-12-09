@@ -23,26 +23,32 @@ interface User {
 }
 
 interface Comment {
-  id: number;
+  // id: number;
   comment: string;
   ownerId: number;
   upvotes: number;
 }
 
 interface Pin {
-  id: number;
+  //id: number;
   isToilet: boolean;
   isFood: boolean;
   isPersonal: boolean;
   upvotes: number;
+  ownerId: number;
 }
 
 interface Photo {
-  id: number;
+  // id: number;
   description: string;
   ownerId: number;
   upvotes: number;
+  url: string;
 }
+
+const formatJSON = (jsonString: string): string => {
+  return jsonString.replace(/"([^"]+)":/g, "$1:");
+};
 
 const FeedPage = () => {
   const [sharedPosts, setSharedPosts] = useState<SharedPost[]>([]);
@@ -50,7 +56,12 @@ const FeedPage = () => {
   const [senderNames, setSenderNames] = useState<{ [userId: number]: string }>(
     {}
   );
-  const [modalContent, setModalContent] = useState<string | null>(null);
+  const [modalContent, setModalContent] = useState<
+    Photo | Comment | Pin | null
+  >(null);
+  const [ownerNames, setOwnerNames] = useState<{ [userId: number]: string }>(
+    {}
+  );
 
   useEffect(() => {
     axios
@@ -65,36 +76,42 @@ const FeedPage = () => {
   }, []);
 
   useEffect(() => {
-    const fetchSenderName = async (userId: number) => {
-      try {
-        const response = await axios.get(`/api/feed/user/${userId}`);
-        const senderName = `${response.data.firstName} ${response.data.lastName}`;
-        setSenderNames((prevNames) => ({
-          ...prevNames,
-          [userId]: senderName,
-        }));
-      } catch (error) {
-        console.error(`Error fetching user ${userId} information:`, error);
-      }
-    };
-
     sharedPosts.forEach((post) => {
       if (!senderNames[post.sender_userId]) {
         fetchSenderName(post.sender_userId);
       }
+      if (!ownerNames[post.recipient_userId]) {
+        fetchOwnerName(post.recipient_userId);
+      }
     });
-  }, [sharedPosts, senderNames]);
+  }, [sharedPosts, senderNames, ownerNames]);
+
+  const fetchSenderName = async (userId: number) => {
+    try {
+      const response = await axios.get(`/api/feed/user/${userId}`);
+      const senderName = `${response.data.firstName} ${response.data.lastName}`;
+
+      setSenderNames((prevNames) => ({
+        ...prevNames,
+        [userId]: senderName,
+      }));
+    } catch (error) {
+      console.error(`Error fetching sender ${userId} information:`, error);
+    }
+  };
 
   const fetchCommentDetails = async (commentId: number) => {
     try {
       const response = await axios.get(`/api/feed/shared-comment/${commentId}`);
       const commentDetails: Comment = {
-        id: response.data.id,
         comment: response.data.comment,
         ownerId: response.data.ownerId,
         upvotes: response.data.upvotes,
       };
-      setModalContent(JSON.stringify(commentDetails, null, 2));
+
+      await fetchOwnerName(commentDetails.ownerId);
+
+      setModalContent(commentDetails);
     } catch (error) {
       console.error("Error fetching shared comment information:", error);
     }
@@ -104,13 +121,16 @@ const FeedPage = () => {
     try {
       const response = await axios.get(`/api/feed/shared-pin/${pinId}`);
       const pinDetails: Pin = {
-        id: response.data.id,
+        ownerId: response.data.ownerId,
         isToilet: response.data.isToilet,
         isFood: response.data.isFood,
         isPersonal: response.data.isPersonal,
         upvotes: response.data.upvotes,
       };
-      setModalContent(JSON.stringify(pinDetails, null, 2));
+
+      await fetchOwnerName(pinDetails.ownerId);
+
+      setModalContent(pinDetails);
     } catch (error) {
       console.error("Error fetching shared pin information:", error);
     }
@@ -120,14 +140,34 @@ const FeedPage = () => {
     try {
       const response = await axios.get(`/api/feed/shared-photo/${photoId}`);
       const photoDetails: Photo = {
-        id: response.data.id,
         description: response.data.description,
         ownerId: response.data.ownerId,
         upvotes: response.data.upvotes,
+        url: response.data.photoURL,
       };
-      setModalContent(JSON.stringify(photoDetails, null, 2));
+
+      await fetchOwnerName(photoDetails.ownerId);
+
+      setModalContent(photoDetails);
     } catch (error) {
       console.error("Error fetching shared photo information:", error);
+    }
+  };
+
+  const fetchOwnerName = async (userId: number) => {
+    try {
+      const response = await axios.get(`/api/feed/user/${userId}`);
+      const ownerName = `${response.data.firstName} ${response.data.lastName}`;
+
+      setOwnerNames((prevNames) => ({
+        ...prevNames,
+        [userId]: ownerName,
+      }));
+    } catch (error) {
+      console.error(
+        `Error fetching owner information for user ${userId}:`,
+        error
+      );
     }
   };
 
@@ -177,6 +217,13 @@ const FeedPage = () => {
                   </button>
                 </>
               )}
+
+              {post.shared_commentId ||
+              post.shared_pinId ||
+              post.shared_photoId ? (
+                <p>Owner: {ownerNames[post.recipient_userId]}</p>
+              ) : null}
+
               <p>
                 Created At:{" "}
                 {moment(post.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
@@ -192,10 +239,38 @@ const FeedPage = () => {
         isOpen={!!modalContent}
         onRequestClose={closeModal}
         contentLabel="Details Modal"
+        ariaHideApp={false}
       >
         <div>
+          {modalContent && typeof modalContent === "object" && (
+            <>
+              {"url" in modalContent && (
+                <img src={(modalContent as Photo).url} alt="Shared Photo" />
+              )}
+              {"ownerId" in modalContent && (
+                <>
+                  <p style={{ marginBottom: 0 }}>
+                    Owner:
+                    {
+                      ownerNames[
+                        (modalContent as Comment | Pin | Photo).ownerId
+                      ]
+                    }
+                  </p>
+                  <pre>
+                    {formatJSON(
+                      JSON.stringify(
+                        { ...modalContent, ownerId: undefined },
+                        null,
+                        2
+                      ).slice(1, -1)
+                    )}
+                  </pre>
+                </>
+              )}
+            </>
+          )}
           <button onClick={closeModal}>Close Modal</button>
-          <pre>{modalContent}</pre>
         </div>
       </Modal>
     </div>
