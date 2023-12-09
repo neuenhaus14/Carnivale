@@ -22,15 +22,15 @@ interface RelationshipModel extends Model {
 // This route exists so only friend info
 // can go to map, rather than all relationships
 // featuring the user's id.
-Friends.get('/getFriends/:id', async (req: Request, res: Response) => {
-  const { id } = req.params
+Friends.get('/getFriends/:userId', async (req: Request, res: Response) => {
+  const { userId } = req.params
   try {
     // getting relationships where friendship is confirmed
     const allFriendships: Array<Model> = await Join_friend.findAll({
       where: {
         [Op.or]: [
-          { requester_userId: id },
-          { recipient_userId: id }
+          { requester_userId: userId },
+          { recipient_userId: userId }
         ],
         isConfirmed: true, // isConfirmed indicates the recipient has accepted the request
       }
@@ -41,8 +41,9 @@ Friends.get('/getFriends/:id', async (req: Request, res: Response) => {
     if (allFriendships.length > 0) {
       // Of all the relationships of the user, get the friend (the non-user)
       const allFriendsIds = allFriendships.map((friendship: RelationshipModel) => {
-        return friendship.requester_userId === Number(id) ? friendship.recipient_userId : friendship.requester_userId
+        return friendship.requester_userId === Number(userId) ? friendship.recipient_userId : friendship.requester_userId
       });
+
       // getting info of users: looking for all id's that are in allFriendsIds
       const allFriendsUsers: Array<Model> = await User.findAll({
         where: {
@@ -76,6 +77,10 @@ Friends.get('/getFriendRequests/:id', async (req: Request, res: Response) => {
       return request.recipient_userId
     })
 
+    // if requestsMadeId's turns out 
+    // empty, then it will return all users,
+    // so we need to contain this is logic to check
+    // that we have some Id's to lookup users with
     let requestsMadeUsers;
     if (requestsMadeIds.length > 0) {
       requestsMadeUsers = await User.findAll({
@@ -98,7 +103,7 @@ Friends.get('/getFriendRequests/:id', async (req: Request, res: Response) => {
       return request.requester_userId
     })
 
-    console.log('HEHERHERHEHRE', requestsMadeIds, requestsReceivedIds)
+    // console.log('HEHERHERHEHRE', requestsMadeIds, requestsReceivedIds)
 
     // set the user objects array as undefined, and 
     // only assign if there are user objects to retrieve
@@ -113,7 +118,7 @@ Friends.get('/getFriendRequests/:id', async (req: Request, res: Response) => {
       });
     }
 
-    console.log('here', requestsMadeUsers, requestsReceivedUsers)
+    // console.log('here', requestsMadeUsers, requestsReceivedUsers)
     // if requests are still undefined (ie, don't pass the conditional
     // length check), then we'll return an empty array
     const response = {

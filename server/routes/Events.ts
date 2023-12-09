@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
-import { Event, Join_event_invitee, Join_event_participant } from "../db";
+import { Event, Join_event_invitee, Join_event_participant, Join_friend } from "../db";
 import { Model, InferCreationAttributes, InferAttributes, CreationOptional, Op } from 'sequelize';
+import axios from "axios";
 
 // interface EventModel extends Model {
 //   id: number,
@@ -22,6 +23,7 @@ import { Model, InferCreationAttributes, InferAttributes, CreationOptional, Op }
 
 const Events = Router();
 
+// NEXT TWO ROUTES SEARCH FOR EVENTS BY USERNAME
 Events.get('/getEventsParticipating/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -67,7 +69,6 @@ Events.get('/getEventsInvited/:id', async (req: Request, res: Response) => {
       invitee_userId: id
     }
   })
-  console.log('Here', userEventsInvitedRecords)
   // if user has no events that they're invited to...
   if (userEventsInvitedRecords.length === 0) {
     console.log('No event invitations')
@@ -90,6 +91,67 @@ Events.get('/getEventsInvited/:id', async (req: Request, res: Response) => {
   console.error('SERVER ERROR: failed to GET events you are invited to', err);
   res.status(500).send(err);
 }
+})
+
+// get friends that are attending provided a user and event
+Events.get('/getPeopleForEvent/:userId-:eventId', async (req: Request, res: Response) => {
+  const { userId, eventId } = req.params;
+
+  try {
+    const allFriendships = await Join_friend.findAll({
+      where: {
+        isConfirmed: true,
+        [Op.or]: [
+          { requester_userId: userId },
+          { recipient_userId: userId }
+        ]
+      }
+    })
+
+     // make sure we have relationships before
+    // going and getting the user info
+    if (allFriendships.length > 0) {
+      // Of all the relationships of the user, get the friend (the non-user)
+      const allFriendsIds = allFriendships.map((friendship: any) => {
+        return friendship.requester_userId === Number(userId) ? friendship.recipient_userId : friendship.requester_userId
+      });
+
+    const eventParticipants = await Join_event_participant.findAll({
+      where: {
+        eventId,
+        participant_userId: {
+          [Op.or]: [...allFriendsIds]
+        }
+      }
+    })
+  
+    const eventInvitees = await Join_event_invitee.findAll({
+      where: {
+        eventId,
+        invitee_userId: {
+          [Op.or]: [...allFriendsIds]
+        }
+      }
+    })
+
+    // map over results to just return the ids of the friends attending
+    const response = {
+      eventParticipants: eventParticipants.map((participationRecord : any) => participationRecord.participant_userId),
+      eventInvitees: eventInvitees.map((inviteRecord: any) => inviteRecord.invitee_userId)
+    }
+
+    res.status(200).send(response);
+  } else { // if they don't have any friends, send back empty arrays
+    const response: any = {
+      eventParticipants: [],
+      eventInvitees: []
+    }
+    res.status(200).send(response)
+  }
+} catch (err) {
+    console.error('SERVER ERROR: failed to GET people involved with event', err);
+    res.status(500).send(err);
+  }
 })
 
 // creating an event from user events page updates events
@@ -226,10 +288,7 @@ Events.post('/inviteToEvent', async (req: Request, res: Response) => {
       return { eventId, invitee_userId }
     })
     const invitationsResponse = await Join_event_invitee.bulkCreate(invitations);
-
-    console.log('here', invitationsResponse)
     res.status(201).send(invitationsResponse)
-
   } catch (err) {
     console.error("SERVER ERROR: could not POST event invitations", err);
     res.status(500).send(err);
