@@ -1,14 +1,27 @@
 import React, { useState, useEffect} from "react";
 import { Card, Form, Button } from "react-bootstrap";
+import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 
 import WeatherCard from "./WeatherCard";
 import PostCard from "./PostCard";
 
 const HomePage = () => {
+  const { user } = useAuth0();
   const [comment, setComment] = useState("");
-  const [userId, setUserId] = useState('1');
+  const [userId, setUserId] = useState(null);
   const [posts, setPosts] = useState(null);
+
+  const getUser = async() => {
+    try {      
+      const { data } = await axios.post(`api/home/user/`, { user });
+      setUserId(data[0].id);
+    } catch (err){
+      console.error(err);
+    }
+  }
+
+
 
   const handleSubmit = async() => {
     try {
@@ -30,6 +43,7 @@ const HomePage = () => {
   }
 
   useEffect(() => {
+    getUser();
     getPosts();
     const interval = setInterval(() => {
       getPosts();
@@ -42,15 +56,6 @@ const HomePage = () => {
   return (
     <div>
       <h1>HomePage!</h1>
-
-      {/* temporary */}
-      <Form>
-        <Form.Group>
-          <Form.Label>UserId</Form.Label>
-          <Form.Control onChange={(e) => setUserId(e.target.value)} />
-        </Form.Group>
-      </Form>
-      {/* temporary */}
 
       <WeatherCard />
       {
