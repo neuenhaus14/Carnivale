@@ -154,7 +154,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     getEventsParticipating();
   }
 
-  function handlePhoneInput(e) {
+  function handlePhoneInput(e: any) {
     setPhoneForFriendRequest(e.target.value);
   }
 

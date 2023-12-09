@@ -14,7 +14,7 @@ interface EventModalProps {
 
 interface EventInviteAccordionProps {
   friends: any,
-  userId: number
+  selectedEvent: any,
 }
 
 
@@ -22,15 +22,15 @@ interface EventInviteAccordionProps {
 // MAYBE ADD A useEffect THAT FETCHES WHO'S ATTENDING
 // AN EVENT WHENEVER SELECTED EVENT CHANGES
 
-const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, userId }) => {
-  
+const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, selectedEvent }) => {
+
   const inviteFriend = (invitee_userId: number, eventId: number) => {
-    
+    console.log('inside invite friend', invitee_userId, eventId);
   }
 
-  
+
   const friendsItems = friends.map((friend: any, index: number) => {
-    return <li key={index}>{friend.firstName} <button onClick={()=> inviteFriend()}>Invite</button></li>
+    return <li key={index}>{friend.firstName} <button onClick={()=> inviteFriend(friend.id, selectedEvent.id)}>Invite</button></li>
   })
 
   console.log('friends from inside accordion', friends);
@@ -63,7 +63,7 @@ const EventModal: React.FC<EventModalProps> = ({ selectedEvent, setShowModal, sh
         {/* <EventMapComponent /> */}
         Woohoo, you are reading this text in a modal!
         <p>{selectedEvent.name}</p>
-        <EventInviteAccordion friends={friends} />
+        <EventInviteAccordion selectedEvent={selectedEvent} friends={friends} />
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
