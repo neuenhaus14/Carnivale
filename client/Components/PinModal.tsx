@@ -60,13 +60,16 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
     }
   }
   
+
   return (
     <>
     { isPinSelected 
     ? (
         <Modal show={isShow} onHide={initModal}>
           <Modal.Header closeButton >
-            <Modal.Title>Pin Category</Modal.Title>
+            { selectedPin.map((pin: any) => (
+            <Modal.Title key={pin.id}>{pin.pinCategory.slice(2)} Pins</Modal.Title>
+            ))}
           </Modal.Header>
           { showPhoto ? (
           <div> 
@@ -75,7 +78,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
                 {
                   selectedPin.map((pin: any) => (
                     <div key={pin.id}>
-                      <p>{pin.firstName} {pin.lastName}</p>
+                      <p><b>Submitted by:</b>{pin.firstName} {pin.lastName}</p>
                       <img src={pin.photoURL} alt="Pin Photo" height="300" width='300'/> 
                       <p>{pin.description}</p>
                     </div>  
