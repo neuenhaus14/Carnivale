@@ -2,7 +2,8 @@ import  { v2 as cloudinary }  from "cloudinary" //grabbing reference to an alrea
 import handleUpload from "../utils/cloudinary_helpers" 
 import express, { Request, Response, Router } from "express";
 import multer from 'multer';
-import { Photo } from '../db'
+import { Join_pin_photo, Photo } from '../db'
+import { Pin } from '../db'
 
 //Multer provides us with two storage options: disk and memory storage. In the below snippet, we start by selecting the storage option we want for our Multer instance. We choose the memory storage option because we do not want to store parsed files on our server; instead, we want them temporarily stored on the RAM so that we can quickly upload them to Cloudinary.
 const storage = multer.memoryStorage();
@@ -42,7 +43,6 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
       // latitude,
       // longitude
     })
-    console.log("newPhoto from cloud", newPhoto)
     res.json(cldRes);
   } catch (error) {
     console.log(error);
@@ -58,8 +58,13 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
   console.log(latitude, longitude)
 
     try{
-      const updatedPhoto = await Photo.update({latitude, longitude}, {where: {photoURL}})
-      console.log('updatedPhoto', updatedPhoto)
+      await Photo.update({latitude, longitude}, {where: {photoURL}})
+      const matchedLatLngPin = await Pin.findOne({where: {latitude, longitude}})
+      console.log('matchedPin', matchedLatLngPin)
+      //console.log('matchedPin ID', matchedLatLngPin[0].ownerID)
+
+      // const newRelationship = await Join_pin_photo.create({})
+
     } catch (error) {
       console.log(error);
     }

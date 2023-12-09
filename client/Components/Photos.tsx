@@ -7,11 +7,10 @@ import { arrayBuffer } from 'stream/consumers';
 interface Props {
   lng: any
   lat: any
+  saveCreatedPin: any
 }
 
-
-
-const Upload: React.FC<Props> = ({lng, lat}) => {
+const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
   const [fileInputState, setFileInputState] = useState('');
   const [selectedFile, setSelectedFile] = useState('');
   const [previewSource, setPreviewSource] = useState();
@@ -70,7 +69,7 @@ const Upload: React.FC<Props> = ({lng, lat}) => {
 
   const saveToDb = async () => {
     console.log('inside save', lat, lng)
-
+    saveCreatedPin()
     try{
       const savePic = await axios.put("/api/images/save", {
         options: {
@@ -139,7 +138,7 @@ const Upload: React.FC<Props> = ({lng, lat}) => {
       /> */}
       {previewSource && (
       <img src={previewSource} alt="chosen"
-      style={{height: '400px'}}/>)}
+      style={{height: 'flex', width: 'flex'}}/>)}
     </div>
   );
 }

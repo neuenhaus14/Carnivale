@@ -116,14 +116,15 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
             </Form.Group>
             <Form.Group className="mb-3" controlId="picture spot" >
               <Form.Label>Placeholder for Picture</Form.Label>
-              <Photos lat={lat} lng={lng} />
+              <Photos lat={lat} lng={lng} saveCreatedPin={saveCreatedPin} />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          { isSaved ? <Button variant="danger" onClick={initModal}> Close </Button>
+        <Button variant="danger" onClick={initModal}> Close </Button>
+          {/* { isSaved ? <Button variant="danger" onClick={initModal}> Close </Button>
             : <Button variant="dark" onClick={() => {saveCreatedPin(); setIsSaved(true)} }> Save </Button>
-          }
+          } */}
         </Modal.Footer>
       </Modal>)
       }
