@@ -19,6 +19,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
   const [isPersonal, setIsPersonal] =useState(false);
   const [isFree, setIsFree] =useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [showPhoto, setShowPhoto] = useState(true);
   //const [marker, setMarkers] = useState([markers]);
   
   const urlSearchString = window.location.search.substring(1);
@@ -67,23 +68,42 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
           <Modal.Header closeButton >
             <Modal.Title>Pin Category</Modal.Title>
           </Modal.Header>
+          { showPhoto ? (
+          <div> 
           <Modal.Body>
             <div id="pin-photos">
-              {
-                selectedPin.map((pin: any) => (
-                  <div key={pin.id}>
-                    <p>{pin.firstName} {pin.lastName}</p>
-                    <img src={pin.photoURL} alt="Pin Photo" height="300" width='300'/> 
-                    <p>{pin.description}</p>
-                  </div>  
-                ))
-              }
+                {
+                  selectedPin.map((pin: any) => (
+                    <div key={pin.id}>
+                      <p>{pin.firstName} {pin.lastName}</p>
+                      <img src={pin.photoURL} alt="Pin Photo" height="300" width='300'/> 
+                      <p>{pin.description}</p>
+                    </div>  
+                  ))
+                }
             </div>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="danger" onClick={initModal}> Close </Button>
-            <Button variant="dark "onClick={initModal}> Add Photo </Button>
+            <Button variant="dark "onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
           </Modal.Footer>
+          </div>
+            ) : (
+          <div>
+          <Modal.Body>
+            <Form.Group className="mb-3" controlId="picture spot" >
+              <h1>Take a picture!</h1>
+              <Form.Label>Add a description</Form.Label>
+              <Form.Control as="textarea" rows={1} />
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="danger" onClick={initModal}> Close </Button>
+            <Button variant="dark "onClick={initModal}> Save Photo </Button>
+          </Modal.Footer>
+          </div>
+              )
+            }
         </Modal>
       )
     : 
