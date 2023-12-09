@@ -59,11 +59,19 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
 
     try{
       await Photo.update({latitude, longitude}, {where: {photoURL}})
+      const matchedLatLngPhoto = await Photo.findOne({where: {latitude, longitude}})
       const matchedLatLngPin = await Pin.findOne({where: {latitude, longitude}})
-      console.log('matchedPin', matchedLatLngPin)
-      //console.log('matchedPin ID', matchedLatLngPin[0].ownerID)
+      console.log(matchedLatLngPhoto)
 
-      // const newRelationship = await Join_pin_photo.create({})
+      const matchedPhotoId = matchedLatLngPhoto.dataValues.id
+      const matchedPinId = matchedLatLngPin.dataValues.id
+      console.log('matchedPin ID', matchedPinId)
+      console.log('matchedPhoto ID', matchedPhotoId)
+
+      const newRelationship = await Join_pin_photo.create({ photoId: matchedPhotoId, pinId: matchedPinId})
+      console.log(newRelationship)
+
+      res.status(200).send('you did it!')
 
     } catch (error) {
       console.log(error);
