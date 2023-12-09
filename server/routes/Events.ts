@@ -69,7 +69,6 @@ Events.get('/getEventsInvited/:id', async (req: Request, res: Response) => {
       invitee_userId: id
     }
   })
-  console.log('Here', userEventsInvitedRecords)
   // if user has no events that they're invited to...
   if (userEventsInvitedRecords.length === 0) {
     console.log('No event invitations')
@@ -135,9 +134,10 @@ Events.get('/getPeopleForEvent/:userId-:eventId', async (req: Request, res: Resp
       }
     })
 
+    // map over results to just return the ids of the friends attending
     const response = {
-      eventParticipants,
-      eventInvitees
+      eventParticipants: eventParticipants.map((participationRecord : any) => participationRecord.participant_userId),
+      eventInvitees: eventInvitees.map((inviteRecord: any) => inviteRecord.invitee_userId)
     }
 
     res.status(200).send(response);
@@ -288,10 +288,7 @@ Events.post('/inviteToEvent', async (req: Request, res: Response) => {
       return { eventId, invitee_userId }
     })
     const invitationsResponse = await Join_event_invitee.bulkCreate(invitations);
-
-    console.log('here', invitationsResponse)
     res.status(201).send(invitationsResponse)
-
   } catch (err) {
     console.error("SERVER ERROR: could not POST event invitations", err);
     res.status(500).send(err);

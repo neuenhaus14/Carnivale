@@ -1,7 +1,7 @@
 import React, { ReactPropTypes, useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom";
 import axios from 'axios';
-import EventModal from './EventModal';
+import EventAttendingModal from './EventAttendingModal';
 
 const UserPage = ({ coolThing }: UserPageProps) => {
 
@@ -69,14 +69,14 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   let userFriendsItems = null;
   if (friends.length > 0) {
     userFriendsItems = friends.map((friend: any, index: number) => {
-      return <li key={index}>{friend.firstName} {friend.lastName} <button onClick={() => unfriend(friend.id)}>Bye bye!</button></li>
+      return <li key={index}>{friend.firstName} {friend.lastName} <button onClick={() => unfriend(friend.id)}>Remove from Krewe</button></li>
     })
   }
 
   let requestsMadeItems = null;
   if (friendRequestsMade.length > 0) {
     requestsMadeItems = friendRequestsMade.map((requestee, index: number) => {
-      return <li key={index}>{requestee.firstName} <button onClick={() => cancelFriendRequest(requestee.id)}>Actually, nah...</button></li>
+      return <li key={index}>{requestee.firstName} <button onClick={() => cancelFriendRequest(requestee.id)}>Cancel invite</button></li>
     })
   }
 
@@ -112,6 +112,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
       }
     })
     console.log('friedRequestRecord', friendRequestResponse);
+    setPhoneForFriendRequest('');
     getFriendRequests();
   }
 
@@ -162,8 +163,8 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   console.log('eP', eventsParticipating, 'eI', eventsInvited)
   return (
     <div>
-      <h1>UserPage!!!</h1>
-      <EventModal
+      <h1>UserPage</h1>
+      <EventAttendingModal
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
         setShowModal={setShowModal}
@@ -171,27 +172,50 @@ const UserPage = ({ coolThing }: UserPageProps) => {
         friends={friends}
         userId={userId}
       />
+      <h5> Mon Krewe </h5>
+      {friends.length > 0 ? <ul>{userFriendsItems}</ul> : 'Assemble your krewe below'}
+
+      <input placeholder='Search people by phone' value={phoneForFriendRequest} onChange={handlePhoneInput}></input>
+      <button onClick={requestFriend}>Invite to Krewe</button>
 
 
-      <p> {coolThing} </p>
-      <p> {userId} </p>
+      {
+        // conditional checks for outgoing requests
+        friendRequestsMade.length > 0 &&  
+        <>
+          <h5> Krewe Invites Made </h5>
+          <ul>{requestsMadeItems}</ul>
+        </>
+      }
 
-      <h3> MON KREWE </h3>
-      <ul>{userFriendsItems}</ul>
-      <input placeholder='Gimme their digits' value={phoneForFriendRequest} onChange={handlePhoneInput}></input>
-      <button onClick={requestFriend}>B My fwend</button>
-      <h3> KREWE REQUESTS MADE </h3>
-      <ul>{requestsMadeItems}</ul>
+      {
+        // conditional checks for incoming requests
+        friendRequestsReceived.length > 0 &&
+        <>
+          <h5> Respond to These Invites </h5>
+          <ul>{requestsReceivedItems}</ul>
+        </>
+      }
 
-      <h3> KREWE REQUESTS RECEIVED </h3>
-      <ul>{requestsReceivedItems}</ul>
 
-      <h3> EVENTS ATTENDING</h3>
-      <ul>{eventsParticipatingItems}</ul>
+      {
+        // conditional checks for events you've attending
+        eventsParticipating.length > 0 &&
+        <>
+          <h3> EVENTS ATTENDING</h3>
+          <ul>{eventsParticipatingItems}</ul>
+        </>
+      }
 
-      <h3>EVENTS INVITED</h3>
-      <ul>{eventsInvitedItems}</ul>
 
+      {
+      // conditional checks for events you've invited to
+      eventsInvited.length > 0 &&
+        <>
+          <h3>EVENTS INVITED</h3>
+          <ul>{eventsInvitedItems}</ul>
+        </>
+      }
     </div>
   )
 };

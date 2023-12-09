@@ -1,5 +1,5 @@
 import React from 'react';
-import EventMapComponent from './EventMapComponent';
+import EventAttendingMapComponent from './EventAttendingMapComponent';
 
 
 const EventPage = () => {
@@ -7,7 +7,7 @@ const EventPage = () => {
   return (
     <div>
       <h1>EventPage!</h1>
-      <EventMapComponent />
+      {/* <EventAttendingMapComponent /> */}
     </div>
   
 )
