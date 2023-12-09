@@ -49,7 +49,7 @@ const NavBar = () => {
             UserPage
           </button>
         </span>
-        <span>
+        {/* <span>
           <button
             type="button"
             id="navButton"
@@ -57,7 +57,7 @@ const NavBar = () => {
           >
             Photo
           </button>
-        </span>
+        </span> */}
         <span>
           <button
             onClick={() =>

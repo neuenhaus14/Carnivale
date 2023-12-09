@@ -115,7 +115,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
                 />
             </Form.Group>
             <Form.Group className="mb-3" controlId="picture spot" >
-              <Form.Label>Placeholder for Picture</Form.Label>
+              <Form.Label>Add a picture below!</Form.Label>
               <Photos lat={lat} lng={lng} saveCreatedPin={saveCreatedPin} />
             </Form.Group>
           </Form>
