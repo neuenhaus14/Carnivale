@@ -62,7 +62,8 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
       await Photo.update({latitude, longitude, isThrow, isCostume, ownerId, description}, {where: {photoURL}})
       const matchedLatLngPhoto = await Photo.findOne({where: {latitude, longitude}})
       const matchedLatLngPin = await Pin.findOne({where: {latitude, longitude}})
-      console.log(matchedLatLngPhoto)
+      console.log('matchedLatLngPhoto', matchedLatLngPhoto)
+      console.log('matchedLatLngPin', matchedLatLngPin)
 
       const matchedPhotoId = matchedLatLngPhoto.dataValues.id
       const matchedPinId = matchedLatLngPin.dataValues.id

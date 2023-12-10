@@ -26,8 +26,15 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
   const urlSearchString = window.location.search.substring(1);
   const parsedParams = JSON.parse('{"' + urlSearchString.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
   
+  // const { lng } = parsedParams;
+  // const { lat } = parsedParams;
   const { lng } = parsedParams;
   const { lat } = parsedParams;
+  const  lngRounded = Math.round(lng * 100) / 100;
+  const  latRounded = Math.round(lat * 100) / 100;
+
+  console.log(lngRounded, latRounded)
+
 
   const initModal = () => {
     setShow(!isShow); 
@@ -43,22 +50,25 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
   }
 
   const saveCreatedPin = async () => {
-    try{
-      const { data } = await axios.post(`/api/pins/create-pin/${1}`, {
-        options: {
-          longitude: lng,
-          latitude: lat,
-          isToilet,
-          isFood,
-          isPersonal,
-          isFree,
-        }
-      })
-      console.log('whish! pin sent to database')
-      setMarkers(markers.concat([data]))
-    } catch (err)  {
-      console.error(err)
-    }
+    initModal()
+    if (!isPinSelected){
+      try{
+        const { data } = await axios.post(`/api/pins/create-pin/${1}`, {
+          options: {
+            longitude: lngRounded,
+            latitude: latRounded,
+            isToilet,
+            isFood,
+            isPersonal,
+            isFree,
+          }
+        })
+        console.log('whish! pin sent to database')
+        setMarkers(markers.concat([data]))
+      } catch (err)  {
+        console.error(err)
+      }
+    } 
   }
   
 
@@ -79,7 +89,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
                 {
                   selectedPin.map((pin: any) => (
                     <div key={pin.id}>
-                      <p><b>Submitted by:</b>{pin.firstName} {pin.lastName}</p>
+                      <p><b>Submitted by: </b>{pin.firstName} {pin.lastName}</p>
                       <img src={pin.photoURL} alt="Pin Photo" height="300" width='300'/> 
                       <p>{pin.description}</p>
                     </div>  
@@ -96,14 +106,15 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
           <div>
           <Modal.Body>
             <Form.Group className="mb-3" controlId="picture spot" >
-              <h1>Take a picture!</h1>
+            <Photos lat={latRounded} lng={lngRounded} saveCreatedPin={saveCreatedPin} />
+              {/* <h1>Take a picture!</h1>
               <Form.Label>Add a description</Form.Label>
-              <Form.Control as="textarea" rows={1} />
+              <Form.Control as="textarea" rows={1} /> */}
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="danger" onClick={initModal}> Close </Button>
-            <Button variant="dark "onClick={initModal}> Save Photo </Button>
+            {/* <Button variant="dark "onClick={initModal}> Save Photo </Button> */}
           </Modal.Footer>
           </div>
               )
@@ -138,8 +149,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
                 />
             </Form.Group>
             <Form.Group className="mb-3" controlId="picture spot" >
-              <Form.Label>Add a picture below!</Form.Label>
-              <Photos lat={lat} lng={lng} saveCreatedPin={saveCreatedPin} />
+              <Photos lat={latRounded} lng={lngRounded} saveCreatedPin={saveCreatedPin} />
             </Form.Group>
           </Form>
         </Modal.Body>

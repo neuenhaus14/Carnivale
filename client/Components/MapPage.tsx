@@ -52,9 +52,11 @@ const MapPage = () => {
   const clickedMarker = async (e: any) => {
     const currMarkerLng = e._lngLat.lng;
     const currMarkerLat = e._lngLat.lat;
+    const  lngRounded = Math.round(currMarkerLng * 100) / 100;
+    const  latRounded = Math.round(currMarkerLat * 100) / 100;
 
     try {
-      const { data } = await axios.get(`/api/pins/get-clicked-marker/${currMarkerLng}/${currMarkerLat}`)
+      const { data } = await axios.get(`/api/pins/get-clicked-marker/${lngRounded}/${latRounded}`)
       console.log('clickedMarkerRes', data);
       setSelectedPin(data);
       setIsPinSelected(true);

@@ -32,6 +32,7 @@ Pins.post('/create-pin/:ownerId', async(req: Request, res: Response) => {
 Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) => {
   const  {lng} = req.params;
   const  {lat}  = req.params;
+  console.log(lng, lat)
 
   try {
     const clickedPin = await Pin.findOne({where: {longitude: lng, latitude: lat}});
