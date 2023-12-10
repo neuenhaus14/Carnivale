@@ -17,6 +17,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [res, setRes] = useState({});
   const [file, setFile] = useState(null);
+  const [description, setDescription] = useState<string>('');
 // type loading = { loading: boolean; setLoading: Dispatch<SetStateAction<boolean>>; file: boolean; setFile: Dispatch<boolean>; }
   // const Form: React.FC<Props> = ({
   //   loading,
@@ -28,6 +29,11 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
   //   loading: boolean;
   //   setLoading?: (value: boolean | (loading: boolean) => boolean) => void;
   // }
+  const handleDescInput = (e:any) => {
+    const desc = e.target.value;
+    setDescription(desc);
+    //console.log('description', desc, description)
+  }
 
   const handleSelectFile = (e: any) => {
     //console.log('handleSelect', e)
@@ -67,14 +73,18 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
   };
   console.log('outside save', lat, lng)
 
+  //considering this put request as part of our post request due to the multer middleware
   const saveToDb = async () => {
     console.log('inside save', lat, lng)
     saveCreatedPin()
     try{
-      const savePic = await axios.put("/api/images/save", {
+      const savePic = await axios.put(`/api/images/save/${1}`, {
         options: {
           latitude: lat,
-          longitude: lng
+          longitude: lng,
+          isThrow: false,
+          isCostume: false,
+          description
         }
       });
     }catch (error) {
@@ -83,62 +93,28 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
   }
 
   return (
- 
-    // <h1>Upload</h1>
-    // <form onSubmit={handleSubmitFile}
-    // className="form">
-
     <div className="App">
-      <label htmlFor="file" className="btn-grey">
-        {" "}
-        select file
-      </label>
-      <input
+      {previewSource && (
+      <img src={previewSource} alt="chosen"
+      style={{height: '300'}}/>)}
+       <input
         id="file"
         type="file"
         name="image"
-       //onChange={previewSource}
-    //     value={fileInputState}
-    //     className="form-input" />
-    //   <button className="btn" type="submit">Submit</button>
-    // </form>
-    
-
+        placeholder="Please add a description"
         onChange={handleSelectFile}
         multiple={false}
       />
-      {file && <p className="file_name">{file.name}</p>}
-      
-      {/* <code>
-        {Object.keys(res).map(
-          (key) =>
-            key && (
-              <p className="output-item" key={key}>
-                <span>{key}:</span>
-                <span>
-                  {typeof res[key] === "object" ? "object" : res[key]}
-                </span>
-              </p>
-            )
-        )}
-      </code> */}
-      {file && (
         <>
+        <input
+        id="desc"
+        type="desc"
+        name="descinput"
+        onChange={handleDescInput}/>
           <button className="btn-green" onClick={uploadFile}>
-            {loading ? "uploading..." : "upload to Cloudinary"}
+            {loading ? "Saving..." : "Save"}
           </button>
         </>
-      )}
-      {/* <Photo 
-      loading={loading} 
-      setLoading={setLoading}
-      file={file}
-      setFile={setFile}
-      
-      /> */}
-      {previewSource && (
-      <img src={previewSource} alt="chosen"
-      style={{height: 'flex', width: 'flex'}}/>)}
     </div>
   );
 }
