@@ -55,23 +55,21 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
 
  ImageRouter.put('/save/:ownerId', async (req: Request, res: Response) => {
   const {latitude, longitude, isThrow, isCostume, description} = req.body.options
-  console.log(latitude, longitude)
   const { ownerId } = req.params
 
     try{
       await Photo.update({latitude, longitude, isThrow, isCostume, ownerId, description}, {where: {photoURL}})
-      const matchedLatLngPhoto = await Photo.findOne({where: {latitude, longitude}})
+      const matchedLatLngPhotos = await Photo.findAll({where: {latitude, longitude}})
       const matchedLatLngPin = await Pin.findOne({where: {latitude, longitude}})
-      console.log('matchedLatLngPhoto', matchedLatLngPhoto)
-      console.log('matchedLatLngPin', matchedLatLngPin)
 
-      const matchedPhotoId = matchedLatLngPhoto.dataValues.id
-      const matchedPinId = matchedLatLngPin.dataValues.id
-      console.log('matchedPin ID', matchedPinId)
-      console.log('matchedPhoto ID', matchedPhotoId)
-
-      const newRelationship = await Join_pin_photo.create({ photoId: matchedPhotoId, pinId: matchedPinId})
-      console.log(newRelationship)
+      await Promise.all(matchedLatLngPhotos.map(async (photo) => {
+        try {
+          const matchedPinId = matchedLatLngPin.dataValues.id
+          const newRelationship = await Join_pin_photo.create({ photoId: photo.dataValues.id, pinId: matchedPinId})
+        } catch (err) {
+          console.error(err, 'something went wrong');
+        }
+      }))
 
       res.status(200).send('you did it!')
 

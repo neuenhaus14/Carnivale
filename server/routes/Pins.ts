@@ -58,7 +58,6 @@ Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) =>
           if (userObj) {
             photo.dataValues.firstName = userObj.dataValues.firstName
             photo.dataValues.lastName = userObj.dataValues.lastName
-            console.log('in map', truePinCategory)
             photo.dataValues.pinCategory = truePinCategory
           }
         } catch (err) {
@@ -66,8 +65,6 @@ Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) =>
         }
       
       }))
-
-   // console.log('bananananana', pinPhotos)
 
     res.status(200).send(pinPhotos)
     
