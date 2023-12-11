@@ -19,17 +19,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
   const [res, setRes] = useState({});
   const [file, setFile] = useState(null);
   const [description, setDescription] = useState<string>('');
-// type loading = { loading: boolean; setLoading: Dispatch<SetStateAction<boolean>>; file: boolean; setFile: Dispatch<boolean>; }
-  // const Form: React.FC<Props> = ({
-  //   loading,
-  //   setLoading,
-  //   file,
-  //   setFile,
-  // })
-  // interface TLoad {
-  //   loading: boolean;
-  //   setLoading?: (value: boolean | (loading: boolean) => boolean) => void;
-  // }
+
   const handleDescInput = (e:any) => {
     const desc = e.target.value;
     setDescription(desc);
@@ -57,15 +47,15 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
     setLoading(true);
     e.preventDefault();
     const data = new FormData();
-    //console.log('file', file);
+    console.log('file', file);
     data.set("sample_file", file);
     //console.log('data', data)
     try {
       const res = await axios.post("/api/images/upload", data);
       
-      //console.log('front end data', data)
+      console.log('front end data',  res, data)
       //setRes(res.data);
-      saveToDb()
+      savePinToDb()
     } catch (error) {
       console.log('upload error', error);
     } finally {
@@ -84,6 +74,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
           longitude: lng,
           isThrow: false,
           isCostume: false,
+          isPin: true,
           description
         }
       });
