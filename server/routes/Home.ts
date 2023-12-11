@@ -18,7 +18,7 @@ HomeRoutes.post('/user', async (req: Request, res: Response) => {
 HomeRoutes.get('/posts', async (req: Request, res: Response) => {
   try {
     const comments = await Comment.findAll();
-    const photos = await Photo.findAll({where: {[Op.and]: [{isCostume: false}, {isThrow: false}]}});
+    const photos = await Photo.findAll({where: {[Op.and]: [{isCostume: false}, {isThrow: false}, {isPin: false}]}});
     const posts = comments.concat(photos);
     res.status(200)
       .send(posts);
