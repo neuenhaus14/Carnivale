@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-
+import HomeModal from "./HomeModal";
 import WeatherCard from "./WeatherCard";
 import PostCard from "./PostCard";
 
@@ -24,6 +24,7 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
   const [comment, setComment] = useState("");
   const [userId, setUserId] = useState(null);
   const [posts, setPosts] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const [key, setKey] = useState("posts");
 
   useEffect(() => {
@@ -37,9 +38,13 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
     } catch (err) {
       console.error(err);
     }
-  };
+  }
+  const modalTrigger = () => {
+   setShowModal(true)
+  }
 
-  const handleSubmit = async () => {
+
+  const handleSubmit = async() => {
     try {
       axios.post(`/api/home/${userId}`, { comment });
     } catch (err) {
@@ -76,6 +81,15 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
 
       <Row>
         <WeatherCard />
+      <button onClick={modalTrigger}>
+        Upload a pic!
+      </button>
+      { showModal ?
+      <HomeModal
+        setShowModal={setShowModal}
+       />
+      : null  
+    }
       </Row>
 
       <Row>
