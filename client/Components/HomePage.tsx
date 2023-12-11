@@ -1,5 +1,14 @@
-import React, { useState, useEffect} from "react";
-import { Card, Form, Button } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  Form,
+  Button,
+  Container,
+  Row,
+  Col,
+  Tab,
+  Tabs,
+} from "react-bootstrap";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 
@@ -11,73 +20,122 @@ const HomePage = () => {
   const [comment, setComment] = useState("");
   const [userId, setUserId] = useState(null);
   const [posts, setPosts] = useState(null);
+  const [key, setKey] = useState("posts");
 
-  const getUser = async() => {
-    try {      
+  const getUser = async () => {
+    try {
       const { data } = await axios.post(`api/home/user/`, { user });
       setUserId(data[0].id);
-    } catch (err){
+    } catch (err) {
       console.error(err);
     }
-  }
+  };
 
-
-
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
     try {
       axios.post(`/api/home/${userId}`, { comment });
-    } catch (err){
+    } catch (err) {
       console.error(err);
     } finally {
-      getPosts();
+      getPosts(key);
     }
-  }
+  };
 
-  const getPosts = async () => {
+  const getPosts = async (e) => {
     try {
-      const { data } = await axios.get(`/api/home/posts`);
+      const { data } = await axios.get(`/api/home/${e}`);
       setPosts(data);
-    } catch (err){
+    } catch (err) {
       console.error(err);
     }
-  }
+  };
+
 
   useEffect(() => {
     getUser();
-    getPosts();
+    getPosts(key);
     const interval = setInterval(() => {
-      getPosts();
-      console.log('fetch');
+      getPosts(key);
+      console.log("fetch");
     }, 5000);
-    return () => clearInterval(interval)
-  }, [])
-
+    return () => clearInterval(interval);
+  }, [key]);
 
   return (
-    <div>
-      <h1>HomePage!</h1>
+    <Container>
+      <Row>
+        <h1>HomePage!</h1>
+      </Row>
 
-      <WeatherCard />
-      {
-        posts
-        ? posts.map((item: any, index: number) => (
-          <PostCard key={`${item.id} + ${index}`} post={item}/>
-        ))
-        : ''
-      }
-      <Form>
-        <Form.Group>
-          <Form.Label>COMMENT</Form.Label>
-          <Form.Control onChange={(e) => setComment(e.target.value)} />
-          <Button
-            variant="primary"
-            onClick={() => handleSubmit()}
+      <Row>
+        <WeatherCard />
+      </Row>
+
+      <Row>
+        <Tabs
+          activeKey={key}
+          onSelect={(k) => {
+            setKey(k);
+            getPosts(k);
+          }}
+        >
+          <Tab
+            eventKey="posts"
+            title="All"
           >
-            SEND!!!
-          </Button>
-        </Form.Group>
-      </Form>
-    </div>
+            {posts
+              ? posts.map((item: any, index: number) => (
+                  <PostCard
+                    key={`${item.id} + ${index}`}
+                    post={item}
+                  />
+                ))
+              : ""}
+          </Tab>
+          <Tab
+            eventKey="costumes"
+            title="Costumes"
+          >
+            {posts
+              ? posts.map((item: any, index: number) => (
+                  <PostCard
+                    key={`${item.id} + ${index}`}
+                    post={item}
+                  />
+                ))
+              : ""}
+          </Tab>
+          <Tab
+            eventKey="throws"
+            title="Throws"
+          >
+            {posts
+              ? posts.map((item: any, index: number) => (
+                  <PostCard
+                    key={`${item.id} + ${index}`}
+                    post={item}
+                  />
+                ))
+              : ""}
+          </Tab>
+        </Tabs>
+      </Row>
+
+      <Row>
+        <Form>
+          <Form.Group>
+            <Form.Label>COMMENT</Form.Label>
+            <Form.Control onChange={(e) => setComment(e.target.value)} />
+            <Button
+              variant="primary"
+              onClick={() => handleSubmit()}
+            >
+              SEND!!!
+            </Button>
+          </Form.Group>
+        </Form>
+      </Row>
+    </Container>
   );
 };
 
