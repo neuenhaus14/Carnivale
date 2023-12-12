@@ -83,27 +83,27 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
 /////////////////////////
 // Uploads an image file
 /////////////////////////
-const uploadImage = async (imagePath: string) => {
+// const uploadImage = async (imagePath: string) => {
 
-  // Use the uploaded file's name as the asset's public ID and
-  // allow overwriting the asset with new versions
-  const options = {
-    use_filename: true,
-    unique_filename: false,
-    overwrite: true,
-    folder : "Carnivale"
-  };
+//   // Use the uploaded file's name as the asset's public ID and
+//   // allow overwriting the asset with new versions
+//   const options = {
+//     use_filename: true,
+//     unique_filename: false,
+//     overwrite: true,
+//     folder : "Carnivale"
+//   };
 
-  try {
-    // Upload the image
-    const result = await cloudinary.uploader.upload(imagePath,
-       options);
-    //console.log(result);
-    return result.public_id;
-  } catch (error) {
-    console.error('upload image', error);
-  }
-};
+//   try {
+//     // Upload the image
+//     const result = await cloudinary.uploader.upload(imagePath,
+//        options);
+//     //console.log(result);
+//     return result.public_id;
+//   } catch (error) {
+//     console.error('upload image', error);
+//   }
+// };
 
 
 export const config = {

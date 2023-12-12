@@ -135,4 +135,17 @@ HomeRoutes.post('/:ownerId', async (req: Request, res: Response) => {
   }
 });
 
+// HomeRoutes.post('/create-post/:ownerId', async(req: Request, res: Response) => {
+//   const { ownerId } = req.params
+//   const {longitude, latitude, isFree, isToilet, isFood, isPersonal} = req.body.options
+//   try {
+//     const result = await HomeRoutes.create({ longitude, latitude, isFree, isToilet, isFood, isPersonal, ownerId })
+//     //console.log(result)
+//     res.status(200).send(result)
+//   } catch (err) {
+//     console.error('SERVER ERROR: could not POST pin', err);
+//     res.status(500).send(err);
+//   }
+// })
+
 export default HomeRoutes;
