@@ -111,7 +111,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
     } catch (err)  {
       console.error(err);
     }
-
   };
 
 
