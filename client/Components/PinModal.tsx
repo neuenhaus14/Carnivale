@@ -26,19 +26,11 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
   const urlSearchString = window.location.search.substring(1);
   const parsedParams = JSON.parse('{"' + urlSearchString.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
   
-  // const { lng } = parsedParams;
-  // const { lat } = parsedParams;
   const { lng } = parsedParams;
   const { lat } = parsedParams;
-  // const  lngRounded = Math.round(lng * 10000) / 10000;
-  // const  latRounded = Math.round(lat * 10000) / 10000;
-  // console.log(lng, lat)
+
   const  lngRounded = lng
   const  latRounded = lat
-
-  console.log(lng, lat)
-  console.log(lngRounded, latRounded)
-
 
   const initModal = () => {
     setShow(!isShow); 
@@ -60,8 +52,8 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
       try{
         const { data } = await axios.post(`/api/pins/create-pin/${1}`, {
           options: {
-            longitude: lngRounded,
-            latitude: latRounded,
+            longitude: lng,
+            latitude: lat,
             isToilet,
             isFood,
             isPersonal,
@@ -83,9 +75,10 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
     ? (
         <Modal show={isShow} onHide={initModal}>
           <Modal.Header closeButton >
-            { selectedPin.map((pin: any) => (
+            {/* { selectedPin.map((pin: any) => (
             <Modal.Title key={pin.id}>{pin.pinCategory.slice(2)} Pins</Modal.Title>
-            ))}
+            ))} */}
+            <Modal.Title> {selectedPin[0].pinCategory.slice(2)} Pins</Modal.Title>
           </Modal.Header>
           { showPhoto ? (
           <div> 
@@ -152,7 +145,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
                 />
             </Form.Group>
             <Form.Group className="mb-3" controlId="picture spot" >
-              <Photos lat={latRounded} lng={lngRounded} saveCreatedPin={saveCreatedPin} />
+              <Photos lat={lat} lng={lng} saveCreatedPin={saveCreatedPin} />
             </Form.Group>
           </Form>
         </Modal.Body>
