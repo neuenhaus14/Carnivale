@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Button } from "react-bootstrap";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import axios from "axios";
+
+import ShareModal from "./ShareModal";
 
 dayjs.extend(relativeTime);
 
@@ -10,17 +12,7 @@ const PostCard = (props: { post: any, userId: number }) => {
   const { post, userId } = props;
   const [owner, setOwner] = useState("");
 
-  const sharePost = async (share: string) => {
-    try {
-      await axios.post(`api/home/share/${share}`, {
-        recipient_userId: 1,
-        sender_userId: userId,
-        id: post.id,
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
+
 
   const getOwner = async () => {
     try {
@@ -31,7 +23,10 @@ const PostCard = (props: { post: any, userId: number }) => {
       console.error(err);
     }
   };
-  getOwner();
+
+  useEffect(() => {
+    getOwner();
+  }, [])
 
   return (
     <Card>
@@ -41,12 +36,7 @@ const PostCard = (props: { post: any, userId: number }) => {
             {post.comment} - {owner}:{" "}
             {dayjs(post.createdAt.toString()).fromNow()}
           </Card.Text>
-          <Button
-                variant="error"
-                onClick={() => sharePost('comment')}
-              >
-                SEND!!!
-              </Button>
+          <ShareModal post={post} userId={userId} postType={'comment'}/>
         </Card.Body>
       ) : (
         <Card.Body>
@@ -58,12 +48,7 @@ const PostCard = (props: { post: any, userId: number }) => {
             {post.description} - {owner}:{" "}
             {dayjs(post.createdAt.toString()).fromNow()}
           </Card.Text>
-          <Button
-                variant="error"
-                onClick={() => sharePost('photo')}
-              >
-                SEND!!!
-              </Button>
+          <ShareModal post={post} userId={userId} postType={'photo'}/>
         </Card.Body>
       )}
     </Card>

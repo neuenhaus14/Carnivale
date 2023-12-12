@@ -123,6 +123,7 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
                   <PostCard
                     key={`${item.id} + ${index}`}
                     post={item}
+                    userId={userId}
                   />
                 ))
               : ""}
