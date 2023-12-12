@@ -54,11 +54,11 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
 
 
  ImageRouter.put('/save/:ownerId', async (req: Request, res: Response) => {
-  const {latitude, longitude, isThrow, isCostume, description} = req.body.options
+  const {latitude, longitude, isThrow, isPin, isCostume, description} = req.body.options
   const { ownerId } = req.params
 
     try{
-      await Photo.update({latitude, longitude, isThrow, isCostume, ownerId, description}, {where: {photoURL}})
+      await Photo.update({latitude, longitude, isThrow, isPin, isCostume, ownerId, description}, {where: {photoURL}})
       const matchedLatLngPhotos = await Photo.findAll({where: {latitude, longitude}})
       const matchedLatLngPin = await Pin.findOne({where: {latitude, longitude}})
 

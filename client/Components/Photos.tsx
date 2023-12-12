@@ -9,9 +9,11 @@ interface Props {
   lng: any
   lat: any
   saveCreatedPin: any
+  latPost: any
+  lngPost: any
 }
 
-const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
+const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost}) => {
   const [fileInputState, setFileInputState] = useState('');
   const [selectedFile, setSelectedFile] = useState('');
   const [previewSource, setPreviewSource] = useState();
@@ -64,7 +66,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
       const res = await axios.post("/api/images/upload", data);
       //console.log('front end data', data)
       //setRes(res.data);
-      savePinToDb()
+      saveToDb()
     } catch (error) {
       console.log('upload error', error);
     } finally {
@@ -74,12 +76,12 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
 
 
   //considering this put request as part of our post request due to the multer middleware
-  const savePinToDb = async () => {
+  const saveToDb = async () => {
     //console.log('inside save', lat, lng)
     if (saveCreatedPin) {
       saveCreatedPin()
     try{
-      const savePic = await axios.put(`/api/images/save/${1}`, {
+       await axios.put(`/api/images/save/${1}`, {
         options: {
           latitude: lat,
           longitude: lng,
@@ -93,27 +95,25 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
       console.log('upload error', error);
     }
   } 
-  // else { 
-  //   savePostToDb()
-  //   try{
-  //     const savePic = await axios.put(`/api/images/save/${1}`, {
-  //       options: {
-  //         latitude: lat,
-  //         longitude: lng,
-  //         isThrow: false,
-  //         isCostume: false,
-  //         isPin: true,
-  //         description
-  //       }
-  //     });
-  //   } catch (error) {
-  //     console.log('upload error', error);
-  //   }
-  // }
-}
-  const savePostToDb = async () => {
-
+  else { 
+    //savePostToDb()
+    try{
+      const savePic = await axios.put(`/api/images/save/${1}`, {
+        options: {
+          latitude: latPost,
+          longitude: lngPost,
+          isThrow: false,
+          isCostume: true,
+          isPin: false,
+          description
+        }
+      });
+    } catch (error) {
+      console.log('upload error', error);
+    }
   }
+}
+ 
 
   return (
     <div className="App">
