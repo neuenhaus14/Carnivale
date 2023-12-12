@@ -3,6 +3,43 @@ import { User, Comment, Photo } from '../db';
 import { Op } from 'sequelize';
 const HomeRoutes = Router();
 
+HomeRoutes.get('/post/:id', async (req: Request, res: Response) => {
+  const {id} = req.params;
+  try {
+    const owner = await User.findByPk(id);
+    res.status(200)
+      .send(owner);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+HomeRoutes.get('/photo/:id', async (req: Request, res: Response) => {
+  const {id} = req.params;
+  try {
+    const owner = await User.findByPk(id);
+    res.status(200)
+      .send(owner);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+HomeRoutes.get('/photo/:id', async (req: Request, res: Response) => {
+  const {id} = req.params;
+  try {
+    const owner = await User.findByPk(id);
+    res.status(200)
+      .send(owner);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+
 HomeRoutes.post('/user', async (req: Request, res: Response) => {
   const { user } = req.body;
   try {
