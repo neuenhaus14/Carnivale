@@ -6,9 +6,21 @@ import axios from "axios";
 
 dayjs.extend(relativeTime);
 
-const PostCard = (props: { post: any }) => {
-  const { post } = props;
+const PostCard = (props: { post: any, userId: number }) => {
+  const { post, userId } = props;
   const [owner, setOwner] = useState("");
+
+  const sharePost = async (share: string) => {
+    try {
+      await axios.post(`api/home/share/${share}`, {
+        recipient_userId: 1,
+        sender_userId: userId,
+        id: post.id,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const getOwner = async () => {
     try {
@@ -22,16 +34,22 @@ const PostCard = (props: { post: any }) => {
   getOwner();
 
   return (
-    <div>
+    <Card>
       {post.comment ? (
-        <Card>
+        <Card.Body>
           <Card.Text>
             {post.comment} - {owner}:{" "}
             {dayjs(post.createdAt.toString()).fromNow()}
           </Card.Text>
-        </Card>
+          <Button
+                variant="error"
+                onClick={() => sharePost('comment')}
+              >
+                SEND!!!
+              </Button>
+        </Card.Body>
       ) : (
-        <Card>
+        <Card.Body>
           <Card.Img
             variant="top"
             src={post.photoURL}
@@ -40,9 +58,15 @@ const PostCard = (props: { post: any }) => {
             {post.description} - {owner}:{" "}
             {dayjs(post.createdAt.toString()).fromNow()}
           </Card.Text>
-        </Card>
+          <Button
+                variant="error"
+                onClick={() => sharePost('photo')}
+              >
+                SEND!!!
+              </Button>
+        </Card.Body>
       )}
-    </div>
+    </Card>
   );
 };
 
