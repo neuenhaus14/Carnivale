@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLoaderData} from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react';
 import ProtectedRoute from './ProtectedRoutes'
@@ -13,15 +13,35 @@ import MainForum from './MainForum';
 import Costume from './Costume';
 import EventPage from './EventPage';
 import NavBar from './NavBar';
-import Photos from './Photos';
 import Loading from './Loading';
 
-//import ProtectedRoutes from './ProtectedRoutes'
-
-// NOTE: mainforum, costume, and event page were supposed to be babies of their parent elements, 
-// cant figure out how to route to them tho.... 
 
 const App = () => {
+
+  const [lng, setLng] = useState(0)
+  const [lat, setLat] = useState(0)
+
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      return navigator.geolocation.getCurrentPosition(showPosition)
+    } else {
+      console.log("Geolocation is not supported by this browser")
+      return null
+    }
+  }
+  
+  const showPosition = (position: any) => {
+    //console.log(position)
+    setLng(position.coords.longitude);
+    setLat(position.coords.latitude);
+  }
+
+  console.log('user coords from app', lng, lat)
+
+  // useEffect(() => {
+  //   getLocation();
+  // }, []);
+
 
   // const { user } = useAuth0();
 
@@ -48,8 +68,8 @@ const App = () => {
     createRoutesFromElements(
       <Route>
           <Route path='/' element={<Login />} />
-        <Route element={<ProtectedRoute />}> 
-          <Route path='/homepage' element={<div><HomePage /> <NavBar /></div>} />
+        {/* <Route element={<ProtectedRoute />}>  */}
+          <Route path='/homepage' element={<div><HomePage getLocation={getLocation}/> <NavBar /></div>}  />
           <Route path='/mainforum' element={<div><MainForum /> <NavBar /></div>} />
           <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
           <Route path='/mappage' element={<div><MapPage /> <NavBar /></div>}/>
@@ -57,7 +77,7 @@ const App = () => {
           <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
           <Route path='/userpage' element={<div><UserPage coolThing = 'string1'/> <NavBar /></div>} />
           {/* <Route path='/photo' element={<div><Photos /> <NavBar /></div>} /> */}
-        </Route> 
+        {/* </Route>  */}
       </Route>,
     ),
   );
