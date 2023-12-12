@@ -9,6 +9,7 @@ interface Props {
   markers: any
   setMarkers: any 
   isPinSelected: boolean
+  isPinSelected: boolean
   setIsPinSelected: any
   selectedPin: any
 }
