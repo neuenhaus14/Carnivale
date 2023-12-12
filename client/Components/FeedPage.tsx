@@ -55,6 +55,7 @@ const FeedPage = () => {
     {}
   );
 
+  const userId = 1;
   useEffect(() => {
     axios
       .get("/api/feed/shared-posts/1")
@@ -179,17 +180,17 @@ const FeedPage = () => {
       await axios.post(
         `/api/feed/${
           type === "comment"
-            ? "upvote-comment"
+            ? `upvote-comment/${userId}/${postId}`
             : type === "pin"
-            ? "upvote-pin"
-            : "upvote-photo"
-        }/${postId}`
+            ? `upvote-pin/${userId}/${postId}`
+            : `upvote-photo/${userId}/${postId}`
+        }`
       );
-
       await fetchPostDetails(postId, type);
+
       console.log(`Upvoted ${type} with ID ${postId}`);
     } catch (error) {
-      console.error(`Error upvoting ${type} with ID ${postId}:`, error);
+      console.log(`Already upvoted ${type} with ID ${postId}`);
     }
   };
 
@@ -198,20 +199,19 @@ const FeedPage = () => {
       await axios.post(
         `/api/feed/${
           type === "comment"
-            ? "downvote-comment"
+            ? `downvote-comment/${userId}/${postId}`
             : type === "pin"
-            ? "downvote-pin"
-            : "downvote-photo"
-        }/${postId}`
+            ? `downvote-pin/${userId}/${postId}`
+            : `downvote-photo/${userId}/${postId}`
+        }`
       );
-
       await fetchPostDetails(postId, type);
+
       console.log(`Downvoted ${type} with ID ${postId}`);
     } catch (error) {
-      console.error(`Error downvoting ${type} with ID ${postId}:`, error);
+      console.log(`Already downvoted ${type} with ID ${postId}`);
     }
   };
-
   const fetchPostDetails = async (postId: number, type: string) => {
     try {
       if (type === "comment") {
@@ -244,6 +244,18 @@ const FeedPage = () => {
         `Error fetching updated details for ${type} with ID ${postId}:`,
         error
       );
+    }
+  };
+
+  const handleDelete = async (postId: number) => {
+    try {
+      await axios.delete(`/api/feed/shared-posts/${postId}`);
+
+      setSharedPosts((prevPosts) =>
+        prevPosts.filter((post) => post.id !== postId)
+      );
+    } catch (error) {
+      console.error(`Error deleting post with ID ${postId}:`, error);
     }
   };
 
@@ -299,6 +311,9 @@ const FeedPage = () => {
                     >
                       Downvote Comment
                     </button>
+                    <button onClick={() => handleDelete(post.id)}>
+                      Delete Post
+                    </button>
                   </div>
                 )}
                 {post.shared_pinId && (
@@ -328,6 +343,9 @@ const FeedPage = () => {
                       onClick={() => handleDownvote(post.shared_pinId, "pin")}
                     >
                       Downvote Pin
+                    </button>
+                    <button onClick={() => handleDelete(post.id)}>
+                      Delete Post
                     </button>
                   </div>
                 )}
@@ -365,6 +383,9 @@ const FeedPage = () => {
                       }
                     >
                       Downvote Photo
+                    </button>
+                    <button onClick={() => handleDelete(post.id)}>
+                      Delete Post
                     </button>
                   </div>
                 )}
