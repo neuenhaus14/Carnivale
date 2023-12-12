@@ -206,6 +206,7 @@ const Photo = db.define(
     photoURL: DataTypes.STRING,
     isCostume: DataTypes.BOOLEAN,
     isThrow: DataTypes.BOOLEAN,
+    isPin: DataTypes.BOOLEAN,
     upvotes: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
@@ -273,8 +274,38 @@ const Join_event_invitee = db.define(
   { timestamps: true }
 );
 
-// may need to alter schema to indicate both that a request
-// is pending/complete and that a request is confirmed/denied
+const Join_user_event = db.define(
+  "join_user_event",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    eventId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Event,
+        key: "id"
+      }
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: User,
+        key: "id"
+      }
+    },
+    isAttending: {
+      type: DataTypes.BOOLEAN,
+
+    },
+  },
+  { timestamps: true }
+)
+
+
+
 const Join_friend = db.define(
   "join_friend",
   {
@@ -471,4 +502,5 @@ export {
   Join_pin_vote,
   Join_photo_vote,
   Join_shared_post,
+  Join_user_event,
 };

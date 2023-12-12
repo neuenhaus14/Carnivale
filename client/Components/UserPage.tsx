@@ -1,7 +1,7 @@
 import React, { ReactPropTypes, useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom";
 import axios from 'axios';
-import EventAttendingModal from './EventAttendingModal';
+import EventBasicModal from './EventBasicModal';
 
 const UserPage = ({ coolThing }: UserPageProps) => {
 
@@ -15,7 +15,8 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   const [phoneForFriendRequest, setPhoneForFriendRequest] = useState('');
 
   const [selectedEvent, setSelectedEvent] = useState({})
-  const [showModal, setShowModal] = useState(false);
+  const [isUserAttending, setIsUserAttending] = useState(false) // this gets passed to basic modal to expose invite functionality
+  const [showBasicModal, setShowBasicModal] = useState(false);
 
   async function getFriends() {
     try {
@@ -90,14 +91,15 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   let eventsParticipatingItems = null;
   if (eventsParticipating.length > 0) {
     eventsParticipatingItems = eventsParticipating.map((event: any, index: number) => {
-      return <li key={index} onClick={() => { setShowModal(true); setSelectedEvent(event) }}>{event.name} {event.description}</li>
+      return <li key={index} onClick={() => { setIsUserAttending(true); setShowBasicModal(true); setSelectedEvent(event) }}>{event.name} {event.description}</li>
     })
   }
 
   let eventsInvitedItems = null;
   if (eventsInvited.length > 0) {
     eventsInvitedItems = eventsInvited.map((event: any, index: number) => {
-      return <li key={index}>{event.name} {event.description} <button onClick={() => answerEventInvitation(event.id, true)}>Yeah!</button><button onClick={() => answerEventInvitation(event.id, false)}>Nah...</button></li>
+      return <li key={index}>{event.name} {event.description} 
+      <button onClick={() => answerEventInvitation(event.id, true)}>Yeah!</button><button onClick={() => answerEventInvitation(event.id, false)}>Nah...</button></li>
     })
   }
 
@@ -141,6 +143,8 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     getFriends();
   }
 
+
+
   // MOVE THIS TO EVENT MODAL
   async function answerEventInvitation(eventId: number, isGoing: boolean) {
     const eventInviteResponse = await axios.post('/api/events/answerEventInvite', {
@@ -155,6 +159,8 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     getEventsParticipating();
   }
 
+
+
   function handlePhoneInput(e: any) {
     setPhoneForFriendRequest(e.target.value);
   }
@@ -164,13 +170,14 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   return (
     <div>
       <h1>UserPage</h1>
-      <EventAttendingModal
+      <EventBasicModal
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
-        setShowModal={setShowModal}
-        showModal={showModal}
+        setShowAttendingModal={setShowBasicModal}
+        showBasicModal={showBasicModal}
         friends={friends}
         userId={userId}
+        isUserAttending={isUserAttending}
       />
       <h5> Mon Krewe </h5>
       {friends.length > 0 ? <ul>{userFriendsItems}</ul> : 'Assemble your krewe below'}

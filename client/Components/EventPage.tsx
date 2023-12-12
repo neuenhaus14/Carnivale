@@ -1,5 +1,5 @@
 import React from 'react';
-import EventAttendingMapComponent from './EventAttendingMapComponent';
+import EventAttendingMapComponent from './EventBasicMapComponent';
 
 
 const EventPage = () => {

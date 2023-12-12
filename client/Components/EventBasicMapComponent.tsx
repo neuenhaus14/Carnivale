@@ -7,6 +7,10 @@ interface EventAttendingMapComponentProps {
   latitude: number
 }
 
+// This map component is for displaying a pin, 
+// it does not have functionality for moving the pin, or
+// setting the location
+
 const EventAttendingMapComponent: React.FC<EventAttendingMapComponentProps>= ({ latitude, longitude}) => {
 
   const markerClicked = () => {
