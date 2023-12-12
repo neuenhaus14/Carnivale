@@ -15,12 +15,20 @@ import axios from "axios";
 import WeatherCard from "./WeatherCard";
 import PostCard from "./PostCard";
 
-const HomePage = () => {
+interface HomePageProps {
+  getLocation: any
+}
+
+const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
   const { user } = useAuth0();
   const [comment, setComment] = useState("");
   const [userId, setUserId] = useState(null);
   const [posts, setPosts] = useState(null);
   const [key, setKey] = useState("posts");
+
+  useEffect(() => {
+    getLocation();
+  }, []);
 
   const getUser = async () => {
     try {
