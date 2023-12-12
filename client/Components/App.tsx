@@ -68,7 +68,7 @@ const App = () => {
     createRoutesFromElements(
       <Route>
           <Route path='/' element={<Login />} />
-        {/* <Route element={<ProtectedRoute />}>  */}
+        <Route element={<ProtectedRoute />}>  
           <Route path='/homepage' element={<div><HomePage getLocation={getLocation}/> <NavBar /></div>}  />
           <Route path='/mainforum' element={<div><MainForum /> <NavBar /></div>} />
           <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
@@ -77,7 +77,7 @@ const App = () => {
           <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
           <Route path='/userpage' element={<div><UserPage coolThing = 'string1'/> <NavBar /></div>} />
           {/* <Route path='/photo' element={<div><Photos /> <NavBar /></div>} /> */}
-        {/* </Route>  */}
+        </Route> 
       </Route>,
     ),
   );
