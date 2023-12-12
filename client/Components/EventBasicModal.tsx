@@ -9,7 +9,7 @@ interface EventAttendingModalProps {
   selectedEvent: any,
   setSelectedEvent: any,
   setShowAttendingModal: any,
-  showModal: boolean,
+  showBasicModal: boolean,
   friends: any,
   userId: number,
   isUserAttending: boolean,
