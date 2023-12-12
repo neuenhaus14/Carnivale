@@ -3,10 +3,11 @@ import { Modal, Button, Form } from 'react-bootstrap'
 import axios from 'axios'
 import Photos from './Photos'
 
+//CHILD OF HOMEPAGE
 interface Props {
   setShowModal: any
 }
-//TODO: are we going to want lat long?
+//TODO: Gretchen will add a function to get lat long
 
 const HomeModal: React.FC<Props> = ( {
   setShowModal
@@ -15,7 +16,8 @@ const HomeModal: React.FC<Props> = ( {
   const [isThrow, setIsThrow] = useState(false);
   const [isCostume, setIsCostume] = useState(false);
 
-
+  const {lng}  = -90;
+  const {lat}  = 30;
   const resetBooleanState = () => {
     setIsThrow(false)
     setIsCostume(false)
@@ -24,6 +26,23 @@ const HomeModal: React.FC<Props> = ( {
   const initModal = ()  => {
     setIsShow(!isShow); 
     setShowModal(!isShow);
+  }
+
+  const createPhoto = async () => {
+    try{
+      const { data } = await axios.post(`/api/home/create-post/${1}`, {
+        options: {
+          longitude: lng,
+          latitude: lat,
+          isCostume,
+          isThrow,
+          isPin: false
+        }
+      })
+      console.log('Post sent to database')
+    } catch (err)  {
+      console.error(err)
+    }
   }
 
   // const savePhotoPost = async () => {
@@ -70,7 +89,7 @@ const HomeModal: React.FC<Props> = ( {
             </Form.Group>
             <Form.Group className="mb-3" controlId="picture spot" >
               <Form.Label>Add a picture below!</Form.Label>
-              <Photos lat="30" lng="-90" />
+              <Photos lat={lat} lng={lng} savePost={savePost}/>
             </Form.Group>
           </Form>
         </Modal.Body>

@@ -14,6 +14,7 @@ import axios from "axios";
 import HomeModal from "./HomeModal";
 import WeatherCard from "./WeatherCard";
 import PostCard from "./PostCard";
+//PARENT OF HOMEMODAL
 
 interface HomePageProps {
   getLocation: any
