@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Dropdown, DropdownButton } from "react-bootstrap";
 import axios from "axios";
-import UserPage from "./UserPage";
 
 const ShareModal = (props: { post: any; userId: number; postType: string }) => {
   const { post, userId, postType } = props;
@@ -9,6 +8,7 @@ const ShareModal = (props: { post: any; userId: number; postType: string }) => {
   const [show, setShow] = useState(false);
   const [friends, setFriends] = useState([]);
   const [shareId, setShareId] = useState(null);
+  const [friendName, setFriendName] = useState(null);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -58,14 +58,18 @@ const ShareModal = (props: { post: any; userId: number; postType: string }) => {
 
         <Form>
           <DropdownButton
-            id="dropdown-basic-button"
-            title="KREWE"
+            title={friendName || 'Krewe'}
           >
-            {friends.map((friend, index) => (
-              <Dropdown.Item key={`${friend.lastName} + ${index}`} onSelect={() => setShareId(friend.id)}>
-                {friend.firstName} {friend.lastName}
-              </Dropdown.Item>
-            ))}
+            {friends.map((friend, index) => {
+            const name = `${friend.firstName} ${friend.lastName}`
+             return (<Dropdown.Item key={`${friend.lastName} + ${index}`} onClick={() => {
+                setShareId(friend.id);
+                setFriendName(name);
+                }}>
+                {name}
+              </Dropdown.Item>)
+            }
+            )}
           </DropdownButton>
         </Form>
 
@@ -73,6 +77,7 @@ const ShareModal = (props: { post: any; userId: number; postType: string }) => {
           <Button
             variant="primary"
             onClick={() => sharePost(postType)}
+            disabled={!shareId}
           >
             Share
           </Button>
