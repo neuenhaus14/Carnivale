@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { Event, Join_event_invitee, Join_event_participant, Join_friend } from "../db";
+import { Event, Join_friend, Join_user_event } from "../db";
 import { Model, InferCreationAttributes, InferAttributes, CreationOptional, Op } from 'sequelize';
 import axios from "axios";
 
@@ -24,20 +24,21 @@ import axios from "axios";
 const Events = Router();
 
 // NEXT TWO ROUTES SEARCH FOR EVENTS BY USERNAME
-Events.get('/getEventsParticipating/:id', async (req: Request, res: Response) => {
-  const { id } = req.params;
+Events.get('/getEventsParticipating/:userId', async (req: Request, res: Response) => {
+  const { userId } = req.params;
 
   try {
     // join records with user's id
-    const userEventsParticipatingRecords: any = await Join_event_participant.findAll({
+    const userEventsParticipatingRecords: any = await Join_user_event.findAll({
       where: {
-        participant_userId: id
+        userId,
+        isAttending: true,
       }
     });
 
     // if user has no events that they're going to
     if (userEventsParticipatingRecords.length === 0) {
-      console.log('No events attending');
+      // send empty array
       res.status(200).send([]);
     } else {
       const userEventsParticipatingIds = userEventsParticipatingRecords.map((record: any) => record.eventId);
@@ -49,7 +50,6 @@ Events.get('/getEventsParticipating/:id', async (req: Request, res: Response) =>
           }
         }
       });
-      // console.log('getEventsAttending', userEventsParticipating);
       res.status(200).send(userEventsParticipating);
     }
   } catch (err) {
@@ -58,15 +58,16 @@ Events.get('/getEventsParticipating/:id', async (req: Request, res: Response) =>
   }
 })
 
-Events.get('/getEventsInvited/:id', async (req: Request, res: Response) => {
-  const { id } = req.params;
+Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
+  const { userId } = req.params;
 
   try {
 
   // join records with user's id
-  const userEventsInvitedRecords: any = await Join_event_invitee.findAll({
+  const userEventsInvitedRecords: any = await Join_user_event.findAll({
     where: {
-      invitee_userId: id
+      userId,
+      isAttending: false,
     }
   })
   // if user has no events that they're invited to...
@@ -84,7 +85,6 @@ Events.get('/getEventsInvited/:id', async (req: Request, res: Response) => {
         }
       }
     })
-    console.log('getEventsInvited', userEventsInvited)
     res.status(200).send(userEventsInvited);
   }
 } catch (err) {
@@ -116,28 +116,30 @@ Events.get('/getPeopleForEvent/:userId-:eventId', async (req: Request, res: Resp
         return friendship.requester_userId === Number(userId) ? friendship.recipient_userId : friendship.requester_userId
       });
 
-    const eventParticipants = await Join_event_participant.findAll({
+    const eventParticipants = await Join_user_event.findAll({
       where: {
         eventId,
-        participant_userId: {
+        userId: {
           [Op.or]: [...allFriendsIds]
-        }
+        },
+        isAttending: true,
       }
     })
   
-    const eventInvitees = await Join_event_invitee.findAll({
+    const eventInvitees = await Join_user_event.findAll({
       where: {
         eventId,
-        invitee_userId: {
+        userId: {
           [Op.or]: [...allFriendsIds]
-        }
+        },
+        isAttending: false,
       }
     })
 
     // map over results to just return the ids of the friends attending
     const response = {
-      eventParticipants: eventParticipants.map((participationRecord : any) => participationRecord.participant_userId),
-      eventInvitees: eventInvitees.map((inviteRecord: any) => inviteRecord.invitee_userId)
+      eventParticipants: eventParticipants.map((participationRecord : any) => participationRecord.userId),
+      eventInvitees: eventInvitees.map((inviteRecord: any) => inviteRecord.userId)
     }
 
     res.status(200).send(response);
@@ -179,14 +181,22 @@ Events.post('/createEvent', async (req: Request, res: Response) => {
     })
 
     // add owner of event to participants
-    const newParticipantRecord: any = await Join_event_participant.create({ eventId: newEvent.id, participant_userId: newEvent.ownerId })
+    const newParticipantRecord: any = await Join_user_event.create({ 
+      eventId: newEvent.id, 
+      userId: newEvent.ownerId,
+      isAttending: true,
+    })
 
     // map over invitees from request to make objects that
     // can be bulk created in invitees join table
     const inviteeArray = invitees.map((invitee: number) => {
-      return { invitee_userId: invitee, eventId: newEvent.id }
+      return { 
+        userId: invitee, 
+        eventId: newEvent.id, 
+        isAttending: false,
+      }
     })
-    const newInviteeRecord: any = await Join_event_invitee.bulkCreate(inviteeArray)
+    const newInviteeRecord: any = await Join_user_event.bulkCreate(inviteeArray)
 
     // confirmation response containing all info
     const response = {
@@ -206,34 +216,17 @@ Events.post('/createEvent', async (req: Request, res: Response) => {
 // request will have instructions whether to attend or not, invitee_userId and eventId
 // The record inside JOIN_EVENT_INVITEES gets deleted every time--will need to refactor
 // to be able to change your mind after RSVP'ing
-Events.post('/answerEventInvite', async (req: Request, res: Response) => {
-  const { eventId, invitee_userId, isGoing } = req.body.answer
+Events.post('/setEventAttendance', async (req: Request, res: Response) => {
+  const { eventId, userId, isAttending } = req.body.answer
 
   try{
-    // init this var, which will be assigned if the user confirms the invitation
-    let eventParticipating: any = null;
-    
-    // if the user RSVP's to an event they're invited to, add
-    // record to event_participant table, 
-    if (isGoing === true) {
-      eventParticipating = await Join_event_participant.create({
-        eventId, participant_userId: invitee_userId
-      })
-    }
-    // always delete the record of the 
-    // invitation after an answer is provided
-    const eventInviteDeletion: any = await Join_event_invitee.destroy({
+    const updatedCount = await Join_user_event.update({ isAttending }, {
       where: {
-        eventId, invitee_userId
+        eventId,
+        userId
       }
     })
-    // send info below back to client: the record added to Join_events_participants
-    // and the number of records deleted from Join_event_invitee
-    const response = {
-      participating: eventParticipating,
-      invitesRemoved: eventInviteDeletion,
-    }
-    res.status(201).send(response)
+    res.status(201).send(updatedCount)
   } catch (err) {
     console.error("SERVER ERROR: could not POST event answer", err);
     res.status(500).send(err);
@@ -244,30 +237,23 @@ Events.delete('/deleteEvent/:eventId', async (req: Request, res: Response)=> {
   const { eventId } = req.params;
 
   try {
-    // delete invites before event, since invite references event
-    const deletedInvites = await Join_event_invitee.destroy({
-      where: {
-        eventId
-      }
-    })
-    const deletedParticipants = await Join_event_participant.destroy({
+    // delete user-event records before event, since invite references event
+    const deletedUserRecordsCount = await Join_user_event.destroy({
       where: {
         eventId
       }
     })
 
-    const deletedEvent = await Event.destroy({
+    const deletedEventCount = await Event.destroy({
       where: {
         id: eventId
       }
     })
     const response = {
-      deletedEventCount: deletedEvent,
-      deletedInviteCount: deletedInvites,
-      deletedParticipants: deletedParticipants,
+      deletedEventCount: deletedEventCount,
+      deletedUserRecordsCount: deletedUserRecordsCount,
     }
 
-    console.log('dE', deletedEvent, 'dI', deletedInvites, 'dP', deletedParticipants);
     res.status(202).send(response);
 
   } catch (err) {
@@ -278,16 +264,15 @@ Events.delete('/deleteEvent/:eventId', async (req: Request, res: Response)=> {
 
 })
 
-
 Events.post('/inviteToEvent', async (req: Request, res: Response) => {
   // invitees is array of userIds
   const { eventId, invitees } = req.body.invitations;
 
   try {
-    const invitations: any = invitees.map((invitee_userId: number) => {
-      return { eventId, invitee_userId }
+    const invitations: any = invitees.map((userId: number) => {
+      return { eventId, userId, isAttending: false }
     })
-    const invitationsResponse = await Join_event_invitee.bulkCreate(invitations);
+    const invitationsResponse = await Join_user_event.bulkCreate(invitations);
     res.status(201).send(invitationsResponse)
   } catch (err) {
     console.error("SERVER ERROR: could not POST event invitations", err);

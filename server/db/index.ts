@@ -222,58 +222,6 @@ const Photo = db.define(
   { timestamps: true }
 );
 
-const Join_event_participant = db.define(
-  "join_event_participant",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    participant_userId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: User,
-        key: "id",
-      },
-    },
-    eventId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: Event,
-        key: "id",
-      },
-    },
-  },
-  { timestamps: true }
-);
-
-const Join_event_invitee = db.define(
-  "join_event_invitee",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    invitee_userId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: User,
-        key: "id",
-      },
-    },
-    eventId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: Event,
-        key: "id",
-      },
-    },
-  },
-  { timestamps: true }
-);
-
 const Join_user_event = db.define(
   "join_user_event",
   {
@@ -494,8 +442,6 @@ export {
   Pin,
   Comment,
   Photo,
-  Join_event_participant,
-  Join_event_invitee,
   Join_friend,
   Join_pin_photo,
   Join_comment_vote,
