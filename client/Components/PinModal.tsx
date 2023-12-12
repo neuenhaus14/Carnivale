@@ -8,7 +8,7 @@ interface Props {
   setShowModal: any
   markers: any
   setMarkers: any 
-  isPinSelected: any
+  isPinSelected: boolean
   setIsPinSelected: any
   selectedPin: any
 }
@@ -30,13 +30,14 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
   // const { lat } = parsedParams;
   const { lng } = parsedParams;
   const { lat } = parsedParams;
-  const  lngRounded = Math.round(lng * 10000) / 10000;
-  const  latRounded = Math.round(lat * 10000) / 10000;
+  // const  lngRounded = Math.round(lng * 10000) / 10000;
+  // const  latRounded = Math.round(lat * 10000) / 10000;
   // console.log(lng, lat)
-  // const  lngRounded = lng.toFixed(4)
-  // const  latRounded = lat.toFixed(4)
+  const  lngRounded = lng
+  const  latRounded = lat
 
- 
+  console.log(lng, lat)
+  console.log(lngRounded, latRounded)
 
 
   const initModal = () => {
@@ -54,8 +55,6 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
 
   const saveCreatedPin = async () => {
     initModal()
-
-    console.log(lngRounded.toFixed(4), latRounded.toFixed(4))
 
     if (!isPinSelected){
       try{
@@ -112,10 +111,8 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
           <div>
           <Modal.Body>
             <Form.Group className="mb-3" controlId="picture spot" >
-            <Photos lat={latRounded} lng={lngRounded} saveCreatedPin={saveCreatedPin} />
-              {/* <h1>Take a picture!</h1>
-              <Form.Label>Add a description</Form.Label>
-              <Form.Control as="textarea" rows={1} /> */}
+            { selectedPin.map((pin: any) => (
+            <Photos key={pin.id} lat={pin.latitude} lng={pin.longitude} saveCreatedPin={saveCreatedPin} /> ))}
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>

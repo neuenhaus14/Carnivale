@@ -248,8 +248,8 @@ module.exports = {
 
     await queryInterface.bulkInsert("pins", [
       {
-        longitude: -90.054261,
-        latitude: 29.964735,
+        longitude: -90.0542,
+        latitude: 29.9647,
         isToilet: true,
         isFood: false,
         isPersonal: false,
@@ -260,8 +260,8 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        longitude: -90.053976,
-        latitude: 29.963373,
+        longitude: -90.0539,
+        latitude: 29.9633,
         isToilet: true,
         isFood: false,
         isPersonal: false,
@@ -272,8 +272,8 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        longitude: -90.055103,
-        latitude: 29.963286,
+        longitude: -90.0551,
+        latitude: 29.9632,
         isToilet: false,
         isFood: true,
         isPersonal: false,
@@ -284,8 +284,8 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        longitude: -90.055187,
-        latitude: 29.963212,
+        longitude: -90.0551,
+        latitude: 29.9632,
         isToilet: false,
         isFood: false,
         isPersonal: true,
