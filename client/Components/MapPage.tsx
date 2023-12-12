@@ -90,19 +90,24 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
     modalTrigger()
-    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
-    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
+
+    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,7)}` , lat:`${e.lngLat.lat.toString().slice(0,6)}`})  
+
   }
 
   //finds clicked marker/pin from database
   const clickedMarker = async (e: any) => {
     const currMarkerLng = e._lngLat.lng;
     const currMarkerLat = e._lngLat.lat;
-    
-    const  lngRounded = currMarkerLng.toString().slice(0,10)
-    const  latRounded = currMarkerLat.toString().slice(0,9)
-    setClickedPinCoords([lngRounded, latRounded])
-    
+
+    // const  lngRounded = currMarkerLng.toFixed(4).toString().slice(0,8)
+    // const  latRounded = currMarkerLat.toFixed(4).toString().slice(0,8)
+    console.log(currMarkerLng, currMarkerLat)
+
+    const  lngRounded = currMarkerLng.toString().slice(0,8)
+    const  latRounded = currMarkerLat.toString().slice(0,7)
+
+
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-marker/${lngRounded}/${latRounded}`)
       console.log('resposne data', data[0].longitude, data[0].latitude)
