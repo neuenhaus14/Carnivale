@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLoaderData} from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react';
 import ProtectedRoute from './ProtectedRoutes'
@@ -22,6 +22,29 @@ import Loading from './Loading';
 // cant figure out how to route to them tho.... 
 
 const App = () => {
+
+  const [lng, setLng] = useState(0)
+  const [lat, setLat] = useState(0)
+
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+      console.log("Geolocation is not supported by this browser.")
+    }
+  }
+  
+  const showPosition = (position: any) => {
+    //console.log(position)
+    setLng(position.coords.longitude);
+    setLat(position.coords.latitude);
+  }
+
+  console.log('user coords from app', lng, lat)
+
+  useEffect(() => {
+    getLocation();
+  }, []);
 
   // const { user } = useAuth0();
 
@@ -48,7 +71,7 @@ const App = () => {
     createRoutesFromElements(
       <Route>
           <Route path='/' element={<Login />} />
-        <Route element={<ProtectedRoute />}> 
+        {/* <Route element={<ProtectedRoute />}>  */}
           <Route path='/homepage' element={<div><HomePage /> <NavBar /></div>} />
           <Route path='/mainforum' element={<div><MainForum /> <NavBar /></div>} />
           <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
@@ -57,7 +80,7 @@ const App = () => {
           <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
           <Route path='/userpage' element={<div><UserPage coolThing = 'string1'/> <NavBar /></div>} />
           {/* <Route path='/photo' element={<div><Photos /> <NavBar /></div>} /> */}
-        </Route> 
+        {/* </Route>  */}
       </Route>,
     ),
   );
