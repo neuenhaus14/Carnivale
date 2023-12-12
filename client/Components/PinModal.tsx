@@ -30,10 +30,13 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
   // const { lat } = parsedParams;
   const { lng } = parsedParams;
   const { lat } = parsedParams;
-  const  lngRounded = Math.round(lng * 100) / 100;
-  const  latRounded = Math.round(lat * 100) / 100;
+  const  lngRounded = Math.round(lng * 10000) / 10000;
+  const  latRounded = Math.round(lat * 10000) / 10000;
+  // console.log(lng, lat)
+  // const  lngRounded = lng.toFixed(4)
+  // const  latRounded = lat.toFixed(4)
 
-  console.log(lngRounded, latRounded)
+ 
 
 
   const initModal = () => {
@@ -51,6 +54,9 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
 
   const saveCreatedPin = async () => {
     initModal()
+
+    console.log(lngRounded.toFixed(4), latRounded.toFixed(4))
+
     if (!isPinSelected){
       try{
         const { data } = await axios.post(`/api/pins/create-pin/${1}`, {

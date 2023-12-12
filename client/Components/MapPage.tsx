@@ -46,14 +46,22 @@ const MapPage = () => {
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
     modalTrigger()
+    
+        const currMarkerLng = e.lngLat.lng;
+        const currMarkerLat = e.lngLat.lat;
+
     setSearchParams({lng:`${e.lngLat.lng}` , lat:`${e.lngLat.lat}`})  
+
   }
 
   const clickedMarker = async (e: any) => {
     const currMarkerLng = e._lngLat.lng;
     const currMarkerLat = e._lngLat.lat;
-    const  lngRounded = Math.round(currMarkerLng * 100) / 100;
-    const  latRounded = Math.round(currMarkerLat * 100) / 100;
+
+    const  lngRounded = currMarkerLng.toFixed(4).toString()
+    const  latRounded = currMarkerLat.toFixed(4).toString()
+
+    console.log(lngRounded, latRounded)
 
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-marker/${lngRounded}/${latRounded}`)
