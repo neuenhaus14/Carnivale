@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Accordion } from 'react-bootstrap'
-import EventAttendingMapComponent from './EventAttendingMapComponent';
+import EventBasicMapComponent from './EventBasicMapComponent';
 import axios from 'axios';
 import moment from 'moment';
 
 
-interface EventModalProps {
+interface EventAttendingModalProps {
   selectedEvent: any,
   setSelectedEvent: any,
-  setShowModal: any,
+  setShowAttendingModal: any,
   showModal: boolean,
   friends: any,
   userId: number,
+  isUserAttending: boolean,
 }
 
 interface EventInviteAccordionProps {
   friends: any,
   selectedEvent: any,
   userId: number
+  isUserAttending: boolean
 }
 
 
@@ -27,7 +29,7 @@ interface EventInviteAccordionProps {
 
 
 
-const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, selectedEvent, userId }) => {
+const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, selectedEvent, userId, isUserAttending }) => {
 
   const [invitees, setInvitees] = useState([]);
   const [participants, setParticipants] = useState([]);
@@ -68,6 +70,7 @@ const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, se
       })
       console.log('iR', inviteResponse)
       getPeopleForEvent();
+      setFriendsToInvite([]);
     } catch (err) {
       console.error("CLIENT ERROR: failed to POST event invites", err);
     }
@@ -83,16 +86,16 @@ const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, se
 
   const uninvitedFriendsItems = friends.filter((friend: any) => !participants.includes(friend.id) && !invitees.includes(friend.id)).map((friend: any, index: number) => {
     return <li key={index}>{friend.firstName} {friend.lastName} is not invited!
-      <Form.Switch
+      {isUserAttending && <Form.Switch
         type="switch"
-        id="custom-switch"
+        id="invite-switch"
         label="Check to invite"
         onChange={() => toggleFriendInvite(friend.id)}
-      />
+      />}
     </li>
   })
 
-  console.log('inside event modal accordion. i:', invitees, 'p', participants, 'f2I', friendsToInvite);
+  // console.log('inside event modal accordion. i:', invitees, 'p', participants, 'f2I', friendsToInvite);
   return (
     <Accordion>
       <Accordion.Item eventKey="0">
@@ -114,27 +117,35 @@ const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, se
   )
 }
 
-const EventAttendingModal: React.FC<EventModalProps> = ({ selectedEvent, setShowModal, showModal, setSelectedEvent, friends, userId }) => {
+const EventAttendingModal: React.FC<EventAttendingModalProps> = ({ selectedEvent, setShowAttendingModal, showBasicModal, setSelectedEvent, friends, userId, isUserAttending }) => {
   const handleClose = () => {
-    setShowModal(false); // goes up to user page and sets to false
+    setShowAttendingModal(false); // goes up to user page and sets to false
     setSelectedEvent({ latitude: 0, longitude: 0, startTime: null, endTime: null }); // set coordinates so map in modal doesn't throw error for invalid LngLat object
   }
 
   return (
-    <Modal show={showModal} onHide={handleClose}>
+    <Modal show={showBasicModal} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>{selectedEvent.name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div style={{display: 'flex', flexDirection: 'column', alignContent:'center'}}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center' }}>
           <div>
-            <EventAttendingMapComponent latitude={selectedEvent.latitude} longitude={selectedEvent.longitude} />
+            <EventBasicMapComponent latitude={selectedEvent.latitude} longitude={selectedEvent.longitude} />
           </div>
           <div>
             <p>{selectedEvent.description}</p>
             <p><b>When:</b> {moment(selectedEvent.startTime).format('MMM Do, h:mm a')} to {moment(selectedEvent.endTime).format('h:mm a')} <em>({moment(selectedEvent.startTime).fromNow()})</em></p>
-            {selectedEvent.address && <p><b>Where:</b> {selectedEvent.address}</p>} 
+            {selectedEvent.address && <p><b>Where:</b> {selectedEvent.address}</p>}
+
+            <Form.Switch
+              type="switch"
+              id="attending-switch"
+              label="Attending?">
+            </Form.Switch>
+
             <EventInviteAccordion
+              isUserAttending={isUserAttending}
               selectedEvent={selectedEvent}
               friends={friends}
               userId={userId}
