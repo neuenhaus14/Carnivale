@@ -23,9 +23,10 @@ const App = () => {
 
   const getLocation = () => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPosition);
+      return navigator.geolocation.getCurrentPosition(showPosition)
     } else {
-      console.log("Geolocation is not supported by this browser.")
+      console.log("Geolocation is not supported by this browser")
+      return null
     }
   }
   
@@ -37,9 +38,10 @@ const App = () => {
 
   console.log('user coords from app', lng, lat)
 
-  useEffect(() => {
-    getLocation();
-  }, []);
+  // useEffect(() => {
+  //   getLocation();
+  // }, []);
+
 
   // const { user } = useAuth0();
 
@@ -66,7 +68,7 @@ const App = () => {
       <Route>
           <Route path='/' element={<Login />} />
         {/* <Route element={<ProtectedRoute />}>  */}
-          <Route path='/homepage' element={<div><HomePage /> <NavBar /></div>} />
+          <Route path='/homepage' element={<div><HomePage getLocation={getLocation}/> <NavBar /></div>}  />
           <Route path='/mainforum' element={<div><MainForum /> <NavBar /></div>} />
           <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
           <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng}/> <NavBar /></div>}/>

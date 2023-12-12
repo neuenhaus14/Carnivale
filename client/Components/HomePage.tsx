@@ -25,15 +25,17 @@ interface HomePageProps {
 }
 //const loc = useContext(LocContext)
 
-const HomePage: React.FC<HomePageProps> = ({getLocation, lat, lng}) => {
+interface HomePageProps {
+  getLocation: any
+}
+
+const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
   const { user } = useAuth0();
   const [comment, setComment] = useState("");
   const [userId, setUserId] = useState(null);
   const [posts, setPosts] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [key, setKey] = useState("posts");
-  const loc = useContext(getLocation)
-  //console.log('context test', lat, lng)
 
   useEffect(() => {
     getLocation();
