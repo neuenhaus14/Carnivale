@@ -62,6 +62,7 @@ const MapPage = () => {
   const dropPin = (e: any) => {
     modalTrigger()
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
+    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
   }
 
   //finds clicked marker/pin from database
@@ -82,6 +83,7 @@ const MapPage = () => {
     } catch (err)  {
       console.error(err);
     }
+
   };
 
   // prompts the modal to open/close
