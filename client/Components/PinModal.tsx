@@ -28,9 +28,14 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
   
   const { lng } = parsedParams;
   const { lat } = parsedParams;
+  const  lngRounded = Math.round(lng * 10000) / 10000;
+  const  latRounded = Math.round(lat * 10000) / 10000;
+  // console.log(lng, lat)
+  // const  lngRounded = lng.toFixed(4)
+  // const  latRounded = lat.toFixed(4)
 
-  const  lngRounded = lng
-  const  latRounded = lat
+ 
+
 
   const initModal = () => {
     setShow(!isShow); 
