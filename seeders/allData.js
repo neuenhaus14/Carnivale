@@ -186,66 +186,6 @@ module.exports = {
       },
     ])
 
-    await queryInterface.bulkInsert("join_event_participants", [
-      {
-        participant_userId: 1,
-        eventId: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        participant_userId: 2,
-        eventId: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        participant_userId: 2,
-        eventId: 2,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        participant_userId: 1,
-        eventId: 2,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        participant_userId: 3,
-        eventId: 2,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        participant_userId: 1,
-        eventId: 3,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        participant_userId: 2,
-        eventId: 3,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        participant_userId: 3,
-        eventId: 3,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
-
-    await queryInterface.bulkInsert("join_event_invitees", [
-      {
-        invitee_userId: 3,
-        eventId: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
-
     await queryInterface.bulkInsert("pins", [
       {
         longitude: -90.054261,
