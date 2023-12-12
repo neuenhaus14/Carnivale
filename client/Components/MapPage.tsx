@@ -83,7 +83,6 @@ const MapPage = () => {
     } catch (err)  {
       console.error(err);
     }
-
   };
 
   // prompts the modal to open/close
