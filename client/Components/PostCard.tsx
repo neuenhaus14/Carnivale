@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Card, Button } from "react-bootstrap";
+import dayjs from "dayjs";
+import relativeTime from 'dayjs/plugin/relativeTime'
 import axios from "axios";
+
+dayjs.extend(relativeTime);
 
 const PostCard = (props: { post: any }) => {
   const { post } = props;
@@ -9,8 +13,8 @@ const PostCard = (props: { post: any }) => {
       {post.comment ? (
         <Card>
           <Card.Text>
-            `${post.comment} - ${post.createdAt}`
-          </Card.Text>{" "}
+            {post.comment} - {dayjs(post.createdAt.toString()).fromNow()}
+          </Card.Text>
         </Card>
       ) : (
         <Card>
@@ -19,8 +23,8 @@ const PostCard = (props: { post: any }) => {
             src={post.photoURL}
           />
           <Card.Text>
-            `${post.description} - ${post.createdAt}`
-          </Card.Text>{" "}
+            {post.description} - {dayjs(post.createdAt.toString()).fromNow()}
+          </Card.Text>
         </Card>
       )}
     </div>
