@@ -1,6 +1,7 @@
 import React, {useState, useEffect, Dispatch, SetStateAction} from 'react';
 import axios from 'axios';
 import Photo from './Photo'
+import { Modal, Button, Form } from 'react-bootstrap'
 import { arrayBuffer } from 'stream/consumers';
 //capturing an image and sending via axios to my backend. on backend making another call to cloudinary to post or retrieve image. So if I need that photo on the front end
 
@@ -71,11 +72,10 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
       setLoading(false);
     }
   };
-  console.log('outside save', lat, lng)
+
 
   //considering this put request as part of our post request due to the multer middleware
   const saveToDb = async () => {
-    console.log('inside save', lat, lng)
     saveCreatedPin()
     try{
       const savePic = await axios.put(`/api/images/save/${1}`, {
@@ -94,18 +94,19 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
 
   return (
     <div className="App">
-      {previewSource && (
-      <img src={previewSource} alt="chosen"
-      style={{height: '300'}}/>)}
-       <input
-        id="file"
-        type="file"
-        name="image"
-        placeholder="Please add a description"
-        onChange={handleSelectFile}
-        multiple={false}
-      />
-        <>
+      <Form.Label><b>Add a picture below!</b></Form.Label><br />
+          {previewSource && (
+          <img src={previewSource} alt="chosen"
+          style={{width: '100%', height: '50vh'}}/>)}
+          <input  id="file" type="file" name="image"
+            onChange={handleSelectFile} multiple={false}
+          /><br />
+          <Form.Label><b>Description is Mandatory</b></Form.Label>
+          <Form.Control as="textarea" rows={1} placeholder="Please add a description"
+            name="descinput" onChange={handleDescInput}/> <br />
+          <Button variant="dark" onClick={uploadFile}> {loading ? "Saving..." : "Save"} </Button>
+
+        {/* <>
         <input
         id="desc"
         type="desc"
@@ -114,7 +115,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
           <button className="btn-green" onClick={uploadFile}>
             {loading ? "Saving..." : "Save"}
           </button>
-        </>
+        </> */}
     </div>
   );
 }

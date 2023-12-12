@@ -1,7 +1,8 @@
-import React from 'react';
-import {Route, RouterProvider, createBrowserRouter, createRoutesFromElements} from 'react-router-dom'
+import React, {useState} from 'react';
+import {Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLoaderData} from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react';
 import ProtectedRoute from './ProtectedRoutes'
+import axios from 'axios';
 
 import FeedPage from './FeedPage'
 import HomePage from './HomePage'
@@ -22,6 +23,20 @@ import Loading from './Loading';
 
 const App = () => {
 
+  // const { user } = useAuth0();
+
+  // const getUserLoader = async() => {
+  //   try {      
+  //     const { data } = await axios.post(`api/home/user/`, { user });
+  //     console.log('userdata', data)
+  //        data "{\"user\":{\"given_name\":\"Kitty\",\"family_name\":\"Scripters\",\"nickname\":\"kittyscripters\",\"name\":\"Kitty Scripters\",
+  //     return data
+  //   } catch (err){
+  //     console.error(err);
+  //   }
+  // }
+
+
   const { isLoading } = useAuth0();
 
   if (isLoading) {
@@ -37,8 +52,8 @@ const App = () => {
           <Route path='/homepage' element={<div><HomePage /> <NavBar /></div>} />
           <Route path='/mainforum' element={<div><MainForum /> <NavBar /></div>} />
           <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
-          <Route path='/mappage' element={<div><MapPage /> <NavBar /></div>} />
-          <Route path='/feedpage' element={<div><FeedPage /> <NavBar /></div>} />
+          <Route path='/mappage' element={<div><MapPage /> <NavBar /></div>}/>
+          <Route path='/feedpage' element={<div><FeedPage /> <NavBar /></div>}/>
           <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
           <Route path='/userpage' element={<div><UserPage coolThing = 'string1'/> <NavBar /></div>} />
           {/* <Route path='/photo' element={<div><Photos /> <NavBar /></div>} /> */}

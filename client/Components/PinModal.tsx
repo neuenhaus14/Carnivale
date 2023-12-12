@@ -20,13 +20,24 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
   const [isPersonal, setIsPersonal] =useState(false);
   const [isFree, setIsFree] =useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [showPhoto, setShowPhoto] = useState(true);
   //const [marker, setMarkers] = useState([markers]);
   
   const urlSearchString = window.location.search.substring(1);
   const parsedParams = JSON.parse('{"' + urlSearchString.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
   
+  // const { lng } = parsedParams;
+  // const { lat } = parsedParams;
   const { lng } = parsedParams;
   const { lat } = parsedParams;
+  const  lngRounded = Math.round(lng * 10000) / 10000;
+  const  latRounded = Math.round(lat * 10000) / 10000;
+  // console.log(lng, lat)
+  // const  lngRounded = lng.toFixed(4)
+  // const  latRounded = lat.toFixed(4)
+
+ 
+
 
   const initModal = () => {
     setShow(!isShow); 
@@ -42,49 +53,78 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
   }
 
   const saveCreatedPin = async () => {
-    try{
-      const { data } = await axios.post(`/api/pins/create-pin/${1}`, {
-        options: {
-          longitude: lng,
-          latitude: lat,
-          isToilet,
-          isFood,
-          isPersonal,
-          isFree,
-        }
-      })
-      console.log('whish! pin sent to database')
-      setMarkers(markers.concat([data]))
-    } catch (err)  {
-      console.error(err)
-    }
+    initModal()
+
+    console.log(lngRounded.toFixed(4), latRounded.toFixed(4))
+
+    if (!isPinSelected){
+      try{
+        const { data } = await axios.post(`/api/pins/create-pin/${1}`, {
+          options: {
+            longitude: lngRounded,
+            latitude: latRounded,
+            isToilet,
+            isFood,
+            isPersonal,
+            isFree,
+          }
+        })
+        console.log('whish! pin sent to database')
+        setMarkers(markers.concat([data]))
+      } catch (err)  {
+        console.error(err)
+      }
+    } 
   }
   
+
   return (
     <>
     { isPinSelected 
     ? (
         <Modal show={isShow} onHide={initModal}>
           <Modal.Header closeButton >
-            <Modal.Title>Pin Category</Modal.Title>
+            { selectedPin.map((pin: any) => (
+            <Modal.Title key={pin.id}>{pin.pinCategory.slice(2)} Pins</Modal.Title>
+            ))}
           </Modal.Header>
+          { showPhoto ? (
+          <div> 
           <Modal.Body>
             <div id="pin-photos">
-              <p>Pin from $User</p> 
-              {
-                selectedPin.map((pin: any) => (
-                  <div key={pin.id}>
-                    <img src={pin.photoURL} alt="Pin Photo" height="300" width='300'/> 
-                    <p>{pin.description}</p>
-                  </div>  
-                ))
-              }
+                {
+                  selectedPin.map((pin: any) => (
+                    <div key={pin.id}>
+                      <p><b>Submitted by: </b>{pin.firstName} {pin.lastName}</p>
+                      <img src={pin.photoURL} alt="Pin Photo" height="300" width='300'/> 
+                      <p>{pin.description}</p>
+                    </div>  
+                  ))
+                }
             </div>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="danger" onClick={initModal}> Close </Button>
-            <Button variant="dark "onClick={initModal}> Add Photo </Button>
+            <Button variant="dark "onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
           </Modal.Footer>
+          </div>
+            ) : (
+          <div>
+          <Modal.Body>
+            <Form.Group className="mb-3" controlId="picture spot" >
+            <Photos lat={latRounded} lng={lngRounded} saveCreatedPin={saveCreatedPin} />
+              {/* <h1>Take a picture!</h1>
+              <Form.Label>Add a description</Form.Label>
+              <Form.Control as="textarea" rows={1} /> */}
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="danger" onClick={initModal}> Close </Button>
+            {/* <Button variant="dark "onClick={initModal}> Save Photo </Button> */}
+          </Modal.Footer>
+          </div>
+              )
+            }
         </Modal>
       )
     : 
@@ -115,8 +155,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
                 />
             </Form.Group>
             <Form.Group className="mb-3" controlId="picture spot" >
-              <Form.Label>Add a picture below!</Form.Label>
-              <Photos lat={lat} lng={lng} saveCreatedPin={saveCreatedPin} />
+              <Photos lat={latRounded} lng={lngRounded} saveCreatedPin={saveCreatedPin} />
             </Form.Group>
           </Form>
         </Modal.Body>

@@ -2,14 +2,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Map, Marker, NavigationControl } from 'react-map-gl';
 import { BsFillPinFill } from "react-icons/bs";
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
+import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
 
 
 const MapPage = () => {
   const mapRef = useRef(null);
+    // loader data brings in live data from the google oauth
+    // const userData = useLoaderData();
+    // const userId = userData
+    // console.log('userId', userId)
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [createPin, setCreatePin] = useState(false);
@@ -41,15 +46,25 @@ const MapPage = () => {
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
     modalTrigger()
+    
+        const currMarkerLng = e.lngLat.lng;
+        const currMarkerLat = e.lngLat.lat;
+
     setSearchParams({lng:`${e.lngLat.lng}` , lat:`${e.lngLat.lat}`})  
+
   }
 
   const clickedMarker = async (e: any) => {
     const currMarkerLng = e._lngLat.lng;
     const currMarkerLat = e._lngLat.lat;
 
+    const  lngRounded = currMarkerLng.toFixed(4).toString()
+    const  latRounded = currMarkerLat.toFixed(4).toString()
+
+    console.log(lngRounded, latRounded)
+
     try {
-      const { data } = await axios.get(`/api/pins/get-clicked-marker/${currMarkerLng}/${currMarkerLat}`)
+      const { data } = await axios.get(`/api/pins/get-clicked-marker/${lngRounded}/${latRounded}`)
       console.log('clickedMarkerRes', data);
       setSelectedPin(data);
       setIsPinSelected(true);
@@ -104,7 +119,7 @@ const MapPage = () => {
             onClick={(e) => {clickedMarker(e.target)}} 
             longitude={marker.longitude} latitude={marker.latitude}
             anchor="bottom"> 
-            <BsFillPinFill style={{ width: 50, height: 25}} /> 
+            {/* <BsFillPinFill style={{ width: 50, height: 25}} />  */}
             </Marker>
           ))
         }
