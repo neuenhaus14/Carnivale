@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
-import { Map, Marker, NavigationControl, GeolocateControl } from 'react-map-gl';
+import { Map, Marker, NavigationControl, GeolocateControl} from 'react-map-gl';
 import { BsFillPinFill } from "react-icons/bs";
 import { useSearchParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
+import {AddressAutofill, SearchBox} from '@mapbox/search-js-react'
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
 
@@ -19,6 +20,7 @@ const MapPage = () => {
   const [selectedPin, setSelectedPin] = useState({})
   const [showModal, setShowModal] = useState(false)
   const [markers, setMarkers] = useState([]);
+  const [searchValue, setSearchValue] = useState('')
   // const [userLocation, setUserLocation] = useState({})
   const [viewState, setViewState] = useState({
     latitude: 29.964735,
@@ -110,6 +112,11 @@ const MapPage = () => {
         : null }
       <div id='map-page-filter' >
       </div>
+      <SearchBox accessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
+        value={searchValue}
+        onChange={(e) => setSearchValue(e)}
+        placeholder="Search for Location"
+      />
       <Map
         ref={mapRef}
         {...viewState}

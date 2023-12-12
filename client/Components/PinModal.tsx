@@ -29,9 +29,6 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
   const { lng } = parsedParams;
   const { lat } = parsedParams;
 
-  const  lngRounded = lng
-  const  latRounded = lat
-
   const initModal = () => {
     setShow(!isShow); 
     setShowModal(!isShow)
