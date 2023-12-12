@@ -16,8 +16,10 @@ const HomeModal: React.FC<Props> = ( {
   const [isThrow, setIsThrow] = useState(false);
   const [isCostume, setIsCostume] = useState(false);
 
-  const {lng}  = -90;
-  const {lat}  = 30;
+  const { lngPost }  = -90;
+  const {latPost }  = 30;
+  // const  lngRounded = Math.round(lng * 10000) / 10000;
+  // const  latRounded = Math.round(lat * 10000) / 10000;
   const resetBooleanState = () => {
     setIsThrow(false)
     setIsCostume(false)
@@ -29,14 +31,14 @@ const HomeModal: React.FC<Props> = ( {
   }
 
   const createPhoto = async () => {
+    initModal()
     try{
       const { data } = await axios.post(`/api/home/create-post/${1}`, {
         options: {
-          longitude: lng,
-          latitude: lat,
+          longitude: lngPost,
+          latitude: latPost,
           isCostume,
-          isThrow,
-          isPin: false
+          isThrow
         }
       })
       console.log('Post sent to database')
@@ -89,7 +91,7 @@ const HomeModal: React.FC<Props> = ( {
             </Form.Group>
             <Form.Group className="mb-3" controlId="picture spot" >
               <Form.Label>Add a picture below!</Form.Label>
-              <Photos lat={lat} lng={lng} savePost={savePost}/>
+              <Photos latPost={latPost} lngPost={lngPost} createPhoto={createPhoto}/>
             </Form.Group>
           </Form>
         </Modal.Body>
