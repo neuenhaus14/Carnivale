@@ -46,11 +46,8 @@ const MapPage = () => {
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
     modalTrigger()
-    
-        const currMarkerLng = e.lngLat.lng;
-        const currMarkerLat = e.lngLat.lat;
 
-    setSearchParams({lng:`${e.lngLat.lng}` , lat:`${e.lngLat.lat}`})  
+    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,7)}` , lat:`${e.lngLat.lat.toString().slice(0,6)}`})  
 
   }
 
@@ -58,13 +55,17 @@ const MapPage = () => {
     const currMarkerLng = e._lngLat.lng;
     const currMarkerLat = e._lngLat.lat;
 
-    const  lngRounded = currMarkerLng.toFixed(4).toString()
-    const  latRounded = currMarkerLat.toFixed(4).toString()
+    // const  lngRounded = currMarkerLng.toFixed(4).toString().slice(0,8)
+    // const  latRounded = currMarkerLat.toFixed(4).toString().slice(0,8)
+    console.log(currMarkerLng, currMarkerLat)
 
-    console.log(lngRounded, latRounded)
+    const  lngRounded = currMarkerLng.toString().slice(0,8)
+    const  latRounded = currMarkerLat.toString().slice(0,7)
+
 
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-marker/${lngRounded}/${latRounded}`)
+      console.log('resposne data', data[0].longitude, data[0].latitude)
       console.log('clickedMarkerRes', data);
       setSelectedPin(data);
       setIsPinSelected(true);

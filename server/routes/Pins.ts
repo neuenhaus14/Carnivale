@@ -38,7 +38,6 @@ Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) =>
     const clickedPin = await Pin.findOne({where: {longitude: lng, latitude: lat}});
     const clickedPinId = clickedPin.dataValues.id;
     
-    console.log(clickedPin)
     let truePinCategory: string 
     for(const key in clickedPin.dataValues){
       if ((clickedPin as any)[key] === true) {
@@ -46,7 +45,6 @@ Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) =>
         break;
       }
     }
-    console.log('not map', truePinCategory)
     const joinPinPhotoResults = await Join_pin_photo.findAll({where : {pinId: clickedPinId }});
     const pinPhotoIds = joinPinPhotoResults.map((pin) => pin.dataValues.photoId);
     
@@ -66,6 +64,7 @@ Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) =>
       
       }))
 
+      console.log(pinPhotos)
     res.status(200).send(pinPhotos)
     
   } catch (err) {
