@@ -7,9 +7,9 @@ import { Pin } from '../db'
 
 //Multer provides us with two storage options: disk and memory storage. In the below snippet, we start by selecting the storage option we want for our Multer instance. We choose the memory storage option because we do not want to store parsed files on our server; instead, we want them temporarily stored on the RAM so that we can quickly upload them to Cloudinary.
 const storage = multer.memoryStorage();
-console.log('storage', storage)
+//console.log('storage', storage)
 const upload = multer({ storage });
-console.log('upload', upload)
+//console.log('upload', upload)
 const myUploadMiddleware = upload.single("sample_file");
 const ImageRouter = express.Router()
 let photoURL : string;
@@ -54,11 +54,11 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
 
 
  ImageRouter.put('/save/:ownerId', async (req: Request, res: Response) => {
-  const {latitude, longitude, isThrow, isCostume, description} = req.body.options
+  const {latitude, longitude, isThrow, isPin, isCostume, description} = req.body.options
   const { ownerId } = req.params
 
     try{
-      await Photo.update({latitude, longitude, isThrow, isCostume, ownerId, description}, {where: {photoURL}})
+      await Photo.update({latitude, longitude, isThrow, isPin, isCostume, ownerId, description}, {where: {photoURL}})
       const matchedLatLngPhotos = await Photo.findAll({where: {latitude, longitude}})
       const matchedLatLngPin = await Pin.findOne({where: {latitude, longitude}})
 
@@ -74,36 +74,27 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
       res.status(200).send('you did it!')
 
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
 
  })
 
 
-/////////////////////////
-// Uploads an image file
-/////////////////////////
-const uploadImage = async (imagePath: string) => {
+ //handles the posting logic from homepage
+ ImageRouter.put('/post/:ownerId', async (req: Request, res: Response) => {
+  const {latitude, longitude, isThrow, isPin, isCostume, description} = req.body.options
+  const { ownerId } = req.params
 
-  // Use the uploaded file's name as the asset's public ID and
-  // allow overwriting the asset with new versions
-  const options = {
-    use_filename: true,
-    unique_filename: false,
-    overwrite: true,
-    folder : "Carnivale"
-  };
+    try{
+      await Photo.update({latitude, longitude, isThrow, isPin, isCostume, ownerId, description}, {where: {photoURL}})
 
-  try {
-    // Upload the image
-    const result = await cloudinary.uploader.upload(imagePath,
-       options);
-    //console.log(result);
-    return result.public_id;
-  } catch (error) {
-    console.error('upload image', error);
-  }
-};
+      res.status(200).send('you did it!')
+
+    } catch (error) {
+      console.error(error);
+    }
+
+ })
 
 
 export const config = {

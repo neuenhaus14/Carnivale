@@ -4,14 +4,19 @@ import Photo from './Photo'
 import { Modal, Button, Form } from 'react-bootstrap'
 import { arrayBuffer } from 'stream/consumers';
 //capturing an image and sending via axios to my backend. on backend making another call to cloudinary to post or retrieve image. So if I need that photo on the front end
-
+//CHILD OF PINMODAL
 interface Props {
-  lng: any
-  lat: any
+  lng: number
+  lat: number
   saveCreatedPin: any
+  latPost: number
+  lngPost: number
+  createPhoto: any
+  isThrow: boolean
+  isCostume: boolean
 }
 
-const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
+const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, createPhoto, isThrow, isCostume}) => {
   const [fileInputState, setFileInputState] = useState('');
   const [selectedFile, setSelectedFile] = useState('');
   const [previewSource, setPreviewSource] = useState();
@@ -19,17 +24,8 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
   const [res, setRes] = useState({});
   const [file, setFile] = useState(null);
   const [description, setDescription] = useState<string>('');
-// type loading = { loading: boolean; setLoading: Dispatch<SetStateAction<boolean>>; file: boolean; setFile: Dispatch<boolean>; }
-  // const Form: React.FC<Props> = ({
-  //   loading,
-  //   setLoading,
-  //   file,
-  //   setFile,
-  // })
-  // interface TLoad {
-  //   loading: boolean;
-  //   setLoading?: (value: boolean | (loading: boolean) => boolean) => void;
-  // }
+
+  //console.log('Photos', latPost, lngPost)
   const handleDescInput = (e:any) => {
     const desc = e.target.value;
     setDescription(desc);
@@ -62,7 +58,6 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
     //console.log('data', data)
     try {
       const res = await axios.post("/api/images/upload", data);
-      
       //console.log('front end data', data)
       //setRes(res.data);
       saveToDb()
@@ -76,21 +71,44 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
 
   //considering this put request as part of our post request due to the multer middleware
   const saveToDb = async () => {
-    saveCreatedPin()
+    //console.log('inside save', lat, lng)
+    if (saveCreatedPin) {
+      saveCreatedPin()
     try{
-      const savePic = await axios.put(`/api/images/save/${1}`, {
+       await axios.put(`/api/images/save/${1}`, {
         options: {
           latitude: lat,
           longitude: lng,
           isThrow: false,
           isCostume: false,
+          isPin: true,
           description
         }
       });
-    }catch (error) {
+    } catch (error) {
       console.log('upload error', error);
     }
   }
+  else {
+    //savePostToDb()
+    createPhoto()
+    try{
+      const savePic = await axios.put(`/api/images/post/${1}`, {
+        options: {
+          latitude: latPost,
+          longitude: lngPost,
+          isThrow,
+          isCostume,
+          isPin: false,
+          description
+        }
+      });
+    } catch (error) {
+      console.log('upload error', error);
+    }
+  }
+}
+
 
   return (
     <div className="App">
@@ -106,16 +124,6 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin}) => {
             name="descinput" onChange={handleDescInput}/> <br />
           <Button variant="dark" onClick={uploadFile}> {loading ? "Saving..." : "Save"} </Button>
 
-        {/* <>
-        <input
-        id="desc"
-        type="desc"
-        name="descinput"
-        onChange={handleDescInput}/>
-          <button className="btn-green" onClick={uploadFile}>
-            {loading ? "Saving..." : "Save"}
-          </button>
-        </> */}
     </div>
   );
 }

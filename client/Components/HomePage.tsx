@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Card,
   Form,
@@ -11,20 +11,29 @@ import {
 } from "react-bootstrap";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-
+import HomeModal from "./HomeModal";
 import WeatherCard from "./WeatherCard";
 import PostCard from "./PostCard";
+import LocContext from "./App"
+
+//PARENT OF HOMEMODAL
 
 interface HomePageProps {
   getLocation: any
+  lat: number
+  lng: number
 }
+//const loc = useContext(LocContext)
 
-const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
+const HomePage: React.FC<HomePageProps> = ({getLocation, lat, lng}) => {
   const { user } = useAuth0();
   const [comment, setComment] = useState("");
   const [userId, setUserId] = useState(null);
   const [posts, setPosts] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const [key, setKey] = useState("posts");
+  const loc = useContext(getLocation)
+  //console.log('context test', lat, lng)
 
   useEffect(() => {
     getLocation();
@@ -37,9 +46,13 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
     } catch (err) {
       console.error(err);
     }
-  };
+  }
+  const modalTrigger = () => {
+   setShowModal(true)
+  }
 
-  const handleSubmit = async () => {
+
+  const handleSubmit = async() => {
     try {
       axios.post(`/api/home/${userId}`, { comment });
     } catch (err) {
@@ -63,7 +76,7 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
     getPosts(key);
     const interval = setInterval(() => {
       getPosts(key);
-      console.log("fetch");
+      //console.log("fetch");
     }, 5000);
     return () => clearInterval(interval);
   }, [key]);
@@ -76,6 +89,17 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
 
       <Row>
         <WeatherCard />
+      <button onClick={modalTrigger}>
+        Upload a pic!
+      </button>
+      { showModal ?
+      <HomeModal
+        setShowModal={setShowModal}
+        lat={lat}
+        lng={lng}
+       />
+      : null
+    }
       </Row>
 
       <Row>
