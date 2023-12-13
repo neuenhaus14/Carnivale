@@ -1,5 +1,14 @@
 import express, { Request, Response } from "express";
-import { Join_shared_post, User, Photo, Comment, Pin } from "../db";
+import {
+  Join_shared_post,
+  User,
+  Photo,
+  Comment,
+  Pin,
+  Join_comment_vote,
+  Join_photo_vote,
+  Join_pin_vote,
+} from "../db";
 
 const feedRouter = express.Router();
 
@@ -18,6 +27,17 @@ feedRouter.get(
     }
   }
 );
+
+feedRouter.delete("/shared-posts/:postId", async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    await Join_shared_post.destroy({ where: { id: postId } });
+    res.json({ message: `Post with ID ${postId} deleted successfully.` });
+  } catch (error) {
+    console.error(`Error deleting post:`, error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 feedRouter.get("/user/:user_id", async (req: Request, res: Response) => {
   try {
@@ -69,103 +89,370 @@ feedRouter.get("/shared-pin/:pin_id", async (req: Request, res: Response) => {
   }
 });
 
-feedRouter.post("/upvote-pin/:pin_id", async (req: Request, res: Response) => {
-  try {
-    const pinId = req.params.pin_id;
-    const upvotePin = await Pin.increment(
-      { upvotes: 1 },
-      { where: { id: pinId } }
-    );
-    res.json(upvotePin);
-  } catch (error) {
-    console.error("Error upvoting pin:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+feedRouter.post(
+  "/upvote-comment/:user_id/:comment_id",
+  async (req: Request, res: Response) => {
+    try {
+      const commentId = req.params.comment_id;
+      const userId = req.params.user_id;
+
+      const existingVote = await Join_comment_vote.findOne({
+        where: { voter_userId: userId, commentId: commentId },
+      });
+
+      if (existingVote) {
+        if (!existingVote.dataValues.isUpvoted) {
+          await Join_comment_vote.update(
+            {
+              isUpvoted: true,
+            },
+            { where: { voter_userId: userId, commentId: commentId } }
+          );
+          await Comment.increment({ upvotes: 1 }, { where: { id: commentId } });
+          res.json({ success: true });
+        } else {
+          res
+            .status(400)
+            .json({ error: "User has already upvoted on this comment." });
+        }
+      } else {
+        await Join_comment_vote.create({
+          voter_userId: userId,
+          commentId: commentId,
+          isUpvoted: true,
+        });
+
+        await Comment.increment({ upvotes: 1 }, { where: { id: commentId } });
+
+        res.json({ success: true });
+      }
+    } catch (error) {
+      console.error(`Error handling comment vote:`, error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   }
-});
+);
 
 feedRouter.post(
-  "/downvote-pin/:pin_id",
+  "/downvote-comment/:user_id/:comment_id",
+  async (req: Request, res: Response) => {
+    try {
+      const commentId = req.params.comment_id;
+      const userId = req.params.user_id;
+
+      const existingVote = await Join_comment_vote.findOne({
+        where: { voter_userId: userId, commentId: commentId },
+      });
+
+      if (existingVote) {
+        if (existingVote.dataValues.isUpvoted) {
+          await Join_comment_vote.update(
+            {
+              isUpvoted: false,
+            },
+            { where: { voter_userId: userId, commentId: commentId } }
+          );
+          await Comment.increment(
+            { upvotes: -1 },
+            { where: { id: commentId } }
+          );
+          res.json({ success: true });
+        } else {
+          res
+            .status(400)
+            .json({ error: "User has already voted down on this comment." });
+        }
+      } else {
+        await Join_comment_vote.create({
+          voter_userId: userId,
+          commentId: commentId,
+          isUpvoted: false,
+        });
+
+        await Comment.increment({ upvotes: -1 }, { where: { id: commentId } });
+
+        res.json({ success: true });
+      }
+    } catch (error) {
+      console.error(`Error handling comment vote:`, error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
+
+feedRouter.post(
+  "/upvote-pin/:user_id/:pin_id",
   async (req: Request, res: Response) => {
     try {
       const pinId = req.params.pin_id;
-      const upvotePin = await Pin.increment(
-        { upvotes: -1 },
-        { where: { id: pinId } }
-      );
-      res.json(upvotePin);
+      const userId = req.params.user_id;
+
+      const existingVote = await Join_pin_vote.findOne({
+        where: { voter_userId: userId, pinId: pinId },
+      });
+
+      if (existingVote) {
+        if (!existingVote.dataValues.isUpvoted) {
+          await Join_pin_vote.update(
+            {
+              isUpvoted: true,
+            },
+            { where: { voter_userId: userId, pinId: pinId } }
+          );
+          await Pin.increment({ upvotes: 1 }, { where: { id: pinId } });
+          res.json({ success: true });
+        } else {
+          res
+            .status(400)
+            .json({ error: "User has already upvoted on this pin." });
+        }
+      } else {
+        await Join_pin_vote.create({
+          voter_userId: userId,
+          pinId: pinId,
+          isUpvoted: true,
+        });
+
+        await Pin.increment({ upvotes: 1 }, { where: { id: pinId } });
+
+        res.json({ success: true });
+      }
     } catch (error) {
-      console.error("Error downvoting pin:", error);
+      console.error(`Error handling pin vote:`, error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   }
 );
 
 feedRouter.post(
-  "/upvote-comment/:comment_id",
-  async (req: Request, res: Response) => {
-    try {
-      const commentId = req.params.comment_id;
-      const upvoteComment = await Comment.increment(
-        { upvotes: 1 },
-        { where: { id: commentId } }
-      );
-      res.json(upvoteComment);
-    } catch (error) {
-      console.error("Error upvoting comment:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  }
-);
-
-feedRouter.post(
-  "/downvote-comment/:comment_id",
-  async (req: Request, res: Response) => {
-    try {
-      const commentId = req.params.comment_id;
-      const downvoteComment = await Comment.increment(
-        { upvotes: -1 },
-        { where: { id: commentId } }
-      );
-      res.json(downvoteComment);
-    } catch (error) {
-      console.error("Error downvoting comment:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  }
-);
-
-feedRouter.post(
-  "/upvote-photo/:photo_id",
+  "/upvote-photo/:user_id/:photo_id",
   async (req: Request, res: Response) => {
     try {
       const photoId = req.params.photo_id;
-      const upvotePhoto = await Photo.increment(
-        { upvotes: 1 },
-        { where: { id: photoId } }
-      );
-      res.json(upvotePhoto);
+      const userId = req.params.user_id;
+
+      const existingVote = await Join_photo_vote.findOne({
+        where: { voter_userId: userId, photoId: photoId },
+      });
+
+      if (existingVote) {
+        if (!existingVote.dataValues.isUpvoted) {
+          await Join_photo_vote.update(
+            {
+              isUpvoted: true,
+            },
+            { where: { voter_userId: userId, photoId: photoId } }
+          );
+          await Photo.increment({ upvotes: 1 }, { where: { id: photoId } });
+          res.json({ success: true });
+        } else {
+          res
+            .status(400)
+            .json({ error: "User has already upvoted on this photo." });
+        }
+      } else {
+        await Join_photo_vote.create({
+          voter_userId: userId,
+          photoId: photoId,
+          isUpvoted: true,
+        });
+
+        await Photo.increment({ upvotes: 1 }, { where: { id: photoId } });
+
+        res.json({ success: true });
+      }
     } catch (error) {
-      console.error("Error upvoting photo:", error);
+      console.error(`Error handling photo vote:`, error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   }
 );
 
 feedRouter.post(
-  "/downvote-photo/:photo_id",
+  "/downvote-pin/:user_id/:pin_id",
   async (req: Request, res: Response) => {
     try {
-      const photoId = req.params.photo_id;
-      const downvotePhoto = await Photo.increment(
-        { upvotes: -1 },
-        { where: { id: photoId } }
-      );
-      res.json(downvotePhoto);
+      const pinId = req.params.pin_id;
+      const userId = req.params.user_id;
+
+      const existingVote = await Join_pin_vote.findOne({
+        where: { voter_userId: userId, pinId: pinId },
+      });
+
+      if (existingVote) {
+        if (existingVote.dataValues.isUpvoted) {
+          await Join_pin_vote.update(
+            {
+              isUpvoted: false,
+            },
+            { where: { voter_userId: userId, pinId: pinId } }
+          );
+          await Pin.increment({ upvotes: -1 }, { where: { id: pinId } });
+          res.json({ success: true });
+        } else {
+          res
+            .status(400)
+            .json({ error: "User has already downvoted on this pin." });
+        }
+      } else {
+        await Join_pin_vote.create({
+          voter_userId: userId,
+          pinId: pinId,
+          isUpvoted: false,
+        });
+
+        await Pin.increment({ upvotes: -1 }, { where: { id: pinId } });
+
+        res.json({ success: true });
+      }
     } catch (error) {
-      console.error("Error downvoting photo:", error);
+      console.error(`Error handling pin vote:`, error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   }
 );
+
+feedRouter.post(
+  "/downvote-photo/:user_id/:photo_id",
+  async (req: Request, res: Response) => {
+    try {
+      const photoId = req.params.photo_id;
+      const userId = req.params.user_id;
+
+      const existingVote = await Join_photo_vote.findOne({
+        where: { voter_userId: userId, photoId: photoId },
+      });
+
+      if (existingVote) {
+        if (existingVote.dataValues.isUpvoted) {
+          await Join_photo_vote.update(
+            {
+              isUpvoted: false,
+            },
+            { where: { voter_userId: userId, photoId: photoId } }
+          );
+          await Photo.increment({ upvotes: -1 }, { where: { id: photoId } });
+          res.json({ success: true });
+        } else {
+          res
+            .status(400)
+            .json({ error: "User has already downvoted on this photo." });
+        }
+      } else {
+        await Join_photo_vote.create({
+          voter_userId: userId,
+          photoId: photoId,
+          isUpvoted: false,
+        });
+
+        await Photo.increment({ upvotes: -1 }, { where: { id: photoId } });
+
+        res.json({ success: true });
+      }
+    } catch (error) {
+      console.error(`Error handling photo vote:`, error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
+
+// feedRouter.post("/upvote-pin/:pin_id", async (req: Request, res: Response) => {
+//   try {
+//     const pinId = req.params.pin_id;
+//     const upvotePin = await Pin.increment(
+//       { upvotes: 1 },
+//       { where: { id: pinId } }
+//     );
+//     res.json(upvotePin);
+//   } catch (error) {
+//     console.error("Error upvoting pin:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+// feedRouter.post(
+//   "/downvote-pin/:pin_id",
+//   async (req: Request, res: Response) => {
+//     try {
+//       const pinId = req.params.pin_id;
+//       const upvotePin = await Pin.increment(
+//         { upvotes: -1 },
+//         { where: { id: pinId } }
+//       );
+//       res.json(upvotePin);
+//     } catch (error) {
+//       console.error("Error downvoting pin:", error);
+//       res.status(500).json({ error: "Internal Server Error" });
+//     }
+//   }
+// );
+
+// // feedRouter.post(
+// //   "/upvote-comment/:comment_id",
+// //   async (req: Request, res: Response) => {
+// //     try {
+// //       const commentId = req.params.comment_id;
+// //       const upvoteComment = await Comment.increment(
+// //         { upvotes: 1 },
+// //         { where: { id: commentId } }
+// //       );
+// //       res.json(upvoteComment);
+// //     } catch (error) {
+// //       console.error("Error upvoting comment:", error);
+// //       res.status(500).json({ error: "Internal Server Error" });
+// //     }
+// //   }
+// // );
+
+// // feedRouter.post(
+// //   "/downvote-comment/:comment_id",
+// //   async (req: Request, res: Response) => {
+// //     try {
+// //       const commentId = req.params.comment_id;
+// //       const downvoteComment = await Comment.increment(
+// //         { upvotes: -1 },
+// //         { where: { id: commentId } }
+// //       );
+// //       res.json(downvoteComment);
+// //     } catch (error) {
+// //       console.error("Error downvoting comment:", error);
+// //       res.status(500).json({ error: "Internal Server Error" });
+// //     }
+// //   }
+// // );
+
+// feedRouter.post(
+//   "/upvote-photo/:photo_id",
+//   async (req: Request, res: Response) => {
+//     try {
+//       const photoId = req.params.photo_id;
+//       const upvotePhoto = await Photo.increment(
+//         { upvotes: 1 },
+//         { where: { id: photoId } }
+//       );
+//       res.json(upvotePhoto);
+//     } catch (error) {
+//       console.error("Error upvoting photo:", error);
+//       res.status(500).json({ error: "Internal Server Error" });
+//     }
+//   }
+// );
+
+// feedRouter.post(
+//   "/downvote-photo/:photo_id",
+//   async (req: Request, res: Response) => {
+//     try {
+//       const photoId = req.params.photo_id;
+//       const downvotePhoto = await Photo.increment(
+//         { upvotes: -1 },
+//         { where: { id: photoId } }
+//       );
+//       res.json(downvotePhoto);
+//     } catch (error) {
+//       console.error("Error downvoting photo:", error);
+//       res.status(500).json({ error: "Internal Server Error" });
+//     }
+//   }
+// );
 
 export default feedRouter;
