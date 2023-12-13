@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
-import { Map, Marker, NavigationControl, GeolocateControl} from 'react-map-gl';
+import { Map, Marker, NavigationControl, GeolocateControl, useMap} from 'react-map-gl';
 import { BsFillPinFill } from "react-icons/bs";
 import { useSearchParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
@@ -33,16 +33,15 @@ const MapPage = () => {
     getPins();
   }, [setMarkers]);
 
-  // useEffect(() => {
-  //   navigator.geolocation.getCurrentPosition((pos) => {
-  //     setViewState({
-  //       ...viewState,
-  //       latitude: pos.coords.latitude,
-  //       longitude: pos.coords.longitude,
-  //       zoom: 16,
-  //     });
-  //   });
-  // }, []);
+ console.log('searchValue', searchValue)
+
+  // const flyToSearch = () => {
+  //   const (current: map) = useMap();
+  //   const onClick = () => {
+  //     map.flyTo({center: })
+  //   }
+  //   mapRef.current?.flyTo({searchValue});
+  // }
 
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
@@ -117,7 +116,10 @@ const MapPage = () => {
         value={searchValue}
         onChange={(e) => setSearchValue(e)}
         placeholder="Search for Location"
+        marker={true}
+       
       />
+      
       <Map
         ref={mapRef}
         {...viewState}
@@ -127,11 +129,6 @@ const MapPage = () => {
         style={{ position: 'relative', bottom: '0px', width: '100vw', height: 475 }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
       >
-        {/* <Marker
-          longitude={viewState.longitude}
-          latitude={viewState.latitude}
-          anchor="bottom"
-        /> */}
         <GeolocateControl
           positionOptions={{ enableHighAccuracy: true }}
           trackUserLocation={true}
