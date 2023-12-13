@@ -212,6 +212,7 @@ const FeedPage = () => {
       console.log(`Already downvoted ${type} with ID ${postId}`);
     }
   };
+
   const fetchPostDetails = async (postId: number, type: string) => {
     try {
       if (type === "comment") {
