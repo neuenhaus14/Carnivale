@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Accordion } from 'react-bootstrap'
-import EventAttendingMapComponent from './EventBasicMapComponent';
+import EventCreateMapComponent from './EventCreateMapComponent';
 import axios from 'axios';
 import moment from 'moment';
 
@@ -8,13 +8,17 @@ import moment from 'moment';
 interface EventCreateModalProps {
   selectedEvent: any,
   setSelectedEvent: any,
-  setShowModal: any,
-  showModal: boolean,
+  setShowCreateModal: any,
+  showCreateModal: boolean,
   friends: any,
   userId: number,
+  isUserAttending: boolean,
+  setIsUserAttending: any,
+  getEventsInvited: any,
+  getEventsParticipating: any
 }
 
-interface EventInviteAccordionProps {
+interface EventCreateAccordionProps {
   friends: any,
   selectedEvent: any,
   userId: number
@@ -23,7 +27,7 @@ interface EventInviteAccordionProps {
 
 
 
-const EventCreateAccordion: React.FC<EventInviteAccordionProps> = ({ friends, selectedEvent, userId }) => {
+const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, selectedEvent, userId }) => {
 
   const [invitees, setInvitees] = useState([]);
   const [participants, setParticipants] = useState([]);
@@ -110,21 +114,21 @@ const EventCreateAccordion: React.FC<EventInviteAccordionProps> = ({ friends, se
   )
 }
 
-const EventCreateModal: React.FC<EventCreateModalProps> = ({ selectedEvent, setShowModal, showModal, setSelectedEvent, friends, userId }) => {
+const EventCreateModal: React.FC<EventCreateModalProps> = ({ selectedEvent, setShowCreateModal, showCreateModal, setSelectedEvent, friends, userId, getEventsInvited, getEventsParticipating }) => {
   const handleClose = () => {
-    setShowModal(false); // goes up to user page and sets to false
+    setShowCreateModal(false); // goes up to user page and sets to false
     setSelectedEvent({ latitude: 0, longitude: 0, startTime: null, endTime: null }); // set coordinates so map in modal doesn't throw error for invalid LngLat object
   }
 
   return (
-    <Modal show={showModal} onHide={handleClose}>
+    <Modal show={showCreateModal} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>{selectedEvent.name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div style={{display: 'flex', flexDirection: 'column', alignContent:'center'}}>
           <div>
-            <EventAttendingMapComponent latitude={selectedEvent.latitude} longitude={selectedEvent.longitude} />
+            <EventCreateMapComponent latitude={selectedEvent.latitude} longitude={selectedEvent.longitude} />
           </div>
           <div>
             <p>{selectedEvent.description}</p>
