@@ -105,7 +105,17 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
           <Modal.Body>
             <Form.Group className="mb-3" controlId="picture spot" >
             { selectedPin.map((pin: any) => (
-            <Photos key={pin.id} lat={pin.latitude} lng={pin.longitude} saveCreatedPin={saveCreatedPin} /> ))}
+            <Photos 
+            key={pin.id} 
+            lat={pin.latitude} 
+            lng={pin.longitude} 
+            saveCreatedPin={saveCreatedPin} 
+            latPost={null}
+              lngPost={null}
+              isThrow={null}
+              isCostume={null}
+              createPhoto={null}
+            /> ))}
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
@@ -145,7 +155,15 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
                 />
             </Form.Group>
             <Form.Group className="mb-3" controlId="picture spot" >
-              <Photos lat={lat} lng={lng} saveCreatedPin={saveCreatedPin} />
+              <Photos
+              lng={lng}
+              lat={lat}
+              saveCreatedPin={saveCreatedPin}
+              latPost={null}
+              lngPost={null}
+              isThrow={null}
+              isCostume={null}
+              createPhoto={null} />
             </Form.Group>
           </Form>
         </Modal.Body>
