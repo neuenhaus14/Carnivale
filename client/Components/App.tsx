@@ -74,7 +74,7 @@ const App = () => {
         {/* </LocContext.Provider>  */}
           <Route path='/mainforum' element={<div><MainForum /> <NavBar /></div>} />
           <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
-          <Route path='/mappage' element={<div><MapPage /> <NavBar /></div>}/>
+          <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng}/> <NavBar /></div>}/>
           <Route path='/feedpage' element={<div><FeedPage /> <NavBar /></div>}/>
           <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
           <Route path='/userpage' element={<div><UserPage coolThing = 'string1'/> <NavBar /></div>} />
