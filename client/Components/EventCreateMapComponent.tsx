@@ -2,16 +2,18 @@ import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Map, Marker, NavigationControl, Layer, Source } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-interface EventBasicMapComponentProps {
+// This map displays in the Create Modal for either 
+// creating a new event or editing an existing event that
+// is owned by the user. You must own the 
+// event to edit it.
+
+interface EventCreateMapComponentProps {
+  latitude: number,
   longitude: number,
-  latitude: number
+  // selectedEvent: object,
 }
 
-// This map component is for displaying a pin, 
-// it does not have functionality for moving the pin, or
-// setting the location
-
-const EventBasicMapComponent: React.FC<EventBasicMapComponentProps>= ({ latitude, longitude}) => {
+const EventCreateMapComponent: React.FC<EventCreateMapComponentProps>= ({ latitude, longitude }) => {
 
   const markerClicked = () => {
     window.alert('the marker was clicked');
@@ -43,4 +45,4 @@ const EventBasicMapComponent: React.FC<EventBasicMapComponentProps>= ({ latitude
   )
 }
 
-export default EventBasicMapComponent;
+export default EventCreateMapComponent;

@@ -23,7 +23,26 @@ import axios from "axios";
 
 const Events = Router();
 
-// NEXT TWO ROUTES SEARCH FOR EVENTS BY USERNAME
+// NEXT THREE ROUTES SEARCH FOR EVENTS BY USERNAME
+Events.get('/getEventsOwned/:userId', async (req: Request, res: Response) => {
+  const {userId } = req.params;
+
+  try {
+    const userEventsOwned: any = await Event.findAll({
+      where: {
+        ownerId: userId
+      }
+    })
+   
+      res.status(200).send(userEventsOwned);
+    
+  } catch (err) {
+    console.error('SERVER ERROR: failed to GET events owned by user', err);
+    res.status(500).send(err);
+  }
+})
+
+
 Events.get('/getEventsParticipating/:userId', async (req: Request, res: Response) => {
   const { userId } = req.params;
 
@@ -47,6 +66,9 @@ Events.get('/getEventsParticipating/:userId', async (req: Request, res: Response
         where: {
           id: {
             [Op.or]: [...userEventsParticipatingIds]
+          },
+          ownerId: {
+            [Op.not]: userId
           }
         }
       });
@@ -72,7 +94,7 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
   })
   // if user has no events that they're invited to...
   if (userEventsInvitedRecords.length === 0) {
-    console.log('No event invitations')
+    // console.log('No event invitations')
     res.status(200).send([])
   } else {
 

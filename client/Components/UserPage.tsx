@@ -2,23 +2,27 @@ import React, { ReactPropTypes, useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom";
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
-
+import EventCreateModal from './EventCreateModal';
 const UserPage = ({ coolThing }: UserPageProps) => {
 
   const [searchParams] = useSearchParams();
   const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
-  const [friendRequestsReceived, setFriendRequestsReceived] = useState([])
+  const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
   const [eventsParticipating, setEventsParticipating] = useState([{ name: 'event1' }]);
   const [eventsInvited, setEventsInvited] = useState([{ name: 'event2' }]);
+  const [eventsOwned, setEventsOwned] = useState([{ name: 'event3' }]);
+
   const [phoneForFriendRequest, setPhoneForFriendRequest] = useState('');
 
   const [selectedEvent, setSelectedEvent] = useState({})
   const [isUserAttending, setIsUserAttending] = useState(false) // this gets passed to basic modal to expose invite functionality
   const [showBasicModal, setShowBasicModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false)
 
-  async function getFriends() {
+
+  const getFriends = async () => {
     try {
       const friends = await axios.get(`/api/friends/getFriends/${userId}`)
       // console.log('here', friends.data);
@@ -28,7 +32,16 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     }
   }
 
-  async function getEventsParticipating() {
+  const getEventsOwned = async () => {
+    try {
+      const eventsOwned = await axios.get(`api/events/getEventsOwned/${userId}`)
+      setEventsOwned(eventsOwned.data);
+    } catch (err) {
+      console.error('CLIENT ERROR: failed to get events owned', err)
+    }
+  }
+
+  const getEventsParticipating = async () => {
     try {
       const eventsParticipating = await axios.get(`api/events/getEventsParticipating/${userId}`)
       setEventsParticipating(eventsParticipating.data);
@@ -61,6 +74,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
 
   useEffect(() => {
     getFriends();
+    getEventsOwned();
     getEventsParticipating();
     getEventsInvited();
     getFriendRequests();
@@ -88,6 +102,13 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     })
   }
 
+  let eventsOwnedItems = null;
+  if (eventsOwned.length > 0) {
+    eventsOwnedItems = eventsOwned.map((event: any, index: number) => {
+      return <li key={index} onClick={() => console.log('owned event1!')}>{event.name} {event.description}</li>
+    })
+  }
+
   let eventsParticipatingItems = null;
   if (eventsParticipating.length > 0) {
     eventsParticipatingItems = eventsParticipating.map((event: any, index: number) => {
@@ -98,8 +119,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   let eventsInvitedItems = null;
   if (eventsInvited.length > 0) {
     eventsInvitedItems = eventsInvited.map((event: any, index: number) => {
-      return <li key={index}>{event.name} {event.description} 
-      <button onClick={() => answerEventInvitation(event.id, true)}>Yeah!</button><button onClick={() => answerEventInvitation(event.id, false)}>Nah...</button></li>
+      return <li key={index} onClick={() => { setIsUserAttending(false); setShowBasicModal(true); setSelectedEvent(event) }}>{event.name} {event.description} </li>
     })
   }
 
@@ -145,19 +165,19 @@ const UserPage = ({ coolThing }: UserPageProps) => {
 
 
 
-  // MOVE THIS TO EVENT MODAL
-  async function answerEventInvitation(eventId: number, isGoing: boolean) {
-    const eventInviteResponse = await axios.post('/api/events/answerEventInvite', {
-      answer: {
-        eventId,
-        invitee_userId: userId,
-        isGoing
-      }
-    })
-    console.log('eventInviteResponse', eventInviteResponse);
-    getEventsInvited();
-    getEventsParticipating();
-  }
+  // // MOVE THIS TO EVENT MODAL
+  // async function answerEventInvitation(eventId: number, isGoing: boolean) {
+  //   const eventInviteResponse = await axios.post('/api/events/answerEventInvite', {
+  //     answer: {
+  //       eventId,
+  //       invitee_userId: userId,
+  //       isGoing
+  //     }
+  //   })
+  //   console.log('eventInviteResponse', eventInviteResponse);
+  //   getEventsInvited();
+  //   getEventsParticipating();
+  // }
 
 
 
@@ -173,12 +193,30 @@ const UserPage = ({ coolThing }: UserPageProps) => {
       <EventBasicModal
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
-        setShowAttendingModal={setShowBasicModal}
+        setShowBasicModal={setShowBasicModal}
         showBasicModal={showBasicModal}
         friends={friends}
         userId={userId}
         isUserAttending={isUserAttending}
+        setIsUserAttending={setIsUserAttending}
+        getEventsInvited={getEventsInvited}
+        getEventsParticipating={getEventsParticipating}
       />
+
+      <EventCreateModal
+        selectedEvent={selectedEvent}
+        setSelectedEvent={setSelectedEvent}
+        setShowCreateModal={setShowCreateModal}
+        showCreateModal={showCreateModal}
+        friends={friends}
+        userId={userId}
+        isUserAttending={isUserAttending}
+        setIsUserAttending={setIsUserAttending}
+        getEventsInvited={getEventsInvited}
+        getEventsParticipating={getEventsParticipating}
+      />
+
+
       <h5> Mon Krewe </h5>
       {friends.length > 0 ? <ul>{userFriendsItems}</ul> : 'Assemble your krewe below'}
 
@@ -188,7 +226,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
 
       {
         // conditional checks for outgoing requests
-        friendRequestsMade.length > 0 &&  
+        friendRequestsMade.length > 0 &&
         <>
           <h5> Krewe Invites Made </h5>
           <ul>{requestsMadeItems}</ul>
@@ -204,6 +242,14 @@ const UserPage = ({ coolThing }: UserPageProps) => {
         </>
       }
 
+      {
+        // conditional check for events you own
+        eventsOwned.length > 0 &&
+        <>
+          <h3> EVENTS OWNED </h3>
+          <ul>{eventsOwnedItems}</ul>
+        </>
+      }
 
       {
         // conditional checks for events you've attending
@@ -216,8 +262,8 @@ const UserPage = ({ coolThing }: UserPageProps) => {
 
 
       {
-      // conditional checks for events you've invited to
-      eventsInvited.length > 0 &&
+        // conditional checks for events you've invited to
+        eventsInvited.length > 0 &&
         <>
           <h3>EVENTS INVITED</h3>
           <ul>{eventsInvitedItems}</ul>
