@@ -1,7 +1,80 @@
 import { Router, Request, Response } from 'express';
-import { User, Comment, Photo } from '../db';
+import { User, Comment, Photo, Join_shared_post } from '../db';
 import { Op } from 'sequelize';
 const HomeRoutes = Router();
+
+HomeRoutes.post('/share/comment', async (req: Request, res: Response) => {
+  const { recipient_userId, sender_userId, id } = req.body;
+  try {
+    const sharedComment = await Join_shared_post.create({recipient_userId, sender_userId, shared_commentId: id})
+    res.status(201)
+      .send(sharedComment);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+HomeRoutes.post('/share/photo', async (req: Request, res: Response) => {
+  const { recipient_userId, sender_userId, id } = req.body;
+  try {
+    const sharedPhoto = await Join_shared_post.create({recipient_userId, sender_userId, shared_photoId: id})
+    res.status(201)
+      .send(sharedPhoto);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+HomeRoutes.post('/share/pin', async (req: Request, res: Response) => {
+  const { recipient_userId, sender_userId, id } = req.body;
+  try {
+    const sharedComment = await Join_shared_post.create({recipient_userId, sender_userId, shared_pinId: id})
+    res.status(201)
+      .send(sharedComment);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+HomeRoutes.get('/post/:id', async (req: Request, res: Response) => {
+  const {id} = req.params;
+  try {
+    const owner = await User.findByPk(id);
+    res.status(200)
+      .send(owner);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+HomeRoutes.get('/photo/:id', async (req: Request, res: Response) => {
+  const {id} = req.params;
+  try {
+    const owner = await User.findByPk(id);
+    res.status(200)
+      .send(owner);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+HomeRoutes.get('/photo/:id', async (req: Request, res: Response) => {
+  const {id} = req.params;
+  try {
+    const owner = await User.findByPk(id);
+    res.status(200)
+      .send(owner);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
 
 HomeRoutes.post('/user', async (req: Request, res: Response) => {
   const { user } = req.body;
@@ -18,7 +91,7 @@ HomeRoutes.post('/user', async (req: Request, res: Response) => {
 HomeRoutes.get('/posts', async (req: Request, res: Response) => {
   try {
     const comments = await Comment.findAll();
-    const photos = await Photo.findAll({where: {[Op.and]: [{isCostume: false}, {isThrow: false}]}});
+    const photos = await Photo.findAll({where: {[Op.and]: [{isCostume: false}, {isThrow: false}, {isPin: false}]}});
     const posts = comments.concat(photos);
     res.status(200)
       .send(posts);

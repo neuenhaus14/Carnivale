@@ -49,7 +49,7 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
     }
   };
 
-  const getPosts = async (e) => {
+  const getPosts = async (e: string) => {
     try {
       const { data } = await axios.get(`/api/home/${e}`);
       setPosts(data);
@@ -57,7 +57,6 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
       console.error(err);
     }
   };
-
 
   useEffect(() => {
     getUser();
@@ -96,6 +95,7 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
                   <PostCard
                     key={`${item.id} + ${index}`}
                     post={item}
+                    userId={userId}
                   />
                 ))
               : ""}
@@ -109,6 +109,7 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
                   <PostCard
                     key={`${item.id} + ${index}`}
                     post={item}
+                    userId={userId}
                   />
                 ))
               : ""}
@@ -122,6 +123,7 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
                   <PostCard
                     key={`${item.id} + ${index}`}
                     post={item}
+                    userId={userId}
                   />
                 ))
               : ""}
@@ -129,20 +131,24 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
         </Tabs>
       </Row>
 
-      <Row>
-        <Form>
-          <Form.Group>
-            <Form.Label>COMMENT</Form.Label>
-            <Form.Control onChange={(e) => setComment(e.target.value)} />
-            <Button
-              variant="primary"
-              onClick={() => handleSubmit()}
-            >
-              SEND!!!
-            </Button>
-          </Form.Group>
-        </Form>
-      </Row>
+      {key === "posts" ? (
+        <Row>
+          <Form>
+            <Form.Group>
+              <Form.Label>COMMENT</Form.Label>
+              <Form.Control onChange={(e) => setComment(e.target.value)} />
+              <Button
+                variant="primary"
+                onClick={() => handleSubmit()}
+              >
+                SEND!!!
+              </Button>
+            </Form.Group>
+          </Form>
+        </Row>
+      ) : (
+        ""
+      )}
     </Container>
   );
 };
