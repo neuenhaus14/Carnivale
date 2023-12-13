@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext, createContext} from 'react';
 import {Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLoaderData} from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react';
 import ProtectedRoute from './ProtectedRoutes'
@@ -20,7 +20,8 @@ const App = () => {
 
   const [lng, setLng] = useState(0)
   const [lat, setLat] = useState(0)
-
+  //set useContext
+  //const LocContext = React.createContext()
   const getLocation = () => {
     if (navigator.geolocation) {
       return navigator.geolocation.getCurrentPosition(showPosition)
@@ -29,14 +30,14 @@ const App = () => {
       return null
     }
   }
-  
+
   const showPosition = (position: any) => {
     //console.log(position)
     setLng(position.coords.longitude);
     setLat(position.coords.latitude);
   }
 
-  console.log('user coords from app', lng, lat)
+  //console.log('user coords from app', lng, lat)
 
   // useEffect(() => {
   //   getLocation();
@@ -63,13 +64,14 @@ const App = () => {
     return <Loading />;
   }
 
-
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
           <Route path='/' element={<Login />} />
-        <Route element={<ProtectedRoute />}>  
-          <Route path='/homepage' element={<div><HomePage getLocation={getLocation}/> <NavBar /></div>}  />
+        {/* <Route element={<ProtectedRoute />}>  */}
+        {/* <LocContext.Provider value={{lat, lng}}> */}
+          <Route path='/homepage' element={<div><HomePage getLocation={getLocation} lat={lat} lng={lng}/> <NavBar /></div>}  />
+        {/* </LocContext.Provider>  */}
           <Route path='/mainforum' element={<div><MainForum /> <NavBar /></div>} />
           <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
           <Route path='/mappage' element={<div><MapPage /> <NavBar /></div>}/>

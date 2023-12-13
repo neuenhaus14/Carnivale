@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Card,
   Form,
@@ -14,19 +14,26 @@ import axios from "axios";
 import HomeModal from "./HomeModal";
 import WeatherCard from "./WeatherCard";
 import PostCard from "./PostCard";
+import LocContext from "./App"
+
 //PARENT OF HOMEMODAL
 
 interface HomePageProps {
   getLocation: any
+  lat: number
+  lng: number
 }
+//const loc = useContext(LocContext)
 
-const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
+const HomePage: React.FC<HomePageProps> = ({getLocation, lat, lng}) => {
   const { user } = useAuth0();
   const [comment, setComment] = useState("");
   const [userId, setUserId] = useState(null);
   const [posts, setPosts] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [key, setKey] = useState("posts");
+  const loc = useContext(getLocation)
+  //console.log('context test', lat, lng)
 
   useEffect(() => {
     getLocation();
@@ -69,7 +76,7 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
     getPosts(key);
     const interval = setInterval(() => {
       getPosts(key);
-      console.log("fetch");
+      //console.log("fetch");
     }, 5000);
     return () => clearInterval(interval);
   }, [key]);
@@ -88,8 +95,10 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
       { showModal ?
       <HomeModal
         setShowModal={setShowModal}
+        lat={lat}
+        lng={lng}
        />
-      : null  
+      : null
     }
       </Row>
 
