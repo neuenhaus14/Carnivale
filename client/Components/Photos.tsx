@@ -68,6 +68,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
     }
   };
 
+  
 
   //considering this put request as part of our post request due to the multer middleware
   const saveToDb = async () => {
