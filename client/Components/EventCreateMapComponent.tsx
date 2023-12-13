@@ -10,7 +10,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 interface EventCreateMapComponentProps {
   latitude: number,
   longitude: number,
-  // selectedEvent: object,
 }
 
 const EventCreateMapComponent: React.FC<EventCreateMapComponentProps>= ({ latitude, longitude }) => {

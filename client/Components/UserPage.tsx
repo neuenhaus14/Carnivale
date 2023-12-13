@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
+import { Button } from 'react-bootstrap';
 const UserPage = ({ coolThing }: UserPageProps) => {
 
   const [searchParams] = useSearchParams();
@@ -20,7 +21,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   const [isUserAttending, setIsUserAttending] = useState(false) // this gets passed to basic modal to expose invite functionality
   const [showBasicModal, setShowBasicModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false)
-
+  const [isNewEvent, setIsNewEvent] = useState(false);
 
   const getFriends = async () => {
     try {
@@ -73,11 +74,13 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   }
 
   useEffect(() => {
-    getFriends();
-    getEventsOwned();
-    getEventsParticipating();
-    getEventsInvited();
-    getFriendRequests();
+    if (!isNewEvent) {
+      getFriends();
+      getEventsOwned();
+      getEventsParticipating();
+      getEventsInvited();
+      getFriendRequests();
+    }
   }, [])
 
   // ALL RENDERED DATA ARE IN LIST ITEMS
@@ -105,21 +108,48 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   let eventsOwnedItems = null;
   if (eventsOwned.length > 0) {
     eventsOwnedItems = eventsOwned.map((event: any, index: number) => {
-      return <li key={index} onClick={() => console.log('owned event1!')}>{event.name} {event.description}</li>
+      return <li
+        key={index}
+        onClick={() => {
+          setIsNewEvent(false);
+          setIsUserAttending(true);
+          setShowCreateModal(true);
+          setSelectedEvent(event)
+        }}>
+        {event.name} {event.description}
+      </li>
     })
   }
 
   let eventsParticipatingItems = null;
   if (eventsParticipating.length > 0) {
     eventsParticipatingItems = eventsParticipating.map((event: any, index: number) => {
-      return <li key={index} onClick={() => { setIsUserAttending(true); setShowBasicModal(true); setSelectedEvent(event) }}>{event.name} {event.description}</li>
+      return <li
+        key={index}
+        onClick={() => {
+          setIsNewEvent(false);
+          setIsUserAttending(true);
+          setShowBasicModal(true);
+          setSelectedEvent(event)
+        }}>
+        {event.name} {event.description}
+      </li>
     })
   }
 
   let eventsInvitedItems = null;
   if (eventsInvited.length > 0) {
     eventsInvitedItems = eventsInvited.map((event: any, index: number) => {
-      return <li key={index} onClick={() => { setIsUserAttending(false); setShowBasicModal(true); setSelectedEvent(event) }}>{event.name} {event.description} </li>
+      return <li
+        key={index}
+        onClick={() => {
+          setIsNewEvent(false);
+          setIsUserAttending(false);
+          setShowBasicModal(true);
+          setSelectedEvent(event)
+        }}>
+        {event.name} {event.description}
+      </li>
     })
   }
 
@@ -214,13 +244,18 @@ const UserPage = ({ coolThing }: UserPageProps) => {
         setIsUserAttending={setIsUserAttending}
         getEventsInvited={getEventsInvited}
         getEventsParticipating={getEventsParticipating}
+        isNewEvent={isNewEvent}
+        setIsNewEvent={setIsNewEvent}
       />
 
 
       <h5> Mon Krewe </h5>
       {friends.length > 0 ? <ul>{userFriendsItems}</ul> : 'Assemble your krewe below'}
 
-      <input placeholder='Search people by phone' value={phoneForFriendRequest} onChange={handlePhoneInput}></input>
+      <input
+        placeholder='Search people by phone'
+        value={phoneForFriendRequest}
+        onChange={handlePhoneInput}></input>
       <button onClick={requestFriend}>Invite to Krewe</button>
 
 
@@ -269,6 +304,22 @@ const UserPage = ({ coolThing }: UserPageProps) => {
           <ul>{eventsInvitedItems}</ul>
         </>
       }
+
+      <Button
+        variant='secondary'
+        onClick={() => {
+          setIsNewEvent(true);
+          setIsUserAttending(true);
+          setSelectedEvent({ 
+            longitude: -90, 
+            latitude: 29.9511, 
+            startTime: null, 
+            endTime: null });
+          setShowCreateModal(true);
+        }}
+      >
+        Create New Event
+      </Button>
     </div>
   )
 };
