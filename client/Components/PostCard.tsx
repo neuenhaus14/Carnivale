@@ -8,11 +8,9 @@ import ShareModal from "./ShareModal";
 
 dayjs.extend(relativeTime);
 
-const PostCard = (props: { post: any, userId: number }) => {
+const PostCard = (props: { post: any; userId: number }) => {
   const { post, userId } = props;
   const [owner, setOwner] = useState("");
-
-
 
   const getOwner = async () => {
     try {
@@ -24,9 +22,18 @@ const PostCard = (props: { post: any, userId: number }) => {
     }
   };
 
+  const handleUpvote = () => {
+    console.log('great job!');
+  }
+
+  
+  const handleDownvote = () => {
+    console.log('BOOO!!!');
+  }
+
   useEffect(() => {
     getOwner();
-  }, [])
+  }, []);
 
   return (
     <Card>
@@ -36,7 +43,11 @@ const PostCard = (props: { post: any, userId: number }) => {
             {post.comment} - {owner}:{" "}
             {dayjs(post.createdAt.toString()).fromNow()}
           </Card.Text>
-          <ShareModal post={post} userId={userId} postType={'comment'}/>
+          <ShareModal
+            post={post}
+            userId={userId}
+            postType={"comment"}
+          />
         </Card.Body>
       ) : (
         <Card.Body>
@@ -48,9 +59,15 @@ const PostCard = (props: { post: any, userId: number }) => {
             {post.description} - {owner}:{" "}
             {dayjs(post.createdAt.toString()).fromNow()}
           </Card.Text>
-          <ShareModal post={post} userId={userId} postType={'photo'}/>
+          <ShareModal
+            post={post}
+            userId={userId}
+            postType={"photo"}
+          />
         </Card.Body>
       )}
+      <Button onClick={handleUpvote}>Upvote</Button>
+      <Button onClick={handleDownvote}>Downvote</Button>
     </Card>
   );
 };
