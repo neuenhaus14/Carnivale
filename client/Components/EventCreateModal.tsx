@@ -15,19 +15,20 @@ interface EventCreateModalProps {
   isUserAttending: boolean,
   setIsUserAttending: any,
   getEventsInvited: any,
-  getEventsParticipating: any
+  getEventsParticipating: any,
+  isNewEvent: boolean,
+  setIsNewEvent: any,
 }
 
 interface EventCreateAccordionProps {
   friends: any,
   selectedEvent: any,
   userId: number
+  isNewEvent: boolean
 }
 
 
-
-
-const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, selectedEvent, userId }) => {
+const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, selectedEvent, userId, isNewEvent }) => {
 
   const [invitees, setInvitees] = useState([]);
   const [participants, setParticipants] = useState([]);
@@ -35,7 +36,9 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
 
 
   useEffect(() => {
-    getPeopleForEvent()
+    if (!isNewEvent) {
+      getPeopleForEvent()
+    }
   }, [])
 
   // ONLY A USER'S FRIENDS WILL POPULATE THESE AREA
@@ -114,7 +117,7 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
   )
 }
 
-const EventCreateModal: React.FC<EventCreateModalProps> = ({ selectedEvent, setShowCreateModal, showCreateModal, setSelectedEvent, friends, userId, getEventsInvited, getEventsParticipating }) => {
+const EventCreateModal: React.FC<EventCreateModalProps> = ({ selectedEvent, setShowCreateModal, showCreateModal, setSelectedEvent, friends, userId, getEventsInvited, getEventsParticipating, isNewEvent }) => {
   const handleClose = () => {
     setShowCreateModal(false); // goes up to user page and sets to false
     setSelectedEvent({ latitude: 0, longitude: 0, startTime: null, endTime: null }); // set coordinates so map in modal doesn't throw error for invalid LngLat object
@@ -122,22 +125,23 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({ selectedEvent, setS
 
   return (
     <Modal show={showCreateModal} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>{selectedEvent.name}</Modal.Title>
+      <Modal.Header>
+        <Modal.Title>{isNewEvent? 'Create new event' : selectedEvent.name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div style={{display: 'flex', flexDirection: 'column', alignContent:'center'}}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center' }}>
           <div>
             <EventCreateMapComponent latitude={selectedEvent.latitude} longitude={selectedEvent.longitude} />
           </div>
           <div>
             <p>{selectedEvent.description}</p>
             <p><b>When:</b> {moment(selectedEvent.startTime).format('MMM Do, h:mm a')} to {moment(selectedEvent.endTime).format('h:mm a')} <em>({moment(selectedEvent.startTime).fromNow()})</em></p>
-            {selectedEvent.address && <p><b>Where:</b> {selectedEvent.address}</p>} 
+            {selectedEvent.address && <p><b>Where:</b> {selectedEvent.address}</p>}
             <EventCreateAccordion
               selectedEvent={selectedEvent}
               friends={friends}
               userId={userId}
+              isNewEvent={isNewEvent} // passing this thru to accordion to determine whether to get event's people
             />
           </div>
         </div>
