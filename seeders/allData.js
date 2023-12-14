@@ -119,7 +119,6 @@ module.exports = {
       },
     ]);
 
-
     await queryInterface.bulkInsert("join_user_events", [
       {
         eventId: 1,
@@ -184,7 +183,7 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
     await queryInterface.bulkInsert("pins", [
       {
@@ -456,6 +455,13 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        comment: "I hate Mardi Gras!",
+        upvotes: -4,
+        ownerId: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
 
     await queryInterface.bulkInsert("join_comment_votes", [
@@ -501,6 +507,34 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        isUpvoted: false,
+        voter_userId: 2,
+        commentId: 5,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 3,
+        commentId: 5,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 4,
+        commentId: 5,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 5,
+        commentId: 5,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
 
     await queryInterface.bulkInsert("join_friends", [
@@ -538,6 +572,24 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
+        sender_userId: 5,
+        recipient_userId: 1,
+        shared_commentId: null,
+        shared_pinId: 2,
+        shared_photoId: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        sender_userId: 3,
+        recipient_userId: 1,
+        shared_commentId: 5,
+        shared_pinId: null,
+        shared_photoId: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
         sender_userId: 2,
         recipient_userId: 1,
         shared_commentId: 3,
@@ -558,6 +610,15 @@ module.exports = {
       {
         sender_userId: 1,
         recipient_userId: 2,
+        shared_commentId: null,
+        shared_pinId: null,
+        shared_photoId: 7,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        sender_userId: 3,
+        recipient_userId: 1,
         shared_commentId: null,
         shared_pinId: null,
         shared_photoId: 7,
