@@ -108,7 +108,7 @@ feedRouter.post(
             },
             { where: { voter_userId: userId, commentId: commentId } }
           );
-          await Comment.increment({ upvotes: 1 }, { where: { id: commentId } });
+          await Comment.increment({ upvotes: 2 }, { where: { id: commentId } });
           res.json({ success: true });
         } else {
           res
@@ -133,52 +133,87 @@ feedRouter.post(
   }
 );
 
-feedRouter.post(
-  "/downvote-comment/:user_id/:comment_id",
-  async (req: Request, res: Response) => {
-    try {
-      const commentId = req.params.comment_id;
-      const userId = req.params.user_id;
+feedRouter.post("/downvote-comment/:user_id/:comment_id", async (req, res) => {
+  try {
+    const commentId = req.params.comment_id;
+    const userId = req.params.user_id;
 
-      const existingVote = await Join_comment_vote.findOne({
-        where: { voter_userId: userId, commentId: commentId },
-      });
+    const existingVote = await Join_comment_vote.findOne({
+      where: { voter_userId: userId, commentId: commentId },
+    });
 
-      if (existingVote) {
-        if (existingVote.dataValues.isUpvoted) {
-          await Join_comment_vote.update(
-            {
-              isUpvoted: false,
-            },
-            { where: { voter_userId: userId, commentId: commentId } }
-          );
+    if (existingVote) {
+      if (existingVote.dataValues.isUpvoted) {
+        await Join_comment_vote.update(
+          { isUpvoted: false },
+          { where: { voter_userId: userId, commentId: commentId } }
+        );
+
+        const comment = await Comment.findByPk(commentId);
+
+        if (comment.dataValues.upvotes <= -4) {
+          // Remove references in join_shared_posts
+          await Join_shared_post.destroy({
+            where: { shared_commentId: commentId },
+          });
+
+          // Remove references in join_comment_votes
+          await Join_comment_vote.destroy({ where: { commentId: commentId } });
+
+          // Delete the comment
+          await Comment.destroy({ where: { id: commentId } });
+
+          res.json({
+            success: true,
+            message: "Comment deleted due to excessive downvotes.",
+          });
+        } else {
           await Comment.increment(
-            { upvotes: -1 },
+            { upvotes: -2 },
             { where: { id: commentId } }
           );
           res.json({ success: true });
-        } else {
-          res
-            .status(400)
-            .json({ error: "User has already voted down on this comment." });
         }
       } else {
-        await Join_comment_vote.create({
-          voter_userId: userId,
-          commentId: commentId,
-          isUpvoted: false,
+        res
+          .status(400)
+          .json({ error: "User has already voted down on this comment." });
+      }
+    } else {
+      await Join_comment_vote.create({
+        voter_userId: userId,
+        commentId: commentId,
+        isUpvoted: false,
+      });
+
+      const comment = await Comment.findByPk(commentId);
+
+      if (comment.dataValues.upvotes <= -4) {
+        // Remove references in join_shared_posts
+        await Join_shared_post.destroy({
+          where: { shared_commentId: commentId },
         });
 
-        await Comment.increment({ upvotes: -1 }, { where: { id: commentId } });
+        // Remove references in join_comment_votes
+        await Join_comment_vote.destroy({ where: { commentId: commentId } });
 
+        // Delete the comment
+        await Comment.destroy({ where: { id: commentId } });
+
+        res.json({
+          success: true,
+          message: "Comment deleted due to excessive downvotes.",
+        });
+      } else {
+        await Comment.increment({ upvotes: -1 }, { where: { id: commentId } });
         res.json({ success: true });
       }
-    } catch (error) {
-      console.error(`Error handling comment vote:`, error);
-      res.status(500).json({ error: "Internal Server Error" });
     }
+  } catch (error) {
+    console.error(`Error handling comment vote:`, error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-);
+});
 
 feedRouter.post(
   "/upvote-pin/:user_id/:pin_id",
@@ -199,7 +234,7 @@ feedRouter.post(
             },
             { where: { voter_userId: userId, pinId: pinId } }
           );
-          await Pin.increment({ upvotes: 1 }, { where: { id: pinId } });
+          await Pin.increment({ upvotes: 2 }, { where: { id: pinId } });
           res.json({ success: true });
         } else {
           res
@@ -243,7 +278,7 @@ feedRouter.post(
             },
             { where: { voter_userId: userId, photoId: photoId } }
           );
-          await Photo.increment({ upvotes: 1 }, { where: { id: photoId } });
+          await Photo.increment({ upvotes: 2 }, { where: { id: photoId } });
           res.json({ success: true });
         } else {
           res
@@ -287,8 +322,29 @@ feedRouter.post(
             },
             { where: { voter_userId: userId, pinId: pinId } }
           );
-          await Pin.increment({ upvotes: -1 }, { where: { id: pinId } });
-          res.json({ success: true });
+
+          const pin = await Pin.findByPk(pinId);
+
+          if (pin.dataValues.upvotes <= -4) {
+            // Remove references in join_shared_posts
+            await Join_shared_post.destroy({
+              where: { shared_pinId: pinId },
+            });
+
+            // Remove references in join_pin_votes
+            await Join_pin_vote.destroy({ where: { pinId: pinId } });
+
+            // Delete the pin
+            await Pin.destroy({ where: { id: pinId } });
+
+            res.json({
+              success: true,
+              message: "Pin deleted due to excessive downvotes.",
+            });
+          } else {
+            await Pin.increment({ upvotes: -2 }, { where: { id: pinId } });
+            res.json({ success: true });
+          }
         } else {
           res
             .status(400)
@@ -301,9 +357,28 @@ feedRouter.post(
           isUpvoted: false,
         });
 
-        await Pin.increment({ upvotes: -1 }, { where: { id: pinId } });
+        const pin = await Pin.findByPk(pinId);
 
-        res.json({ success: true });
+        if (pin.dataValues.upvotes <= -4) {
+          // Remove references in join_shared_posts
+          await Join_shared_post.destroy({
+            where: { shared_pinId: pinId },
+          });
+
+          // Remove references in join_pin_votes
+          await Join_pin_vote.destroy({ where: { pinId: pinId } });
+
+          // Delete the pin
+          await Pin.destroy({ where: { id: pinId } });
+
+          res.json({
+            success: true,
+            message: "Pin deleted due to excessive downvotes.",
+          });
+        } else {
+          await Pin.increment({ upvotes: -1 }, { where: { id: pinId } });
+          res.json({ success: true });
+        }
       }
     } catch (error) {
       console.error(`Error handling pin vote:`, error);
@@ -331,8 +406,29 @@ feedRouter.post(
             },
             { where: { voter_userId: userId, photoId: photoId } }
           );
-          await Photo.increment({ upvotes: -1 }, { where: { id: photoId } });
-          res.json({ success: true });
+
+          const photo = await Photo.findByPk(photoId);
+
+          if (photo.dataValues.upvotes <= -4) {
+            // Remove references in join_shared_posts
+            await Join_shared_post.destroy({
+              where: { shared_photoId: photoId },
+            });
+
+            // Remove references in join_photo_votes
+            await Join_photo_vote.destroy({ where: { photoId: photoId } });
+
+            // Delete the photo
+            await Photo.destroy({ where: { id: photoId } });
+
+            res.json({
+              success: true,
+              message: "Photo deleted due to excessive downvotes.",
+            });
+          } else {
+            await Photo.increment({ upvotes: -2 }, { where: { id: photoId } });
+            res.json({ success: true });
+          }
         } else {
           res
             .status(400)
@@ -345,9 +441,28 @@ feedRouter.post(
           isUpvoted: false,
         });
 
-        await Photo.increment({ upvotes: -1 }, { where: { id: photoId } });
+        const photo = await Photo.findByPk(photoId);
 
-        res.json({ success: true });
+        if (photo.dataValues.upvotes <= -4) {
+          // Remove references in join_shared_posts
+          await Join_shared_post.destroy({
+            where: { shared_photoId: photoId },
+          });
+
+          // Remove references in join_photo_votes
+          await Join_photo_vote.destroy({ where: { photoId: photoId } });
+
+          // Delete the photo
+          await Photo.destroy({ where: { id: photoId } });
+
+          res.json({
+            success: true,
+            message: "Photo deleted due to excessive downvotes.",
+          });
+        } else {
+          await Photo.increment({ upvotes: -1 }, { where: { id: photoId } });
+          res.json({ success: true });
+        }
       }
     } catch (error) {
       console.error(`Error handling photo vote:`, error);
@@ -355,104 +470,5 @@ feedRouter.post(
     }
   }
 );
-
-// feedRouter.post("/upvote-pin/:pin_id", async (req: Request, res: Response) => {
-//   try {
-//     const pinId = req.params.pin_id;
-//     const upvotePin = await Pin.increment(
-//       { upvotes: 1 },
-//       { where: { id: pinId } }
-//     );
-//     res.json(upvotePin);
-//   } catch (error) {
-//     console.error("Error upvoting pin:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-// feedRouter.post(
-//   "/downvote-pin/:pin_id",
-//   async (req: Request, res: Response) => {
-//     try {
-//       const pinId = req.params.pin_id;
-//       const upvotePin = await Pin.increment(
-//         { upvotes: -1 },
-//         { where: { id: pinId } }
-//       );
-//       res.json(upvotePin);
-//     } catch (error) {
-//       console.error("Error downvoting pin:", error);
-//       res.status(500).json({ error: "Internal Server Error" });
-//     }
-//   }
-// );
-
-// // feedRouter.post(
-// //   "/upvote-comment/:comment_id",
-// //   async (req: Request, res: Response) => {
-// //     try {
-// //       const commentId = req.params.comment_id;
-// //       const upvoteComment = await Comment.increment(
-// //         { upvotes: 1 },
-// //         { where: { id: commentId } }
-// //       );
-// //       res.json(upvoteComment);
-// //     } catch (error) {
-// //       console.error("Error upvoting comment:", error);
-// //       res.status(500).json({ error: "Internal Server Error" });
-// //     }
-// //   }
-// // );
-
-// // feedRouter.post(
-// //   "/downvote-comment/:comment_id",
-// //   async (req: Request, res: Response) => {
-// //     try {
-// //       const commentId = req.params.comment_id;
-// //       const downvoteComment = await Comment.increment(
-// //         { upvotes: -1 },
-// //         { where: { id: commentId } }
-// //       );
-// //       res.json(downvoteComment);
-// //     } catch (error) {
-// //       console.error("Error downvoting comment:", error);
-// //       res.status(500).json({ error: "Internal Server Error" });
-// //     }
-// //   }
-// // );
-
-// feedRouter.post(
-//   "/upvote-photo/:photo_id",
-//   async (req: Request, res: Response) => {
-//     try {
-//       const photoId = req.params.photo_id;
-//       const upvotePhoto = await Photo.increment(
-//         { upvotes: 1 },
-//         { where: { id: photoId } }
-//       );
-//       res.json(upvotePhoto);
-//     } catch (error) {
-//       console.error("Error upvoting photo:", error);
-//       res.status(500).json({ error: "Internal Server Error" });
-//     }
-//   }
-// );
-
-// feedRouter.post(
-//   "/downvote-photo/:photo_id",
-//   async (req: Request, res: Response) => {
-//     try {
-//       const photoId = req.params.photo_id;
-//       const downvotePhoto = await Photo.increment(
-//         { upvotes: -1 },
-//         { where: { id: photoId } }
-//       );
-//       res.json(downvotePhoto);
-//     } catch (error) {
-//       console.error("Error downvoting photo:", error);
-//       res.status(500).json({ error: "Internal Server Error" });
-//     }
-//   }
-// );
 
 export default feedRouter;

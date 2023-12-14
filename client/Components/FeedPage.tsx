@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import moment from "moment";
+import dayjs from "dayjs";
 
 interface SharedPost {
+  upvotes: number;
   id: number;
   sender_userId: number;
   recipient_userId: number;
@@ -45,135 +46,156 @@ interface Photo {
 const FeedPage = () => {
   const [sharedPosts, setSharedPosts] = useState<SharedPost[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [senderNames, setSenderNames] = useState<{ [userId: number]: string }>(
-    {}
-  );
-  const [commentDetails, setCommentDetails] = useState<Comment | null>(null);
-  const [pinDetails, setPinDetails] = useState<Pin | null>(null);
-  const [photoDetails, setPhotoDetails] = useState<Photo | null>(null);
-  const [ownerNames, setOwnerNames] = useState<{ [userId: number]: string }>(
-    {}
-  );
+  const [userNames, setUserNames] = useState<{ [userId: number]: string }>({});
+  const [commentDetails, setCommentDetails] = useState<{
+    [postId: number]: Comment;
+  }>({});
+  const [pinDetails, setPinDetails] = useState<{ [postId: number]: Pin }>({});
+  const [photoDetails, setPhotoDetails] = useState<{
+    [postId: number]: Photo;
+  }>({});
+  const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
 
   const userId = 1;
-  useEffect(() => {
-    axios
-      .get("/api/feed/shared-posts/1")
-      .then((response) => setSharedPosts(response.data))
-      .catch((error) => console.error("Error fetching shared posts:", error));
-
-    axios
-      .get("/api/feed/user/1")
-      .then((response) => setCurrentUser(response.data))
-      .catch((error) => console.error("Error fetching current user:", error));
-  }, []);
-
-  useEffect(() => {
-    sharedPosts.forEach(async (post) => {
-      try {
-        if (!senderNames[post.sender_userId]) {
-          await fetchSenderName(post.sender_userId);
-        }
-
-        if (!ownerNames[post.recipient_userId]) {
-          await fetchOwnerName(post.recipient_userId);
-        }
-
-        if (post.shared_commentId) {
-          await fetchCommentDetails(post.shared_commentId);
-        }
-
-        if (post.shared_pinId) {
-          await fetchPinDetails(post.shared_pinId);
-        }
-
-        if (post.shared_photoId) {
-          await fetchPhotoDetails(post.shared_photoId);
-        }
-      } catch (error) {
-        console.error("Error fetching shared post details:", error);
-      }
-    });
-  }, [sharedPosts, senderNames, ownerNames]);
 
   const fetchSenderName = async (userId: number) => {
     try {
       const response = await axios.get(`/api/feed/user/${userId}`);
       const senderName = `${response.data.firstName} ${response.data.lastName}`;
-      setSenderNames((prevNames) => ({ ...prevNames, [userId]: senderName }));
+      setUserNames((prevNames) => ({ ...prevNames, [userId]: senderName }));
     } catch (error) {
       console.error(`Error fetching sender ${userId} information:`, error);
     }
   };
 
-  const fetchOwnerName = async (userId: number) => {
-    if (ownerNames[userId] !== undefined) {
-      return;
-    }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [postsResponse, userResponse] = await Promise.all([
+          axios.get(`/api/feed/shared-posts/${userId}`),
+          axios.get(`/api/feed/user/${userId}`),
+        ]);
 
-    try {
-      const response = await axios.get(`/api/feed/user/${userId}`);
-      const ownerName = `${response.data.firstName} ${response.data.lastName}`;
-      setOwnerNames((prevNames) => ({ ...prevNames, [userId]: ownerName }));
-    } catch (error) {
-      console.error(
-        `Error fetching owner information for user ${userId}:`,
-        error
-      );
-      setOwnerNames((prevNames) => ({
-        ...prevNames,
-        [userId]: "Unknown User",
-      }));
-    }
-  };
+        setSharedPosts(postsResponse.data);
+        setCurrentUser(userResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-  const fetchCommentDetails = async (commentId: number) => {
-    try {
-      const response = await axios.get(`/api/feed/shared-comment/${commentId}`);
-      const commentDetails: Comment = {
-        comment: response.data.comment,
-        ownerId: response.data.ownerId,
-        upvotes: response.data.upvotes,
-      };
-      await fetchOwnerName(commentDetails.ownerId);
-      setCommentDetails(commentDetails);
-    } catch (error) {
-      console.error("Error fetching shared comment information:", error);
-    }
-  };
+    fetchData();
+  }, [userId]);
 
-  const fetchPinDetails = async (pinId: number) => {
-    try {
-      const response = await axios.get(`/api/feed/shared-pin/${pinId}`);
-      const pinDetails: Pin = {
-        ownerId: response.data.ownerId,
-        isToilet: response.data.isToilet,
-        isFood: response.data.isFood,
-        isPersonal: response.data.isPersonal,
-        upvotes: response.data.upvotes,
-      };
-      await fetchOwnerName(pinDetails.ownerId);
-      setPinDetails(pinDetails);
-    } catch (error) {
-      console.error("Error fetching shared pin information:", error);
-    }
-  };
+  useEffect(() => {
+    const fetchDetails = async (postId: number, type: string) => {
+      try {
+        const response = await axios.get(`/api/feed/shared-${type}/${postId}`);
 
-  const fetchPhotoDetails = async (photoId: number) => {
-    try {
-      const response = await axios.get(`/api/feed/shared-photo/${photoId}`);
-      const photoDetails: Photo = {
-        description: response.data.description,
-        ownerId: response.data.ownerId,
-        upvotes: response.data.upvotes,
-        url: response.data.photoURL,
-      };
-      await fetchOwnerName(photoDetails.ownerId);
-      setPhotoDetails(photoDetails);
-    } catch (error) {
-      console.error("Error fetching shared photo information:", error);
-    }
-  };
+        if (response.data === null) {
+          if (type === "comment") {
+            setCommentDetails((prevDetails) => ({
+              ...prevDetails,
+              [postId]: null,
+            }));
+          } else if (type === "pin") {
+            setPinDetails((prevDetails) => ({
+              ...prevDetails,
+              [postId]: null,
+            }));
+          } else if (type === "photo") {
+            setPhotoDetails((prevDetails) => ({
+              ...prevDetails,
+              [postId]: null,
+            }));
+          }
+
+          console.error(`${type} with ID ${postId} is deleted.`);
+          return;
+        }
+
+        const details = {
+          comment: {
+            comment: response.data.comment,
+            ownerId: response.data.ownerId,
+            upvotes: response.data.upvotes,
+          },
+          pin: {
+            ownerId: response.data.ownerId,
+            isToilet: response.data.isToilet,
+            isFood: response.data.isFood,
+            isPersonal: response.data.isPersonal,
+            upvotes: response.data.upvotes,
+          },
+          photo: {
+            description: response.data.description,
+            ownerId: response.data.ownerId,
+            upvotes: response.data.upvotes,
+            url: response.data.photoURL,
+          },
+        };
+
+        if (type === "comment") {
+          setCommentDetails((prevDetails) => ({
+            ...prevDetails,
+            [postId]: details.comment,
+          }));
+        } else if (type === "pin") {
+          setPinDetails((prevDetails) => ({
+            ...prevDetails,
+            [postId]: details.pin,
+          }));
+        } else if (type === "photo") {
+          setPhotoDetails((prevDetails) => ({
+            ...prevDetails,
+            [postId]: details.photo,
+          }));
+        }
+
+        // Fetch user details if not already fetched
+        if (!userNames[response.data.ownerId]) {
+          const userResponse = await axios.get(
+            `/api/feed/user/${response.data.ownerId}`
+          );
+          setUserNames((prevNames) => ({
+            ...prevNames,
+            [response.data
+              .ownerId]: `${userResponse.data.firstName} ${userResponse.data.lastName}`,
+          }));
+        }
+      } catch (error) {
+        console.error(`Error fetching ${type} details:`, error);
+      }
+    };
+    const fetchDataDetails = async () => {
+      const fetchPromises: Promise<void>[] = [];
+
+      sharedPosts.forEach((post) => {
+        if (post.sender_userId && !userNames[post.sender_userId]) {
+          fetchPromises.push(fetchSenderName(post.sender_userId));
+        }
+
+        if (post.shared_commentId) {
+          fetchPromises.push(fetchDetails(post.shared_commentId, "comment"));
+        }
+
+        if (post.shared_pinId) {
+          fetchPromises.push(fetchDetails(post.shared_pinId, "pin"));
+        }
+
+        if (post.shared_photoId) {
+          fetchPromises.push(fetchDetails(post.shared_photoId, "photo"));
+        }
+      });
+
+      try {
+        await Promise.all(fetchPromises);
+      } catch (error) {
+        console.error(`Error in Promise.all:`, error);
+      }
+    };
+
+    fetchDataDetails();
+  }, [sharedPosts, userNames, userNames]);
 
   const handleUpvote = async (postId: number, type: string) => {
     try {
@@ -205,7 +227,24 @@ const FeedPage = () => {
             : `downvote-photo/${userId}/${postId}`
         }`
       );
-      await fetchPostDetails(postId, type);
+
+      const updatedSharedPosts = sharedPosts.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              upvotes: post.upvotes - 1,
+            }
+          : post
+      );
+
+      setSharedPosts(updatedSharedPosts);
+
+      // Check if the post has reached -5 upvotes
+      if (
+        updatedSharedPosts.find((post) => post.id === postId)?.upvotes === -5
+      ) {
+        setDeletedPosts((prevDeletedPosts) => [...prevDeletedPosts, postId]);
+      }
 
       console.log(`Downvoted ${type} with ID ${postId}`);
     } catch (error) {
@@ -215,30 +254,48 @@ const FeedPage = () => {
 
   const fetchPostDetails = async (postId: number, type: string) => {
     try {
+      if (!sharedPosts.some((post) => post.id === postId)) {
+        return;
+      }
+
       if (type === "comment") {
         const response = await axios.get(`/api/feed/shared-comment/${postId}`);
-        setCommentDetails({
-          comment: response.data.comment,
-          ownerId: response.data.ownerId,
-          upvotes: response.data.upvotes,
-        });
+
+        if (response.data !== null) {
+          setCommentDetails((prevDetails) => ({
+            ...prevDetails,
+            [postId]: {
+              comment: response.data.comment,
+              ownerId: response.data.ownerId,
+              upvotes: response.data.upvotes,
+            },
+          }));
+        } else {
+          console.error(`Error: Comment with ID ${postId} not found.`);
+        }
       } else if (type === "pin") {
         const response = await axios.get(`/api/feed/shared-pin/${postId}`);
-        setPinDetails({
-          ownerId: response.data.ownerId,
-          isToilet: response.data.isToilet,
-          isFood: response.data.isFood,
-          isPersonal: response.data.isPersonal,
-          upvotes: response.data.upvotes,
-        });
+        setPinDetails((prevDetails) => ({
+          ...prevDetails,
+          [postId]: {
+            ownerId: response.data.ownerId,
+            isToilet: response.data.isToilet,
+            isFood: response.data.isFood,
+            isPersonal: response.data.isPersonal,
+            upvotes: response.data.upvotes,
+          },
+        }));
       } else if (type === "photo") {
         const response = await axios.get(`/api/feed/shared-photo/${postId}`);
-        setPhotoDetails({
-          description: response.data.description,
-          ownerId: response.data.ownerId,
-          upvotes: response.data.upvotes,
-          url: response.data.photoURL,
-        });
+        setPhotoDetails((prevDetails) => ({
+          ...prevDetails,
+          [postId]: {
+            description: response.data.description,
+            ownerId: response.data.ownerId,
+            upvotes: response.data.upvotes,
+            url: response.data.photoURL,
+          },
+        }));
       }
     } catch (error) {
       console.error(
@@ -282,117 +339,167 @@ const FeedPage = () => {
                 }}
               >
                 <p style={{ margin: 0 }}>
-                  Sender: {senderNames[post.sender_userId]}
+                  Sender: {userNames[post.sender_userId]}
                 </p>
+                {/* Comments */}
                 {post.shared_commentId && (
                   <div style={{ marginTop: "5px" }}>
                     <p style={{ margin: 0 }}>
                       Shared Comment ID: {post.shared_commentId}
                     </p>
-                    <p style={{ margin: 0 }}>
-                      Comment: {commentDetails?.comment}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Creator: {ownerNames[commentDetails?.ownerId]}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Upvotes: {commentDetails?.upvotes}
-                    </p>
-                    <button
-                      onClick={() =>
-                        handleUpvote(post.shared_commentId, "comment")
-                      }
-                    >
-                      Upvote Comment
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleDownvote(post.shared_commentId, "comment")
-                      }
-                    >
-                      Downvote Comment
-                    </button>
-                    <button onClick={() => handleDelete(post.id)}>
-                      Delete Post
-                    </button>
+                    {commentDetails[post.shared_commentId] ? (
+                      <div>
+                        <p style={{ margin: 0 }}>
+                          Comment:{" "}
+                          {commentDetails[post.shared_commentId].comment}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Creator:{" "}
+                          {
+                            userNames[
+                              commentDetails[post.shared_commentId].ownerId
+                            ]
+                          }
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Upvotes:{" "}
+                          {commentDetails[post.shared_commentId].upvotes}
+                        </p>
+                        <button
+                          onClick={() =>
+                            handleUpvote(post.shared_commentId, "comment")
+                          }
+                        >
+                          Upvote Comment
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDownvote(post.shared_commentId, "comment")
+                          }
+                        >
+                          Downvote Comment
+                        </button>
+                        <button onClick={() => handleDelete(post.id)}>
+                          Delete Post
+                        </button>
+                      </div>
+                    ) : (
+                      <p style={{ color: "red" }}>
+                        This post has been deleted due to too many downvotes.
+                      </p>
+                    )}
                   </div>
                 )}
+                {/* Pins */}
                 {post.shared_pinId && (
                   <div style={{ marginTop: "5px" }}>
                     <p style={{ margin: 0 }}>
                       Shared Pin ID: {post.shared_pinId}
                     </p>
-                    <p style={{ margin: 0 }}>
-                      Is Toilet: {pinDetails?.isToilet ? "Yes" : "No"}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Is Food: {pinDetails?.isFood ? "Yes" : "No"}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Is Personal: {pinDetails?.isPersonal ? "Yes" : "No"}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Creator: {ownerNames[pinDetails?.ownerId]}
-                    </p>
-                    <p style={{ margin: 0 }}>Upvotes: {pinDetails?.upvotes}</p>
-                    <button
-                      onClick={() => handleUpvote(post.shared_pinId, "pin")}
-                    >
-                      Upvote Pin
-                    </button>
-                    <button
-                      onClick={() => handleDownvote(post.shared_pinId, "pin")}
-                    >
-                      Downvote Pin
-                    </button>
-                    <button onClick={() => handleDelete(post.id)}>
-                      Delete Post
-                    </button>
+                    {pinDetails[post.shared_pinId] ? (
+                      <div>
+                        <p style={{ margin: 0 }}>
+                          Is Toilet:{" "}
+                          {pinDetails[post.shared_pinId].isToilet
+                            ? "Yes"
+                            : "No"}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Is Food:{" "}
+                          {pinDetails[post.shared_pinId].isFood ? "Yes" : "No"}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Is Personal:{" "}
+                          {pinDetails[post.shared_pinId].isPersonal
+                            ? "Yes"
+                            : "No"}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Creator:{" "}
+                          {userNames[pinDetails[post.shared_pinId].ownerId]}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Upvotes: {pinDetails[post.shared_pinId].upvotes}
+                        </p>
+                        <button
+                          onClick={() => handleUpvote(post.shared_pinId, "pin")}
+                        >
+                          Upvote Pin
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDownvote(post.shared_pinId, "pin")
+                          }
+                        >
+                          Downvote Pin
+                        </button>
+                        <button onClick={() => handleDelete(post.id)}>
+                          Delete Post
+                        </button>
+                      </div>
+                    ) : (
+                      <p style={{ color: "red" }}>
+                        This post has been deleted due to too many downvotes.
+                      </p>
+                    )}
                   </div>
                 )}
+                {/* Photos */}
                 {post.shared_photoId && (
                   <div style={{ marginTop: "5px" }}>
                     <p style={{ margin: 0 }}>
                       Shared Photo ID: {post.shared_photoId}
                     </p>
-                    <p style={{ margin: 0 }}>
-                      Description: {photoDetails?.description}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Creator: {ownerNames[photoDetails?.ownerId]}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Upvotes: {photoDetails?.upvotes}
-                    </p>
-                    <img
-                      src={photoDetails?.url}
-                      alt="Shared Photo"
-                      style={{
-                        maxWidth: "100%",
-                        height: "auto",
-                        marginTop: "10px",
-                      }}
-                    />
-                    <button
-                      onClick={() => handleUpvote(post.shared_photoId, "photo")}
-                    >
-                      Upvote Photo
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleDownvote(post.shared_photoId, "photo")
-                      }
-                    >
-                      Downvote Photo
-                    </button>
-                    <button onClick={() => handleDelete(post.id)}>
-                      Delete Post
-                    </button>
+                    {photoDetails[post.shared_photoId] ? (
+                      <div>
+                        <p style={{ margin: 0 }}>
+                          Description:{" "}
+                          {photoDetails[post.shared_photoId].description}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Creator:{" "}
+                          {userNames[photoDetails[post.shared_photoId].ownerId]}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Upvotes: {photoDetails[post.shared_photoId].upvotes}
+                        </p>
+                        <img
+                          src={photoDetails[post.shared_photoId].url}
+                          alt="Shared Photo"
+                          style={{
+                            maxWidth: "100%",
+                            height: "auto",
+                            marginTop: "10px",
+                          }}
+                        />
+                        <button
+                          onClick={() =>
+                            handleUpvote(post.shared_photoId, "photo")
+                          }
+                        >
+                          Upvote Photo
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDownvote(post.shared_photoId, "photo")
+                          }
+                        >
+                          Downvote Photo
+                        </button>
+                        <button onClick={() => handleDelete(post.id)}>
+                          Delete Post
+                        </button>
+                      </div>
+                    ) : (
+                      <p style={{ color: "red" }}>
+                        This post has been deleted due to too many downvotes.
+                      </p>
+                    )}
                   </div>
                 )}
                 <p style={{ margin: 0 }}>
                   Created At:{" "}
-                  {moment(post.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
+                  {dayjs(post.createdAt).format("MMMM D YYYY, h:mm:ss A")}
                 </p>
               </div>
             </li>

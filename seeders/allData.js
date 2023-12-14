@@ -119,7 +119,6 @@ module.exports = {
       },
     ]);
 
-
     await queryInterface.bulkInsert("join_user_events", [
       {
         eventId: 1,
@@ -184,7 +183,7 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ])
+    ]);
 
     await queryInterface.bulkInsert("pins", [
       {
@@ -235,6 +234,18 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        longitude: -90.0544,
+        latitude: 29.9644,
+        isToilet: false,
+        isFood: true,
+        isPersonal: false,
+        isFree: null,
+        upvotes: -4,
+        ownerId: 6,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
 
     await queryInterface.bulkInsert("join_pin_votes", [
@@ -256,6 +267,34 @@ module.exports = {
         isUpvoted: false,
         voter_userId: 3,
         pinId: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 2,
+        pinId: 5,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 3,
+        pinId: 5,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 4,
+        pinId: 5,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 5,
+        pinId: 5,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -360,6 +399,20 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        longitude: -90.055144,
+        latitude: 29.963244,
+        description: "Baccus is lame!",
+        photoURL:
+          "https://www.kreweofbacchus.org/wp-content/uploads/2016/12/beads.jpg",
+        isCostume: false,
+        isThrow: true,
+        isPin: false,
+        upvotes: -4,
+        ownerId: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
 
     await queryInterface.bulkInsert("join_photo_votes", [
@@ -388,6 +441,34 @@ module.exports = {
         isUpvoted: true,
         voter_userId: 3,
         photoId: 7,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 2,
+        photoId: 8,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 3,
+        photoId: 8,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 4,
+        photoId: 8,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 5,
+        photoId: 8,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -456,6 +537,13 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        comment: "I hate Mardi Gras!",
+        upvotes: -4,
+        ownerId: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
 
     await queryInterface.bulkInsert("join_comment_votes", [
@@ -501,6 +589,34 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        isUpvoted: false,
+        voter_userId: 2,
+        commentId: 5,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 3,
+        commentId: 5,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 4,
+        commentId: 5,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        isUpvoted: false,
+        voter_userId: 5,
+        commentId: 5,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
 
     await queryInterface.bulkInsert("join_friends", [
@@ -538,6 +654,33 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
+        sender_userId: 5,
+        recipient_userId: 1,
+        shared_commentId: null,
+        shared_pinId: 2,
+        shared_photoId: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        sender_userId: 5,
+        recipient_userId: 1,
+        shared_commentId: null,
+        shared_pinId: 5,
+        shared_photoId: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        sender_userId: 3,
+        recipient_userId: 1,
+        shared_commentId: 5,
+        shared_pinId: null,
+        shared_photoId: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
         sender_userId: 2,
         recipient_userId: 1,
         shared_commentId: 3,
@@ -556,8 +699,26 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
+        sender_userId: 2,
+        recipient_userId: 1,
+        shared_commentId: null,
+        shared_pinId: null,
+        shared_photoId: 8,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
         sender_userId: 1,
         recipient_userId: 2,
+        shared_commentId: null,
+        shared_pinId: null,
+        shared_photoId: 7,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        sender_userId: 3,
+        recipient_userId: 1,
         shared_commentId: null,
         shared_pinId: null,
         shared_photoId: 7,
