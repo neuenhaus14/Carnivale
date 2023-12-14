@@ -134,6 +134,23 @@ io.on('connection', (socket: any) => {
   });
 });
 
+io.on('connection', (socket: any) => {
+  console.log('a user connected');
+  socket.on('userLoc', (userLoc: any) => {
+    console.log('userLoc', userLoc.longitude, userLoc.latitude)
+    User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: 1}})
+    .then((data: any) => 
+        console.log('success')
+        // io.emit('userLoc', data.dataValues)
+    )
+    .catch((err) => console.error(err))
+  })
+
+  socket.on('disconnect', () => {
+    console.log('a user disconnected');
+  });
+});
+
 app.get("/*", function (req: Request, res: Response) {
   res.sendFile(
     path.join(__dirname, "..", "dist", "index.html"),
