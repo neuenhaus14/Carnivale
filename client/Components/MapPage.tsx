@@ -21,21 +21,18 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
   const mapRef = useRef(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [createPin, setCreatePin] = useState(false);
+  const [createPin, setCreatePin] = useState(false)
   const [isPinSelected, setIsPinSelected] = useState(false)
   const [selectedPin, setSelectedPin] = useState({})
   const [showModal, setShowModal] = useState(false)
   const [markers, setMarkers] = useState([]);
-  const [searchValue, setSearchValue] = useState('')
   const [userLocation, setUserLocation] = useState<[number, number]>([userLng, userLat]);
   const [clickedPinCoords, setClickedPinCoords] = useState<[number, number]>([0, 0]);
   const [distance, setDistance] = useState(null);
   const [duration, setDuration] = useState(null);
   const [destinationCoords, setDestinationCoords] = useState<[number, number]>([0, 0]);
   const [routeDirections, setRouteDirections] = useState<any | null>(null);
-
-  // console.log('userLocation', userLocation)
-
+  const [friends, setFriends] = useState([])
   const [viewState, setViewState] = useState({
     latitude: 29.964735,
     longitude: -90.054261,
@@ -52,6 +49,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
   //loads pins immediately on page render
   useEffect(() => {
     getPins();
+    getFriends();
   }, [setMarkers]);
 
   
@@ -68,6 +66,16 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
     try {
       const response = await axios.get('/api/pins/get-pins')
       setMarkers(response.data)
+    } catch (err)  {
+      console.error(err)
+    }
+  }
+
+  const getFriends = async () => {
+    try {
+      const friends = await axios.get(`/api/friends/getFriends/${1}`)
+      console.log(friends)
+      setFriends(friends.data)
     } catch (err)  {
       console.error(err)
     }
@@ -122,10 +130,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
 
  // handles the route line creation by making the response from the directions API into a geoJSON 
  // which is the only way to use it in the <Source> tag (displays the "route/line")
-  const createRouterLine = async ( 
-    userLocation: [number, number],
-    routeProfile: string,
-  ): Promise<void> => {
+  const createRouterLine = async (userLocation: [number, number], routeProfile: string,): Promise<void> => {
     console.log('userCoords', userLng, userLat)
     const startCoords = `${userLng},${userLat}`;
     const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`;
@@ -148,15 +153,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
         const routerFeature = makeRouterFeature([...coordinates]);
         setRouteDirections(routerFeature);
       }
-
     } catch (err) {
-
       console.error(err);
     }
-
   }
-
-  //console.log(`${distance} miles`, `${duration} hours` )
 
   // prompts the modal to open/close
   const modalTrigger = () => {
@@ -178,20 +178,11 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
           setMarkers={setMarkers}
           isPinSelected={isPinSelected}
           selectedPin={selectedPin}
-          // setSelectedPin={setSelectedPin}
           setIsPinSelected={setIsPinSelected} 
         /> 
         : null }
       <div id='map-page-filter' >
       </div>
-      {/* <SearchBox accessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
-        value={searchValue}
-        onChange={(e) => setSearchValue(e)}
-        placeholder="Search for Location"
-        marker={true}
-       
-      /> */}
-      
       <Map
         ref={mapRef}
         {...viewState}
@@ -216,7 +207,19 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
             onClick={(e) => {clickedMarker(e.target)}} 
             longitude={marker.longitude} latitude={marker.latitude}
             anchor="bottom"> 
-            {/* <BsFillPinFill style={{ width: 50, height: 25}} />  */}
+            </Marker>
+          ))
+        }
+      </div>
+      <div id='friend-markers'>
+        {
+          friends.map((friend) => (
+            <Marker 
+            key={friend.id}
+            onClick={(e) => {clickedMarker(e.target)}} 
+            longitude={friend.longitude} latitude={friend.latitude}
+            anchor="bottom"> 
+            <b>{friend.firstName[0]}{friend.lastName[0]}</b>
             </Marker>
           ))
         }
