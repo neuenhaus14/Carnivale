@@ -54,12 +54,14 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
     getPins();
   }, [setMarkers]);
 
+  
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
     geoControlRef.current?.trigger();
     console.log('geocontrolRef', geoControlRef)
   }, [geoControlRef.current]);
+
 
   //gets pins from database
   const getPins = async () => {
@@ -75,16 +77,18 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
   const dropPin = (e: any) => {
     modalTrigger()
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
+    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
   }
 
   //finds clicked marker/pin from database
   const clickedMarker = async (e: any) => {
     const currMarkerLng = e._lngLat.lng;
     const currMarkerLat = e._lngLat.lat;
-
+    
     const  lngRounded = currMarkerLng.toString().slice(0,10)
     const  latRounded = currMarkerLat.toString().slice(0,9)
-
+    setClickedPinCoords([lngRounded, latRounded])
+    
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-marker/${lngRounded}/${latRounded}`)
       console.log('resposne data', data[0].longitude, data[0].latitude)
@@ -95,6 +99,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
     } catch (err)  {
       console.error(err);
     }
+
   };
 
  // these are the details that are being set to build the "route"/ line for the directions
@@ -117,10 +122,15 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
 
  // handles the route line creation by making the response from the directions API into a geoJSON 
  // which is the only way to use it in the <Source> tag (displays the "route/line")
-  const createRouterLine = async ( routeProfile: string ): Promise<void> => {
+  const createRouterLine = async ( 
+    userLocation: [number, number],
+    routeProfile: string,
+  ): Promise<void> => {
     console.log('userCoords', userLng, userLat)
     const startCoords = `${userLng},${userLat}`;
     const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`;
+    console.log('endcoords', endCoords)
+    console.log('clickedPinCoords', clickedPinCoords)
     const geometries = 'geojson';
     const url = `https://api.mapbox.com/directions/v5/mapbox/${routeProfile}/${startCoords};${endCoords}?alternatives=true&geometries=${geometries}&steps=true&banner_instructions=true&overview=full&voice_instructions=true&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw`;
 
@@ -128,23 +138,28 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
       const { data } = await axios.get(url);
 
       const result = data.routes.map((route: any) => {
-        setDistance((route.distance / 1000).toFixed(2))
-        setDuration((route.duration / 3600).toFixed(2))
+        console.log('result of the data loop', route);
+        setDistance((route.distance / 1000).toFixed(2));
+        setDuration((route.duration / 3600).toFixed(2));
       });
 
-      const coordinates = data['routes'][0]['geometry']['coordinates']
-      const destinationCoordinates = data['routes'][0]['geometry']['coordinates'].slice(-1)[0]
-      setDestinationCoords(destinationCoordinates)
+      const coordinates = data['routes'][0]['geometry']['coordinates'];
+      const destinationCoordinates = data['routes'][0]['geometry']['coordinates'].slice(-1)[0];
+      setDestinationCoords(destinationCoordinates);
 
       if (coordinates.length) {
         const routerFeature = makeRouterFeature([...coordinates]);
         setRouteDirections(routerFeature);
       }
-
+      console.log('end of createRouterLine function')
+      //setLoading(false);
     } catch (err) {
+      //setLoading(false);
       console.error(err);
     }
+
   }
+
 
   // prompts the modal to open/close
   const modalTrigger = () => {
@@ -179,11 +194,12 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
         marker={true}
        
       /> */}
+      
       <Map
         ref={mapRef}
         {...viewState}
         onMove={(e) => setViewState(e.viewState)}
-        onClick={(e) => {dropPin(e); createRouterLine(selectedRouteProfile)}}
+        onClick={(e) => {dropPin(e); createRouterLine(userLocation, selectedRouteProfile)}}
         mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
         style={{ position: 'relative', bottom: '0px', width: '100vw', height: 475 }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
@@ -194,21 +210,21 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
           showUserHeading={true}
           showAccuracyCircle={false}
           ref={geoControlRef}       
-        />
-        <div id='map-markers'>
-          {
-            markers.map((marker) => (
-              <Marker 
-              key={marker.id}
-              onClick={(e) => {clickedMarker(e.target)}} 
-              longitude={marker.longitude} latitude={marker.latitude}
-              anchor="bottom"> 
-              {/* <BsFillPinFill style={{ width: 50, height: 25}} />  */}
-              </Marker>
-            ))
-          }
-        </div>
-        {routeDirections && (
+          />
+      <div id='map-markers'>
+        {
+          markers.map((marker) => (
+            <Marker 
+            key={marker.id}
+            onClick={(e) => {clickedMarker(e.target)}} 
+            longitude={marker.longitude} latitude={marker.latitude}
+            anchor="bottom"> 
+            {/* <BsFillPinFill style={{ width: 50, height: 25}} />  */}
+            </Marker>
+          ))
+        }
+      </div>
+      {routeDirections && (
           <Source id="line1" type="geojson" data={routeDirections}>
             <Layer
               id="routerLine01"
