@@ -302,6 +302,37 @@ Events.post('/inviteToEvent', async (req: Request, res: Response) => {
   }
 })
 
+Events.post('/getCoordinatesFromAddress', async (req: Request, res: Response) => {
+  
+  const apiUrlBeginning = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
+  const apiUrlEnd = '.json?proximity=ip&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw';
+ try {
+  let { address } = req.body
+  address = address.replaceAll(' ', '%20');
+  const apiUrl = apiUrlBeginning + address + apiUrlEnd;
+  const coordinateResponse: any = await axios.get(apiUrl).catch((error) => console.error(error));
+  const coordinates = coordinateResponse.data.features[0].center;
+  res.status(200).send(coordinates);
+  } catch (err) {
+    console.error("SERVER ERROR: failed to 'POST' new coordinates from address", err);
+    res.status(500).send(err);
+  }
+})
+
+Events.post('/getAddressFromCoordinates', async (req: Request, res: Response) => {
+  console.log(req.body)
+  const { latitude, longitude } = req.body.coordinates
+
+  const apiUrlBeginning = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
+  const apiUrlEnd = '.json?proximity=ip&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw';
+  const coordinateString = `${longitude},${latitude}`
+  const apiUrl = apiUrlBeginning + coordinateString + apiUrlEnd
+
+  const addressResponse: any = await axios.get(apiUrl).catch((error) => console.error(error));
+  const address = addressResponse.data.features[0].place_name;
+  console.log('addressResponse', address)
+  res.status(200).send(address);
+})
 
 
 export default Events;
