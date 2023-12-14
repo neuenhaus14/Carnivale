@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Accordion } from 'react-bootstrap'
 import EventBasicMapComponent from './EventBasicMapComponent';
 import axios from 'axios';
-import moment from 'moment';
 
 // This modal displays for events that the user
 // is invited to and attending
@@ -162,7 +161,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({ selectedEvent, setSho
           </div>
           <div>
             <p>{selectedEvent.description}</p>
-            <p><b>When:</b> {moment(selectedEvent.startTime).format('MMM Do, h:mm a')} to {moment(selectedEvent.endTime).format('h:mm a')} <em>({moment(selectedEvent.startTime).fromNow()})</em></p>
+            <p><b>When:</b> {selectedEvent.startTime} to {selectedEvent.endTime} </p>
             {selectedEvent.address && <p><b>Where:</b> {selectedEvent.address}</p>}
 
             <Form.Switch

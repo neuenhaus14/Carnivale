@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Accordion, FloatingLabel } from 'react-bootstrap'
 import EventCreateMapComponent from './EventCreateMapComponent';
 import axios from 'axios';
-import moment from 'moment';
+import Events from '../../server/routes/Events';
 
 
 interface EventCreateModalProps {
@@ -133,8 +133,12 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   const [eventLatitude, setEventLatitude] = useState(0);
   const [eventLongitude, setEventLongitude] = useState(0);
-  const [eventStartTime, setEventStartTime] = useState('');
-  const [eventEndTime, setEventEndTime] = useState('');
+
+  // Event time data: will combine to make Date string
+  const [eventStartDate, setEventStartDate] = useState('')
+  const [eventEndDate, setEventEndDate] = useState('')
+  const [eventStartTime, setEventStartTime] = useState(2); // 0-24 in 15 min increments
+  const [eventEndTime, setEventEndTime] = useState(6);     // same
 
   const [userLatitude, setUserLatitude] = useState(lat); // lat is user location from getLocation
   const [userLongitude, setUserLongitude] = useState(lng); // lng is user location from getLocation
@@ -161,18 +165,16 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventStartTime(selectedEvent.startTime);
       setEventEndTime(selectedEvent.endTime)
     }
-
+    // event create mode
     else if (isNewEvent === true) {
-      setEventName('Name');
-      setEventAddress('Address');
-      setEventDescription('Description');
-      setEventState('State');
-      setEventZip('Zip')
-      setEventStartTime('Start Time');
-      setEventEndTime('End Time')
+      setEventName('');
+      setEventAddress('');
+      setEventDescription('');
+      setEventState('');
+      setEventZip('')
+      setEventStartTime(2);
+      setEventEndTime(4);
     }
-
-
   }, [selectedEvent, isNewEvent])
 
 
@@ -199,6 +201,42 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
   }
 
+  const handleRangeChange = (e: any) => {
+    console.log('inside handleRangeChange', e.target)
+    const { value, name } = e.target;
+
+    if (name === 'start') {
+      setEventStartTime(value);
+    }
+    else if (name === 'end') {
+      setEventEndTime(value);
+    }
+  }
+
+  const handleDateChange = (e: any) => {
+    const { value, name } = e.target;
+
+    if (name === 'start') {
+      setEventStartDate(value);
+    }
+    else if (name === 'end') {
+      setEventEndDate(value);
+    }
+  }
+
+  const handleInputChange = (e: any) => {
+    const { value, name } = e.target;
+
+    if (name === 'name') {
+      setEventName(value);
+    } else if (name === 'description') {
+      setEventDescription(value);
+    } else if (name === 'address') {
+      setEventAddress(value);
+    }
+
+    console.log('input change', name, value)
+  }
 
   return (
     <Modal show={showCreateModal} onHide={handleClose}>
@@ -219,66 +257,76 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           <div>
             <Form>
               <Form.Group className="mb-5" controlId="formEvent">
+
+                <p>{eventName}</p>
                 <FloatingLabel
                   controlId="floatingEventNameInput"
                   label="Event Name"
                   className="my-2"
                 >
-                  <Form.Control type="text" placeholder={eventName || 'Name'} />
+                  <Form.Control type="text" name='name' value={eventName} onChange={handleInputChange} />
                 </FloatingLabel>
+
+                <p>{eventDescription}</p>
                 <FloatingLabel
                   controlId="floatingEventDescriptionInput"
                   label="Description"
                   className="mb-2"
                 >
-                  <Form.Control type="text" placeholder={eventDescription || 'Description'} />
+                  <Form.Control type="text" name='description' value={eventDescription} onChange={handleInputChange} />
                 </FloatingLabel>
+
+                <p>{eventAddress}</p>
                 <FloatingLabel
                   controlId="floatingEventAddressInput"
                   label="Address"
                   className="mb-2"
                 >
-                  <Form.Control type="text" placeholder={eventAddress || 'Address'} />
+                  <Form.Control type="text" name='address' value={eventAddress} onChange={handleInputChange} />
                 </FloatingLabel>
-                <Form.Label>Starts</Form.Label>
-                <Form.Check
-                  inline
-                  type='checkbox'
-                  name='eventEndStartDay'
-                  label='Today'
-                  id='eventStartsTodayCheck'
-                />
-                 <Form.Check
-                  inline
-                  type='checkbox'
-                  name='eventEndTimeDay'
-                  label='Tomorrow'
-                  id='eventStartsTodayCheck'
-                />
-                <Form.Range type="text" placeholder={eventStartTime} />
-                <Form.Label>Ends</Form.Label>
-                <Form.Check
-                  inline
-                  type='checkbox'
-                  name='eventEndTimeDay'
-                  label='Today'
-                  id='eventEndsTodayCheck'
-                />
-                 <Form.Check
-                  inline
-                  type='checkbox'
-                  name='eventEndTimeDay'
-                  label='Tomorrow'
-                  id='eventEndsTomorrowCheck'
-                />
-                <Form.Range type="text" placeholder={eventEndTime} />
+
+                <p>{eventStartDate}</p>
+                <FloatingLabel
+                  controlId="floatingEventStartDateInput"
+                  label="Start Date: YYYY-MM-DD"
+                  className="my-2"
+                >
+                  <Form.Control type="text" name="start" value={eventStartDate} onChange={handleDateChange} />
+                </FloatingLabel>
+
+                <div style={{ display: 'flex', flexDirection: 'row' }}><p>{eventStartTime}</p>
+                  <Form.Range
+                    min={0}
+                    max={24}
+                    value={eventStartTime}
+                    name='start'
+                    step={.25}
+                    onChange={handleRangeChange}
+                  /></div>
+
+                <p>{eventEndDate}</p>
+                <FloatingLabel
+                  controlId="floatingEventEndDateInput"
+                  label="End Date: YYYY-MM-DD"
+                  className="my-2"
+                >
+                  <Form.Control type="text" name="end" value={eventEndDate} onChange={handleDateChange} />
+                </FloatingLabel>
+
+                <div style={{ display: 'flex', flexDirection: 'row' }}><p>{eventEndTime}</p>
+                  <Form.Range
+                    min={0}
+                    max={24}
+                    value={eventEndTime}
+                    step={.25}
+                    name='end'
+                    onChange={handleRangeChange}
+                  /></div>
               </Form.Group>
             </Form>
 
 
-            {/* <p>{description}</p>
-            <p><b>When:</b> {moment(startTime).format('MMM Do, h:mm a')} to {moment(endTime).format('h:mm a')} <em>({moment(selectedEvent.startTime).fromNow()})</em></p>
-            {address && <p><b>Where:</b> {address}</p>} */}
+            
 
             <EventCreateAccordion
               selectedEvent={selectedEvent}
