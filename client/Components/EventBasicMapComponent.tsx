@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Map, Marker, NavigationControl, Layer, Source } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-interface EventAttendingMapComponentProps {
+interface EventBasicMapComponentProps {
   longitude: number,
   latitude: number
 }
@@ -11,7 +11,7 @@ interface EventAttendingMapComponentProps {
 // it does not have functionality for moving the pin, or
 // setting the location
 
-const EventAttendingMapComponent: React.FC<EventAttendingMapComponentProps>= ({ latitude, longitude}) => {
+const EventBasicMapComponent: React.FC<EventBasicMapComponentProps>= ({ latitude, longitude}) => {
 
   const markerClicked = () => {
     window.alert('the marker was clicked');
@@ -43,4 +43,4 @@ const EventAttendingMapComponent: React.FC<EventAttendingMapComponentProps>= ({ 
   )
 }
 
-export default EventAttendingMapComponent;
+export default EventBasicMapComponent;

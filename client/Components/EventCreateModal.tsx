@@ -1,37 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Accordion } from 'react-bootstrap'
-import EventAttendingMapComponent from './EventBasicMapComponent';
+import { Modal, Button, Form, Accordion, FloatingLabel } from 'react-bootstrap'
+import EventCreateMapComponent from './EventCreateMapComponent';
 import axios from 'axios';
-import moment from 'moment';
+import Events from '../../server/routes/Events';
 
 
 interface EventCreateModalProps {
   selectedEvent: any,
   setSelectedEvent: any,
-  setShowModal: any,
-  showModal: boolean,
+  setShowCreateModal: any,
+  showCreateModal: boolean,
   friends: any,
   userId: number,
+  isUserAttending: boolean,
+  setIsUserAttending: any,
+  getEventsInvited: any,
+  getEventsParticipating: any,
+  isNewEvent: boolean,
+  setIsNewEvent: any,
+  getLocation: any,
+  lng: number,
+  lat: number,
 }
 
-interface EventInviteAccordionProps {
+interface EventCreateAccordionProps {
   friends: any,
   selectedEvent: any,
   userId: number
+  isNewEvent: boolean,
+  setFriendsToInvite: any,
+  friendsToInvite: Array<any>,
 }
 
 
-
-
-const EventCreateAccordion: React.FC<EventInviteAccordionProps> = ({ friends, selectedEvent, userId }) => {
+const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, selectedEvent, userId, isNewEvent, setFriendsToInvite, friendsToInvite }) => {
 
   const [invitees, setInvitees] = useState([]);
   const [participants, setParticipants] = useState([]);
-  const [friendsToInvite, setFriendsToInvite] = useState([]); // collects friends to invite as group to event
+  // const [friendsToInvite, setFriendsToInvite] = useState([]); // collects friends to invite as group to event
 
 
   useEffect(() => {
-    getPeopleForEvent()
+    if (!isNewEvent) {
+      getPeopleForEvent()
+    }
   }, [])
 
   // ONLY A USER'S FRIENDS WILL POPULATE THESE AREA
@@ -41,7 +53,6 @@ const EventCreateAccordion: React.FC<EventInviteAccordionProps> = ({ friends, se
     setInvitees(eventInvitees);
     setParticipants(eventParticipants)
   }
-
 
   const toggleFriendInvite = (invitee_userId: number) => {
     // if the user is already being invited
@@ -62,7 +73,6 @@ const EventCreateAccordion: React.FC<EventInviteAccordionProps> = ({ friends, se
           invitees: friendsToInvite
         }
       })
-      console.log('iR', inviteResponse)
       getPeopleForEvent();
     } catch (err) {
       console.error("CLIENT ERROR: failed to POST event invites", err);
@@ -88,7 +98,6 @@ const EventCreateAccordion: React.FC<EventInviteAccordionProps> = ({ friends, se
     </li>
   })
 
-  console.log('inside event modal accordion. i:', invitees, 'p', participants, 'f2I', friendsToInvite);
   return (
     <Accordion>
       <Accordion.Item eventKey="0">
@@ -103,42 +112,236 @@ const EventCreateAccordion: React.FC<EventInviteAccordionProps> = ({ friends, se
           <ul>
             {uninvitedFriendsItems}
           </ul>
-          {friendsToInvite.length > 0 && <button onClick={() => sendFriendInvites()}>Send Invites</button>}
+          {isNewEvent === false && friendsToInvite.length > 0 && <button onClick={() => sendFriendInvites()}>Send Invites</button>}
         </Accordion.Body>
       </Accordion.Item>
     </Accordion>
   )
 }
 
-const EventCreateModal: React.FC<EventCreateModalProps> = ({ selectedEvent, setShowModal, showModal, setSelectedEvent, friends, userId }) => {
+const EventCreateModal: React.FC<EventCreateModalProps> = ({
+  selectedEvent, setShowCreateModal, showCreateModal,
+  setSelectedEvent, friends, userId, getEventsInvited,
+  getEventsParticipating, isNewEvent, getLocation, lng, lat }) => {
+
+  const [eventAddress, setEventAddress] = useState('');
+  const [eventCity, setEventCity] = useState('');
+  const [eventState, setEventState] = useState('');
+  const [eventZip, setEventZip] = useState('');
+  const [eventDescription, setEventDescription] = useState('')
+  const [eventName, setEventName] = useState('')
+
+  const [eventLatitude, setEventLatitude] = useState(0);
+  const [eventLongitude, setEventLongitude] = useState(0);
+
+  // Event time data: will combine to make Date string
+  const [eventStartDate, setEventStartDate] = useState('')
+  const [eventEndDate, setEventEndDate] = useState('')
+  const [eventStartTime, setEventStartTime] = useState(2); // 0-24 in 15 min increments
+  const [eventEndTime, setEventEndTime] = useState(6);     // same
+
+  const [userLatitude, setUserLatitude] = useState(lat); // lat is user location from getLocation
+  const [userLongitude, setUserLongitude] = useState(lng); // lng is user location from getLocation
+  const [friendsToInvite, setFriendsToInvite] = useState([]);
+
+  // geo use effect
+  useEffect(() => {
+    setUserLatitude(lat);
+    setUserLongitude(lng);
+  }, [lng, lat])
+
+
+  // new/old event modal
+  useEffect(() => {
+    console.log('inside Modal. isNewEvent', isNewEvent, 'selectedEvent', selectedEvent)
+
+    // event edit mode
+    if (isNewEvent === false) {
+      setEventName(selectedEvent.name)
+      setEventAddress(selectedEvent.address);
+      setEventDescription(selectedEvent.description);
+      setEventLatitude(Number(selectedEvent.latitude));
+      setEventLongitude(Number(selectedEvent.longitude));
+      setEventStartTime(selectedEvent.startTime);
+      setEventEndTime(selectedEvent.endTime)
+    }
+    // event create mode
+    else if (isNewEvent === true) {
+      setEventName('');
+      setEventAddress('');
+      setEventDescription('');
+      setEventState('');
+      setEventZip('')
+      setEventStartTime(2);
+      setEventEndTime(4);
+    }
+  }, [selectedEvent, isNewEvent])
+
+
   const handleClose = () => {
-    setShowModal(false); // goes up to user page and sets to false
+    setShowCreateModal(false); // goes up to user page and sets to false
     setSelectedEvent({ latitude: 0, longitude: 0, startTime: null, endTime: null }); // set coordinates so map in modal doesn't throw error for invalid LngLat object
   }
 
+  const handleEventCreation = async () => {
+    try {
+      const newEvent = await axios.post('/api/events/createEvent', {
+        event: {
+          ownerId: userId,
+          address: `${eventAddress} ${eventCity} ${eventState} ${eventZip}`,
+          description: eventDescription,
+          latitude: eventLatitude,
+          longitude: eventLongitude,
+          startTime: eventStartTime,
+          endTime: eventEndTime,
+        }
+      })
+    } catch (err) {
+      console.error('CLIENT ERROR: failed to POST new event', err)
+    }
+  }
+
+  const handleRangeChange = (e: any) => {
+    console.log('inside handleRangeChange', e.target)
+    const { value, name } = e.target;
+
+    if (name === 'start') {
+      setEventStartTime(value);
+    }
+    else if (name === 'end') {
+      setEventEndTime(value);
+    }
+  }
+
+  const handleDateChange = (e: any) => {
+    const { value, name } = e.target;
+
+    if (name === 'start') {
+      setEventStartDate(value);
+    }
+    else if (name === 'end') {
+      setEventEndDate(value);
+    }
+  }
+
+  const handleInputChange = (e: any) => {
+    const { value, name } = e.target;
+
+    if (name === 'name') {
+      setEventName(value);
+    } else if (name === 'description') {
+      setEventDescription(value);
+    } else if (name === 'address') {
+      setEventAddress(value);
+    }
+
+    console.log('input change', name, value)
+  }
+
   return (
-    <Modal show={showModal} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>{selectedEvent.name}</Modal.Title>
+    <Modal show={showCreateModal} onHide={handleClose}>
+      <Modal.Header>
+        <Modal.Title>{isNewEvent ? 'Create new event' : `${eventName} -- your event`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div style={{display: 'flex', flexDirection: 'column', alignContent:'center'}}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center' }}>
           <div>
-            <EventAttendingMapComponent latitude={selectedEvent.latitude} longitude={selectedEvent.longitude} />
+            <EventCreateMapComponent
+              isNewEvent={isNewEvent}
+              userLatitude={userLatitude}
+              userLongitude={userLongitude}
+              eventLatitude={eventLatitude}
+              eventLongitude={eventLongitude}
+            />
           </div>
           <div>
-            <p>{selectedEvent.description}</p>
-            <p><b>When:</b> {moment(selectedEvent.startTime).format('MMM Do, h:mm a')} to {moment(selectedEvent.endTime).format('h:mm a')} <em>({moment(selectedEvent.startTime).fromNow()})</em></p>
-            {selectedEvent.address && <p><b>Where:</b> {selectedEvent.address}</p>} 
+            <Form>
+              <Form.Group className="mb-5" controlId="formEvent">
+
+                <p>{eventName}</p>
+                <FloatingLabel
+                  controlId="floatingEventNameInput"
+                  label="Event Name"
+                  className="my-2"
+                >
+                  <Form.Control type="text" name='name' value={eventName} onChange={handleInputChange} />
+                </FloatingLabel>
+
+                <p>{eventDescription}</p>
+                <FloatingLabel
+                  controlId="floatingEventDescriptionInput"
+                  label="Description"
+                  className="mb-2"
+                >
+                  <Form.Control type="text" name='description' value={eventDescription} onChange={handleInputChange} />
+                </FloatingLabel>
+
+                <p>{eventAddress}</p>
+                <FloatingLabel
+                  controlId="floatingEventAddressInput"
+                  label="Address"
+                  className="mb-2"
+                >
+                  <Form.Control type="text" name='address' value={eventAddress} onChange={handleInputChange} />
+                </FloatingLabel>
+
+                <p>{eventStartDate}</p>
+                <FloatingLabel
+                  controlId="floatingEventStartDateInput"
+                  label="Start Date: YYYY-MM-DD"
+                  className="my-2"
+                >
+                  <Form.Control type="text" name="start" value={eventStartDate} onChange={handleDateChange} />
+                </FloatingLabel>
+
+                <div style={{ display: 'flex', flexDirection: 'row' }}><p>{eventStartTime}</p>
+                  <Form.Range
+                    min={0}
+                    max={24}
+                    value={eventStartTime}
+                    name='start'
+                    step={.25}
+                    onChange={handleRangeChange}
+                  /></div>
+
+                <p>{eventEndDate}</p>
+                <FloatingLabel
+                  controlId="floatingEventEndDateInput"
+                  label="End Date: YYYY-MM-DD"
+                  className="my-2"
+                >
+                  <Form.Control type="text" name="end" value={eventEndDate} onChange={handleDateChange} />
+                </FloatingLabel>
+
+                <div style={{ display: 'flex', flexDirection: 'row' }}><p>{eventEndTime}</p>
+                  <Form.Range
+                    min={0}
+                    max={24}
+                    value={eventEndTime}
+                    step={.25}
+                    name='end'
+                    onChange={handleRangeChange}
+                  /></div>
+              </Form.Group>
+            </Form>
+
+
+            
+
             <EventCreateAccordion
               selectedEvent={selectedEvent}
               friends={friends}
               userId={userId}
+              isNewEvent={isNewEvent} // passing this thru to accordion to determine whether to get event's people
+              setFriendsToInvite={setFriendsToInvite}
+              friendsToInvite={friendsToInvite}
             />
           </div>
         </div>
       </Modal.Body>
       <Modal.Footer>
+        {isNewEvent && <Button onClick={handleEventCreation}>Create Event</Button>}
+
         <Button variant="danger" onClick={handleClose}>
           X
         </Button>

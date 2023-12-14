@@ -74,7 +74,7 @@ const App = () => {
           <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng}/> <NavBar /></div>}/>
           <Route path='/feedpage' element={<div><FeedPage /> <NavBar /></div>}/>
           <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
-          <Route path='/userpage' element={<div><UserPage coolThing = 'string1'/> <NavBar /></div>} />
+          <Route path='/userpage' element={<div><UserPage getLocation = {getLocation} lng={lng} lat={lat} /> <NavBar /></div>} />
           {/* <Route path='/photo' element={<div><Photos /> <NavBar /></div>} /> */}
         {/* </Route>  */}
       </Route>,

@@ -2,23 +2,29 @@ import React, { ReactPropTypes, useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom";
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
+import EventCreateModal from './EventCreateModal';
+import { Button } from 'react-bootstrap';
 
-const UserPage = ({ coolThing }: UserPageProps) => {
+const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
 
   const [searchParams] = useSearchParams();
   const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
-  const [friendRequestsReceived, setFriendRequestsReceived] = useState([])
+  const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
   const [eventsParticipating, setEventsParticipating] = useState([{ name: 'event1' }]);
   const [eventsInvited, setEventsInvited] = useState([{ name: 'event2' }]);
+  const [eventsOwned, setEventsOwned] = useState([{ name: 'event3' }]);
+
   const [phoneForFriendRequest, setPhoneForFriendRequest] = useState('');
 
-  const [selectedEvent, setSelectedEvent] = useState({})
+  const [selectedEvent, setSelectedEvent] = useState({ latitude: 0, longitude: 0, startTime: null, endTime: null }) // default to make modals happy
   const [isUserAttending, setIsUserAttending] = useState(false) // this gets passed to basic modal to expose invite functionality
   const [showBasicModal, setShowBasicModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [isNewEvent, setIsNewEvent] = useState(false);
 
-  async function getFriends() {
+  const getFriends = async () => {
     try {
       const friends = await axios.get(`/api/friends/getFriends/${userId}`)
       // console.log('here', friends.data);
@@ -28,7 +34,16 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     }
   }
 
-  async function getEventsParticipating() {
+  const getEventsOwned = async () => {
+    try {
+      const eventsOwned = await axios.get(`api/events/getEventsOwned/${userId}`)
+      setEventsOwned(eventsOwned.data);
+    } catch (err) {
+      console.error('CLIENT ERROR: failed to get events owned', err)
+    }
+  }
+
+  const getEventsParticipating = async () => {
     try {
       const eventsParticipating = await axios.get(`api/events/getEventsParticipating/${userId}`)
       setEventsParticipating(eventsParticipating.data);
@@ -37,7 +52,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     }
   }
 
-  async function getEventsInvited() {
+  const getEventsInvited = async () => {
     try {
       const eventsInvited = await axios.get(`api/events/getEventsInvited/${userId}`);
       setEventsInvited(eventsInvited.data);
@@ -46,7 +61,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     }
   }
 
-  async function getFriendRequests() {
+  const getFriendRequests = async() => {
     try {
       const friendRequestsData = await axios.get(`api/friends/getFriendRequests/${userId}`);
       const { requestsMadeUsers, requestsReceivedUsers } = friendRequestsData.data;
@@ -59,11 +74,19 @@ const UserPage = ({ coolThing }: UserPageProps) => {
 
   }
 
+
   useEffect(() => {
-    getFriends();
-    getEventsParticipating();
-    getEventsInvited();
-    getFriendRequests();
+    getLocation()
+
+    // for updating events on userpage when 
+    // responding to invites or inviting other users
+    if (isNewEvent === false) {
+      getFriends();
+      getEventsOwned();
+      getEventsParticipating();
+      getEventsInvited();
+      getFriendRequests();
+    }
   }, [])
 
   // ALL RENDERED DATA ARE IN LIST ITEMS
@@ -88,18 +111,51 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     })
   }
 
+  let eventsOwnedItems = null;
+  if (eventsOwned.length > 0) {
+    eventsOwnedItems = eventsOwned.map((event: any, index: number) => {
+      return <li
+        key={index}
+        onClick={() => {
+          setIsNewEvent(false);
+          setIsUserAttending(true);
+          setShowCreateModal(true);
+          setSelectedEvent(event);
+        }}>
+        {event.name} {event.description}
+      </li>
+    })
+  }
+
   let eventsParticipatingItems = null;
   if (eventsParticipating.length > 0) {
     eventsParticipatingItems = eventsParticipating.map((event: any, index: number) => {
-      return <li key={index} onClick={() => { setIsUserAttending(true); setShowBasicModal(true); setSelectedEvent(event) }}>{event.name} {event.description}</li>
+      return <li
+        key={index}
+        onClick={() => {
+          setIsNewEvent(false);
+          setIsUserAttending(true);
+          setShowBasicModal(true);
+          setSelectedEvent(event)
+        }}>
+        {event.name} {event.description}
+      </li>
     })
   }
 
   let eventsInvitedItems = null;
   if (eventsInvited.length > 0) {
     eventsInvitedItems = eventsInvited.map((event: any, index: number) => {
-      return <li key={index}>{event.name} {event.description} 
-      <button onClick={() => answerEventInvitation(event.id, true)}>Yeah!</button><button onClick={() => answerEventInvitation(event.id, false)}>Nah...</button></li>
+      return <li
+        key={index}
+        onClick={() => {
+          setIsNewEvent(false);
+          setIsUserAttending(false);
+          setShowBasicModal(true);
+          setSelectedEvent(event)
+        }}>
+        {event.name} {event.description}
+      </li>
     })
   }
 
@@ -145,19 +201,19 @@ const UserPage = ({ coolThing }: UserPageProps) => {
 
 
 
-  // MOVE THIS TO EVENT MODAL
-  async function answerEventInvitation(eventId: number, isGoing: boolean) {
-    const eventInviteResponse = await axios.post('/api/events/answerEventInvite', {
-      answer: {
-        eventId,
-        invitee_userId: userId,
-        isGoing
-      }
-    })
-    console.log('eventInviteResponse', eventInviteResponse);
-    getEventsInvited();
-    getEventsParticipating();
-  }
+  // // MOVE THIS TO EVENT MODAL
+  // async function answerEventInvitation(eventId: number, isGoing: boolean) {
+  //   const eventInviteResponse = await axios.post('/api/events/answerEventInvite', {
+  //     answer: {
+  //       eventId,
+  //       invitee_userId: userId,
+  //       isGoing
+  //     }
+  //   })
+  //   console.log('eventInviteResponse', eventInviteResponse);
+  //   getEventsInvited();
+  //   getEventsParticipating();
+  // }
 
 
 
@@ -166,29 +222,55 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   }
 
 
-  console.log('eP', eventsParticipating, 'eI', eventsInvited)
+  console.log('inside userpage. isNewEvent', isNewEvent)
   return (
     <div>
-      <h1>UserPage</h1>
+      <h1>UserPage {lng} {lat}</h1>
       <EventBasicModal
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
-        setShowAttendingModal={setShowBasicModal}
+        setShowBasicModal={setShowBasicModal}
         showBasicModal={showBasicModal}
         friends={friends}
         userId={userId}
         isUserAttending={isUserAttending}
+        setIsUserAttending={setIsUserAttending}
+        getEventsInvited={getEventsInvited}
+        getEventsParticipating={getEventsParticipating}
       />
+
+      <EventCreateModal
+        selectedEvent={selectedEvent}
+        setSelectedEvent={setSelectedEvent}
+        setShowCreateModal={setShowCreateModal}
+        showCreateModal={showCreateModal}
+        friends={friends}
+        userId={userId}
+        isUserAttending={isUserAttending}
+        setIsUserAttending={setIsUserAttending}
+        getEventsInvited={getEventsInvited}
+        getEventsParticipating={getEventsParticipating}
+        isNewEvent={isNewEvent}
+        setIsNewEvent={setIsNewEvent}
+        lat={lat}
+        lng={lng}
+        getLocation={getLocation}
+      />
+
+
       <h5> Mon Krewe </h5>
       {friends.length > 0 ? <ul>{userFriendsItems}</ul> : 'Assemble your krewe below'}
 
-      <input placeholder='Search people by phone' value={phoneForFriendRequest} onChange={handlePhoneInput}></input>
+      <input
+        placeholder='Search people by phone'
+        value={phoneForFriendRequest}
+        onChange={handlePhoneInput}></input>
       <button onClick={requestFriend}>Invite to Krewe</button>
 
 
       {
         // conditional checks for outgoing requests
-        friendRequestsMade.length > 0 &&  
+        friendRequestsMade.length > 0 &&
         <>
           <h5> Krewe Invites Made </h5>
           <ul>{requestsMadeItems}</ul>
@@ -204,6 +286,14 @@ const UserPage = ({ coolThing }: UserPageProps) => {
         </>
       }
 
+      {
+        // conditional check for events you own
+        eventsOwned.length > 0 &&
+        <>
+          <h3> EVENTS OWNED </h3>
+          <ul>{eventsOwnedItems}</ul>
+        </>
+      }
 
       {
         // conditional checks for events you've attending
@@ -216,19 +306,32 @@ const UserPage = ({ coolThing }: UserPageProps) => {
 
 
       {
-      // conditional checks for events you've invited to
-      eventsInvited.length > 0 &&
+        // conditional checks for events you've invited to
+        eventsInvited.length > 0 &&
         <>
           <h3>EVENTS INVITED</h3>
           <ul>{eventsInvitedItems}</ul>
         </>
       }
+
+      <Button
+        variant='secondary'
+        onClick={async () => {
+          await setIsNewEvent(true);
+          await setIsUserAttending(true);
+          await setShowCreateModal(true);
+        }}
+      >
+        Create New Event
+      </Button>
     </div>
   )
 };
 
 interface UserPageProps {
-  coolThing: string
+  getLocation: any,
+  lng: number,
+  lat: number,
 }
 
 export default UserPage;

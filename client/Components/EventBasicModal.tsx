@@ -2,20 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Accordion } from 'react-bootstrap'
 import EventBasicMapComponent from './EventBasicMapComponent';
 import axios from 'axios';
-import moment from 'moment';
+
+// This modal displays for events that the user
+// is invited to and attending
+// you can only invite other people if you're 
+// already attending
 
 
-interface EventAttendingModalProps {
+
+interface EventBasicModalProps {
   selectedEvent: any,
   setSelectedEvent: any,
-  setShowAttendingModal: any,
+  setShowBasicModal: any,
   showBasicModal: boolean,
   friends: any,
   userId: number,
   isUserAttending: boolean,
+  setIsUserAttending: any,
+  getEventsInvited: any,
+  getEventsParticipating: any,
 }
 
-interface EventInviteAccordionProps {
+interface EventBasicAccordionProps {
   friends: any,
   selectedEvent: any,
   userId: number
@@ -29,7 +37,7 @@ interface EventInviteAccordionProps {
 
 
 
-const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, selectedEvent, userId, isUserAttending }) => {
+const EventBasicAccordion: React.FC<EventBasicAccordionProps> = ({ friends, selectedEvent, userId, isUserAttending }) => {
 
   const [invitees, setInvitees] = useState([]);
   const [participants, setParticipants] = useState([]);
@@ -44,10 +52,10 @@ const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, se
   const getPeopleForEvent = async () => {
     const eventPeopleData = await axios.get(`/api/events/getPeopleForEvent/${userId}-${selectedEvent.id}`);
     const { eventParticipants, eventInvitees } = eventPeopleData.data;
+    // console.log('inside getPeopleForEvent', 'eP', eventParticipants, 'eI', eventInvitees)
     setInvitees(eventInvitees);
     setParticipants(eventParticipants)
   }
-
 
   const toggleFriendInvite = (invitee_userId: number) => {
     // if the user is already being invited
@@ -60,15 +68,15 @@ const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, se
     }
   }
 
-  const sendFriendInvites = () => {
+  const sendFriendInvites = async () => {
     try {
-      const inviteResponse = axios.post('/api/events/inviteToEvent', {
+      const inviteResponse = await axios.post('/api/events/inviteToEvent', {
         invitations: {
           eventId: selectedEvent.id,
           invitees: friendsToInvite
         }
       })
-      console.log('iR', inviteResponse)
+      // console.log('iR', inviteResponse)
       getPeopleForEvent();
       setFriendsToInvite([]);
     } catch (err) {
@@ -77,19 +85,19 @@ const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, se
   }
 
   const attendingFriendsItems = friends.filter((friend: any) => participants.includes(friend.id)).map((friend: any, index: number) => {
-    return <li key={index}>{friend.firstName} {friend.lastName} is attending!</li>
+    return <li key={index}>{friend.firstName} {friend.lastName}: attending</li>
   })
 
   const invitedFriendsItems = friends.filter((friend: any) => invitees.includes(friend.id)).map((friend: any, index: number) => {
-    return <li key={index}>{friend.firstName} {friend.lastName} is already invited!</li>
+    return <li key={index}>{friend.firstName} {friend.lastName}: invited</li>
   })
 
   const uninvitedFriendsItems = friends.filter((friend: any) => !participants.includes(friend.id) && !invitees.includes(friend.id)).map((friend: any, index: number) => {
-    return <li key={index}>{friend.firstName} {friend.lastName} is not invited!
-      {isUserAttending && <Form.Switch
-        type="switch"
-        id="invite-switch"
-        label="Check to invite"
+    return <li key={index}>{friend.firstName} {friend.lastName}: not invited
+      {isUserAttending && <Form.Check
+        type="checkbox"
+        id="invite-checkbox"
+        label="Check to queue invite"
         onChange={() => toggleFriendInvite(friend.id)}
       />}
     </li>
@@ -110,22 +118,40 @@ const EventInviteAccordion: React.FC<EventInviteAccordionProps> = ({ friends, se
           <ul>
             {uninvitedFriendsItems}
           </ul>
-          {friendsToInvite.length > 0 && <button onClick={() => sendFriendInvites()}>Send Invites</button>}
+          <Button disabled={friendsToInvite.length === 0} onClick={() => sendFriendInvites()}>Send Invites</Button>
         </Accordion.Body>
       </Accordion.Item>
     </Accordion>
   )
 }
 
-const EventAttendingModal: React.FC<EventAttendingModalProps> = ({ selectedEvent, setShowAttendingModal, showBasicModal, setSelectedEvent, friends, userId, isUserAttending }) => {
+const EventBasicModal: React.FC<EventBasicModalProps> = ({ selectedEvent, setShowBasicModal, showBasicModal, setSelectedEvent, friends, userId, isUserAttending, setIsUserAttending, getEventsInvited, getEventsParticipating }) => {
+  
   const handleClose = () => {
-    setShowAttendingModal(false); // goes up to user page and sets to false
+    setShowBasicModal(false); // goes up to user page and sets to false
     setSelectedEvent({ latitude: 0, longitude: 0, startTime: null, endTime: null }); // set coordinates so map in modal doesn't throw error for invalid LngLat object
   }
 
+  const toggleAttendance = async () => {
+    console.log('inside toggle attendance', selectedEvent.id);
+    const eventUpdateCount = await axios.post('/api/events/setEventAttendance', {
+      answer : {
+        eventId: selectedEvent.id,
+        userId,
+        isAttending: !isUserAttending
+      }
+    })
+
+    // console.log(eventUpdateCount.data);
+    getEventsInvited();
+    getEventsParticipating();
+    setIsUserAttending(!isUserAttending);
+  }
+
+
   return (
     <Modal show={showBasicModal} onHide={handleClose}>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title>{selectedEvent.name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -135,27 +161,30 @@ const EventAttendingModal: React.FC<EventAttendingModalProps> = ({ selectedEvent
           </div>
           <div>
             <p>{selectedEvent.description}</p>
-            <p><b>When:</b> {moment(selectedEvent.startTime).format('MMM Do, h:mm a')} to {moment(selectedEvent.endTime).format('h:mm a')} <em>({moment(selectedEvent.startTime).fromNow()})</em></p>
+            <p><b>When:</b> {selectedEvent.startTime} to {selectedEvent.endTime} </p>
             {selectedEvent.address && <p><b>Where:</b> {selectedEvent.address}</p>}
 
             <Form.Switch
               type="switch"
               id="attending-switch"
-              label="Attending?">
-            </Form.Switch>
+              label="Attending?"
+              onChange={() => toggleAttendance()}
+              defaultChecked={isUserAttending}
+            />
 
-            <EventInviteAccordion
+            { // only allow invites if the user is attending the event
+            <EventBasicAccordion
               isUserAttending={isUserAttending}
               selectedEvent={selectedEvent}
               friends={friends}
               userId={userId}
-            />
+            />}
           </div>
         </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="danger" onClick={handleClose}>
-          X
+          Close Event
         </Button>
       </Modal.Footer>
     </Modal>
@@ -163,4 +192,4 @@ const EventAttendingModal: React.FC<EventAttendingModalProps> = ({ selectedEvent
 
 };
 
-export default EventAttendingModal;
+export default EventBasicModal;
