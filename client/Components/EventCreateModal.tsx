@@ -174,6 +174,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   }, [selectedEvent, isNewEvent])
 
 
+
+
+  // takes either selectedEvent.startTime or .endTime
+  // to populate date input and time ranges
   const parseDateIntoDateAndTime = (fullDate: string, startOrEnd: string) => {
     // 2023-12-11 20:40:35.222-05
 
@@ -254,6 +258,20 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     console.log('input change', name, value)
   }
 
+  const handleAddressToCoordinates = async (e:any) => {
+    const { value } = e.target;
+    console.log('here', value)
+    const coordinatesResponse = await axios.post('/api/events/getCoordinatesFromAddress', {
+      address: value
+    })
+
+    const [ evtLongitude, evtLatitude] = coordinatesResponse.data;
+
+    console.log( 'heeeere', evtLongitude, evtLatitude )
+    setEventLongitude(evtLongitude);
+    setEventLatitude(evtLatitude);
+  }
+
   return (
     <Modal show={showCreateModal} onHide={handleClose}>
       <Modal.Header>
@@ -268,6 +286,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
               userLongitude={userLongitude}
               eventLatitude={eventLatitude}
               eventLongitude={eventLongitude}
+              setEventLatitude={setEventLatitude}
+              setEventLongitude={setEventLongitude}
+              setEventAddress={setEventAddress}
             />
           </div>
           <div>
@@ -298,7 +319,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                   label="Address"
                   className="mb-2"
                 >
-                  <Form.Control type="text" name='address' value={eventAddress} onChange={handleInputChange} />
+                  <Form.Control type="text" name='address' value={eventAddress} onChange={handleInputChange} onBlur={handleAddressToCoordinates} />
                 </FloatingLabel>
 
           {/* <p>{eventStartDate}</p> */}
@@ -342,9 +363,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
               </Form.Group>
             </Form>
-
-
-            
 
             <EventCreateAccordion
               selectedEvent={selectedEvent}
