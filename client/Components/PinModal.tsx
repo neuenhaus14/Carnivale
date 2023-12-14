@@ -14,6 +14,8 @@ interface Props {
   selectedPin: any
 }
 
+//this is a git test
+
 const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected} ) => {
   const [isShow, setShow] = useState(true);
   const [isToilet, setIsToilet] =useState(false);
