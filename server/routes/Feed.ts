@@ -133,53 +133,87 @@ feedRouter.post(
   }
 );
 
-feedRouter.post(
-  "/downvote-comment/:user_id/:comment_id",
-  async (req: Request, res: Response) => {
-    try {
-      const commentId = req.params.comment_id;
-      const userId = req.params.user_id;
+feedRouter.post("/downvote-comment/:user_id/:comment_id", async (req, res) => {
+  try {
+    const commentId = req.params.comment_id;
+    const userId = req.params.user_id;
 
-      const existingVote = await Join_comment_vote.findOne({
-        where: { voter_userId: userId, commentId: commentId },
-      });
+    const existingVote = await Join_comment_vote.findOne({
+      where: { voter_userId: userId, commentId: commentId },
+    });
 
-      if (existingVote) {
-        if (existingVote.dataValues.isUpvoted) {
-          await Join_comment_vote.update(
-            {
-              isUpvoted: false,
-            },
-            { where: { voter_userId: userId, commentId: commentId } }
-          );
+    if (existingVote) {
+      if (existingVote.dataValues.isUpvoted) {
+        await Join_comment_vote.update(
+          { isUpvoted: false },
+          { where: { voter_userId: userId, commentId: commentId } }
+        );
+
+        const comment = await Comment.findByPk(commentId);
+
+        if (comment.dataValues.upvotes <= -4) {
+          // Remove references in join_shared_posts
+          await Join_shared_post.destroy({
+            where: { shared_commentId: commentId },
+          });
+
+          // Remove references in join_comment_votes
+          await Join_comment_vote.destroy({ where: { commentId: commentId } });
+
+          // Delete the comment
+          await Comment.destroy({ where: { id: commentId } });
+
+          res.json({
+            success: true,
+            message: "Comment deleted due to excessive downvotes.",
+          });
+        } else {
           await Comment.increment(
             { upvotes: -1 },
             { where: { id: commentId } }
           );
           res.json({ success: true });
-        } else {
-          res
-            .status(400)
-            .json({ error: "User has already voted down on this comment." });
         }
       } else {
-        await Join_comment_vote.create({
-          voter_userId: userId,
-          commentId: commentId,
-          isUpvoted: false,
+        res
+          .status(400)
+          .json({ error: "User has already voted down on this comment." });
+      }
+    } else {
+      await Join_comment_vote.create({
+        voter_userId: userId,
+        commentId: commentId,
+        isUpvoted: false,
+      });
+
+      const comment = await Comment.findByPk(commentId);
+
+      if (comment.dataValues.upvotes <= -4) {
+        // Remove references in join_shared_posts
+        await Join_shared_post.destroy({
+          where: { shared_commentId: commentId },
         });
 
-        await Comment.increment({ upvotes: -1 }, { where: { id: commentId } });
+        // Remove references in join_comment_votes
+        await Join_comment_vote.destroy({ where: { commentId: commentId } });
 
+        // Delete the comment
+        await Comment.destroy({ where: { id: commentId } });
+
+        res.json({
+          success: true,
+          message: "Comment deleted due to excessive downvotes.",
+        });
+      } else {
+        await Comment.increment({ upvotes: -1 }, { where: { id: commentId } });
         res.json({ success: true });
       }
-    } catch (error) {
-      console.error(`Error handling comment vote:`, error);
-      res.status(500).json({ error: "Internal Server Error" });
     }
+  } catch (error) {
+    console.error(`Error handling comment vote:`, error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-);
-
+});
 feedRouter.post(
   "/upvote-pin/:user_id/:pin_id",
   async (req: Request, res: Response) => {
