@@ -53,7 +53,7 @@ const EventBasicAccordion: React.FC<EventBasicAccordionProps> = ({ friends, sele
   const getPeopleForEvent = async () => {
     const eventPeopleData = await axios.get(`/api/events/getPeopleForEvent/${userId}-${selectedEvent.id}`);
     const { eventParticipants, eventInvitees } = eventPeopleData.data;
-    console.log('inside getPeopleForEvent', 'eP', eventParticipants, 'eI', eventInvitees)
+    // console.log('inside getPeopleForEvent', 'eP', eventParticipants, 'eI', eventInvitees)
     setInvitees(eventInvitees);
     setParticipants(eventParticipants)
   }
@@ -77,7 +77,7 @@ const EventBasicAccordion: React.FC<EventBasicAccordionProps> = ({ friends, sele
           invitees: friendsToInvite
         }
       })
-      console.log('iR', inviteResponse)
+      // console.log('iR', inviteResponse)
       getPeopleForEvent();
       setFriendsToInvite([]);
     } catch (err) {
@@ -104,7 +104,7 @@ const EventBasicAccordion: React.FC<EventBasicAccordionProps> = ({ friends, sele
     </li>
   })
 
-  console.log('inside event modal accordion. i:', invitees, 'p', participants, 'f2I', friendsToInvite);
+  // console.log('inside event modal accordion. i:', invitees, 'p', participants, 'f2I', friendsToInvite);
   return (
     <Accordion>
       <Accordion.Item eventKey="0">
@@ -143,7 +143,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({ selectedEvent, setSho
       }
     })
 
-    console.log(eventUpdateCount.data);
+    // console.log(eventUpdateCount.data);
     getEventsInvited();
     getEventsParticipating();
     setIsUserAttending(!isUserAttending);

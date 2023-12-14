@@ -8,11 +8,14 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 // event to edit it.
 
 interface EventCreateMapComponentProps {
-  latitude: number,
-  longitude: number,
+  eventLatitude: number,
+  eventLongitude: number,
+  isNewEvent: boolean,
+  userLatitude: number,
+  userLongitude: number,
 }
 
-const EventCreateMapComponent: React.FC<EventCreateMapComponentProps>= ({ latitude, longitude }) => {
+const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNewEvent, eventLatitude, eventLongitude, userLatitude, userLongitude }) => {
 
   const markerClicked = () => {
     window.alert('the marker was clicked');
@@ -21,11 +24,12 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps>= ({ latitu
   const mapRef = useRef(null);
 
   const [viewState, setViewState] = useState({
-    latitude,
-    longitude,
+    latitude: isNewEvent ? userLatitude : eventLatitude,
+    longitude: isNewEvent ? userLongitude : eventLongitude,
     zoom: 12,
   });
 
+  console.log('inside map component. isNewEvent', isNewEvent, 'viewState', viewState)
   return (
     <div>
       <Map
@@ -36,8 +40,12 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps>= ({ latitu
         style={{ position: 'relative', width: '100%', height: '25vh' }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
       >
-        <Marker onClick={() => markerClicked()} longitude={longitude} latitude={latitude} anchor="bottom"> 
-        </Marker>
+
+        { // conditional render for pin if we're editing the event
+        isNewEvent === false &&
+        <Marker onClick={() => markerClicked()} longitude={eventLongitude} latitude={eventLatitude} anchor="bottom"></Marker>
+        }
+
         <NavigationControl />
       </Map>
     </div>

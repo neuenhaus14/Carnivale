@@ -18,6 +18,9 @@ interface EventCreateModalProps {
   getEventsParticipating: any,
   isNewEvent: boolean,
   setIsNewEvent: any,
+  getLocation: any,
+  lng: number,
+  lat: number,
 }
 
 interface EventCreateAccordionProps {
@@ -48,7 +51,6 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
     setInvitees(eventInvitees);
     setParticipants(eventParticipants)
   }
-
 
   const toggleFriendInvite = (invitee_userId: number) => {
     // if the user is already being invited
@@ -117,26 +119,81 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
   )
 }
 
-const EventCreateModal: React.FC<EventCreateModalProps> = ({ selectedEvent, setShowCreateModal, showCreateModal, setSelectedEvent, friends, userId, getEventsInvited, getEventsParticipating, isNewEvent }) => {
+const EventCreateModal: React.FC<EventCreateModalProps> = ({
+  selectedEvent, setShowCreateModal, showCreateModal,
+  setSelectedEvent, friends, userId, getEventsInvited,
+  getEventsParticipating, isNewEvent, getLocation, lng, lat }) => {
+
+  const [address, setAddress] = useState('');
+  const [description, setDescription] = useState('')
+  const [eventLatitude, setEventLatitude] = useState(0); 
+  const [eventLongitude, setEventLongitude] = useState(0); 
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [userLatitude, setUserLatitude] = useState(lat); // lat is user location from getLocation
+  const [userLongitude, setUserLongitude] = useState(lng); // lng is user location from getLocation
+
+
+  useEffect(() => {
+    setUserLatitude(lat);
+    setUserLongitude(lng);
+    // event editing
+    
+    if (isNewEvent === false) {
+      setAddress(selectedEvent.address);
+      setDescription(selectedEvent.description);
+      setEventLatitude(Number(selectedEvent.latitude));
+      setEventLongitude(Number(selectedEvent.longitude));
+      setStartTime(selectedEvent.startTime);
+      setEndTime(selectedEvent.endTime)
+    }
+  }, [lng, lat])
+
+
   const handleClose = () => {
     setShowCreateModal(false); // goes up to user page and sets to false
     setSelectedEvent({ latitude: 0, longitude: 0, startTime: null, endTime: null }); // set coordinates so map in modal doesn't throw error for invalid LngLat object
   }
 
+  const handleEventCreation = async () => {
+    try {
+      console.log('inside handle event creation')
+      const newEvent = await axios.post('/api/events/createEvent', {
+        event: {
+          ownerId: userId,
+          address,
+          description,
+          latitude: eventLatitude,
+          longitude: eventLongitude,
+          startTime,
+          endTime,
+        }
+      })
+    } catch (err) {
+      console.error('CLIENT ERROR: failed to POST new event', err)
+    }
+  }
+  console.log('inside modal', selectedEvent, isNewEvent)
+  console.log('eventLat-Lng', eventLatitude, eventLongitude, 'userLat-Lng', userLatitude, userLongitude)
   return (
     <Modal show={showCreateModal} onHide={handleClose}>
       <Modal.Header>
-        <Modal.Title>{isNewEvent? 'Create new event' : selectedEvent.name}</Modal.Title>
+        <Modal.Title>{isNewEvent ? 'Create new event' : `${selectedEvent.name} -- your event`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center' }}>
           <div>
-            <EventCreateMapComponent latitude={selectedEvent.latitude} longitude={selectedEvent.longitude} />
+            <EventCreateMapComponent
+              isNewEvent={isNewEvent}
+              userLatitude={userLatitude}
+              userLongitude={userLongitude}
+              eventLatitude={eventLatitude}
+              eventLongitude={eventLongitude} />
           </div>
           <div>
-            <p>{selectedEvent.description}</p>
-            <p><b>When:</b> {moment(selectedEvent.startTime).format('MMM Do, h:mm a')} to {moment(selectedEvent.endTime).format('h:mm a')} <em>({moment(selectedEvent.startTime).fromNow()})</em></p>
-            {selectedEvent.address && <p><b>Where:</b> {selectedEvent.address}</p>}
+            <p>{description}</p>
+            <p><b>When:</b> {moment(startTime).format('MMM Do, h:mm a')} to {moment(endTime).format('h:mm a')} <em>({moment(selectedEvent.startTime).fromNow()})</em></p>
+            {address && <p><b>Where:</b> {address}</p>}
             <EventCreateAccordion
               selectedEvent={selectedEvent}
               friends={friends}
@@ -147,6 +204,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({ selectedEvent, setS
         </div>
       </Modal.Body>
       <Modal.Footer>
+        {isNewEvent && <Button onClick={handleEventCreation}>Create Event</Button>}
+
         <Button variant="danger" onClick={handleClose}>
           X
         </Button>

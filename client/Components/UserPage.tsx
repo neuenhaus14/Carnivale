@@ -4,7 +4,8 @@ import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
 import { Button } from 'react-bootstrap';
-const UserPage = ({ coolThing }: UserPageProps) => {
+
+const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
 
   const [searchParams] = useSearchParams();
   const [userId] = useState(Number(searchParams.get('userid')) || 1);
@@ -17,7 +18,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
 
   const [phoneForFriendRequest, setPhoneForFriendRequest] = useState('');
 
-  const [selectedEvent, setSelectedEvent] = useState({})
+  const [selectedEvent, setSelectedEvent] = useState({ latitude: 0, longitude: 0, startTime: null, endTime: null }) // default to make modals happy
   const [isUserAttending, setIsUserAttending] = useState(false) // this gets passed to basic modal to expose invite functionality
   const [showBasicModal, setShowBasicModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -51,7 +52,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     }
   }
 
-  async function getEventsInvited() {
+  const getEventsInvited = async () => {
     try {
       const eventsInvited = await axios.get(`api/events/getEventsInvited/${userId}`);
       setEventsInvited(eventsInvited.data);
@@ -60,7 +61,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
     }
   }
 
-  async function getFriendRequests() {
+  const getFriendRequests = async() => {
     try {
       const friendRequestsData = await axios.get(`api/friends/getFriendRequests/${userId}`);
       const { requestsMadeUsers, requestsReceivedUsers } = friendRequestsData.data;
@@ -73,8 +74,13 @@ const UserPage = ({ coolThing }: UserPageProps) => {
 
   }
 
+
   useEffect(() => {
-    if (!isNewEvent) {
+    getLocation()
+
+    // for updating events on userpage when 
+    // responding to invites or inviting other users
+    if (isNewEvent === false) {
       getFriends();
       getEventsOwned();
       getEventsParticipating();
@@ -114,7 +120,7 @@ const UserPage = ({ coolThing }: UserPageProps) => {
           setIsNewEvent(false);
           setIsUserAttending(true);
           setShowCreateModal(true);
-          setSelectedEvent(event)
+          setSelectedEvent(event);
         }}>
         {event.name} {event.description}
       </li>
@@ -216,10 +222,10 @@ const UserPage = ({ coolThing }: UserPageProps) => {
   }
 
 
-  console.log('eP', eventsParticipating, 'eI', eventsInvited)
+
   return (
     <div>
-      <h1>UserPage</h1>
+      <h1>UserPage {lng} {lat}</h1>
       <EventBasicModal
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
@@ -246,6 +252,9 @@ const UserPage = ({ coolThing }: UserPageProps) => {
         getEventsParticipating={getEventsParticipating}
         isNewEvent={isNewEvent}
         setIsNewEvent={setIsNewEvent}
+        lat={lat}
+        lng={lng}
+        getLocation={getLocation}
       />
 
 
@@ -307,15 +316,10 @@ const UserPage = ({ coolThing }: UserPageProps) => {
 
       <Button
         variant='secondary'
-        onClick={() => {
-          setIsNewEvent(true);
-          setIsUserAttending(true);
-          setSelectedEvent({ 
-            longitude: -90, 
-            latitude: 29.9511, 
-            startTime: null, 
-            endTime: null });
-          setShowCreateModal(true);
+        onClick={async () => {
+          await setIsNewEvent(true);
+          await setIsUserAttending(true);
+          await setShowCreateModal(true);
         }}
       >
         Create New Event
@@ -325,7 +329,9 @@ const UserPage = ({ coolThing }: UserPageProps) => {
 };
 
 interface UserPageProps {
-  coolThing: string
+  getLocation: any,
+  lng: number,
+  lat: number,
 }
 
 export default UserPage;
