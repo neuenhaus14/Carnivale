@@ -139,8 +139,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
 
       const result = data.routes.map((route: any) => {
         console.log('result of the data loop', route);
-        setDistance((route.distance / 1000).toFixed(2));
-        setDuration((route.duration / 3600).toFixed(2));
+        setDistance((route.distance / 1609).toFixed(2)); // meters to miles
+        setDuration((route.duration / 3600).toFixed(2)); 
+
+        console.log(`${distance} miles`, `${distance} hours`)
       });
 
       const coordinates = data['routes'][0]['geometry']['coordinates'];
