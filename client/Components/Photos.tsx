@@ -6,14 +6,14 @@ import { arrayBuffer } from 'stream/consumers';
 //capturing an image and sending via axios to my backend. on backend making another call to cloudinary to post or retrieve image. So if I need that photo on the front end
 //CHILD OF PINMODAL
 interface Props {
-  lng: number
-  lat: number
-  saveCreatedPin: any
-  latPost: number
-  lngPost: number
-  createPhoto: any
-  isThrow: boolean
-  isCostume: boolean
+  lng: number | null
+  lat: number |null
+  saveCreatedPin: any | null
+  latPost: number | null
+  lngPost: number | null
+  isThrow: boolean | null
+  isCostume: boolean | null
+  createPhoto: any | null
 }
 
 const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, createPhoto, isThrow, isCostume}) => {

@@ -68,6 +68,9 @@ const HomeModal: React.FC<Props> = ( {
               isThrow={isThrow}
               isCostume={isCostume}
               createPhoto={createPhoto}
+              lng={null}
+              lat={null}
+              saveCreatedPin={null}
               />
             </Form.Group>
           </Form>
