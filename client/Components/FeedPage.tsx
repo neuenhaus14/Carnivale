@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import moment from "moment";
+import dayjs from "dayjs";
 
 interface SharedPost {
+  upvotes: number;
   id: number;
   sender_userId: number;
   recipient_userId: number;
@@ -53,6 +54,7 @@ const FeedPage = () => {
   const [photoDetails, setPhotoDetails] = useState<{
     [postId: number]: Photo;
   }>({});
+  const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
 
   const userId = 1;
 
@@ -88,6 +90,28 @@ const FeedPage = () => {
     const fetchDetails = async (postId: number, type: string) => {
       try {
         const response = await axios.get(`/api/feed/shared-${type}/${postId}`);
+
+        if (response.data === null) {
+          if (type === "comment") {
+            setCommentDetails((prevDetails) => ({
+              ...prevDetails,
+              [postId]: null,
+            }));
+          } else if (type === "pin") {
+            setPinDetails((prevDetails) => ({
+              ...prevDetails,
+              [postId]: null,
+            }));
+          } else if (type === "photo") {
+            setPhotoDetails((prevDetails) => ({
+              ...prevDetails,
+              [postId]: null,
+            }));
+          }
+
+          console.error(`${type} with ID ${postId} is deleted.`);
+          return;
+        }
 
         const details = {
           comment: {
@@ -127,6 +151,7 @@ const FeedPage = () => {
           }));
         }
 
+        // Fetch user details if not already fetched
         if (!userNames[response.data.ownerId]) {
           const userResponse = await axios.get(
             `/api/feed/user/${response.data.ownerId}`
@@ -141,7 +166,6 @@ const FeedPage = () => {
         console.error(`Error fetching ${type} details:`, error);
       }
     };
-
     const fetchDataDetails = async () => {
       const fetchPromises: Promise<void>[] = [];
 
@@ -204,26 +228,23 @@ const FeedPage = () => {
         }`
       );
 
-      // Reset state for the specific post
-      setSharedPosts((prevPosts) =>
-        prevPosts.filter((post) => post.id !== postId)
+      const updatedSharedPosts = sharedPosts.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              upvotes: post.upvotes - 1,
+            }
+          : post
       );
 
-      // Reset details state for the specific post
-      setCommentDetails((prevDetails) => ({
-        ...prevDetails,
-        [postId]: null, // or remove the postId from the state
-      }));
+      setSharedPosts(updatedSharedPosts);
 
-      setPinDetails((prevDetails) => ({
-        ...prevDetails,
-        [postId]: null, // or remove the postId from the state
-      }));
-
-      setPhotoDetails((prevDetails) => ({
-        ...prevDetails,
-        [postId]: null, // or remove the postId from the state
-      }));
+      // Check if the post has reached -5 upvotes
+      if (
+        updatedSharedPosts.find((post) => post.id === postId)?.upvotes === -5
+      ) {
+        setDeletedPosts((prevDeletedPosts) => [...prevDeletedPosts, postId]);
+      }
 
       console.log(`Downvoted ${type} with ID ${postId}`);
     } catch (error) {
@@ -234,14 +255,12 @@ const FeedPage = () => {
   const fetchPostDetails = async (postId: number, type: string) => {
     try {
       if (!sharedPosts.some((post) => post.id === postId)) {
-        // Post has been deleted, no need to fetch details
         return;
       }
 
       if (type === "comment") {
         const response = await axios.get(`/api/feed/shared-comment/${postId}`);
 
-        // Check if response.data is not null before accessing properties
         if (response.data !== null) {
           setCommentDetails((prevDetails) => ({
             ...prevDetails,
@@ -322,13 +341,14 @@ const FeedPage = () => {
                 <p style={{ margin: 0 }}>
                   Sender: {userNames[post.sender_userId]}
                 </p>
+                {/* Comments */}
                 {post.shared_commentId && (
                   <div style={{ marginTop: "5px" }}>
                     <p style={{ margin: 0 }}>
                       Shared Comment ID: {post.shared_commentId}
                     </p>
-                    {commentDetails[post.shared_commentId] && (
-                      <>
+                    {commentDetails[post.shared_commentId] ? (
+                      <div>
                         <p style={{ margin: 0 }}>
                           Comment:{" "}
                           {commentDetails[post.shared_commentId].comment}
@@ -362,94 +382,124 @@ const FeedPage = () => {
                         <button onClick={() => handleDelete(post.id)}>
                           Delete Post
                         </button>
-                      </>
+                      </div>
+                    ) : (
+                      <p style={{ color: "red" }}>
+                        This post has been deleted due to too many downvotes.
+                      </p>
                     )}
                   </div>
                 )}
+                {/* Pins */}
                 {post.shared_pinId && (
                   <div style={{ marginTop: "5px" }}>
                     <p style={{ margin: 0 }}>
                       Shared Pin ID: {post.shared_pinId}
                     </p>
-                    <p style={{ margin: 0 }}>
-                      Is Toilet:{" "}
-                      {pinDetails[post.shared_pinId]?.isToilet ? "Yes" : "No"}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Is Food:{" "}
-                      {pinDetails[post.shared_pinId]?.isFood ? "Yes" : "No"}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Is Personal:{" "}
-                      {pinDetails[post.shared_pinId]?.isPersonal ? "Yes" : "No"}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Creator:{" "}
-                      {userNames[pinDetails[post.shared_pinId]?.ownerId]}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Upvotes: {pinDetails[post.shared_pinId]?.upvotes}
-                    </p>
-                    <button
-                      onClick={() => handleUpvote(post.shared_pinId, "pin")}
-                    >
-                      Upvote Pin
-                    </button>
-                    <button
-                      onClick={() => handleDownvote(post.shared_pinId, "pin")}
-                    >
-                      Downvote Pin
-                    </button>
-                    <button onClick={() => handleDelete(post.id)}>
-                      Delete Post
-                    </button>
+                    {pinDetails[post.shared_pinId] ? (
+                      <div>
+                        <p style={{ margin: 0 }}>
+                          Is Toilet:{" "}
+                          {pinDetails[post.shared_pinId].isToilet
+                            ? "Yes"
+                            : "No"}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Is Food:{" "}
+                          {pinDetails[post.shared_pinId].isFood ? "Yes" : "No"}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Is Personal:{" "}
+                          {pinDetails[post.shared_pinId].isPersonal
+                            ? "Yes"
+                            : "No"}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Creator:{" "}
+                          {userNames[pinDetails[post.shared_pinId].ownerId]}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Upvotes: {pinDetails[post.shared_pinId].upvotes}
+                        </p>
+                        <button
+                          onClick={() => handleUpvote(post.shared_pinId, "pin")}
+                        >
+                          Upvote Pin
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDownvote(post.shared_pinId, "pin")
+                          }
+                        >
+                          Downvote Pin
+                        </button>
+                        <button onClick={() => handleDelete(post.id)}>
+                          Delete Post
+                        </button>
+                      </div>
+                    ) : (
+                      <p style={{ color: "red" }}>
+                        This post has been deleted due to too many downvotes.
+                      </p>
+                    )}
                   </div>
                 )}
+                {/* Photos */}
                 {post.shared_photoId && (
                   <div style={{ marginTop: "5px" }}>
                     <p style={{ margin: 0 }}>
                       Shared Photo ID: {post.shared_photoId}
                     </p>
-                    <p style={{ margin: 0 }}>
-                      Description:{" "}
-                      {photoDetails[post.shared_photoId]?.description}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Creator:{" "}
-                      {userNames[photoDetails[post.shared_photoId]?.ownerId]}
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Upvotes: {photoDetails[post.shared_photoId]?.upvotes}
-                    </p>
-                    <img
-                      src={photoDetails[post.shared_photoId]?.url}
-                      alt="Shared Photo"
-                      style={{
-                        maxWidth: "100%",
-                        height: "auto",
-                        marginTop: "10px",
-                      }}
-                    />
-                    <button
-                      onClick={() => handleUpvote(post.shared_photoId, "photo")}
-                    >
-                      Upvote Photo
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleDownvote(post.shared_photoId, "photo")
-                      }
-                    >
-                      Downvote Photo
-                    </button>
-                    <button onClick={() => handleDelete(post.id)}>
-                      Delete Post
-                    </button>
+                    {photoDetails[post.shared_photoId] ? (
+                      <div>
+                        <p style={{ margin: 0 }}>
+                          Description:{" "}
+                          {photoDetails[post.shared_photoId].description}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Creator:{" "}
+                          {userNames[photoDetails[post.shared_photoId].ownerId]}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          Upvotes: {photoDetails[post.shared_photoId].upvotes}
+                        </p>
+                        <img
+                          src={photoDetails[post.shared_photoId].url}
+                          alt="Shared Photo"
+                          style={{
+                            maxWidth: "100%",
+                            height: "auto",
+                            marginTop: "10px",
+                          }}
+                        />
+                        <button
+                          onClick={() =>
+                            handleUpvote(post.shared_photoId, "photo")
+                          }
+                        >
+                          Upvote Photo
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDownvote(post.shared_photoId, "photo")
+                          }
+                        >
+                          Downvote Photo
+                        </button>
+                        <button onClick={() => handleDelete(post.id)}>
+                          Delete Post
+                        </button>
+                      </div>
+                    ) : (
+                      <p style={{ color: "red" }}>
+                        This post has been deleted due to too many downvotes.
+                      </p>
+                    )}
                   </div>
                 )}
                 <p style={{ margin: 0 }}>
                   Created At:{" "}
-                  {moment(post.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
+                  {dayjs(post.createdAt).format("MMMM D YYYY, h:mm:ss A")}
                 </p>
               </div>
             </li>
