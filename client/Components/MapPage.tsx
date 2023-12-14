@@ -129,8 +129,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
     console.log('userCoords', userLng, userLat)
     const startCoords = `${userLng},${userLat}`;
     const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`;
-    console.log('endcoords', endCoords)
-    console.log('clickedPinCoords', clickedPinCoords)
     const geometries = 'geojson';
     const url = `https://api.mapbox.com/directions/v5/mapbox/${routeProfile}/${startCoords};${endCoords}?alternatives=true&geometries=${geometries}&steps=true&banner_instructions=true&overview=full&voice_instructions=true&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw`;
 
@@ -138,11 +136,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
       const { data } = await axios.get(url);
 
       const result = data.routes.map((route: any) => {
-        console.log('result of the data loop', route);
         setDistance((route.distance / 1609).toFixed(2)); // meters to miles
         setDuration((route.duration / 3600).toFixed(2)); // hours. minutes
-
-        
       });
 
       const coordinates = data['routes'][0]['geometry']['coordinates'];
@@ -153,10 +148,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
         const routerFeature = makeRouterFeature([...coordinates]);
         setRouteDirections(routerFeature);
       }
-      console.log('end of createRouterLine function')
-      //setLoading(false);
+
     } catch (err) {
-      //setLoading(false);
+
       console.error(err);
     }
 
@@ -241,6 +235,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
         )}
       <NavigationControl />
       </Map>
+        <p>{distance} miles and {duration} hour(s) away from Pin</p>
     </div>
   )
 }
