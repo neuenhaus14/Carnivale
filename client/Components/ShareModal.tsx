@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Dropdown, DropdownButton } from "react-bootstrap";
 import axios from "axios";
 
-const ShareModal = (props: { post: number; userId: number; postType: string }) => {
+const ShareModal = (props: { postId: number; userId: number; postType: string }) => {
   const { postId, userId, postType } = props;
 
   const [show, setShow] = useState(false);
