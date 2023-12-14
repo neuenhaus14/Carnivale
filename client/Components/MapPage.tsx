@@ -159,6 +159,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
  // handles the route line creation by making the response from the directions API into a geoJSON 
  // which is the only way to use it in the <Source> tag (displays the "route/line")
   const createRouterLine = async (userLocation: [number, number], routeProfile: string,): Promise<void> => {
+  const createRouterLine = async (userLocation: [number, number], routeProfile: string,): Promise<void> => {
     console.log('userCoords', userLng, userLat)
     const startCoords = `${userLng},${userLat}`
     const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`
