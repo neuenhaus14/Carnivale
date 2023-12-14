@@ -29,7 +29,6 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
     zoom: 12,
   });
 
-  console.log('inside map component. isNewEvent', isNewEvent, 'viewState', viewState)
   return (
     <div>
       <Map
