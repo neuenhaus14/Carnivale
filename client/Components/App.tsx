@@ -3,6 +3,8 @@ import {Route, RouterProvider, createBrowserRouter, createRoutesFromElements, us
 import { useAuth0 } from '@auth0/auth0-react';
 import ProtectedRoute from './ProtectedRoutes'
 import axios from 'axios';
+import { io } from 'socket.io-client'
+const socket = io()
 
 import FeedPage from './FeedPage'
 import HomePage from './HomePage'
@@ -34,13 +36,29 @@ const App = () => {
     //console.log(position)
     setLng(position.coords.longitude);
     setLat(position.coords.latitude);
+
+    // it first inits with the emit when home page calls the function, 
+    // this is sent to the server side to udate the database
+    socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude })
+    console.log('end of socket emit func',{longitude: position.coords.longitude, latitude: position.coords.latitude } )
   }
 
-  console.log('user coords from app', lng, lat)
+  useEffect(() => {
+    getLocation();
+  }, []);
 
   // useEffect(() => {
-  //   getLocation();
-  // }, []);
+  //   // this coords is data.dataValues from the database as a response to the emit
+  //   socket.on('userLoc', (coords: any) => {
+  //     console.log('userLoc', coords.longitude, coords.latitude)
+
+  //     //set the coords with the response
+  //     setLng(coords.longitude);
+  //     setLat(coords.latitude);
+      
+  //     console.log('lng lat', lng, lat)
+  //   })
+  // }, [])
 
 
   // const { user } = useAuth0();

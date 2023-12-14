@@ -3,7 +3,10 @@ import path from "path";
 import { db } from "./db";
 import { auth, requiresAuth } from 'express-openid-connect';
 import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER } from './config';
+import { Server } from 'socket.io';
 import PinRoutes from './routes/Pins';
+import http from 'http'
+import cors from 'cors'
 //import Upload  from "./routes/PhotoUpload"
 import cloudinary  from "./utils/cloudinary_helpers" //grabbing reference to an already configured cloudinary object
 import FriendsRoutes from './routes/Friends'
@@ -13,12 +16,16 @@ import HomeRoutes from "./routes/Home";
 import FeedRoutes from "./routes/Feed";
 import ImageRouter from './routes/PhotoUpload'
 
+import { User } from './db/index'
+
 //this is declaring db as an obj so it can be ran when server starts
 type db = { db: object };
 //this is running db/index.ts
 db;
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {cors: {origin: '*'}})
 const port = 4000;
 
 const routeHandler = Router();
@@ -35,6 +42,10 @@ app.use("/", routeHandler);
 app.use("/api/pins", PinRoutes);
 app.use("/api/feed", FeedRoutes);
 app.use('/api/images', ImageRouter)
+app.use(cors({
+  origin: ['http://localhost:4000'], 
+  credentials: true
+}));
 
 const config = {
   authRequired: false,
@@ -54,6 +65,23 @@ app.get('/auth', (req, res) => {
   res.render("index", {isAuthenticated: req.oidc.isAuthenticated()});
 });
 
+io.on('connection', (socket: any) => {
+  console.log('a user connected');
+  socket.on('userLoc', (userLoc: any) => {
+    console.log('userLoc', userLoc.longitude, userLoc.latitude)
+    User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: 1}})
+    .then((data: any) => 
+        console.log('success')
+        // io.emit('userLoc', data.dataValues)
+    )
+    .catch((err) => console.error(err))
+  })
+
+  socket.on('disconnect', () => {
+    console.log('a user disconnected');
+  });
+});
+
 app.get("/*", function (req: Request, res: Response) {
   res.sendFile(
     path.join(__dirname, "..", "dist", "index.html"),
@@ -64,8 +92,10 @@ app.get("/*", function (req: Request, res: Response) {
     }
   );
 });
+
+
 // SERVER CONNECTION
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`
   Listening at: http://127.0.0.1:${port}
   `);
