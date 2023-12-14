@@ -222,7 +222,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
   }
 
 
-
+  console.log('inside userpage. isNewEvent', isNewEvent)
   return (
     <div>
       <h1>UserPage {lng} {lat}</h1>
