@@ -65,7 +65,7 @@ const PostCard = (props: { post: any; userId: number }) => {
             {dayjs(post.createdAt.toString()).fromNow()}
           </Card.Text>
           <ShareModal
-            post={post.id}
+            postId={post.id}
             userId={userId}
             postType={"comment"}
           />
@@ -84,7 +84,7 @@ const PostCard = (props: { post: any; userId: number }) => {
             {dayjs(post.createdAt.toString()).fromNow()}
           </Card.Text>
           <ShareModal
-            post={post.id}
+            postId={post.id}
             userId={userId}
             postType={"photo"}
           />
