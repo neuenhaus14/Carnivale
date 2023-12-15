@@ -33,6 +33,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
   const [destinationCoords, setDestinationCoords] = useState<[number, number]>([0, 0]);
   const [routeDirections, setRouteDirections] = useState<any | null>(null);
   const [friends, setFriends] = useState([])
+  const [events, setEvents] = useState([])
   const [viewState, setViewState] = useState({
     latitude: 29.964735,
     longitude: -90.054261,
@@ -50,6 +51,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
   useEffect(() => {
     getPins();
     getFriends();
+    getEvents();
   }, [setMarkers]);
 
   
@@ -70,6 +72,21 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
       console.error(err)
     }
   }
+
+  const getEvents = async () => {
+    const endpoints = [
+      `/api/events/getEventsOwned/${1}`,
+      `/api/events/getEventsParticipating/${1}`]
+    try {
+       await axios.all(endpoints.map((endpoint) => axios.get(endpoint))).then(
+        (events) => {events.map((responseEvent) => setEvents(responseEvent.data))}
+        );
+        
+      } catch (err)  {
+        console.error(err)
+      }
+    }
+    //console.log('state events', events)
 
   const getFriends = async () => {
     try {
@@ -142,7 +159,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
 
       const result = data.routes.map((route: any) => {
         setDistance((route.distance / 1609).toFixed(2)); // meters to miles
-        setDuration((route.duration / 3600).toFixed(2)); // hours. minutes
+        setDuration((route.duration / 3600).toFixed(2)); // hours
       });
 
       const coordinates = data['routes'][0]['geometry']['coordinates'];
@@ -170,6 +187,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
 
   return (
     <div>
+      {/* {console.log(events)} */}
       <h1>MapPage!</h1>
       { showModal ? 
         <PinModal 
@@ -223,6 +241,19 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
             <svg>
               <circle cx="15" cy="15" r="10" stroke="gray" strokeWidth="3" fill="white" />
             </svg>
+            </Marker>
+          ))
+        }
+      </div>
+      <div id='event-markers'>
+        {
+          events.map((event) => (
+            <Marker 
+            key={event.id}
+            onClick={(e) => {clickedMarker(e.target)}} 
+            longitude={event.longitude} latitude={event.latitude}
+            anchor="bottom"> 
+            <b>EVENT</b>
             </Marker>
           ))
         }
