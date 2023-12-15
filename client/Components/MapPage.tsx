@@ -30,6 +30,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
   const [routeDirections, setRouteDirections] = useState<any | null>(null);
   const [friends, setFriends] = useState([])
   const [events, setEvents] = useState([])
+  const [showDirections, setShowDirections]= useState(false);
   const [viewState, setViewState] = useState({
     latitude: 29.964735,
     longitude: -90.054261,
@@ -112,22 +113,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
       console.log('clickedMarkerRes', data);
       setSelectedPin(data);
       setIsPinSelected(true);
+      setShowDirections(true);
       modalTrigger()
     } catch (err)  {
       console.error(err);
-    }
-
-    if (!isPinSelected){
-      try {
-        const { data } = await axios.get(`/api/pins/get-clicked-marker/${lngRounded}/${latRounded}`)
-        console.log('resposne data', data[0].longitude, data[0].latitude)
-        console.log('clickedMarkerRes', data);
-        setSelectedPin(data);
-        setIsPinSelected(true);
-        modalTrigger()
-      } catch (err)  {
-        console.error(err);
-      }
     }
 
   };
@@ -164,7 +153,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
 
       const result = data.routes.map((route: any) => {
         setDistance((route.distance / 1609).toFixed(2)) // meters to miles
-        setDuration((route.duration / 3600).toFixed(2)) // hours
+        setDuration((route.duration).toFixed(2)) // hours
       });
 
       const coordinates = data['routes'][0]['geometry']['coordinates']
@@ -190,6 +179,20 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
     }
   }
   
+  const humanizedDuration = (duration: number) => {
+    duration = Number(duration);
+    const h = Math.floor(duration / 3600);
+    const m = Math.floor(duration % 3600 / 60);
+    const s = Math.floor(duration % 3600 % 60);
+
+    const hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+    const mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes") : "";
+    const sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+
+    return `Time to Pin: ${hDisplay + mDisplay}`; 
+
+}
+
 
   const pinCategoryColor = (marker: any) => {
     const colorMapping: PinColorMapping = {
@@ -295,7 +298,15 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
         )}
       <NavigationControl />
       </Map>
-        <p>{distance} miles and {duration} hour(s) away from Pin</p>
+      <div>
+        {showDirections ? (
+        <div>
+          <p><b>{humanizedDuration(duration)} </b></p>
+          <p><b> Distance to Pin: {distance} miles</b></p>
+        </div>
+        ) 
+        : null }      
+      </div>
     </div>
   )
 }
