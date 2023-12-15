@@ -220,6 +220,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
             longitude={friend.longitude} latitude={friend.latitude}
             anchor="bottom"> 
             <b>{friend.firstName[0]}{friend.lastName[0]}</b>
+            <svg>
+              <circle cx="15" cy="15" r="10" stroke="gray" strokeWidth="3" fill="white" />
+            </svg>
             </Marker>
           ))
         }
