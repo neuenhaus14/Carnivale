@@ -96,7 +96,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <ShareModal post={selectedPin[0].id} userId={1} postType={"pin"}/>
+            <ShareModal postId={selectedPin[0].id} userId={1} postType={"pin"}/>
             <Button variant="danger" onClick={initModal}> Close </Button>
             <Button variant="dark "onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
           </Modal.Footer>
