@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Dropdown, DropdownButton } from "react-bootstrap";
 import axios from "axios";
 
-const ShareModal = (props: { post: any; userId: number; postType: string }) => {
-  const { post, userId, postType } = props;
+const ShareModal = (props: { postId: number; userId: number; postType: string }) => {
+  const { postId, userId, postType } = props;
 
   const [show, setShow] = useState(false);
   const [friends, setFriends] = useState([]);
@@ -31,7 +31,7 @@ const ShareModal = (props: { post: any; userId: number; postType: string }) => {
       await axios.post(`api/home/share/${share}`, {
         recipient_userId: shareId,
         sender_userId: userId,
-        id: post.id,
+        id: postId,
       });
     } catch (err) {
       console.error(err);

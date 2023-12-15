@@ -8,11 +8,9 @@ import ShareModal from "./ShareModal";
 
 dayjs.extend(relativeTime);
 
-const PostCard = (props: { post: any, userId: number }) => {
+const PostCard = (props: { post: any; userId: number }) => {
   const { post, userId } = props;
   const [owner, setOwner] = useState("");
-
-
 
   const getOwner = async () => {
     try {
@@ -24,9 +22,39 @@ const PostCard = (props: { post: any, userId: number }) => {
     }
   };
 
+  const handleUpvote = async (type: string) => {
+    try {
+      await axios.post(
+        `/api/feed/${
+          type === "comment"
+            ? `upvote-comment/${userId}/${post.id}`
+            : `upvote-photo/${userId}/${post.id}`
+        }`
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDownvote = async (type: string) => {
+    try {
+      console.log(`great job:${post.id}`);
+      await axios.post(
+        `/api/feed/${
+          type === "comment"
+            ? `downvote-comment/${userId}/${post.id}`
+            : `downvote-photo/${userId}/${post.id}`
+        }`
+      );
+    } catch (err) {
+      console.error(err);
+    }
+    console.log(`Boo:${post.id}`);
+  };
+
   useEffect(() => {
     getOwner();
-  }, [])
+  }, []);
 
   return (
     <Card>
@@ -36,7 +64,14 @@ const PostCard = (props: { post: any, userId: number }) => {
             {post.comment} - {owner}:{" "}
             {dayjs(post.createdAt.toString()).fromNow()}
           </Card.Text>
-          <ShareModal post={post} userId={userId} postType={'comment'}/>
+          <ShareModal
+            postId={post.id}
+            userId={userId}
+            postType={"comment"}
+          />
+          Upvotes: {post.upvotes}
+          <Button onClick={() => handleUpvote("comment")}>Upvote</Button>
+          <Button onClick={() => handleDownvote("comment")}>Downvote</Button>
         </Card.Body>
       ) : (
         <Card.Body>
@@ -48,7 +83,14 @@ const PostCard = (props: { post: any, userId: number }) => {
             {post.description} - {owner}:{" "}
             {dayjs(post.createdAt.toString()).fromNow()}
           </Card.Text>
-          <ShareModal post={post} userId={userId} postType={'photo'}/>
+          <ShareModal
+            postId={post.id}
+            userId={userId}
+            postType={"photo"}
+          />
+          Upvotes: {post.upvotes}
+          <Button onClick={() => handleUpvote("photo")}>Upvote</Button>
+          <Button onClick={() => handleDownvote("photo")}>Downvote</Button>
         </Card.Body>
       )}
     </Card>

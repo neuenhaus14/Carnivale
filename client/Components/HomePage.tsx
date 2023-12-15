@@ -22,14 +22,10 @@ interface HomePageProps {
   getLocation: any
   lat: number
   lng: number
-}
-//const loc = useContext(LocContext)
-
-interface HomePageProps {
-  getLocation: any
+  userData: any
 }
 
-const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
+const HomePage: React.FC<HomePageProps> = ({getLocation, lat, lng, userData}) => {
   const { user } = useAuth0();
   const [comment, setComment] = useState("");
   const [userId, setUserId] = useState(null);
@@ -38,17 +34,24 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
   const [key, setKey] = useState("posts");
 
   useEffect(() => {
-    getLocation();
+    getLocation()
   }, []);
 
-  const getUser = async () => {
-    try {
-      const { data } = await axios.post(`api/home/user/`, { user });
-      setUserId(data[0].id);
-    } catch (err) {
-      console.error(err);
+  // const getUser = async () => {
+  //   try {
+  //     const { data } = await axios.post(`api/home/user/`, { user });
+  //     setUserId(data[0].id);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // }
+
+  useEffect(() => {
+    if(userData !== null){
+      setUserId(userData.id)
     }
-  }
+  }, [userData])
+
   const modalTrigger = () => {
    setShowModal(true)
   }
@@ -74,7 +77,7 @@ const HomePage: React.FC<HomePageProps> = ({getLocation}) => {
   };
 
   useEffect(() => {
-    getUser();
+   // getUser();
     getPosts(key);
     const interval = setInterval(() => {
       getPosts(key);
