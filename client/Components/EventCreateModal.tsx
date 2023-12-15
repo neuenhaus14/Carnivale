@@ -125,9 +125,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   getEventsParticipating, isNewEvent, getLocation, lng, lat }) => {
 
   const [eventAddress, setEventAddress] = useState('');
-  const [eventCity, setEventCity] = useState('');
-  const [eventState, setEventState] = useState('');
-  const [eventZip, setEventZip] = useState('');
   const [eventDescription, setEventDescription] = useState('')
   const [eventName, setEventName] = useState('')
 
@@ -150,7 +147,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     setUserLongitude(lng);
   }, [lng, lat])
 
-
   // new/old event modal
   useEffect(() => {
     console.log('inside Modal. isNewEvent', isNewEvent, 'selectedEvent', selectedEvent)
@@ -162,21 +158,45 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventDescription(selectedEvent.description);
       setEventLatitude(Number(selectedEvent.latitude));
       setEventLongitude(Number(selectedEvent.longitude));
-      setEventStartTime(selectedEvent.startTime);
-      setEventEndTime(selectedEvent.endTime)
+      if (selectedEvent.startTime !== null && selectedEvent !== null){
+        parseDateIntoDateAndTime(selectedEvent.startTime, 'start');
+        parseDateIntoDateAndTime(selectedEvent.endTime, 'end');
+      }
     }
     // event create mode
     else if (isNewEvent === true) {
       setEventName('');
       setEventAddress('');
       setEventDescription('');
-      setEventState('');
-      setEventZip('')
-      setEventStartTime(2);
-      setEventEndTime(4);
+      setEventStartTime(12);
+      setEventEndTime(14);
     }
   }, [selectedEvent, isNewEvent])
 
+
+
+
+  // takes either selectedEvent.startTime or .endTime
+  // to populate date input and time ranges
+  const parseDateIntoDateAndTime = (fullDate: string, startOrEnd: string) => {
+    // 2023-12-11 20:40:35.222-05
+
+    console.log('here', fullDate, typeof fullDate)
+
+    const [date, time] = fullDate.split('T');
+
+    const timeRangeValue = Number(time.slice(0,5).replace(':', '.'))
+
+    if (startOrEnd === 'start'){
+      console.log(date, time, timeRangeValue, startOrEnd);
+      setEventStartDate(date);
+      setEventStartTime(timeRangeValue);
+    } else if (startOrEnd === 'end'){
+      console.log(date, time, timeRangeValue, startOrEnd)
+      setEventEndDate(date);
+      setEventEndTime(timeRangeValue);
+    }
+  }
 
   const handleClose = () => {
     setShowCreateModal(false); // goes up to user page and sets to false
@@ -188,7 +208,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       const newEvent = await axios.post('/api/events/createEvent', {
         event: {
           ownerId: userId,
-          address: `${eventAddress} ${eventCity} ${eventState} ${eventZip}`,
+          address: eventAddress,
           description: eventDescription,
           latitude: eventLatitude,
           longitude: eventLongitude,
@@ -238,6 +258,20 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     console.log('input change', name, value)
   }
 
+  const handleAddressToCoordinates = async (e:any) => {
+    const { value } = e.target;
+    console.log('here', value)
+    const coordinatesResponse = await axios.post('/api/events/getCoordinatesFromAddress', {
+      address: value
+    })
+
+    const [ evtLongitude, evtLatitude] = coordinatesResponse.data;
+
+    console.log( 'heeeere', evtLongitude, evtLatitude )
+    setEventLongitude(evtLongitude);
+    setEventLatitude(evtLatitude);
+  }
+
   return (
     <Modal show={showCreateModal} onHide={handleClose}>
       <Modal.Header>
@@ -252,13 +286,16 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
               userLongitude={userLongitude}
               eventLatitude={eventLatitude}
               eventLongitude={eventLongitude}
+              setEventLatitude={setEventLatitude}
+              setEventLongitude={setEventLongitude}
+              setEventAddress={setEventAddress}
             />
           </div>
           <div>
             <Form>
               <Form.Group className="mb-5" controlId="formEvent">
 
-                <p>{eventName}</p>
+          {/* <p>{eventName}</p> */}
                 <FloatingLabel
                   controlId="floatingEventNameInput"
                   label="Event Name"
@@ -267,7 +304,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                   <Form.Control type="text" name='name' value={eventName} onChange={handleInputChange} />
                 </FloatingLabel>
 
-                <p>{eventDescription}</p>
+          {/* <p>{eventDescription}</p> */}
                 <FloatingLabel
                   controlId="floatingEventDescriptionInput"
                   label="Description"
@@ -276,16 +313,16 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                   <Form.Control type="text" name='description' value={eventDescription} onChange={handleInputChange} />
                 </FloatingLabel>
 
-                <p>{eventAddress}</p>
+          {/* <p>{eventAddress}</p> */}
                 <FloatingLabel
                   controlId="floatingEventAddressInput"
                   label="Address"
                   className="mb-2"
                 >
-                  <Form.Control type="text" name='address' value={eventAddress} onChange={handleInputChange} />
+                  <Form.Control type="text" name='address' value={eventAddress} onChange={handleInputChange} onBlur={handleAddressToCoordinates} />
                 </FloatingLabel>
 
-                <p>{eventStartDate}</p>
+          {/* <p>{eventStartDate}</p> */}
                 <FloatingLabel
                   controlId="floatingEventStartDateInput"
                   label="Start Date: YYYY-MM-DD"
@@ -304,7 +341,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                     onChange={handleRangeChange}
                   /></div>
 
-                <p>{eventEndDate}</p>
+          {/* <p>{eventEndDate}</p> */}
                 <FloatingLabel
                   controlId="floatingEventEndDateInput"
                   label="End Date: YYYY-MM-DD"
@@ -322,11 +359,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                     name='end'
                     onChange={handleRangeChange}
                   /></div>
+
+
               </Form.Group>
             </Form>
-
-
-            
 
             <EventCreateAccordion
               selectedEvent={selectedEvent}
