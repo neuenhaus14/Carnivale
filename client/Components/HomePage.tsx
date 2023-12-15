@@ -22,6 +22,7 @@ interface HomePageProps {
   getLocation: any
   lat: number
   lng: number
+  userData: any
 }
 
 const HomePage: React.FC<HomePageProps> = ({getLocation, lat, lng, userData}) => {
