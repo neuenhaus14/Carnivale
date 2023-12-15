@@ -115,14 +115,102 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
 }
 })
 
-// NEXT TWO GET PUBLIC EVENTS FOR A USER
+// NEXT TWO GET ARRAY OF PUBLIC EVENT ID's FOR A USER
 Events.get('/getPublicEventsParticipating/:userId', async (req: Request, res: Response) => {
-  res.status(200).send('get pub part WORKING');
+  const { userId } = req.params;
+
+  try {
+    // join records with user's id
+    const userEventsParticipatingRecords: any = await Join_user_event.findAll({
+      where: {
+        userId,
+        isAttending: true,
+      }
+    });
+
+    // if user has no events that they're going to
+    if (userEventsParticipatingRecords.length === 0) {
+      console.log('No user event participation records')
+      // send empty array
+      res.status(200).send([]);
+    } else {
+      const userEventsParticipatingIds = userEventsParticipatingRecords.map((record: any) => record.eventId);
+
+      const userPublicEventsParticipating: any = await Event.findAll({
+        where: {
+          id: {
+            [Op.or]: [...userEventsParticipatingIds]
+          },
+          ownerId: {
+            [Op.not]: userId
+          },
+          system: true
+        }
+      });
+      res.status(200).send(userPublicEventsParticipating.map((event: any) => event.id));
+    }
+  } catch (err) {
+    console.error('SERVER ERROR: failed to GET public events the user is going to', err);
+    res.status(500).send(err);
+  }
 })
 
-Events.get('/getPublicEventsInvited/:userId', (req: Request, res: Response) => {
-  res.status(200).send('get pub invi WORKING');
+Events.get('/getPublicEventsInvited/:userId', async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+
+  // join records with user's id
+  const userEventsInvitedRecords: any = await Join_user_event.findAll({
+    where: {
+      userId,
+      isAttending: false,
+    }
+  })
+  // if user has no events that they're invited to...
+  if (userEventsInvitedRecords.length === 0) {
+    // console.log('No event invitations')
+    res.status(200).send([])
+  } else {
+
+    const userEventsInvitedIds = userEventsInvitedRecords.map((record: any) => record.eventId)
+
+    const userPublicEventsInvited: any = await Event.findAll({
+      where: {
+        id: {
+          [Op.or]: [...userEventsInvitedIds]
+        },
+        system: true,
+      }
+    })
+    res.status(200).send(userPublicEventsInvited.map((event: any) => event.id));
+  }
+} catch (err) {
+  console.error('SERVER ERROR: failed to GET public events the user is invited to', err);
+  res.status(500).send(err);
+}
 })
+
+// GET ALL PUBLIC EVENTS
+Events.get('/getAllPublicEvents', async (req: Request, res: Response) => {
+  
+  try {
+    const allPublicEvents = await Event.findAll({
+      where: {
+        system: true
+      },
+      order: [
+        ['startTime', 'ASC']
+      ]
+    })
+    res.status(200).send(allPublicEvents)
+  } catch (err) {
+    console.error('SERVER ERROR: failed to GET all public events', err)
+    res.status(500).send(err)
+  }
+
+})
+
 
 // get friends that are attending provided a user and event
 Events.get('/getPeopleForEvent/:userId-:eventId', async (req: Request, res: Response) => {
