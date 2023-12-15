@@ -71,8 +71,11 @@ io.on('connection', (socket: any) => {
     console.log('userLoc', userLoc.longitude, userLoc.latitude)
     User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: 1}})
     .then((data: any) => 
-        console.log('success')
-        // io.emit('userLoc', data.dataValues)
+      User.findOne({where: {id: 1}})
+        .then((data) => {
+          console.log('successfully updated location')
+          io.emit('userLoc', data.dataValues)
+        })
     )
     .catch((err) => console.error(err))
   })

@@ -59,8 +59,8 @@ const App = () => {
   
   const showPosition = (position: any) => {
     //console.log(position)
-    setLng(position.coords.longitude);
-    setLat(position.coords.latitude);
+    // setLng(position.coords.longitude);
+    // setLat(position.coords.latitude);
 
     // it first inits with the emit when home page calls the function, 
     // this is sent to the server side to udate the database
@@ -72,18 +72,18 @@ const App = () => {
     getLocation();
   }, []);
 
-  // useEffect(() => {
-  //   // this coords is data.dataValues from the database as a response to the emit
-  //   socket.on('userLoc', (coords: any) => {
-  //     console.log('userLoc', coords.longitude, coords.latitude)
+  useEffect(() => {
+    // this coords is data.dataValues from the database as a response to the emit
+    socket.on('userLoc', (coords: any) => {
+      console.log('userLoc', coords.longitude, coords.latitude)
 
-  //     //set the coords with the response
-  //     setLng(coords.longitude);
-  //     setLat(coords.latitude);
+      //set the coords with the response
+      setLng(coords.longitude);
+      setLat(coords.latitude);
       
-  //     console.log('lng lat', lng, lat)
-  //   })
-  // }, [])
+      console.log('lng lat', lng, lat)
+    })
+  }, [])
 
 
 
