@@ -65,7 +65,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
     try {
       const friendRequestsData = await axios.get(`api/friends/getFriendRequests/${userId}`);
       const { requestsMadeUsers, requestsReceivedUsers } = friendRequestsData.data;
-      console.log(requestsMadeUsers, requestsReceivedUsers)
+      // console.log(requestsMadeUsers, requestsReceivedUsers)
       setFriendRequestsReceived(requestsReceivedUsers);
       setFriendRequestsMade(requestsMadeUsers);
     } catch (err) {
@@ -169,14 +169,14 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         recipient_phoneNumber: phoneForFriendRequest,
       }
     })
-    console.log('friedRequestRecord', friendRequestResponse);
+    //console.log('friedRequestRecord', friendRequestResponse);
     setPhoneForFriendRequest('');
     getFriendRequests();
   }
 
   async function cancelFriendRequest(recipient_userId: number) {
     const deleteResponse = await axios.delete(`/api/friends/cancelFriendRequest/${userId}-${recipient_userId}`)
-    console.log(deleteResponse);
+    //console.log(deleteResponse);
     getFriendRequests();
   }
 
@@ -188,14 +188,14 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         isConfirmed
       }
     })
-    console.log('updated Relationship', updatedRelationship);
+    //console.log('updated Relationship', updatedRelationship);
     getFriends();
     getFriendRequests();
   }
 
   async function unfriend(friendId: number) {
     const deleteResponse = await axios.delete(`/api/friends/unfriend/${userId}-${friendId}`);
-    console.log(deleteResponse)
+    //console.log(deleteResponse)
     getFriends();
   }
 
@@ -222,7 +222,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
   }
 
 
-  console.log('inside userpage. isNewEvent', isNewEvent)
+  // console.log('inside userpage. isNewEvent', isNewEvent)
   return (
     <div>
       <h1>UserPage {lng} {lat}</h1>
