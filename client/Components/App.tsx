@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext, createContext} from 'react';
+import React, {useEffect, useState, useContext, createContext, useRef} from 'react';
 import {Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLoaderData} from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react';
 import ProtectedRoute from './ProtectedRoutes'
@@ -19,9 +19,34 @@ import Loading from './Loading';
 
 
 const App = () => {
+  
+  const { user, isLoading, isAuthenticated } = useAuth0();
+  const [userData, setUserData] = useState(null);
+  const userRef = useRef(null);
 
   const [lng, setLng] = useState(0)
   const [lat, setLat] = useState(0)
+
+
+  const getUser = async () => {
+    try {
+      const { data } = await axios.post(`api/home/user/`, { user });
+      setUserData(data[0]);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  
+  if(isAuthenticated){
+    if(userRef.current === null){
+      getUser();
+      userRef.current = userData;
+      //console.log('userDATA:', userData)
+    }
+  }
+
+
+
 
   const getLocation = () => {
     if (navigator.geolocation) {
@@ -61,21 +86,7 @@ const App = () => {
   // }, [])
 
 
-  // const { user } = useAuth0();
 
-  // const getUserLoader = async() => {
-  //   try {      
-  //     const { data } = await axios.post(`api/home/user/`, { user });
-  //     console.log('userdata', data)
-  //        data "{\"user\":{\"given_name\":\"Kitty\",\"family_name\":\"Scripters\",\"nickname\":\"kittyscripters\",\"name\":\"Kitty Scripters\",
-  //     return data
-  //   } catch (err){
-  //     console.error(err);
-  //   }
-  // }
-
-
-  const { isLoading } = useAuth0();
 
   if (isLoading) {
     return <Loading />;
@@ -86,13 +97,11 @@ const App = () => {
       <Route>
           <Route path='/' element={<Login />} />
         {/* <Route element={<ProtectedRoute />}>  */}
-          <Route path='/homepage' element={<div><HomePage getLocation={getLocation}/> <NavBar /></div>}  />
-          <Route path='/mainforum' element={<div><MainForum /> <NavBar /></div>} />
-          <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
-          <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng}/> <NavBar /></div>}/>
-          <Route path='/feedpage' element={<div><FeedPage /> <NavBar /></div>}/>
+          <Route path='/homepage' element={<div><HomePage getLocation={getLocation} lat={lat} lng={lng} userData={userData}/> <NavBar /></div>}  />
+          <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng} /> <NavBar /></div>}/>
+          <Route path='/feedpage' element={<div><FeedPage  /> <NavBar /></div>}/>
           <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
-          <Route path='/userpage' element={<div><UserPage getLocation = {getLocation} lng={lng} lat={lat} /> <NavBar /></div>} />
+          <Route path='/userpage' element={<div><UserPage  getLocation = {getLocation} lng={lng} lat={lat} /> <NavBar /></div>} />
           {/* <Route path='/photo' element={<div><Photos /> <NavBar /></div>} /> */}
         {/* </Route>  */}
       </Route>,
