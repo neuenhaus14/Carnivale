@@ -14,6 +14,7 @@ import Costume from './Costume';
 import EventPage from './EventPage';
 import NavBar from './NavBar';
 import Loading from './Loading';
+import Parades from './Parades'
 
 
 const App = () => {
@@ -73,6 +74,7 @@ const App = () => {
           <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
           <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng}/> <NavBar /></div>}/>
           <Route path='/feedpage' element={<div><FeedPage /> <NavBar /></div>}/>
+          <Route path='/parades' element={<div><Parades /> <NavBar /></div>}/>
           <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
           <Route path='/userpage' element={<div><UserPage getLocation = {getLocation} lng={lng} lat={lat} /> <NavBar /></div>} />
           {/* <Route path='/photo' element={<div><Photos /> <NavBar /></div>} /> */}
