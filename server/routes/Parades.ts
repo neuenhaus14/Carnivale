@@ -88,12 +88,47 @@ const scrapeParadeInfo = async (paradeName: string) => {
 
   try {
     const response = await axios.get(url);
-    const $ = cheerio.load(response.data);
+    const htmlString = response.data;
 
-    const title = $("h1").text().trim();
-    const description = $('meta[name="description"]').attr("content") || "";
+    const $ = cheerio.load(htmlString);
 
-    return { title, description };
+    const titleTagContent = $("title").text().trim();
+    const title = titleTagContent.split("|")[0].trim();
+
+    const startDate = $("meta[itemprop='startDate']").attr("content");
+
+    const mapLink = $(".parade-map a").attr("href");
+    const imageSrc = $(".parade-map img").attr("src");
+    const paradeInfo = $(".paradedescription")
+      .text()
+      .replace(/\n|\t/g, "")
+      .trim();
+    const imageParade = $("img.paradeImage").attr("src");
+
+    const description = $("meta[name='description']").attr("content");
+    const location = $("meta[itemprop='address']").attr("content");
+
+    const directionsText = $(".directions").text().replace(/\n|\t/g, "").trim();
+
+    const otherParadesDate = $(".center h3").text().trim();
+    const otherParadesList = $(".center ul.sideRoutes li a")
+      .map(function () {
+        return $(this).text().trim();
+      })
+      .get();
+
+    return {
+      title,
+      startDate,
+      mapLink,
+      imageSrc,
+      imageParade,
+      description,
+      location,
+      paradeInfo,
+      directionsText,
+      otherParades: [otherParadesDate, ...otherParadesList].join("\n"),
+    };
   } catch (error) {
     throw new Error(
       `Error scraping parade info for ${paradeName}: ${error.message}`
