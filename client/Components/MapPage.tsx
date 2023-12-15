@@ -2,15 +2,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer } from 'react-map-gl';
 import PointAnnotation from 'react-map-gl'
-import { BsFillPinFill } from "react-icons/bs";
 import { useSearchParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
-import {AddressAutofill, SearchBox} from '@mapbox/search-js-react'
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
-
-//https://blog.logrocket.com/using-mapbox-gl-js-react/#locating-your-position-react-map-gl
 
 interface MapProps {
   userLat: number
@@ -73,20 +69,17 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
     }
   }
 
+  //gets owned and participating events from database
   const getEvents = async () => {
-    const endpoints = [
-      `/api/events/getEventsOwned/${1}`,
-      `/api/events/getEventsParticipating/${1}`]
+    const endpoints = [`/api/events/getEventsOwned/${1}`, `/api/events/getEventsParticipating/${1}`]
     try {
-       await axios.all(endpoints.map((endpoint) => axios.get(endpoint))).then(
-        (events) => {events.map((responseEvent) => setEvents(responseEvent.data))}
-        );
-        
-      } catch (err)  {
+      await axios.all(endpoints.map((endpoint) => axios.get(endpoint))).then(
+        (events) => {events.map((responseEvent) => setEvents(responseEvent.data))} );  
+    } catch (err)  {
         console.error(err)
-      }
     }
-    //console.log('state events', events)
+  }
+
 
   const getFriends = async () => {
     try {
@@ -114,6 +107,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
     const  latRounded = currMarkerLat.toString().slice(0,9)
     setClickedPinCoords([lngRounded, latRounded])
     
+
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-marker/${lngRounded}/${latRounded}`)
       console.log('resposne data', data[0].longitude, data[0].latitude)
@@ -123,6 +117,19 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
       modalTrigger()
     } catch (err)  {
       console.error(err);
+    }
+
+    if (!isPinSelected){
+      try {
+        const { data } = await axios.get(`/api/pins/get-clicked-marker/${lngRounded}/${latRounded}`)
+        console.log('resposne data', data[0].longitude, data[0].latitude)
+        console.log('clickedMarkerRes', data);
+        setSelectedPin(data);
+        setIsPinSelected(true);
+        modalTrigger()
+      } catch (err)  {
+        console.error(err);
+      }
     }
 
   };
@@ -142,33 +149,33 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
         },
       ],
     };
-    return routerFeature;
+    return routerFeature
   }
 
  // handles the route line creation by making the response from the directions API into a geoJSON 
  // which is the only way to use it in the <Source> tag (displays the "route/line")
   const createRouterLine = async (userLocation: [number, number], routeProfile: string,): Promise<void> => {
     console.log('userCoords', userLng, userLat)
-    const startCoords = `${userLng},${userLat}`;
-    const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`;
-    const geometries = 'geojson';
+    const startCoords = `${userLng},${userLat}`
+    const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`
+    const geometries = 'geojson'
     const url = `https://api.mapbox.com/directions/v5/mapbox/${routeProfile}/${startCoords};${endCoords}?alternatives=true&geometries=${geometries}&steps=true&banner_instructions=true&overview=full&voice_instructions=true&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw`;
 
     try {
       const { data } = await axios.get(url);
 
       const result = data.routes.map((route: any) => {
-        setDistance((route.distance / 1609).toFixed(2)); // meters to miles
-        setDuration((route.duration / 3600).toFixed(2)); // hours
+        setDistance((route.distance / 1609).toFixed(2)) // meters to miles
+        setDuration((route.duration / 3600).toFixed(2)) // hours
       });
 
-      const coordinates = data['routes'][0]['geometry']['coordinates'];
-      const destinationCoordinates = data['routes'][0]['geometry']['coordinates'].slice(-1)[0];
-      setDestinationCoords(destinationCoordinates);
+      const coordinates = data['routes'][0]['geometry']['coordinates']
+      const destinationCoordinates = data['routes'][0]['geometry']['coordinates'].slice(-1)[0]
+      setDestinationCoords(destinationCoordinates)
 
       if (coordinates.length) {
-        const routerFeature = makeRouterFeature([...coordinates]);
-        setRouteDirections(routerFeature);
+        const routerFeature = makeRouterFeature([...coordinates])
+        setRouteDirections(routerFeature)
       }
     } catch (err) {
       console.error(err);
@@ -184,10 +191,28 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
       setShowModal(true)
     }
   }
+  
+
+  const pinCategoryColor = (marker: any) => {
+    const colorMapping: PinColorMapping = {
+      isFree:"#90a8c9",
+      isToilet: "#21675e",
+      isFood: "#cd8282",
+      isPersonal: "#82a8dc",
+      isPhoneCharger: '#53e3d4',
+      isPoliceStation: "#82cda8",
+      isEMTStation:"#f27d52"
+    }
+
+    for(const key in marker){
+      if (marker[key] === true){
+        return colorMapping[key]
+      }
+    }
+  }
 
   return (
     <div>
-      {/* {console.log(events)} */}
       <h1>MapPage!</h1>
       { showModal ? 
         <PinModal 
@@ -224,7 +249,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
             key={marker.id}
             onClick={(e) => {clickedMarker(e.target)}} 
             longitude={marker.longitude} latitude={marker.latitude}
-            anchor="bottom"> 
+            anchor="bottom"
+            color={pinCategoryColor(marker)}> 
             </Marker>
           ))
         }
@@ -236,11 +262,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
             key={friend.id}
             onClick={(e) => {clickedMarker(e.target)}} 
             longitude={friend.longitude} latitude={friend.latitude}
-            anchor="bottom"> 
-            <b>{friend.firstName[0]}{friend.lastName[0]}</b>
-            <svg>
-              <circle cx="15" cy="15" r="10" stroke="gray" strokeWidth="3" fill="white" />
-            </svg>
+            anchor="bottom" 
+            color="#aa9ce3"> 
+            
+            {/* <b>{friend.firstName[0]}{friend.lastName[0]}</b> */}
             </Marker>
           ))
         }
@@ -252,8 +277,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
             key={event.id}
             onClick={(e) => {clickedMarker(e.target)}} 
             longitude={event.longitude} latitude={event.latitude}
-            anchor="bottom"> 
-            <b>EVENT</b>
+            anchor="bottom"
+            color="#ffbdf0"> 
             </Marker>
           ))
         }
@@ -275,6 +300,17 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
         <p>{distance} miles and {duration} hour(s) away from Pin</p>
     </div>
   )
+}
+
+interface PinColorMapping {
+  [key: string]: string;
+  isFree: string;
+  isToilet: string;
+  isFood: string;
+  isPersonal: string;
+  isPhoneCharger: string;
+  isPoliceStation: string;
+  isEMTStation: string;
 }
 
 export default MapPage;
