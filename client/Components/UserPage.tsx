@@ -4,7 +4,7 @@ import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
 import { Button } from 'react-bootstrap';
-import EventPage from './EventPage';
+// import EventPage from './EventPage';
 
 const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
 
@@ -81,7 +81,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
 
     // for updating events on userpage when 
     // responding to invites or inviting other users
-    
+
     // TODO: I think isNewEvent gets flipped
     // to false from the eventCreateModal,
     // so isNewEvent should realistically 
