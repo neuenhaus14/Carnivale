@@ -55,7 +55,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
     geoControlRef.current?.trigger();
-    console.log('geocontrolRef', geoControlRef)
   }, [geoControlRef.current]);
 
 
@@ -84,7 +83,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
   const getFriends = async () => {
     try {
       const friends = await axios.get(`/api/friends/getFriends/${1}`)
-      console.log(friends)
       setFriends(friends.data)
     } catch (err)  {
       console.error(err)
