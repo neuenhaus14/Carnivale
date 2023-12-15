@@ -23,7 +23,7 @@ import axios from "axios";
 
 const Events = Router();
 
-// NEXT THREE ROUTES SEARCH FOR EVENTS BY USERNAME
+// NEXT THREE ROUTES SEARCH FOR PRIVATE!!! EVENTS BY USERNAME
 Events.get('/getEventsOwned/:userId', async (req: Request, res: Response) => {
   const {userId } = req.params;
 
@@ -113,6 +113,15 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
   console.error('SERVER ERROR: failed to GET events you are invited to', err);
   res.status(500).send(err);
 }
+})
+
+// NEXT TWO GET PUBLIC EVENTS FOR A USER
+Events.get('/getPublicEventsParticipating/:userId', async (req: Request, res: Response) => {
+  res.status(200).send('get pub part WORKING');
+})
+
+Events.get('/getPublicEventsInvited/:userId', (req: Request, res: Response) => {
+  res.status(200).send('get pub invi WORKING');
 })
 
 // get friends that are attending provided a user and event

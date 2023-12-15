@@ -201,43 +201,40 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   }
 
   const handleEventCreation = async () => {
-    try {
+    
+    const stringifyDateTime = (date: string, time: number) => {
+      let formattedTime;
+      const timeString: string = time.toString()
+      
+      if (timeString.indexOf('.') === -1){
+        formattedTime = `${time}:00`
+      } else {
+        const hour = timeString.slice(0,2);
+        const minute = timeString.slice(3,5);
+        let formattedMinute; 
 
-      console.log('hEC', eventStartDate, eventStartTime, eventEndDate, eventEndTime)
-      // "2023-12-24T18:00"
-
-      const stringifyDateTime = (date: string, time: number) => {
-        let formattedTime;
-        const timeString: string = time.toString()
-        
-        if (timeString.indexOf('.') === -1){
-          formattedTime = `${time}:00`
-        } else {
-          const hour = timeString.slice(0,2);
-          const minute = timeString.slice(3,5);
-          let formattedMinute; 
-
-          switch (minute) {
-            case '25':
-              formattedMinute = '15';
-              break;
-            case '5': 
-              formattedMinute = '30'
-              break;
-            case '75': 
-              formattedMinute = '45'
-              break;
-          }
-
-         formattedTime = `${hour}:${formattedMinute}`
+        switch (minute) {
+          case '25':
+            formattedMinute = '15';
+            break;
+          case '5': 
+            formattedMinute = '30'
+            break;
+          case '75': 
+            formattedMinute = '45'
+            break;
         }
 
-        return `${date}T${formattedTime}`;
+       formattedTime = `${hour}:${formattedMinute}`
       }
 
+      return `${date}T${formattedTime}`;
+    }
+    
+    try {
       const startTimeString= stringifyDateTime(eventStartDate, eventStartTime)
       const endTimeString = stringifyDateTime(eventEndDate, eventEndTime)
-      console.log('sts,ets', startTimeString, endTimeString)
+      // console.log('sts,ets', startTimeString, endTimeString)
       const newEvent = await axios.post('/api/events/createEvent', {
         event: {
           ownerId: userId,
@@ -255,7 +252,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           invitees: friendsToInvite,
         }
       })
-      console.log(newEvent.data)
+      // console.log(newEvent.data)
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST new event', err)
     }
