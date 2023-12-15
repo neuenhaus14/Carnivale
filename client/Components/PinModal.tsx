@@ -3,16 +3,18 @@ import { Modal, Button, Form } from 'react-bootstrap'
 import { useParams} from 'react-router-dom'
 import axios from 'axios'
 import Photos from './Photos'
+import ShareModal from './ShareModal'
  
 interface Props {
   setShowModal: any
   markers: any
   setMarkers: any 
   isPinSelected: boolean
-  isPinSelected: boolean
   setIsPinSelected: any
   selectedPin: any
 }
+
+//this is a git test
 
 const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected} ) => {
   const [isShow, setShow] = useState(true);
@@ -94,6 +96,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
             </div>
           </Modal.Body>
           <Modal.Footer>
+            <ShareModal post={selectedPin[0].id} userId={1} postType={"pin"}/>
             <Button variant="danger" onClick={initModal}> Close </Button>
             <Button variant="dark "onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
           </Modal.Footer>
