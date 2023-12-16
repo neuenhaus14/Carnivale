@@ -79,7 +79,21 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
 
  })
 
- 
+  //handles the posting logic from homepage
+  ImageRouter.put('/post/:ownerId', async (req: Request, res: Response) => {
+    const {latitude, longitude, isThrow, isPin, isCostume, description} = req.body.options
+    const { ownerId } = req.params
+  
+      try{
+        await Photo.update({latitude, longitude, isThrow, isPin, isCostume, ownerId, description}, {where: {photoURL}})
+  
+        res.status(200).send('you did it!')
+  
+      } catch (error) {
+        console.error(error);
+      }
+  
+   })
 /////////////////////////
 // Uploads an image file
 /////////////////////////
