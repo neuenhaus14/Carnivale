@@ -44,15 +44,6 @@ const NavBar = () => {
           <button
             type="button"
             id="navButton"
-            onClick={() => handleNavigation("/parades")}
-          >
-            Parades
-          </button>
-        </span>
-        <span>
-          <button
-            type="button"
-            id="navButton"
             onClick={() => handleNavigation("/userpage")}
           >
             UserPage
