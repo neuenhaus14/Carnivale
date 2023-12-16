@@ -142,13 +142,13 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({ selectedEvent, setSho
       }
     })
 
-    // console.log(eventUpdateCount.data);
+    console.log('eventCount', eventUpdateCount.data);
     getEventsInvited();
     getEventsParticipating();
     setIsUserAttending(!isUserAttending);
   }
 
-
+  console.log('inside EventBasicModal. isUserAttending', isUserAttending)
   return (
     <Modal show={showBasicModal} onHide={handleClose}>
       <Modal.Header>

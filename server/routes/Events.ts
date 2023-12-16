@@ -31,7 +31,10 @@ Events.get('/getEventsOwned/:userId', async (req: Request, res: Response) => {
     const userEventsOwned: any = await Event.findAll({
       where: {
         ownerId: userId
-      }
+      },
+      order: [
+        ['startTime', 'ASC']
+      ]
     })
    
       res.status(200).send(userEventsOwned);
@@ -70,7 +73,10 @@ Events.get('/getEventsParticipating/:userId', async (req: Request, res: Response
           ownerId: {
             [Op.not]: userId
           }
-        }
+        },
+        order: [
+          ['startTime', 'ASC']
+        ]
       });
       res.status(200).send(userEventsParticipating);
     }
@@ -105,7 +111,10 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
         id: {
           [Op.or]: [...userEventsInvitedIds]
         }
-      }
+      },
+      order: [
+        ['startTime', 'ASC']
+      ]
     })
     res.status(200).send(userEventsInvited);
   }
