@@ -183,8 +183,8 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
       }
       )
 
-
       setPhoneForFriendRequest('');
+      setNameForFriendRequest('');
       getFriendRequests();
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST friend request', err);
@@ -215,24 +215,6 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
     //console.log(deleteResponse)
     getFriends();
   }
-
-
-
-  // // MOVE THIS TO EVENT MODAL
-  // async function answerEventInvitation(eventId: number, isGoing: boolean) {
-  //   const eventInviteResponse = await axios.post('/api/events/answerEventInvite', {
-  //     answer: {
-  //       eventId,
-  //       invitee_userId: userId,
-  //       isGoing
-  //     }
-  //   })
-  //   console.log('eventInviteResponse', eventInviteResponse);
-  //   getEventsInvited();
-  //   getEventsParticipating();
-  // }
-
-
 
   function handlePhoneInput(e: any) {
     setPhoneForFriendRequest(e.target.value);
@@ -354,7 +336,14 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         role="button"
         to="/eventpage"
       >
-        Gigs & Parades
+        Gigs
+      </Link>
+      <Link
+        className="btn btn-primary"
+        role="button"
+        to="/parades"
+      >
+        Parades
       </Link>
 
     </div>
