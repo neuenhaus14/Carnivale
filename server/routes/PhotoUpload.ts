@@ -79,22 +79,31 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
 
  })
 
+ 
+/////////////////////////
+// Uploads an image file
+/////////////////////////
+const uploadImage = async (imagePath: string) => {
 
- //handles the posting logic from homepage
- ImageRouter.put('/post/:ownerId', async (req: Request, res: Response) => {
-  const {latitude, longitude, isThrow, isPin, isCostume, description} = req.body.options
-  const { ownerId } = req.params
+  // Use the uploaded file's name as the asset's public ID and
+  // allow overwriting the asset with new versions
+  const options = {
+    use_filename: true,
+    unique_filename: false,
+    overwrite: true,
+    folder : "Carnivale"
+  };
 
-    try{
-      await Photo.update({latitude, longitude, isThrow, isPin, isCostume, ownerId, description}, {where: {photoURL}})
-
-      res.status(200).send('you did it!')
-
-    } catch (error) {
-      console.error(error);
-    }
-
- })
+  try {
+    // Upload the image
+    const result = await cloudinary.uploader.upload(imagePath,
+       options);
+    //console.log(result);
+    return result.public_id;
+  } catch (error) {
+    console.error('upload image', error);
+  }
+};
 
 
 export const config = {
@@ -104,3 +113,4 @@ export const config = {
 };
 
 export default ImageRouter;
+
