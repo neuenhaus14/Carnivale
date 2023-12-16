@@ -18,6 +18,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
   const [eventsOwned, setEventsOwned] = useState([{ name: 'event3' }]);
 
   const [phoneForFriendRequest, setPhoneForFriendRequest] = useState('');
+  const [nameForFriendRequest, setNameForFriendRequest] = useState('');
 
   const [selectedEvent, setSelectedEvent] = useState({ latitude: 0, longitude: 0, startTime: null, endTime: null }) // default to make modals happy
   const [isUserAttending, setIsUserAttending] = useState(false) // this gets passed to basic modal to expose invite functionality
@@ -170,15 +171,24 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
 
   // FRIENDS
   async function requestFriend() {
-    const friendRequestResponse = await axios.post('/api/friends/requestFriend', {
-      friendRequest: {
-        requester_userId: userId,
-        recipient_phoneNumber: phoneForFriendRequest,
+    try {
+      // checking for phoneNumber
+
+      const friendRequestResponse = await axios.post('/api/friends/requestFriend', {
+        friendRequest: {
+          requester_userId: userId,
+          recipient_phoneNumber: phoneForFriendRequest,
+          recipient_name: nameForFriendRequest,
+        }
       }
-    })
-    //console.log('friedRequestRecord', friendRequestResponse);
-    setPhoneForFriendRequest('');
-    getFriendRequests();
+      )
+
+
+      setPhoneForFriendRequest('');
+      getFriendRequests();
+    } catch (err) {
+      console.error('CLIENT ERROR: failed to POST friend request', err);
+    }
   }
 
   async function cancelFriendRequest(recipient_userId: number) {
@@ -228,6 +238,9 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
     setPhoneForFriendRequest(e.target.value);
   }
 
+  function handleFriendNameInput(e: any) {
+    setNameForFriendRequest(e.target.value);
+  }
 
   // console.log('inside userpage. isNewEvent', isNewEvent)
   return (
@@ -264,7 +277,6 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         getLocation={getLocation}
       />
 
-
       <h5> Mon Krewe </h5>
       {friends.length > 0 ? <ul>{userFriendsItems}</ul> : 'Assemble your krewe below'}
 
@@ -272,6 +284,10 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         placeholder='Search people by phone'
         value={phoneForFriendRequest}
         onChange={handlePhoneInput}></input>
+      <input
+        placeholder='Or by first & last name'
+        value={nameForFriendRequest}
+        onChange={handleFriendNameInput}></input>
       <button onClick={requestFriend}>Invite to Krewe</button>
 
 
@@ -332,7 +348,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         Create New Event
       </Button>
 
-{/* Link below is styled like a bootstrap button */}
+      {/* Link below is styled like a bootstrap button */}
       <Link
         className="btn btn-primary"
         role="button"
