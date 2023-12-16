@@ -17,7 +17,7 @@ import {Event} from '../db'
 async function start() {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
-  await page.goto('https://www.wwoz.org/calendar/livewire-music?date=2023-12-18')
+  await page.goto('https://www.wwoz.org/calendar/livewire-music?date=2023-12-19')
 
   const venues = await page.evaluate(() => {
     return Array.from(document.querySelectorAll('h3 a')).map(e => ({
@@ -67,11 +67,11 @@ async function start() {
   
   const proper = []
   
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 5; i++) {
     proper.push(new Date(new Date(`${date[i]} 2023 ${time[i]}:00`)))
   }
   const mainArr = []
-  
+  //console.log(date)
   for (let i = 0; i < 10; i++) {
     mainArr.push({
       name: act[i], 
@@ -109,9 +109,9 @@ async function start() {
   //it wouldnt double up data
   //conditional logic to prevent duplicates. Find or Create
 
-fs.writeFile('eventScrapeVenue.json', JSON.stringify(venues))
+//fs.writeFile('eventScrapeVenue.json', JSON.stringify(venues))
 // fs.writeFile('eventScrapeName.json', JSON.stringify(names))
-fs.writeFile('eventScrapeDate.json', JSON.stringify(info))
+//fs.writeFile('eventScrapeDate.json', JSON.stringify(info))
 
 
   await browser.close()
