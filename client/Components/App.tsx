@@ -60,7 +60,8 @@ const App = () => {
     // it first inits with the emit when home page calls the function, 
     // this is sent to the server side to udate the database
     console.log('userId in socket', userId)
-    socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
+    //socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
+    socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: 1 })
   }
 
   useEffect(() => {
