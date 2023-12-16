@@ -82,6 +82,7 @@ module.exports = {
         ownerId: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
+        imageUrl: 'https://www.shutterstock.com/shutterstock/photos/1930257152/display_1500/stock-photo-seven-horses-force-running-out-1930257152.jpg'
       },
       {
         name: "DJ set at PvF Marker",

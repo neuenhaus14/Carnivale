@@ -1,14 +1,15 @@
 import React, { ReactPropTypes, useEffect, useState } from 'react';
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
 import { Button } from 'react-bootstrap';
+// import EventPage from './EventPage';
 
-const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
+const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, userId }) => {
 
-  const [searchParams] = useSearchParams();
-  const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  //const [searchParams] = useSearchParams();
+  //const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
@@ -17,6 +18,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
   const [eventsOwned, setEventsOwned] = useState([{ name: 'event3' }]);
 
   const [phoneForFriendRequest, setPhoneForFriendRequest] = useState('');
+  const [nameForFriendRequest, setNameForFriendRequest] = useState('');
 
   const [selectedEvent, setSelectedEvent] = useState({ latitude: 0, longitude: 0, startTime: null, endTime: null }) // default to make modals happy
   const [isUserAttending, setIsUserAttending] = useState(false) // this gets passed to basic modal to expose invite functionality
@@ -61,11 +63,11 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
     }
   }
 
-  const getFriendRequests = async() => {
+  const getFriendRequests = async () => {
     try {
       const friendRequestsData = await axios.get(`api/friends/getFriendRequests/${userId}`);
       const { requestsMadeUsers, requestsReceivedUsers } = friendRequestsData.data;
-      console.log(requestsMadeUsers, requestsReceivedUsers)
+      // console.log(requestsMadeUsers, requestsReceivedUsers)
       setFriendRequestsReceived(requestsReceivedUsers);
       setFriendRequestsMade(requestsMadeUsers);
     } catch (err) {
@@ -80,6 +82,12 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
 
     // for updating events on userpage when 
     // responding to invites or inviting other users
+
+    // TODO: I think isNewEvent gets flipped
+    // to false from the eventCreateModal,
+    // so isNewEvent should realistically 
+    // always be false. This uE only
+    // runs on the first page load, right?
     if (isNewEvent === false) {
       getFriends();
       getEventsOwned();
@@ -163,20 +171,29 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
 
   // FRIENDS
   async function requestFriend() {
-    const friendRequestResponse = await axios.post('/api/friends/requestFriend', {
-      friendRequest: {
-        requester_userId: userId,
-        recipient_phoneNumber: phoneForFriendRequest,
+    try {
+      // checking for phoneNumber
+
+      const friendRequestResponse = await axios.post('/api/friends/requestFriend', {
+        friendRequest: {
+          requester_userId: userId,
+          recipient_phoneNumber: phoneForFriendRequest,
+          recipient_name: nameForFriendRequest,
+        }
       }
-    })
-    console.log('friedRequestRecord', friendRequestResponse);
-    setPhoneForFriendRequest('');
-    getFriendRequests();
+      )
+
+      setPhoneForFriendRequest('');
+      setNameForFriendRequest('');
+      getFriendRequests();
+    } catch (err) {
+      console.error('CLIENT ERROR: failed to POST friend request', err);
+    }
   }
 
   async function cancelFriendRequest(recipient_userId: number) {
     const deleteResponse = await axios.delete(`/api/friends/cancelFriendRequest/${userId}-${recipient_userId}`)
-    console.log(deleteResponse);
+    //console.log(deleteResponse);
     getFriendRequests();
   }
 
@@ -188,41 +205,26 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         isConfirmed
       }
     })
-    console.log('updated Relationship', updatedRelationship);
+    //console.log('updated Relationship', updatedRelationship);
     getFriends();
     getFriendRequests();
   }
 
   async function unfriend(friendId: number) {
     const deleteResponse = await axios.delete(`/api/friends/unfriend/${userId}-${friendId}`);
-    console.log(deleteResponse)
+    //console.log(deleteResponse)
     getFriends();
   }
-
-
-
-  // // MOVE THIS TO EVENT MODAL
-  // async function answerEventInvitation(eventId: number, isGoing: boolean) {
-  //   const eventInviteResponse = await axios.post('/api/events/answerEventInvite', {
-  //     answer: {
-  //       eventId,
-  //       invitee_userId: userId,
-  //       isGoing
-  //     }
-  //   })
-  //   console.log('eventInviteResponse', eventInviteResponse);
-  //   getEventsInvited();
-  //   getEventsParticipating();
-  // }
-
-
 
   function handlePhoneInput(e: any) {
     setPhoneForFriendRequest(e.target.value);
   }
 
+  function handleFriendNameInput(e: any) {
+    setNameForFriendRequest(e.target.value);
+  }
 
-  console.log('inside userpage. isNewEvent', isNewEvent)
+  // console.log('inside userpage. isNewEvent', isNewEvent)
   return (
     <div>
       <h1>UserPage {lng} {lat}</h1>
@@ -257,7 +259,6 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         getLocation={getLocation}
       />
 
-
       <h5> Mon Krewe </h5>
       {friends.length > 0 ? <ul>{userFriendsItems}</ul> : 'Assemble your krewe below'}
 
@@ -265,6 +266,10 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         placeholder='Search people by phone'
         value={phoneForFriendRequest}
         onChange={handlePhoneInput}></input>
+      <input
+        placeholder='Or by first & last name'
+        value={nameForFriendRequest}
+        onChange={handleFriendNameInput}></input>
       <button onClick={requestFriend}>Invite to Krewe</button>
 
 
@@ -324,6 +329,23 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
       >
         Create New Event
       </Button>
+
+      {/* Link below is styled like a bootstrap button */}
+      <Link
+        className="btn btn-primary"
+        role="button"
+        to="/eventpage"
+      >
+        Gigs
+      </Link>
+      <Link
+        className="btn btn-primary"
+        role="button"
+        to="/parades"
+      >
+        Parades
+      </Link>
+
     </div>
   )
 };
@@ -332,6 +354,7 @@ interface UserPageProps {
   getLocation: any,
   lng: number,
   lat: number,
+  userId: number,
 }
 
 export default UserPage;

@@ -17,10 +17,10 @@ Pins.get('/get-pins', async (req: Request, res: Response) => {
 
 Pins.post('/create-pin/:ownerId', async(req: Request, res: Response) => {
   const { ownerId } = req.params
-  const {longitude, latitude, isFree, isToilet, isFood, isPersonal} = req.body.options
+  const {longitude, latitude, isFree, isToilet, isFood, isPersonal, isPhoneCharger, isPoliceStation, isEMTStation} = req.body.options
   
   try {
-    const result = await Pin.create({ longitude, latitude, isFree, isToilet, isFood, isPersonal, ownerId })
+    const result = await Pin.create({ longitude, latitude, isFree, isToilet, isFood, isPersonal, isPhoneCharger, isPoliceStation, isEMTStation, ownerId })
     res.status(200).send(result)
   } catch (err) {
     console.error('SERVER ERROR: could not POST pin', err);
@@ -29,7 +29,7 @@ Pins.post('/create-pin/:ownerId', async(req: Request, res: Response) => {
 })
 
 
-Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) => {
+Pins.get('/get-clicked-pin-marker/:lng/:lat', async (req: Request, res: Response) => {
   const  {lng} = req.params;
   const  {lat}  = req.params;
   //console.log(lng, lat)
@@ -73,5 +73,19 @@ Pins.get('/get-clicked-marker/:lng/:lat', async (req: Request, res: Response) =>
   }
 })
 
+
+Pins.get('/get-clicked-friend-marker/:lng/:lat', async (req: Request, res: Response) => {
+  const  {lng} = req.params;
+  const  {lat}  = req.params;
+   
+  try {
+    const clickedFriend = await User.findOne({where: {longitude: lng, latitude: lat}});
+    res.status(200).send(clickedFriend)
+    
+  } catch (err) {
+    console.error('SERVER ERROR: could not GET clicked pin', err);
+    res.status(500).send(err);
+  }
+})
 
 export default Pins

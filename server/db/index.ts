@@ -80,6 +80,7 @@ const Event = db.define(
       autoIncrement: true,
       primaryKey: true,
     },
+    imageUrl: DataTypes.STRING,
     name: DataTypes.STRING,
     startTime: DataTypes.DATE,
     endTime: DataTypes.DATE,
@@ -122,6 +123,9 @@ interface Pin
   isFood: boolean;
   isPersonal: boolean;
   isFree: boolean;
+  isPhoneCharger: boolean;
+  isPoliceStation: boolean;
+  isEMTStation:boolean;
   upvotes: number;
   ownerId: number;
 }
@@ -140,6 +144,9 @@ const Pin = db.define(
     isFood: DataTypes.BOOLEAN,
     isPersonal: DataTypes.BOOLEAN,
     isFree: DataTypes.BOOLEAN,
+    isPhoneCharger: DataTypes.BOOLEAN,
+    isPoliceStation: DataTypes.BOOLEAN,
+    isEMTStation: DataTypes.BOOLEAN,
     upvotes: {
       type: DataTypes.INTEGER,
       defaultValue: 0,

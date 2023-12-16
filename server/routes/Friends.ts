@@ -139,15 +139,24 @@ Friends.get('/getFriendRequests/:id', async (req: Request, res: Response) => {
 // all useful data are in request body
 Friends.post('/requestFriend', async (req: Request, res: Response) => {
 
-  const { requester_userId, recipient_phoneNumber } = req.body.friendRequest
+  const { requester_userId, recipient_phoneNumber, recipient_name } = req.body.friendRequest
 
   try {
-    const userWithPhoneNumber: any = await User.findOne({ where: { phone: recipient_phoneNumber } })
-    console.log('uWPN', userWithPhoneNumber);
-    if (userWithPhoneNumber === null) {
+    
+    let userWithNameOrPhone: any;
+    if (recipient_name.length > 0){
+      const [ firstName, lastName ] = recipient_name.split(' ');
+      userWithNameOrPhone = await User.findOne({ where: { firstName, lastName}})
+    } else if (recipient_phoneNumber.length > 0){
+      userWithNameOrPhone = await User.findOne({ where: { phone: recipient_phoneNumber }})
+    }
+
+
+    console.log('uWPN', userWithNameOrPhone);
+    if (userWithNameOrPhone === null) {
       res.status(404).send('No user with that phone number')
     } else {
-      const newRelationship: Model = await Join_friend.create({ requester_userId, recipient_userId: userWithPhoneNumber.id, isConfirmed: null })
+      const newRelationship: Model = await Join_friend.create({ requester_userId, recipient_userId: userWithNameOrPhone.id, isConfirmed: null })
       res.status(201).send(newRelationship)
     }
   } catch (err) {

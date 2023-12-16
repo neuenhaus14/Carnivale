@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuth0 } from "@auth0/auth0-react";//TODO: temporary
+import { useAuth0 } from "@auth0/auth0-react"; //TODO: temporary
 import { Link, To, useNavigate } from "react-router-dom";
 
 const NavBar = () => {
@@ -49,15 +49,6 @@ const NavBar = () => {
             UserPage
           </button>
         </span>
-        {/* <span>
-          <button
-            type="button"
-            id="navButton"
-            onClick={() => handleNavigation("/photo")}
-          >
-            Photo
-          </button>
-        </span> */}
         <span>
           <button
             onClick={() =>

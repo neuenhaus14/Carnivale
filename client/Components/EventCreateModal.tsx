@@ -37,11 +37,10 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
 
   const [invitees, setInvitees] = useState([]);
   const [participants, setParticipants] = useState([]);
-  // const [friendsToInvite, setFriendsToInvite] = useState([]); // collects friends to invite as group to event
-
 
   useEffect(() => {
-    if (!isNewEvent) {
+    if (isNewEvent === false) {
+      console.log('before getPeopleForEvent in accordion')
       getPeopleForEvent()
     }
   }, [])
@@ -92,7 +91,7 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
       <Form.Switch
         type="switch"
         id="custom-switch"
-        label="Check to invite"
+        label="Check too invite"
         onChange={() => toggleFriendInvite(friend.id)}
       />
     </li>
@@ -122,7 +121,7 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
 const EventCreateModal: React.FC<EventCreateModalProps> = ({
   selectedEvent, setShowCreateModal, showCreateModal,
   setSelectedEvent, friends, userId, getEventsInvited,
-  getEventsParticipating, isNewEvent, getLocation, lng, lat }) => {
+  getEventsParticipating, isNewEvent, setIsNewEvent, getLocation, lng, lat }) => {
 
   const [eventAddress, setEventAddress] = useState('');
   const [eventDescription, setEventDescription] = useState('')
@@ -139,6 +138,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   const [userLatitude, setUserLatitude] = useState(lat); // lat is user location from getLocation
   const [userLongitude, setUserLongitude] = useState(lng); // lng is user location from getLocation
+  
+  // both get passed to accordion
   const [friendsToInvite, setFriendsToInvite] = useState([]);
 
   // geo use effect
@@ -149,7 +150,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   // new/old event modal
   useEffect(() => {
-    console.log('inside Modal. isNewEvent', isNewEvent, 'selectedEvent', selectedEvent)
+    //console.log('inside Modal. isNewEvent', isNewEvent, 'selectedEvent', selectedEvent)
 
     // event edit mode
     if (isNewEvent === false) {
@@ -174,25 +175,19 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   }, [selectedEvent, isNewEvent])
 
 
-
-
   // takes either selectedEvent.startTime or .endTime
   // to populate date input and time ranges
   const parseDateIntoDateAndTime = (fullDate: string, startOrEnd: string) => {
     // 2023-12-11 20:40:35.222-05
-
-    console.log('here', fullDate, typeof fullDate)
-
     const [date, time] = fullDate.split('T');
 
     const timeRangeValue = Number(time.slice(0,5).replace(':', '.'))
 
     if (startOrEnd === 'start'){
-      console.log(date, time, timeRangeValue, startOrEnd);
+      // console.log(date, time, timeRangeValue, startOrEnd);
       setEventStartDate(date);
       setEventStartTime(timeRangeValue);
     } else if (startOrEnd === 'end'){
-      console.log(date, time, timeRangeValue, startOrEnd)
       setEventEndDate(date);
       setEventEndTime(timeRangeValue);
     }
@@ -204,25 +199,69 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   }
 
   const handleEventCreation = async () => {
+    
+    const stringifyDateTime = (date: string, time: number) => {
+      let formattedTime;
+      const timeString: string = time.toString()
+      
+      if (timeString.indexOf('.') === -1){
+        formattedTime = `${time}:00`
+      } else {
+        const hour = timeString.slice(0,2);
+        const minute = timeString.slice(3,5);
+        let formattedMinute; 
+
+        switch (minute) {
+          case '25':
+            formattedMinute = '15';
+            break;
+          case '5': 
+            formattedMinute = '30'
+            break;
+          case '75': 
+            formattedMinute = '45'
+            break;
+        }
+
+       formattedTime = `${hour}:${formattedMinute}`
+      }
+
+      return `${date}T${formattedTime}`;
+    }
+    
     try {
+      const startTimeString= stringifyDateTime(eventStartDate, eventStartTime)
+      const endTimeString = stringifyDateTime(eventEndDate, eventEndTime)
+      // console.log('sts,ets', startTimeString, endTimeString)
       const newEvent = await axios.post('/api/events/createEvent', {
         event: {
           ownerId: userId,
+          name: eventName,
           address: eventAddress,
           description: eventDescription,
           latitude: eventLatitude,
           longitude: eventLongitude,
-          startTime: eventStartTime,
-          endTime: eventEndTime,
+          system: false,
+          link: null,
+          invitedCount: friendsToInvite.length,
+          attendingCount: 1,
+          startTime: new Date(startTimeString),
+          endTime: new Date(endTimeString),
+          invitees: friendsToInvite,
         }
       })
+      // console.log(newEvent.data)
+      setIsNewEvent(false);
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST new event', err)
     }
   }
 
+  const handleEventUpdate = async () => {
+    console.log('inside handleEventUpdate')
+  }
+
   const handleRangeChange = (e: any) => {
-    console.log('inside handleRangeChange', e.target)
     const { value, name } = e.target;
 
     if (name === 'start') {
@@ -254,20 +293,15 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     } else if (name === 'address') {
       setEventAddress(value);
     }
-
-    console.log('input change', name, value)
   }
 
   const handleAddressToCoordinates = async (e:any) => {
     const { value } = e.target;
-    console.log('here', value)
     const coordinatesResponse = await axios.post('/api/events/getCoordinatesFromAddress', {
       address: value
     })
 
     const [ evtLongitude, evtLatitude] = coordinatesResponse.data;
-
-    console.log( 'heeeere', evtLongitude, evtLatitude )
     setEventLongitude(evtLongitude);
     setEventLatitude(evtLatitude);
   }
@@ -359,8 +393,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                     name='end'
                     onChange={handleRangeChange}
                   /></div>
-
-
               </Form.Group>
             </Form>
 
@@ -377,7 +409,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       </Modal.Body>
       <Modal.Footer>
         {isNewEvent && <Button onClick={handleEventCreation}>Create Event</Button>}
-
+        {!isNewEvent && <Button onClick={handleEventUpdate}>Update Event</Button>}
         <Button variant="danger" onClick={handleClose}>
           X
         </Button>
