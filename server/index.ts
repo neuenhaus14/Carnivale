@@ -114,6 +114,9 @@ io.on('connection', (socket: any) => {
   });
 });
 
+
+
+
 app.get("/*", function (req: Request, res: Response) {
   res.sendFile(
     path.join(__dirname, "..", "dist", "index.html"),
