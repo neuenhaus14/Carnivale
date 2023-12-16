@@ -8,7 +8,6 @@ import { Server } from 'socket.io';
 import PinRoutes from './routes/Pins';
 import http from 'http'
 import cors from 'cors'
-
 //import Upload  from "./routes/PhotoUpload"
 import cloudinary from "./utils/cloudinary_helpers"; //grabbing reference to an already configured cloudinary object
 import FriendsRoutes from "./routes/Friends";
@@ -18,7 +17,6 @@ import HomeRoutes from "./routes/Home";
 import FeedRoutes from "./routes/Feed";
 import ImageRouter from "./routes/PhotoUpload";
 import ParadesRoutes from "./routes/Parades";
-
 import { User } from './db/index'
 
 //this is declaring db as an obj so it can be ran when server starts
@@ -53,7 +51,6 @@ app.use(cors({
   origin: ['http://localhost:4000'], 
   credentials: true
 }));
-
 
 const config = {
   authRequired: false,
@@ -116,6 +113,23 @@ io.on('connection', (socket: any) => {
 
 
 
+
+io.on('connection', (socket: any) => {
+  console.log('a user connected');
+  socket.on('userLoc', (userLoc: any) => {
+    console.log('userLoc', userLoc.longitude, userLoc.latitude)
+    User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: 1}})
+    .then((data: any) => 
+        console.log('success')
+        // io.emit('userLoc', data.dataValues)
+    )
+    .catch((err) => console.error(err))
+  })
+
+  socket.on('disconnect', () => {
+    console.log('a user disconnected');
+  });
+});
 
 app.get("/*", function (req: Request, res: Response) {
   res.sendFile(
