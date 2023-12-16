@@ -37,8 +37,6 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
 
   const [invitees, setInvitees] = useState([]);
   const [participants, setParticipants] = useState([]);
-  // const [friendsToInvite, setFriendsToInvite] = useState([]); // collects friends to invite as group to event
-
 
   useEffect(() => {
     if (isNewEvent === false) {
@@ -123,7 +121,7 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
 const EventCreateModal: React.FC<EventCreateModalProps> = ({
   selectedEvent, setShowCreateModal, showCreateModal,
   setSelectedEvent, friends, userId, getEventsInvited,
-  getEventsParticipating, isNewEvent, getLocation, lng, lat }) => {
+  getEventsParticipating, isNewEvent, setIsNewEvent, getLocation, lng, lat }) => {
 
   const [eventAddress, setEventAddress] = useState('');
   const [eventDescription, setEventDescription] = useState('')
@@ -253,9 +251,14 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         }
       })
       // console.log(newEvent.data)
+      setIsNewEvent(false);
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST new event', err)
     }
+  }
+
+  const handleEventUpdate = async () => {
+    console.log('inside handleEventUpdate')
   }
 
   const handleRangeChange = (e: any) => {
@@ -406,7 +409,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       </Modal.Body>
       <Modal.Footer>
         {isNewEvent && <Button onClick={handleEventCreation}>Create Event</Button>}
-
+        {!isNewEvent && <Button onClick={handleEventUpdate}>Update Event</Button>}
         <Button variant="danger" onClick={handleClose}>
           X
         </Button>
