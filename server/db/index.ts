@@ -80,6 +80,7 @@ const Event = db.define(
       autoIncrement: true,
       primaryKey: true,
     },
+    imageUrl: DataTypes.STRING,
     name: DataTypes.STRING,
     startTime: DataTypes.DATE,
     endTime: DataTypes.DATE,

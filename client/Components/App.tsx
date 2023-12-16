@@ -10,6 +10,8 @@ import FeedPage from './FeedPage'
 import HomePage from './HomePage'
 import MapPage from './MapPage'
 import UserPage from './UserPage'
+import MainForum from './MainForum';
+import Costume from './Costume';
 import Login from './Login'
 import EventPage from './EventPage';
 import NavBar from './NavBar';
@@ -84,16 +86,20 @@ const App = () => {
     return <Loading />;
   }
 
+
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
           <Route path='/' element={<Login />} />
         {/* <Route element={<ProtectedRoute />}>  */}
           <Route path='/homepage' element={<div><HomePage getLocation={getLocation} lat={lat} lng={lng} userData={userData}/> <NavBar /></div>}  />
-          <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng} userId={userId} /> <NavBar /></div>}/>
-          <Route path='/feedpage' element={<div><FeedPage  /> <NavBar /></div>}/>
-          <Route path='/eventpage' element={<div><EventPage /> <NavBar /></div>} />
-          <Route path='/userpage' element={<div><UserPage  getLocation = {getLocation} lng={lng} lat={lat} /> <NavBar /></div>} />
+          <Route path='/mainforum' element={<div><MainForum /> <NavBar /></div>} />
+          <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
+          <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng} userId={userId}/> <NavBar /></div>}/>
+          <Route path='/feedpage' element={<div><FeedPage /> <NavBar /></div>}/>
+          <Route path='/eventpage' element={<div><EventPage getLocation={getLocation} lng={lng} lat={lat}/> <NavBar /></div>} />
+          <Route path='/userpage' element={<div><UserPage getLocation = {getLocation} lng={lng} lat={lat} /> <NavBar /></div>} />
           {/* <Route path='/photo' element={<div><Photos /> <NavBar /></div>} /> */}
         {/* </Route>  */}
       </Route>,
