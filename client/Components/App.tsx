@@ -61,7 +61,7 @@ const App = () => {
     // this is sent to the server side to udate the database
     console.log('userId in socket', userId)
     //socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
-    socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: 1 })
+    socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
   }
 
   useEffect(() => {
