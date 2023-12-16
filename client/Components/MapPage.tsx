@@ -7,6 +7,8 @@ import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
+const mapKey = '../images/Map_pin_key.png'
+ 
 
 interface MapProps {
   userLat: number
@@ -39,9 +41,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
   });
 
   const routeProfiles = [
-    {id: 'walking', label: 'Walking', icon: 'walking'},
-    {id: 'cycling', label: 'Cylcing', icon: 'bicycle'},
-    {id: 'driving', label: 'Driving', icon: 'car'},
+    {id: 'walking', label: 'Walking'},
+    {id: 'cycling', label: 'Cylcing'},
+    {id: 'driving', label: 'Driving'},
   ];
   const [selectedRouteProfile, setselectedRouteProfile] = useState<string>('walking');
 
@@ -198,12 +200,12 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
 
   const pinCategoryColor = (marker: any) => {
     const colorMapping: PinColorMapping = {
-      isFree:"#90a8c9",
-      isToilet: "#21675e",
-      isFood: "#cd8282",
-      isPersonal: "#82a8dc",
+      isFree:"#53CA3C",
+      isToilet: "#169873",
+      isFood: "#FCC54E",
+      isPersonal: "#BA37DD",
       isPhoneCharger: '#53e3d4',
-      isPoliceStation: "#82cda8",
+      isPoliceStation: "#E7ABFF",
       isEMTStation:"#f27d52"
     }
 
@@ -293,7 +295,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
               id="routerLine01"
               type="line"
               paint={{
-                'line-color': '#FA9E14',
+                'line-color': '#98CE00',
                 'line-width': 4,
               }}
             />
@@ -301,6 +303,11 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
         )}
       <NavigationControl />
       </Map>
+      <div id="map-pin-key-img">
+        <img src="/client/images/Map_pin_key.png" alt="Map Pin Key" width="500" height="600"/>
+        <img src="../images/Map_pin_key.png" alt="Map Pin Key" width="500" height="600" />
+        <img src={mapKey} alt="Map Pin Key" width="500" height="600" />
+      </div>
       <div>
         {showDirections ? (
         <div>
@@ -310,6 +317,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
         ) 
         : null }      
       </div>
+
     </div>
   )
 }
