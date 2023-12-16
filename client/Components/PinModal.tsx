@@ -12,9 +12,10 @@ interface Props {
   isPinSelected: boolean
   setIsPinSelected: any
   selectedPin: any
+  userId: number
 }
 
-const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected} ) => {
+const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected} ) => {
   const [isShow, setShow] = useState(true);
   const [isToilet, setIsToilet] =useState(false);
   const [isFood, setIsFood] =useState(false);
@@ -54,7 +55,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
 
     if (!isPinSelected){
       try{
-        const { data } = await axios.post(`/api/pins/create-pin/${1}`, {
+        const { data } = await axios.post(`/api/pins/create-pin/${userId}`, {
           options: {
             longitude: lng,
             latitude: lat,
@@ -100,7 +101,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <ShareModal postId={selectedPin[0].id} userId={1} postType={"pin"}/>
+            <ShareModal postId={selectedPin[0].id} userId={userId} postType={"pin"}/>
             <Button variant="danger" onClick={initModal}> Close </Button>
             <Button variant="dark "onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
           </Modal.Footer>
