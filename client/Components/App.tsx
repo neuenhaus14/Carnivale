@@ -29,6 +29,7 @@ const App = () => {
   const [lat, setLat] = useState(0)
 
 
+
   const getUser = async () => {
     try {
       const { data } = await axios.post(`api/home/user/`, { user });
@@ -83,6 +84,7 @@ const App = () => {
 
 
 
+
   if (isLoading) {
     return <Loading />;
   }
@@ -99,11 +101,8 @@ const App = () => {
           <Route path='/costume' element={<div><Costume /> <NavBar /></div>} />
           <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng} userId={userId}/> <NavBar /></div>}/>
           <Route path='/feedpage' element={<div><FeedPage /> <NavBar /></div>}/>
-
           <Route path='/parades' element={<div><Parades /> <NavBar /></div>}/>
-
           <Route path='/eventpage' element={<div><EventPage getLocation={getLocation} lng={lng} lat={lat}/> <NavBar /></div>} />
-
           <Route path='/userpage' element={<div><UserPage getLocation = {getLocation} lng={lng} lat={lat} /> <NavBar /></div>} />
           {/* <Route path='/photo' element={<div><Photos /> <NavBar /></div>} /> */}
         {/* </Route>  */}

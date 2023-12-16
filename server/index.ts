@@ -44,10 +44,9 @@ app.use("/api/weather", WeatherRoutes);
 app.use("/", routeHandler);
 app.use("/api/pins", PinRoutes);
 app.use("/api/feed", FeedRoutes);
-
+app.use("/api/images", ImageRouter);
 app.use("/api/parades", ParadesRoutes);
 
-app.use('/api/images', ImageRouter)
 app.use(cors({
   origin: ['http://localhost:4000'], 
   credentials: true
@@ -70,6 +69,27 @@ app.use(auth(config));
 app.get("/auth", (req, res) => {
   console.log(req.oidc.isAuthenticated());
   res.render("index", { isAuthenticated: req.oidc.isAuthenticated() });
+});
+
+io.on('connection', (socket: any) => {
+  console.log('a user connected');
+  socket.on('userLoc', (userLoc: any) => {
+    console.log('userLoc', userLoc.longitude, userLoc.latitude, userLoc.id)
+      User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: userLoc.id}})
+      .then(() => 
+        User.findOne({where: {id: userLoc.id}})
+          .then((data) => {
+            console.log('successfully updated location')
+            io.emit('userLoc', data.dataValues)
+          })
+      )
+      .catch((err) => console.error(err))
+  })
+
+  socket.on('disconnect', () => {
+    console.log('a user disconnected');
+  });
+
 });
 
 io.on('connection', (socket: any) => {
