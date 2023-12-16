@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
-import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer } from 'react-map-gl';
+import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer, Popup } from 'react-map-gl';
 import PointAnnotation from 'react-map-gl'
 import { useSearchParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
-const mapKey = '../images/Map_pin_key.png'
- 
+
 
 interface MapProps {
   userLat: number
@@ -34,6 +33,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
   const [friends, setFriends] = useState([])
   const [events, setEvents] = useState([])
   const [showDirections, setShowDirections]= useState(false);
+  const [showFriendPopup, setShowFriendPopup] = useState<boolean>(false);
   const [viewState, setViewState] = useState({
     latitude: 29.964735,
     longitude: -90.054261,
@@ -75,7 +75,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
 
   //gets owned and participating events from database
   const getEvents = async () => {
-    const endpoints = [`/api/events/getEventsOwned/${userId}`, `/api/events/getEventsParticipating/${userId}`]
+    const endpoints = [`/api/events/getEventsOwned/${1}`, `/api/events/getEventsParticipating/${1}`]
     try {
       await axios.all(endpoints.map((endpoint) => axios.get(endpoint))).then(
         (events) => {events.map((responseEvent) => setEvents(responseEvent.data))} );  
@@ -87,8 +87,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
 
   const getFriends = async () => {
     try {
-      const friends = await axios.get(`/api/friends/getFriends/${userId}`)
+      const friends = await axios.get(`/api/friends/getFriends/${1}`)
       setFriends(friends.data)
+      console.log('freind', friends.data)
     } catch (err)  {
       console.error(err)
     }
@@ -96,7 +97,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
 
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
-    modalTrigger()
+    //modalTrigger()
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
   }
@@ -112,16 +113,36 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
     
 
     try {
-      const { data } = await axios.get(`/api/pins/get-clicked-marker/${lngRounded}/${latRounded}`)
-      console.log('resposne data', data[0].longitude, data[0].latitude)
+      const { data } = await axios.get(`/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`)
+      console.log('response data', data[0].longitude, data[0].latitude)
       console.log('clickedMarkerRes', data);
-      setSelectedPin(data);
-      setIsPinSelected(true);
-      setShowDirections(true);
-      modalTrigger()
+      if(data){
+        setSelectedPin(data);
+        setIsPinSelected(true);
+        setShowDirections(true);
+      }
+      else {
+        setIsPinSelected(false);
+        setShowDirections(true);
+        console.log('not a pin')
+      }
+    } catch (err)  {
+
+
+      console.error(err);
+
+    }
+
+    try {
+      const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
+      //console.log('resposne data', data[0].longitude, data[0].latitude)
+      console.log('clickedFriend', data);
+      setShowFriendPopup(true)
+      setShowDirections(true)
     } catch (err)  {
       console.error(err);
     }
+    //modalTrigger()
 
   };
 
@@ -187,13 +208,11 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
     duration = Number(duration);
     const h = Math.floor(duration / 3600);
     const m = Math.floor(duration % 3600 / 60);
-    const s = Math.floor(duration % 3600 % 60);
-
+   
     const hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
     const mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes") : "";
-    const sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
 
-    return `Time to Pin: ${hDisplay + mDisplay}`; 
+    return `Time to Location: ${hDisplay + mDisplay}`; 
 
 }
 
@@ -269,7 +288,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
             onClick={(e) => {clickedMarker(e.target)}} 
             longitude={friend.longitude} latitude={friend.latitude}
             anchor="bottom" 
-            color="#aa9ce3"> 
+            color="black"> 
             
             {/* <b>{friend.firstName[0]}{friend.lastName[0]}</b> */}
             </Marker>
@@ -295,24 +314,44 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
               id="routerLine01"
               type="line"
               paint={{
-                'line-color': '#98CE00',
+                'line-color': '#78C3FB',
                 'line-width': 4,
               }}
             />
           </Source>
         )}
       <NavigationControl />
+      {showFriendPopup ? (
+          <>
+            {friends.map((friend) => (
+              <Popup
+                key={friend.id}
+                longitude={friend.longitude} latitude={friend.latitude}
+                anchor="bottom"
+                onClose={() => setShowFriendPopup(false)}
+              >
+                This is {friend.firstName} {friend.LastName}
+              </Popup>
+            ))}
+          </>
+        ) : null} 
       </Map>
       <div id="map-pin-key-img">
-        <img src="/client/images/Map_pin_key.png" alt="Map Pin Key" width="500" height="600"/>
-        <img src="../images/Map_pin_key.png" alt="Map Pin Key" width="500" height="600" />
-        <img src={mapKey} alt="Map Pin Key" width="500" height="600" />
+        <p><b>MAP KEY</b></p>
+        <img src="img/Map_pin_key.jpg" alt="Map Pin Key" width='300' height= "200"/>      
       </div>
       <div>
         {showDirections ? (
         <div>
+          {/* <Popup
+            anchor="bottom"
+            onClose={() => setShowDirections(false)}
+          >
+            <p><b>{humanizedDuration(duration)} </b></p>
+            <p><b> Distance to Location: {distance} miles</b></p>
+          </Popup> */}
           <p><b>{humanizedDuration(duration)} </b></p>
-          <p><b> Distance to Pin: {distance} miles</b></p>
+          <p><b> Distance to Location: {distance} miles</b></p>
         </div>
         ) 
         : null }      
