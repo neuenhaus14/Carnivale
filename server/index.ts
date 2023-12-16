@@ -1,7 +1,11 @@
 import express, { Request, Response, Router } from "express";
 import path from "path";
+<<<<<<< HEAD
 import { db } from "./db";
 
+=======
+import "./db"; //importing not using. so it does the same thing
+>>>>>>> b1a3b68 ("add/ added scraped data routes to add info to database"")
 import { auth, requiresAuth } from 'express-openid-connect';
 import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER } from './config';
 import { Server } from 'socket.io';
@@ -18,11 +22,11 @@ import FeedRoutes from "./routes/Feed";
 import ImageRouter from "./routes/PhotoUpload";
 import ParadesRoutes from "./routes/Parades";
 import { User } from './db/index'
+import { Sequelize } from "sequelize";
 //start()
 //this is declaring db as an obj so it can be ran when server starts
-type db = { db: object };
 //this is running db/index.ts
-db;
+
 
 const app = express();
 const server = http.createServer(app);

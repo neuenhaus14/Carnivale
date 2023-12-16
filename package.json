@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.config.js --watch",
     "start": "nodemon server/index.ts",
-    "seed": "npx sequelize db:drop && npx sequelize db:create && ts-node server/db/seed.ts && npx sequelize db:seed:all"
+    "seed": "npx sequelize db:drop && npx sequelize db:create && ts-node server/db/seed.ts && npx sequelize db:seed:all",
+    "scrape": "ts-node server/routes/scrapeEvents"
   },
   "repository": {
     "type": "git",
