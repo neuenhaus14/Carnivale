@@ -100,7 +100,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
     modalTrigger()
 
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
-    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
+  
   }
 
   //finds clicked marker/pin from database
@@ -158,7 +158,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
 
  // handles the route line creation by making the response from the directions API into a geoJSON 
  // which is the only way to use it in the <Source> tag (displays the "route/line")
-  const createRouterLine = async (userLocation: [number, number], routeProfile: string,): Promise<void> => {
   const createRouterLine = async (userLocation: [number, number], routeProfile: string,): Promise<void> => {
     console.log('userCoords', userLng, userLat)
     const startCoords = `${userLng},${userLat}`
