@@ -1,11 +1,6 @@
 import express, { Request, Response, Router } from "express";
 import path from "path";
-<<<<<<< HEAD
-import { db } from "./db";
-
-=======
 import "./db"; //importing not using. so it does the same thing
->>>>>>> b1a3b68 ("add/ added scraped data routes to add info to database"")
 import { auth, requiresAuth } from 'express-openid-connect';
 import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER } from './config';
 import { Server } from 'socket.io';
