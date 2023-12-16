@@ -18,7 +18,7 @@ import FeedRoutes from "./routes/Feed";
 import ImageRouter from "./routes/PhotoUpload";
 import ParadesRoutes from "./routes/Parades";
 import { User } from './db/index'
-
+//start()
 //this is declaring db as an obj so it can be ran when server starts
 type db = { db: object };
 //this is running db/index.ts
@@ -89,46 +89,6 @@ io.on('connection', (socket: any) => {
     console.log('a user disconnected');
   });
 
-});
-
-io.on('connection', (socket: any) => {
-  console.log('a user connected');
-  socket.on('userLoc', (userLoc: any) => {
-    console.log('userLoc', userLoc.longitude, userLoc.latitude, userLoc.id)
-      User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: userLoc.id}})
-      .then(() => 
-        User.findOne({where: {id: userLoc.id}})
-          .then((data) => {
-            console.log('successfully updated location')
-            io.emit('userLoc', data.dataValues)
-          })
-      )
-      .catch((err) => console.error(err))
-  })
-
-  socket.on('disconnect', () => {
-    console.log('a user disconnected');
-  });
-});
-
-
-
-
-io.on('connection', (socket: any) => {
-  console.log('a user connected');
-  socket.on('userLoc', (userLoc: any) => {
-    console.log('userLoc', userLoc.longitude, userLoc.latitude)
-    User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: 1}})
-    .then((data: any) => 
-        console.log('success')
-        // io.emit('userLoc', data.dataValues)
-    )
-    .catch((err) => console.error(err))
-  })
-
-  socket.on('disconnect', () => {
-    console.log('a user disconnected');
-  });
 });
 
 
