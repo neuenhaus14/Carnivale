@@ -11,9 +11,10 @@ import PinModal from './PinModal';
 interface MapProps {
   userLat: number
   userLng: number
+  userId: number
 }
 
-const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
+const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
   const mapRef = useRef(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -49,6 +50,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
     getPins();
     getFriends();
     getEvents();
+    console.log('userId', userId)
   }, [setMarkers]);
 
   
@@ -71,7 +73,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
 
   //gets owned and participating events from database
   const getEvents = async () => {
-    const endpoints = [`/api/events/getEventsOwned/${1}`, `/api/events/getEventsParticipating/${1}`]
+    const endpoints = [`/api/events/getEventsOwned/${userId}`, `/api/events/getEventsParticipating/${userId}`]
     try {
       await axios.all(endpoints.map((endpoint) => axios.get(endpoint))).then(
         (events) => {events.map((responseEvent) => setEvents(responseEvent.data))} );  
@@ -83,7 +85,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
 
   const getFriends = async () => {
     try {
-      const friends = await axios.get(`/api/friends/getFriends/${1}`)
+      const friends = await axios.get(`/api/friends/getFriends/${userId}`)
       setFriends(friends.data)
     } catch (err)  {
       console.error(err)
@@ -217,6 +219,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng}) => {
       <h1>MapPage!</h1>
       { showModal ? 
         <PinModal 
+          userId={userId}
           setShowModal={setShowModal}
           markers={markers}
           setMarkers={setMarkers}
