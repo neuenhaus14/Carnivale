@@ -126,6 +126,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
         try {
           const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
           console.log('clickedFriend', data);
+          setShowModal(false)
           setShowFriendPopup(true)
           setShowDirections(true)
         } catch (err)  {
@@ -330,7 +331,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
         {showDirections ? (
         <div>
           {/* <Popup
-            anchor="bottom"
+            longitude={userLng}
+            latitude={userLat}
+            anchor="top-left"
             onClose={() => setShowDirections(false)}
           >
             <p><b>{humanizedDuration(duration)} </b></p>
