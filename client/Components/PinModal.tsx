@@ -55,7 +55,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
 
     if (!isPinSelected){
       try{
-        const { data } = await axios.post(`/api/pins/create-pin/${1}`, {
+        const { data } = await axios.post(`/api/pins/create-pin/${userId}`, {
           options: {
             longitude: lng,
             latitude: lat,
