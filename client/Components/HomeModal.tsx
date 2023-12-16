@@ -8,10 +8,11 @@ interface Props {
   setShowModal: any
   lat: number
   lng: number
+  userId: number
 }
 
 const HomeModal: React.FC<Props> = ( {
-  setShowModal, lat, lng
+  setShowModal, lat, lng, userId
 } ) => {
   const [isShow, setIsShow] = useState(true);
   const [isThrow, setIsThrow] = useState(false);
@@ -71,6 +72,7 @@ const HomeModal: React.FC<Props> = ( {
               lng={null}
               lat={null}
               saveCreatedPin={null}
+              userId={userId}
               />
             </Form.Group>
           </Form>

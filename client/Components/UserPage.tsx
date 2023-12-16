@@ -6,10 +6,10 @@ import EventCreateModal from './EventCreateModal';
 import { Button } from 'react-bootstrap';
 // import EventPage from './EventPage';
 
-const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
+const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, userId }) => {
 
-  const [searchParams] = useSearchParams();
-  const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  //const [searchParams] = useSearchParams();
+  //const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
@@ -354,6 +354,7 @@ interface UserPageProps {
   getLocation: any,
   lng: number,
   lat: number,
+  userId: number,
 }
 
 export default UserPage;

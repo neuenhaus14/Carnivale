@@ -43,7 +43,11 @@ interface Photo {
   url: string;
 }
 
-const FeedPage = () => {
+interface FeedPageProps {
+  userId: number;
+}
+
+const FeedPage: React.FC<FeedPageProps> = ({userId}) => {
   const [sharedPosts, setSharedPosts] = useState<SharedPost[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userNames, setUserNames] = useState<{ [userId: number]: string }>({});
@@ -55,8 +59,6 @@ const FeedPage = () => {
     [postId: number]: Photo;
   }>({});
   const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
-
-  const userId = 1;
 
   const fetchSenderName = async (userId: number) => {
     try {

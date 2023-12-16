@@ -14,9 +14,10 @@ interface Props {
   isThrow: boolean | null
   isCostume: boolean | null
   createPhoto: any | null
+  userId: number
 }
 
-const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, createPhoto, isThrow, isCostume}) => {
+const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, createPhoto, isThrow, isCostume, userId}) => {
   const [fileInputState, setFileInputState] = useState('');
   const [selectedFile, setSelectedFile] = useState('');
   const [previewSource, setPreviewSource] = useState();
@@ -76,7 +77,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
     if (saveCreatedPin) {
       saveCreatedPin()
     try{
-       await axios.put(`/api/images/save/${1}`, {
+       await axios.put(`/api/images/save/${userId}`, {
         options: {
           latitude: lat,
           longitude: lng,
@@ -94,7 +95,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
     //savePostToDb()
     createPhoto()
     try{
-      const savePic = await axios.put(`/api/images/post/${1}`, {
+      const savePic = await axios.put(`/api/images/post/${userId}`, {
         options: {
           latitude: latPost,
           longitude: lngPost,
