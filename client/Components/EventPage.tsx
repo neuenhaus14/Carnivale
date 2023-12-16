@@ -28,8 +28,9 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat }) => {
   // get array of public event ids that the user is attending
   const getEventsInvited = async () => {
     try {
-      const publicEventsInvited = await axios.get(`/api/events/getPublicEventsParticipating/${userId}`)
+      const publicEventsInvited = await axios.get(`/api/events/getPublicEventsInvited/${userId}`)
       setEventsInvited(publicEventsInvited.data)
+      console.log('pubEventsInvited', publicEventsInvited.data)
     } catch (err) {
       console.error('CLIENT ERROR: failed to GET user\'s public event invitations', err)
     }
@@ -38,8 +39,9 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat }) => {
   // get array of public event ids that the user is invited to
   const getEventsParticipating = async () => {
     try {
-      const publicEventsParticipating = await axios.get(`/api/events/getPublicEventsInvited/${userId}`);
+      const publicEventsParticipating = await axios.get(`/api/events/getPublicEventsParticipating/${userId}`);
       setEventsParticipating(publicEventsParticipating.data);
+      console.log('pubEventsParticipating', publicEventsParticipating.data)
     } catch (err) {
       console.error('CLIENT ERROR: failed to GET user\'s public participating events', err);
     }
@@ -72,7 +74,7 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat }) => {
     getEventsParticipating();
     getAllPublicEvents();
     getFriends();
-  }, [])
+  }, [isUserAttending])
 
 
 
@@ -86,16 +88,17 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat }) => {
       onClick={() => {
         setShowBasicModal(true);
         setSelectedEvent(event);
+        // enables invite ability if user is participating
         if (eventsParticipating.includes(event.id)) {
           setIsUserAttending(true);
         }
       }}
     >
-      {event.name} {event.description} {event.startTime}
+     {event.id} {event.name} {event.startTime}
     </li>
   })
 
-
+  console.log('inside eventPage. isUserAttending', isUserAttending)
   return (
     <div>
       <h1>EventPage! {`${lng}, ${lat}`}</h1>
