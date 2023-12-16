@@ -100,7 +100,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
     modalTrigger()
 
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
-    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
+  
   }
 
   //finds clicked marker/pin from database

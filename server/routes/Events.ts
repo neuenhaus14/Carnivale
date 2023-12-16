@@ -290,10 +290,21 @@ Events.get('/getPeopleForEvent/:userId-:eventId', async (req: Request, res: Resp
 // are friends). 
 Events.post('/createEvent', async (req: Request, res: Response) => {
   const {
-    ownerId, name, description,
-    longitude, latitude, address,
-    startTime, endTime, system, link,
-    invitees, invitedCount, attendingCount } = req.body.event;
+    name, 
+    startTime, 
+    endTime, 
+    description,
+    longitude, 
+    latitude, 
+    address,
+    link,
+    system, 
+    invitees, 
+    invitedCount, 
+    attendingCount,
+    upvotes,
+    ownerId, 
+   } = req.body.event;
 
   try {
     // figure out how to type this properly
@@ -301,11 +312,18 @@ Events.post('/createEvent', async (req: Request, res: Response) => {
     // db's index.js? Event interface is created,
     // but not working
     const newEvent: any = await Event.create({
-      ownerId, name, description,
-      longitude, latitude, address,
+      ownerId, 
+      name, 
+      description,
+      longitude, 
+      latitude, 
+      address,
       startTime: new Date(startTime),
-      endTime: new Date(endTime), system, link,
-      invitedCount, attendingCount
+      endTime: new Date(endTime), 
+      system, 
+      link,
+      invitedCount, 
+      attendingCount
     })
 
     // add owner of event to participants

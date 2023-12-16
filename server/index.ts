@@ -1,14 +1,12 @@
 import express, { Request, Response, Router } from "express";
 import path from "path";
-import { db } from "./db";
-
+import "./db"; //importing not using. so it does the same thing
 import { auth, requiresAuth } from 'express-openid-connect';
 import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER } from './config';
 import { Server } from 'socket.io';
 import PinRoutes from './routes/Pins';
 import http from 'http'
 import cors from 'cors'
-
 //import Upload  from "./routes/PhotoUpload"
 import cloudinary from "./utils/cloudinary_helpers"; //grabbing reference to an already configured cloudinary object
 import FriendsRoutes from "./routes/Friends";
@@ -18,13 +16,12 @@ import HomeRoutes from "./routes/Home";
 import FeedRoutes from "./routes/Feed";
 import ImageRouter from "./routes/PhotoUpload";
 import ParadesRoutes from "./routes/Parades";
-
 import { User } from './db/index'
-
+import { Sequelize } from "sequelize";
+//start()
 //this is declaring db as an obj so it can be ran when server starts
-type db = { db: object };
 //this is running db/index.ts
-db;
+
 
 const app = express();
 const server = http.createServer(app);
@@ -53,7 +50,6 @@ app.use(cors({
   origin: ['http://localhost:4000'], 
   credentials: true
 }));
-
 
 const config = {
   authRequired: false,
@@ -94,25 +90,6 @@ io.on('connection', (socket: any) => {
 
 });
 
-io.on('connection', (socket: any) => {
-  console.log('a user connected');
-  socket.on('userLoc', (userLoc: any) => {
-    console.log('userLoc', userLoc.longitude, userLoc.latitude, userLoc.id)
-      User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: userLoc.id}})
-      .then(() => 
-        User.findOne({where: {id: userLoc.id}})
-          .then((data) => {
-            console.log('successfully updated location')
-            io.emit('userLoc', data.dataValues)
-          })
-      )
-      .catch((err) => console.error(err))
-  })
-
-  socket.on('disconnect', () => {
-    console.log('a user disconnected');
-  });
-});
 
 app.get("/*", function (req: Request, res: Response) {
   res.sendFile(

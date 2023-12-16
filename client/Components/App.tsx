@@ -5,7 +5,6 @@ import ProtectedRoute from './ProtectedRoutes'
 import axios from 'axios';
 import { io } from 'socket.io-client'
 const socket = io()
-
 import FeedPage from './FeedPage'
 import HomePage from './HomePage'
 import MapPage from './MapPage'
@@ -57,6 +56,10 @@ const App = () => {
   }
   
   const showPosition = (position: any) => {
+    //console.log(position)
+    setLng(position.coords.longitude);
+    setLat(position.coords.latitude);
+
     // it first inits with the emit when home page calls the function, 
     // this is sent to the server side to udate the database
     console.log('userId in socket', userId)
