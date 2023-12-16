@@ -5,6 +5,7 @@ import { db } from "./db";
 import { auth, requiresAuth } from 'express-openid-connect';
 import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER } from './config';
 import { Server } from 'socket.io';
+import { Server } from 'socket.io';
 import PinRoutes from './routes/Pins';
 import http from 'http'
 import cors from 'cors'
@@ -25,6 +26,8 @@ type db = { db: object };
 db;
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {cors: {origin: '*'}})
 const server = http.createServer(app);
 const io = new Server(server, {cors: {origin: '*'}})
 const port = 4000;
