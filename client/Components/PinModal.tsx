@@ -12,16 +12,18 @@ interface Props {
   isPinSelected: boolean
   setIsPinSelected: any
   selectedPin: any
+  userId: number
 }
 
-//this is a git test
-
-const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected} ) => {
+const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected} ) => {
   const [isShow, setShow] = useState(true);
   const [isToilet, setIsToilet] =useState(false);
   const [isFood, setIsFood] =useState(false);
   const [isPersonal, setIsPersonal] =useState(false);
   const [isFree, setIsFree] =useState(false);
+  const [isPhoneCharger, setIsPhoneCharger] =useState(false);
+  const [isPoliceStation, setIsPoliceStation] =useState(false);
+  const [isEMTStation, setIsEMTStation] =useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [showPhoto, setShowPhoto] = useState(true);
   //const [marker, setMarkers] = useState([markers]);
@@ -43,6 +45,9 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
     setIsToilet(false)
     setIsFood(false)
     setIsPersonal(false)
+    setIsPhoneCharger(false)
+    setIsPoliceStation(false)
+    setIsEMTStation(false)
   }
 
   const saveCreatedPin = async () => {
@@ -50,7 +55,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
 
     if (!isPinSelected){
       try{
-        const { data } = await axios.post(`/api/pins/create-pin/${1}`, {
+        const { data } = await axios.post(`/api/pins/create-pin/${userId}`, {
           options: {
             longitude: lng,
             latitude: lat,
@@ -58,6 +63,9 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
             isFood,
             isPersonal,
             isFree,
+            isPhoneCharger,
+            isPoliceStation,
+            isEMTStation
           }
         })
         console.log('whish! pin sent to database')
@@ -74,10 +82,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
     { isPinSelected 
     ? (
         <Modal show={isShow} onHide={initModal}>
-          <Modal.Header closeButton >
-            {/* { selectedPin.map((pin: any) => (
-            <Modal.Title key={pin.id}>{pin.pinCategory.slice(2)} Pins</Modal.Title>
-            ))} */}
+          <Modal.Header >
             <Modal.Title> {selectedPin[0].pinCategory.slice(2)} Pins</Modal.Title>
           </Modal.Header>
           { showPhoto ? (
@@ -96,7 +101,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <ShareModal postId={selectedPin[0].id} userId={1} postType={"pin"}/>
+            <ShareModal postId={selectedPin[0].id} userId={userId} postType={"pin"}/>
             <Button variant="danger" onClick={initModal}> Close </Button>
             <Button variant="dark "onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
           </Modal.Footer>
@@ -121,7 +126,6 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
           </Modal.Body>
           <Modal.Footer>
             <Button variant="danger" onClick={initModal}> Close </Button>
-            {/* <Button variant="dark "onClick={initModal}> Save Photo </Button> */}
           </Modal.Footer>
           </div>
               )
@@ -131,7 +135,7 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
     : 
     (
       <Modal show={isShow} onHide={initModal}>
-        <Modal.Header closeButton >
+        <Modal.Header >
           <Modal.Title>Create a Pin</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -141,19 +145,31 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
               <Form.Check type="radio" id="freeToilet" name="pin-cat" 
                 label="Free Toilet" value="isFree" inline isValid 
                 onClick={() => {resetBooleanState(); setIsFree(!isFree)} }
-                />
+              />
               <Form.Check type="radio" id="toilet" name="pin-cat" 
                 label="Toilet" value="isToilet" inline isValid 
                 onClick={() => {resetBooleanState(); setIsToilet(!isToilet)} }
-                />
+              />
               <Form.Check type="radio" id="food" name="pin-cat" 
                 label="Food" value="isFood" inline isValid 
                 onClick={() => {resetBooleanState(); setIsFood(!isFood)} }
-                />
+              />
               <Form.Check type="radio" id="personal" name="pin-cat" 
                 label="Personal" value="isPersonal" inline isValid 
                 onClick={() => {resetBooleanState(); setIsPersonal(!isPersonal)} }
-                />
+              />
+              <Form.Check type="radio" id="PhoneCharger" name="pin-cat" 
+                label="Charging Station" value="PhoneCharger" inline isValid 
+                onClick={() => {resetBooleanState(); setIsPhoneCharger(!isPhoneCharger)} }
+              />
+              <Form.Check type="radio" id="PoliceStation" name="pin-cat" 
+                label="Police Station" value="PoliceStation" inline isValid 
+                onClick={() => {resetBooleanState(); setIsPoliceStation(!isPoliceStation)} }
+              />
+              <Form.Check type="radio" id="EMT Station" name="pin-cat" 
+                label="EMT Station" value="EMT Station" inline isValid 
+                onClick={() => {resetBooleanState(); setIsEMTStation(!isEMTStation)} }
+              />
             </Form.Group>
             <Form.Group className="mb-3" controlId="picture spot" >
               <Photos
@@ -170,9 +186,6 @@ const PinModal: React.FC<Props> = ( {setShowModal, selectedPin, markers, setMark
         </Modal.Body>
         <Modal.Footer>
         <Button variant="danger" onClick={initModal}> Close </Button>
-          {/* { isSaved ? <Button variant="danger" onClick={initModal}> Close </Button>
-            : <Button variant="dark" onClick={() => {saveCreatedPin(); setIsSaved(true)} }> Save </Button>
-          } */}
         </Modal.Footer>
       </Modal>)
       }

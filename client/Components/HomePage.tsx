@@ -33,9 +33,9 @@ const HomePage: React.FC<HomePageProps> = ({getLocation, lat, lng, userData}) =>
   const [showModal, setShowModal] = useState(false);
   const [key, setKey] = useState("posts");
 
-  useEffect(() => {
-    getLocation()
-  }, []);
+  // useEffect(() => {
+  //   getLocation()
+  // }, []);
 
   // const getUser = async () => {
   //   try {
@@ -49,6 +49,7 @@ const HomePage: React.FC<HomePageProps> = ({getLocation, lat, lng, userData}) =>
   useEffect(() => {
     if(userData !== null){
       setUserId(userData.id)
+      getLocation()
     }
   }, [userData])
 
