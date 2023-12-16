@@ -51,6 +51,7 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat }) => {
   const getAllPublicEvents = async () => {
     try {
       const allPublicEventsResponse = await axios.get('/api/events/getAllPublicEvents');
+      console.log('all public', allPublicEventsResponse)
       setAllPublicEvents(allPublicEventsResponse.data);
     } catch (err) {
       console.error('CLIENT ERROR: failed to get all public events');
