@@ -99,6 +99,7 @@ const App = () => {
           <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng} userId={userId}/> <NavBar /></div>}/>
           <Route path='/feedpage' element={<div><FeedPage userId={userId}/> <NavBar /></div>}/>
           <Route path='/parades' element={<div><Parades /> <NavBar /></div>}/>
+          <Route path='/feedpage' element={<div><FeedPage userId={userId}/> <NavBar /></div>}/>
           <Route path='/eventpage' element={<div><EventPage getLocation={getLocation} lng={lng} lat={lat}/> <NavBar /></div>} />
           <Route path='/userpage' element={<div><UserPage userId={userId} getLocation = {getLocation} lng={lng} lat={lat} /> <NavBar /></div>} />
         </Route> 
