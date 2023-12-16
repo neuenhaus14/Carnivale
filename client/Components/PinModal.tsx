@@ -121,6 +121,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
               isThrow={null}
               isCostume={null}
               createPhoto={null}
+              userId={userId}
             /> ))}
             </Form.Group>
           </Modal.Body>
@@ -180,7 +181,8 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
               lngPost={null}
               isThrow={null}
               isCostume={null}
-              createPhoto={null} />
+              createPhoto={null}
+              userId={userId} />
             </Form.Group>
           </Form>
         </Modal.Body>
