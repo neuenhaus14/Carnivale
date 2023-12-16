@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
-import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer } from 'react-map-gl';
+import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer, Popup } from 'react-map-gl';
 import PointAnnotation from 'react-map-gl'
 import { useSearchParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
+
 
 interface MapProps {
   userLat: number
@@ -18,10 +19,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
   const mapRef = useRef(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [createPin, setCreatePin] = useState(false)
-  const [isPinSelected, setIsPinSelected] = useState(false)
+  const [createPin, setCreatePin] = useState<boolean>(false)
+  const [isPinSelected, setIsPinSelected] = useState<boolean>(false)
   const [selectedPin, setSelectedPin] = useState({})
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState<boolean>(false)
   const [markers, setMarkers] = useState([]);
   const [userLocation, setUserLocation] = useState<[number, number]>([userLng, userLat]);
   const [clickedPinCoords, setClickedPinCoords] = useState<[number, number]>([0, 0]);
@@ -31,7 +32,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
   const [routeDirections, setRouteDirections] = useState<any | null>(null);
   const [friends, setFriends] = useState([])
   const [events, setEvents] = useState([])
-  const [showDirections, setShowDirections]= useState(false);
+  const [showDirections, setShowDirections]= useState<boolean>(false);
+  const [showFriendPopup, setShowFriendPopup] = useState<boolean>(true);
   const [viewState, setViewState] = useState({
     latitude: 29.964735,
     longitude: -90.054261,
@@ -39,9 +41,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
   });
 
   const routeProfiles = [
-    {id: 'walking', label: 'Walking', icon: 'walking'},
-    {id: 'cycling', label: 'Cylcing', icon: 'bicycle'},
-    {id: 'driving', label: 'Driving', icon: 'car'},
+    {id: 'walking', label: 'Walking'},
+    {id: 'cycling', label: 'Cylcing'},
+    {id: 'driving', label: 'Driving'},
   ];
   const [selectedRouteProfile, setselectedRouteProfile] = useState<string>('walking');
 
@@ -87,6 +89,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
     try {
       const friends = await axios.get(`/api/friends/getFriends/${userId}`)
       setFriends(friends.data)
+      console.log('freind', friends.data)
     } catch (err)  {
       console.error(err)
     }
@@ -95,6 +98,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
     modalTrigger()
+
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
   }
@@ -110,17 +114,28 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
     
 
     try {
-      const { data } = await axios.get(`/api/pins/get-clicked-marker/${lngRounded}/${latRounded}`)
-      console.log('resposne data', data[0].longitude, data[0].latitude)
+      const { data } = await axios.get(`/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`)
+      console.log('response data', data[0].longitude, data[0].latitude)
       console.log('clickedMarkerRes', data);
-      setSelectedPin(data);
-      setIsPinSelected(true);
-      setShowDirections(true);
-      modalTrigger()
-    } catch (err)  {
-      console.error(err);
-    }
+        setSelectedPin(data);
+        setIsPinSelected(true);
+        setShowDirections(true);
+        modalTrigger()
+      } catch (err)  {
+        console.error(err); 
+        try {
+          const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
+          console.log('clickedFriend', data);
+          setShowModal(false)
+          setShowFriendPopup(true)
+          setShowDirections(true)
+        } catch (err)  {
+          console.error(err);
+        }
+      }
+  
 
+    // modalTrigger()
   };
 
  // these are the details that are being set to build the "route"/ line for the directions
@@ -185,25 +200,23 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
     duration = Number(duration);
     const h = Math.floor(duration / 3600);
     const m = Math.floor(duration % 3600 / 60);
-    const s = Math.floor(duration % 3600 % 60);
-
+   
     const hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
     const mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes") : "";
-    const sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
 
-    return `Time to Pin: ${hDisplay + mDisplay}`; 
+    return `${hDisplay + mDisplay}`; 
 
 }
 
 
   const pinCategoryColor = (marker: any) => {
     const colorMapping: PinColorMapping = {
-      isFree:"#90a8c9",
-      isToilet: "#21675e",
-      isFood: "#cd8282",
-      isPersonal: "#82a8dc",
+      isFree:"#53CA3C",
+      isToilet: "#169873",
+      isFood: "#FCC54E",
+      isPersonal: "#BA37DD",
       isPhoneCharger: '#53e3d4',
-      isPoliceStation: "#82cda8",
+      isPoliceStation: "#E7ABFF",
       isEMTStation:"#f27d52"
     }
 
@@ -267,9 +280,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
             onClick={(e) => {clickedMarker(e.target)}} 
             longitude={friend.longitude} latitude={friend.latitude}
             anchor="bottom" 
-            color="#aa9ce3"> 
-            
-            {/* <b>{friend.firstName[0]}{friend.lastName[0]}</b> */}
+            color="white"> 
             </Marker>
           ))
         }
@@ -293,23 +304,52 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId}) => {
               id="routerLine01"
               type="line"
               paint={{
-                'line-color': '#FA9E14',
+                'line-color': '#000000',
                 'line-width': 4,
               }}
             />
           </Source>
         )}
       <NavigationControl />
+      {showFriendPopup ? (
+          <>
+            {friends.map((friend) => (
+              <Popup
+                key={friend.id}
+                longitude={friend.longitude} latitude={friend.latitude}
+                anchor="bottom"
+                onClose={() => setShowFriendPopup(false)}
+              >
+                <b>{friend.firstName} {friend.lastName}</b>
+              </Popup>
+            ))}
+          </>
+        ) : null} 
       </Map>
+      <center>
       <div>
         {showDirections ? (
         <div>
-          <p><b>{humanizedDuration(duration)} </b></p>
-          <p><b> Distance to Pin: {distance} miles</b></p>
+          {/* <Popup
+            longitude={userLng}
+            latitude={userLat}
+            anchor="top-left"
+            onClose={() => setShowDirections(false)}
+          >
+            <p><b>{humanizedDuration(duration)} </b></p>
+            <p><b> Distance to Location: {distance} miles</b></p>
+          </Popup> */}
+          <h4> Time to Location: <b>{humanizedDuration(duration)}</b> </h4>
+          <h4> Distance to Location: <b>{distance} miles</b></h4>
         </div>
         ) 
         : null }      
       </div>
+      <div id="map-pin-key-img">
+        <h3><b>MAP KEY</b></h3>
+        <img src="img/Map_pin_key.jpg" alt="Map Pin Key" width='350' height= "275"/>      
+      </div>
+      </center>
     </div>
   )
 }

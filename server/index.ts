@@ -33,8 +33,10 @@ const port = 4000;
 
 const routeHandler = Router();
 const distPath = path.resolve(__dirname, "..", "dist");
+const imgPath = path.resolve(__dirname, "..", "img");
 
 app.use(express.static(distPath));
+app.use('/img', express.static(imgPath));
 app.use(express.json());
 
 app.use("/api/home", HomeRoutes);
