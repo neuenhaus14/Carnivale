@@ -17,7 +17,7 @@ import {Event} from '../db'
 async function start() {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
-  await page.goto('https://www.wwoz.org/calendar/livewire-music?date=2023-12-19')
+  await page.goto('https://www.wwoz.org/calendar/livewire-music?date=2023-12-20')
 
   const venues = await page.evaluate(() => {
     return Array.from(document.querySelectorAll('h3 a')).map(e => ({
@@ -86,6 +86,7 @@ async function start() {
       //invitees: [],
       invitedCount: 0, 
       attendingCount: 0, 
+      imageUrl: null,
       upvotes: 0, 
       ownerId: null 
     })
