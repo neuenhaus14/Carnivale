@@ -1,9 +1,10 @@
 import React, { ReactPropTypes, useEffect, useState } from 'react';
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
 import { Button } from 'react-bootstrap';
+// import EventPage from './EventPage';
 
 const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
 
@@ -61,11 +62,11 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
     }
   }
 
-  const getFriendRequests = async() => {
+  const getFriendRequests = async () => {
     try {
       const friendRequestsData = await axios.get(`api/friends/getFriendRequests/${userId}`);
       const { requestsMadeUsers, requestsReceivedUsers } = friendRequestsData.data;
-      console.log(requestsMadeUsers, requestsReceivedUsers)
+      // console.log(requestsMadeUsers, requestsReceivedUsers)
       setFriendRequestsReceived(requestsReceivedUsers);
       setFriendRequestsMade(requestsMadeUsers);
     } catch (err) {
@@ -80,6 +81,12 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
 
     // for updating events on userpage when 
     // responding to invites or inviting other users
+
+    // TODO: I think isNewEvent gets flipped
+    // to false from the eventCreateModal,
+    // so isNewEvent should realistically 
+    // always be false. This uE only
+    // runs on the first page load, right?
     if (isNewEvent === false) {
       getFriends();
       getEventsOwned();
@@ -169,14 +176,14 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         recipient_phoneNumber: phoneForFriendRequest,
       }
     })
-    console.log('friedRequestRecord', friendRequestResponse);
+    //console.log('friedRequestRecord', friendRequestResponse);
     setPhoneForFriendRequest('');
     getFriendRequests();
   }
 
   async function cancelFriendRequest(recipient_userId: number) {
     const deleteResponse = await axios.delete(`/api/friends/cancelFriendRequest/${userId}-${recipient_userId}`)
-    console.log(deleteResponse);
+    //console.log(deleteResponse);
     getFriendRequests();
   }
 
@@ -188,14 +195,14 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         isConfirmed
       }
     })
-    console.log('updated Relationship', updatedRelationship);
+    //console.log('updated Relationship', updatedRelationship);
     getFriends();
     getFriendRequests();
   }
 
   async function unfriend(friendId: number) {
     const deleteResponse = await axios.delete(`/api/friends/unfriend/${userId}-${friendId}`);
-    console.log(deleteResponse)
+    //console.log(deleteResponse)
     getFriends();
   }
 
@@ -222,7 +229,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
   }
 
 
-  console.log('inside userpage. isNewEvent', isNewEvent)
+  // console.log('inside userpage. isNewEvent', isNewEvent)
   return (
     <div>
       <h1>UserPage {lng} {lat}</h1>
@@ -324,6 +331,16 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
       >
         Create New Event
       </Button>
+
+{/* Link below is styled like a bootstrap button */}
+      <Link
+        className="btn btn-primary"
+        role="button"
+        to="/eventpage"
+      >
+        Gigs & Parades
+      </Link>
+
     </div>
   )
 };
