@@ -5,9 +5,6 @@ import ProtectedRoute from './ProtectedRoutes'
 import axios from 'axios';
 import { io } from 'socket.io-client'
 const socket = io()
-import { io } from 'socket.io-client'
-const socket = io()
-
 import FeedPage from './FeedPage'
 import HomePage from './HomePage'
 import MapPage from './MapPage'

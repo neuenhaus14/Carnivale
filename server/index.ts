@@ -5,7 +5,6 @@ import { db } from "./db";
 import { auth, requiresAuth } from 'express-openid-connect';
 import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER } from './config';
 import { Server } from 'socket.io';
-import { Server } from 'socket.io';
 import PinRoutes from './routes/Pins';
 import http from 'http'
 import cors from 'cors'
@@ -26,8 +25,6 @@ type db = { db: object };
 db;
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {cors: {origin: '*'}})
 const server = http.createServer(app);
 const io = new Server(server, {cors: {origin: '*'}})
 const port = 4000;
@@ -134,22 +131,6 @@ io.on('connection', (socket: any) => {
   });
 });
 
-io.on('connection', (socket: any) => {
-  console.log('a user connected');
-  socket.on('userLoc', (userLoc: any) => {
-    console.log('userLoc', userLoc.longitude, userLoc.latitude)
-    User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: 1}})
-    .then((data: any) => 
-        console.log('success')
-        // io.emit('userLoc', data.dataValues)
-    )
-    .catch((err) => console.error(err))
-  })
-
-  socket.on('disconnect', () => {
-    console.log('a user disconnected');
-  });
-});
 
 app.get("/*", function (req: Request, res: Response) {
   res.sendFile(
