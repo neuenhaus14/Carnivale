@@ -1,12 +1,14 @@
 import express, { Request, Response, Router } from "express";
 import path from "path";
 import { db } from "./db";
+
 import { auth, requiresAuth } from 'express-openid-connect';
 import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER } from './config';
 import { Server } from 'socket.io';
 import PinRoutes from './routes/Pins';
 import http from 'http'
 import cors from 'cors'
+
 //import Upload  from "./routes/PhotoUpload"
 import cloudinary from "./utils/cloudinary_helpers"; //grabbing reference to an already configured cloudinary object
 import FriendsRoutes from "./routes/Friends";
@@ -44,11 +46,12 @@ app.use("/api/pins", PinRoutes);
 app.use("/api/feed", FeedRoutes);
 app.use("/api/images", ImageRouter);
 app.use("/api/parades", ParadesRoutes);
-app.use('/api/images', ImageRouter)
+
 app.use(cors({
   origin: ['http://localhost:4000'], 
   credentials: true
 }));
+
 
 const config = {
   authRequired: false,
@@ -86,6 +89,7 @@ io.on('connection', (socket: any) => {
   socket.on('disconnect', () => {
     console.log('a user disconnected');
   });
+
 });
 
 io.on('connection', (socket: any) => {
