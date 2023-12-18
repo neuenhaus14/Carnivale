@@ -129,11 +129,12 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({ selectedEvent, setSho
   
   const handleClose = () => {
     setShowBasicModal(false); // goes up to user page and sets to false
+    setIsUserAttending(false);
     setSelectedEvent({ latitude: 0, longitude: 0, startTime: null, endTime: null }); // set coordinates so map in modal doesn't throw error for invalid LngLat object
   }
 
   const toggleAttendance = async () => {
-    console.log('inside toggle attendance', selectedEvent.id);
+    console.log('inside toggle attendance _____________________________', selectedEvent.id);
     const eventUpdateCount = await axios.post('/api/events/setEventAttendance', {
       answer : {
         eventId: selectedEvent.id,
@@ -148,7 +149,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({ selectedEvent, setSho
     setIsUserAttending(!isUserAttending);
   }
 
-  console.log('inside EventBasicModal. isUserAttending', isUserAttending)
+  // console.log('inside EventBasicModal. isUserAttending', isUserAttending, 'selectedEvent', selectedEvent)
   return (
     <Modal show={showBasicModal} onHide={handleClose}>
       <Modal.Header>

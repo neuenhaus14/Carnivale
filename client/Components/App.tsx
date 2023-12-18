@@ -1,5 +1,5 @@
-import React, {useEffect, useState, useContext, createContext, useRef} from 'react';
-import {Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLoaderData} from 'react-router-dom'
+import React, { useEffect, useState, useContext, createContext, useRef } from 'react';
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLoaderData } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react';
 import ProtectedRoute from './ProtectedRoutes'
 import axios from 'axios';
@@ -19,32 +19,41 @@ import Parades from './Parades'
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
   const [userData, setUserData] = useState(null);
-  const [userId, setUserId] = useState(0);
+  const [userId, setUserId] = useState(null);
   const userRef = useRef(null);
 
   const [lng, setLng] = useState(0)
   const [lat, setLat] = useState(0)
 
 
-
+  // this gets user from database
+  // sets user state
   const getUser = async () => {
     try {
       const { data } = await axios.post(`api/home/user/`, { user });
-      console.log('userId', data[0].id)
+      // console.log('userId', data[0].id)
       setUserData(data[0]);
       setUserId(data[0].id)
-      return data[0].id
     } catch (err) {
       console.error(err);
     }
   }
-  
-  if(isAuthenticated){
-    if(userRef.current === null){
-      getUser();
-      userRef.current = userData;
-    }
+
+
+  // this sends coordinates to socket
+  const showPosition = (position: any) => {
+    //console.log(position)
+    setLng(position.coords.longitude);
+    setLat(position.coords.latitude);
+
+    // it first inits with the emit when home page calls the function,
+    // this is sent to the server side to udate the database
+    console.log('userId in socket, userID', userId, 'long/lat', position.coords.longitude, position.coords.latitude)
+    //socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
+    socket.emit('userLoc', { longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
   }
+
+  // this get coordinates from the browser
 
   const getLocation = () => {
     if (navigator.geolocation) {
@@ -54,6 +63,7 @@ const App = () => {
       return null
     }
   }
+
   
   const showPosition = (position: any) => {
     //console.log(position)
@@ -67,31 +77,45 @@ const App = () => {
     socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
   }
 
+
+
+  // The two useEffects below both run on the first load,
+  // but have conditions to check if the next operation
+  // should execute.
+  // 1st: auth0 sends user object in, is Authenticated switches
+  // 2nd: provided a user object, useEffect gets the 
+  // logged in user's info from the database
+  // 3rd: provided a non-null userId, the user's location
+  // is looked up and emitted to socket.io server
   useEffect(() => {
-    getLocation();
-  }, []);
+    if (user) {
+      getUser();
+      userRef.current = userData; // do we need this?
+    }
+  }, [isAuthenticated])
 
   useEffect(() => {
-    // this coords is data.dataValues from the database as a response to the emit
-    socket.on('userLoc', (coords: any) => {
-      console.log('userLoc', coords.longitude, coords.latitude)
+    console.log('userId changes')
+    if (userId !== null){
+      console.log('userRef.current is not null')
+      getLocation();
+    }
+  }, [userId])
 
-      //set the coords with the response
-      setLng(coords.longitude);
-      setLat(coords.latitude);
-    })
+  // useEffect(() => {
+  //   // this coords is data.dataValues from the database as a response to the emit
+  //   socket.on('userLoc', (coords: any) => {
+  //     console.log('userLoc', coords.longitude, coords.latitude)
 
-  }, [])
-
-
-
-
+  //     //set the coords with the response
+  //     setLng(coords.longitude);
+  //     setLat(coords.latitude);
+  //   })
+  // }, [])
 
   if (isLoading) {
     return <Loading />;
   }
-
-
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -102,13 +126,14 @@ const App = () => {
           <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng} userId={userId}/> <NavBar /></div>}/>
           <Route path='/feedpage' element={<div><FeedPage userId={userId}/> <NavBar /></div>}/>
           <Route path='/parades' element={<div><Parades /> <NavBar /></div>}/>
-          <Route path='/eventpage' element={<div><EventPage getLocation={getLocation} lng={lng} lat={lat}/> <NavBar /></div>} />
+          <Route path='/eventpage' element={<div><EventPage userId={userId} getLocation={getLocation} lng={lng} lat={lat}/> <NavBar /></div>} />
           <Route path='/userpage' element={<div><UserPage userId={userId} getLocation = {getLocation} lng={lng} lat={lat} /> <NavBar /></div>} />
         </Route> 
       </Route>,
     ),
   );
 
+  console.log('bottom of app', userId, lng, lat)
   return (
     <RouterProvider router={router} />
   );
