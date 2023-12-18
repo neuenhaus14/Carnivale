@@ -297,21 +297,24 @@ Events.get('/getPeopleForEvent/:userId-:eventId', async (req: Request, res: Resp
 // are friends). 
 Events.post('/createEvent', async (req: Request, res: Response) => {
   const {
-    name,
-    startTime,
-    endTime,
+
+
+    name, 
+    startTime, 
+    endTime, 
     description,
-    longitude,
-    latitude,
+    longitude, 
+    latitude, 
     address,
     link,
-    system,
-    invitees,
-    invitedCount,
+    system, 
+    invitees, 
+    invitedCount, 
     attendingCount,
     upvotes,
-    ownerId,
-  } = req.body.event;
+    ownerId, 
+   } = req.body.event;
+
 
   try {
     // figure out how to type this properly
