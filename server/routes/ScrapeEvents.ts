@@ -17,7 +17,8 @@ import {Event} from '../db'
 async function start() {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
-  await page.goto('https://www.wwoz.org/calendar/livewire-music?date=2023-12-20')
+  const url = 'https://www.wwoz.org/calendar/livewire-music?date=2023-12-21'
+  await page.goto(url)
 
   const venues = await page.evaluate(() => {
     return Array.from(document.querySelectorAll('h3 a')).map(e => ({
@@ -57,7 +58,7 @@ async function start() {
   for (let i = 0; i < act.length; i++) {
     const test = day[i].split(' at ')
     date.push(test[0].trim())
-    time.push(parseInt(test[1].replace(/[amp]/g, '').trim()) + 12) //need to remove : and am
+    time.push(parseInt(test[1].replace(/[amp]/g, '').trim())) //need to remove : and am
   }
   
   for (let i = 0; i < venues.length; i++) {
@@ -66,31 +67,35 @@ async function start() {
   }
   
   const proper = []
+  // const randInt = Math.floor(Math.random() * venues.length)
   
-  for (let i = 0; i < 5; i++) {
-    proper.push(new Date(new Date(`${date[i]} 2023 ${time[i]}:00`)))
+  for (let i = 0; i < 7; i++) {
+    proper.push(new Date(`${date[i]} 2023 ${time[i]}:00`))
+    console.log(time[i])
+    console.log('proper', proper)
   }
   const mainArr = []
   //console.log(date)
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 7; i++) {
     mainArr.push({
-      name: act[i], 
-      startTime: proper[i], 
-      endTime: new Date(`${date[i]} 2023 11:59`),   
-      description: act[i], 
-      longitude: null, 
-      latitude: null, 
-      address: location[i],  
-      link: 'https://www.wwoz.org/calendar/livewire-music',  
-      system: true, 
+      name: act[i],
+      startTime: proper[i],
+      endTime: new Date(`${date[i]} 2023 11:59`),
+      description: act[i],
+      longitude: null,
+      latitude: null,
+      address: location[i],
+      link: url,
+      system: true,
       //invitees: [],
-      invitedCount: 0, 
-      attendingCount: 0, 
+      invitedCount: 0,
+      attendingCount: 0,
       imageUrl: null,
-      upvotes: 0, 
-      ownerId: null 
+      upvotes: 0,
+      ownerId: null
     })
   }
+  //conditional logic to prevent duplicates. Find or Create
 
   for (let i = 0; i < mainArr.length; i++) {
     Event.findOrCreate({where: mainArr[i]})
@@ -101,15 +106,6 @@ async function start() {
       console.error('Failed to write to event db', err)
     })
   }
-
- 
-  // console.log(time, proper)
-  //console.log(mainArr)
-  //iterate through and clean up
-  //estanblish db connection in this file
-  //it wouldnt double up data
-  //conditional logic to prevent duplicates. Find or Create
-
 //fs.writeFile('eventScrapeVenue.json', JSON.stringify(venues))
 // fs.writeFile('eventScrapeName.json', JSON.stringify(names))
 //fs.writeFile('eventScrapeDate.json', JSON.stringify(info))
