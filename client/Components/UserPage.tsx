@@ -6,7 +6,7 @@ import EventCreateModal from './EventCreateModal';
 import { Button } from 'react-bootstrap';
 // import EventPage from './EventPage';
 
-const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, userId }) => {
+const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, userId}) => {
 
   //const [searchParams] = useSearchParams();
   //const [userId] = useState(Number(searchParams.get('userid')) || 1);
@@ -95,7 +95,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, userId }) =>
       getEventsInvited();
       getFriendRequests();
     }
-  }, [])
+  }, [userId])
 
   // ALL RENDERED DATA ARE IN LIST ITEMS
   let userFriendsItems = null;

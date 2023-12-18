@@ -8,12 +8,13 @@ interface EventPageProps {
   getLocation: any,
   lng: number,
   lat: number,
+  userId: number,
 }
 
-const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat }) => {
+const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) => {
 
   const [searchParams] = useSearchParams();
-  const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  // const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // will be passed to modal to manage invites
 
   const [selectedEvent, setSelectedEvent] = useState({ latitude: 0, longitude: 0, startTime: null, endTime: null })
@@ -51,7 +52,7 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat }) => {
   const getAllPublicEvents = async () => {
     try {
       const allPublicEventsResponse = await axios.get('/api/events/getAllPublicEvents');
-      console.log('all public', allPublicEventsResponse)
+      // console.log('all public', allPublicEventsResponse)
       setAllPublicEvents(allPublicEventsResponse.data);
     } catch (err) {
       console.error('CLIENT ERROR: failed to get all public events');
@@ -75,8 +76,7 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat }) => {
     getEventsParticipating();
     getAllPublicEvents();
     getFriends();
-  }, [isUserAttending])
-
+  }, [isUserAttending, selectedEvent, userId])
 
 
   const allPublicEventItems = allPublicEvents.map((event: any, index: number) => {
@@ -99,7 +99,7 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat }) => {
     </li>
   })
 
-  console.log('inside eventPage. isUserAttending', isUserAttending)
+  // console.log('inside eventPage. isUserAttending', isUserAttending)
   return (
     <div>
       <h1>EventPage! {`${lng}, ${lat}`}</h1>

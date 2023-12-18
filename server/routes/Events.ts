@@ -25,7 +25,7 @@ const Events = Router();
 
 // NEXT THREE ROUTES SEARCH FOR PRIVATE!!! EVENTS BY USERNAME
 Events.get('/getEventsOwned/:userId', async (req: Request, res: Response) => {
-  const {userId } = req.params;
+  const { userId } = req.params;
 
   try {
     const userEventsOwned: any = await Event.findAll({
@@ -36,9 +36,9 @@ Events.get('/getEventsOwned/:userId', async (req: Request, res: Response) => {
         ['startTime', 'ASC']
       ]
     })
-   
-      res.status(200).send(userEventsOwned);
-    
+
+    res.status(200).send(userEventsOwned);
+
   } catch (err) {
     console.error('SERVER ERROR: failed to GET events owned by user', err);
     res.status(500).send(err);
@@ -67,12 +67,20 @@ Events.get('/getEventsParticipating/:userId', async (req: Request, res: Response
 
       const userEventsParticipating: any = await Event.findAll({
         where: {
-          id: {
-            [Op.or]: [...userEventsParticipatingIds]
-          },
-          ownerId: {
-            [Op.not]: userId
-          }
+          id: userEventsParticipatingIds,
+          // id: {
+          //   [Op.or]: [...userEventsParticipatingIds]
+          // },
+          [Op.or]: [
+            {
+              ownerId: {
+                [Op.not]: userId
+              }
+            },
+            {
+              ownerId: null
+            }
+          ]
         },
         order: [
           ['startTime', 'ASC']
@@ -91,37 +99,37 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
 
   try {
 
-  // join records with user's id
-  const userEventsInvitedRecords: any = await Join_user_event.findAll({
-    where: {
-      userId,
-      isAttending: false,
-    }
-  })
-  // if user has no events that they're invited to...
-  if (userEventsInvitedRecords.length === 0) {
-    // console.log('No event invitations')
-    res.status(200).send([])
-  } else {
-
-    const userEventsInvitedIds = userEventsInvitedRecords.map((record: any) => record.eventId)
-
-    const userEventsInvited: any = await Event.findAll({
+    // join records with user's id
+    const userEventsInvitedRecords: any = await Join_user_event.findAll({
       where: {
-        id: {
-          [Op.or]: [...userEventsInvitedIds]
-        }
-      },
-      order: [
-        ['startTime', 'ASC']
-      ]
+        userId,
+        isAttending: false,
+      }
     })
-    res.status(200).send(userEventsInvited);
+    // if user has no events that they're invited to...
+    if (userEventsInvitedRecords.length === 0) {
+      // console.log('No event invitations')
+      res.status(200).send([])
+    } else {
+
+      const userEventsInvitedIds = userEventsInvitedRecords.map((record: any) => record.eventId)
+
+      const userEventsInvited: any = await Event.findAll({
+        where: {
+          id: {
+            [Op.or]: [...userEventsInvitedIds]
+          }
+        },
+        order: [
+          ['startTime', 'ASC']
+        ]
+      })
+      res.status(200).send(userEventsInvited);
+    }
+  } catch (err) {
+    console.error('SERVER ERROR: failed to GET events you are invited to', err);
+    res.status(500).send(err);
   }
-} catch (err) {
-  console.error('SERVER ERROR: failed to GET events you are invited to', err);
-  res.status(500).send(err);
-}
 })
 
 // NEXT TWO GET ARRAY OF PUBLIC EVENT ID's FOR A USER
@@ -136,7 +144,7 @@ Events.get('/getPublicEventsParticipating/:userId', async (req: Request, res: Re
         isAttending: true,
       }
     });
-
+    // console.log('user events participating', userId, userEventsParticipatingRecords)
     // if user has no events that they're going to
     if (userEventsParticipatingRecords.length === 0) {
       console.log('No user event participation records')
@@ -150,12 +158,11 @@ Events.get('/getPublicEventsParticipating/:userId', async (req: Request, res: Re
           id: {
             [Op.or]: [...userEventsParticipatingIds]
           },
-          ownerId: {
-            [Op.not]: userId
-          },
+          ownerId: null,
           system: true
         }
       });
+      // console.log('array of public participating events ids', userPublicEventsParticipating.map((event: any) => event.id))
       res.status(200).send(userPublicEventsParticipating.map((event: any) => event.id));
     }
   } catch (err) {
@@ -169,40 +176,40 @@ Events.get('/getPublicEventsInvited/:userId', async (req: Request, res: Response
 
   try {
 
-  // join records with user's id
-  const userEventsInvitedRecords: any = await Join_user_event.findAll({
-    where: {
-      userId,
-      isAttending: false,
-    }
-  })
-  // if user has no events that they're invited to...
-  if (userEventsInvitedRecords.length === 0) {
-    // console.log('No event invitations')
-    res.status(200).send([])
-  } else {
-
-    const userEventsInvitedIds = userEventsInvitedRecords.map((record: any) => record.eventId)
-
-    const userPublicEventsInvited: any = await Event.findAll({
+    // join records with user's id
+    const userEventsInvitedRecords: any = await Join_user_event.findAll({
       where: {
-        id: {
-          [Op.or]: [...userEventsInvitedIds]
-        },
-        system: true,
+        userId,
+        isAttending: false,
       }
     })
-    res.status(200).send(userPublicEventsInvited.map((event: any) => event.id));
+    // if user has no events that they're invited to...
+    if (userEventsInvitedRecords.length === 0) {
+      // console.log('No event invitations')
+      res.status(200).send([])
+    } else {
+
+      const userEventsInvitedIds = userEventsInvitedRecords.map((record: any) => record.eventId)
+
+      const userPublicEventsInvited: any = await Event.findAll({
+        where: {
+          id: {
+            [Op.or]: [...userEventsInvitedIds]
+          },
+          system: true,
+        }
+      })
+      res.status(200).send(userPublicEventsInvited.map((event: any) => event.id));
+    }
+  } catch (err) {
+    console.error('SERVER ERROR: failed to GET public events the user is invited to', err);
+    res.status(500).send(err);
   }
-} catch (err) {
-  console.error('SERVER ERROR: failed to GET public events the user is invited to', err);
-  res.status(500).send(err);
-}
 })
 
 // GET ALL PUBLIC EVENTS
 Events.get('/getAllPublicEvents', async (req: Request, res: Response) => {
-  
+
   try {
     const allPublicEvents = await Event.findAll({
       where: {
@@ -236,7 +243,7 @@ Events.get('/getPeopleForEvent/:userId-:eventId', async (req: Request, res: Resp
       }
     })
 
-     // make sure we have relationships before
+    // make sure we have relationships before
     // going and getting the user info
     if (allFriendships.length > 0) {
       // Of all the relationships of the user, get the friend (the non-user)
@@ -244,41 +251,41 @@ Events.get('/getPeopleForEvent/:userId-:eventId', async (req: Request, res: Resp
         return friendship.requester_userId === Number(userId) ? friendship.recipient_userId : friendship.requester_userId
       });
 
-    const eventParticipants = await Join_user_event.findAll({
-      where: {
-        eventId,
-        userId: {
-          [Op.or]: [...allFriendsIds]
-        },
-        isAttending: true,
-      }
-    })
-  
-    const eventInvitees = await Join_user_event.findAll({
-      where: {
-        eventId,
-        userId: {
-          [Op.or]: [...allFriendsIds]
-        },
-        isAttending: false,
-      }
-    })
+      const eventParticipants = await Join_user_event.findAll({
+        where: {
+          eventId,
+          userId: {
+            [Op.or]: [...allFriendsIds]
+          },
+          isAttending: true,
+        }
+      })
 
-    // map over results to just return the ids of the friends attending
-    const response = {
-      eventParticipants: eventParticipants.map((participationRecord : any) => participationRecord.userId),
-      eventInvitees: eventInvitees.map((inviteRecord: any) => inviteRecord.userId)
-    }
+      const eventInvitees = await Join_user_event.findAll({
+        where: {
+          eventId,
+          userId: {
+            [Op.or]: [...allFriendsIds]
+          },
+          isAttending: false,
+        }
+      })
 
-    res.status(200).send(response);
-  } else { // if they don't have any friends, send back empty arrays
-    const response: any = {
-      eventParticipants: [],
-      eventInvitees: []
+      // map over results to just return the ids of the friends attending
+      const response = {
+        eventParticipants: eventParticipants.map((participationRecord: any) => participationRecord.userId),
+        eventInvitees: eventInvitees.map((inviteRecord: any) => inviteRecord.userId)
+      }
+
+      res.status(200).send(response);
+    } else { // if they don't have any friends, send back empty arrays
+      const response: any = {
+        eventParticipants: [],
+        eventInvitees: []
+      }
+      res.status(200).send(response)
     }
-    res.status(200).send(response)
-  }
-} catch (err) {
+  } catch (err) {
     console.error('SERVER ERROR: failed to GET people involved with event', err);
     res.status(500).send(err);
   }
@@ -290,21 +297,21 @@ Events.get('/getPeopleForEvent/:userId-:eventId', async (req: Request, res: Resp
 // are friends). 
 Events.post('/createEvent', async (req: Request, res: Response) => {
   const {
-    name, 
-    startTime, 
-    endTime, 
+    name,
+    startTime,
+    endTime,
     description,
-    longitude, 
-    latitude, 
+    longitude,
+    latitude,
     address,
     link,
-    system, 
-    invitees, 
-    invitedCount, 
+    system,
+    invitees,
+    invitedCount,
     attendingCount,
     upvotes,
-    ownerId, 
-   } = req.body.event;
+    ownerId,
+  } = req.body.event;
 
   try {
     // figure out how to type this properly
@@ -312,23 +319,23 @@ Events.post('/createEvent', async (req: Request, res: Response) => {
     // db's index.js? Event interface is created,
     // but not working
     const newEvent: any = await Event.create({
-      ownerId, 
-      name, 
+      ownerId,
+      name,
       description,
-      longitude, 
-      latitude, 
+      longitude,
+      latitude,
       address,
       startTime: new Date(startTime),
-      endTime: new Date(endTime), 
-      system, 
+      endTime: new Date(endTime),
+      system,
       link,
-      invitedCount, 
+      invitedCount,
       attendingCount
     })
 
     // add owner of event to participants
-    const newParticipantRecord: any = await Join_user_event.create({ 
-      eventId: newEvent.id, 
+    const newParticipantRecord: any = await Join_user_event.create({
+      eventId: newEvent.id,
       userId: newEvent.ownerId,
       isAttending: true,
     })
@@ -336,9 +343,9 @@ Events.post('/createEvent', async (req: Request, res: Response) => {
     // map over invitees from request to make objects that
     // can be bulk created in invitees join table
     const inviteeArray = invitees.map((invitee: number) => {
-      return { 
-        userId: invitee, 
-        eventId: newEvent.id, 
+      return {
+        userId: invitee,
+        eventId: newEvent.id,
         isAttending: false,
       }
     })
@@ -365,13 +372,21 @@ Events.post('/createEvent', async (req: Request, res: Response) => {
 Events.post('/setEventAttendance', async (req: Request, res: Response) => {
   const { eventId, userId, isAttending } = req.body.answer
 
-  try{
-    const updatedCount = await Join_user_event.update({ isAttending }, {
+  try {
+    let updatedCount: any = await Join_user_event.update({ isAttending }, {
       where: {
         eventId,
         userId
       }
     })
+    if (updatedCount[0] === 0) {
+      updatedCount = await Join_user_event.create({
+        eventId,
+        userId,
+        isAttending,
+      })
+    }
+    // console.log('uC', updatedCount);
     res.status(201).send(updatedCount)
   } catch (err) {
     console.error("SERVER ERROR: could not POST event answer", err);
@@ -379,7 +394,7 @@ Events.post('/setEventAttendance', async (req: Request, res: Response) => {
   }
 })
 
-Events.delete('/deleteEvent/:eventId', async (req: Request, res: Response)=> {
+Events.delete('/deleteEvent/:eventId', async (req: Request, res: Response) => {
   const { eventId } = req.params;
 
   try {
@@ -427,16 +442,16 @@ Events.post('/inviteToEvent', async (req: Request, res: Response) => {
 })
 
 Events.post('/getCoordinatesFromAddress', async (req: Request, res: Response) => {
-  
+
   const apiUrlBeginning = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
   const apiUrlEnd = '.json?proximity=ip&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw';
- try {
-  let { address } = req.body
-  address = address.replaceAll(' ', '%20');
-  const apiUrl = apiUrlBeginning + address + apiUrlEnd;
-  const coordinateResponse: any = await axios.get(apiUrl).catch((error) => console.error(error));
-  const coordinates = coordinateResponse.data.features[0].center;
-  res.status(200).send(coordinates);
+  try {
+    let { address } = req.body
+    address = address.replaceAll(' ', '%20');
+    const apiUrl = apiUrlBeginning + address + apiUrlEnd;
+    const coordinateResponse: any = await axios.get(apiUrl).catch((error) => console.error(error));
+    const coordinates = coordinateResponse.data.features[0].center;
+    res.status(200).send(coordinates);
   } catch (err) {
     console.error("SERVER ERROR: failed to 'POST' new coordinates from address", err);
     res.status(500).send(err);
@@ -444,7 +459,6 @@ Events.post('/getCoordinatesFromAddress', async (req: Request, res: Response) =>
 })
 
 Events.post('/getAddressFromCoordinates', async (req: Request, res: Response) => {
-  console.log(req.body)
   const { latitude, longitude } = req.body.coordinates
 
   const apiUrlBeginning = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
@@ -454,7 +468,7 @@ Events.post('/getAddressFromCoordinates', async (req: Request, res: Response) =>
 
   const addressResponse: any = await axios.get(apiUrl).catch((error) => console.error(error));
   const address = addressResponse.data.features[0].place_name;
-  console.log('addressResponse', address)
+
   res.status(200).send(address);
 })
 

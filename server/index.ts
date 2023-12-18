@@ -74,12 +74,12 @@ io.on('connection', (socket: any) => {
   socket.on('userLoc', (userLoc: any) => {
     console.log('userLoc', userLoc.longitude, userLoc.latitude, userLoc.id)
       User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: userLoc.id}})
-      .then(() => 
-        User.findOne({where: {id: userLoc.id}})
-          .then((data) => {
-            console.log('successfully updated location')
-            io.emit('userLoc', data.dataValues)
-          })
+      .then(() => {
+        console.log('successfully updated location')}
+        // User.findOne({where: {id: userLoc.id}})
+        //   .then((data) => {
+        //     io.emit('userLoc', data.dataValues)
+        //   })
       )
       .catch((err) => console.error(err))
   })
