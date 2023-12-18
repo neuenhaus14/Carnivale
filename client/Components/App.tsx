@@ -64,18 +64,7 @@ const App = () => {
     }
   }
 
-  
-  const showPosition = (position: any) => {
-    //console.log(position)
-    setLng(position.coords.longitude);
-    setLat(position.coords.latitude);
 
-    // it first inits with the emit when home page calls the function, 
-    // this is sent to the server side to udate the database
-    console.log('userId in socket', userId)
-    //socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
-    socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
-  }
 
 
 
