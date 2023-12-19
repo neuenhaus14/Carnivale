@@ -59,7 +59,7 @@ async function start(userDate: string) {
   //array for proper time numbers for next for loop
   const proper = []
   for (let i = 0; i < 7; i++) {
-    proper.push(new Date(`${date[i]} 2023 ${time[i]}:00`))
+    proper.push(new Date(new Date(`${date[i]} 2023 ${time[i]}:00`)))
   }
   //finally, array to hold individual objects to be added to db
   const mainArr = []
@@ -83,6 +83,7 @@ async function start(userDate: string) {
       ownerId: null
     })
   }
+  console.log(mainArr)
   //conditional logic to prevent duplicates. Find or Create
   for (let i = 0; i < mainArr.length; i++) {
     const rand = Math.floor(Math.random() * mainArr.length)
