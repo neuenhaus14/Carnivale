@@ -7,11 +7,11 @@ import { Button } from 'react-bootstrap';
 // import EventPage from './EventPage';
 
 
-const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, userId}) => {
+const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, }) => {
 
 
-  //const [searchParams] = useSearchParams();
-  //const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  const [searchParams] = useSearchParams();
+  const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);

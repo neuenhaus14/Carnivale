@@ -3,7 +3,8 @@ import { Modal, Button, Form, Accordion, FloatingLabel } from 'react-bootstrap'
 import EventCreateMapComponent from './EventCreateMapComponent';
 import axios from 'axios';
 import Events from '../../server/routes/Events';
-
+import dayjs = require('dayjs');
+import { timeLog } from 'console';
 
 interface EventCreateModalProps {
   selectedEvent: any,
@@ -79,22 +80,21 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
   }
 
   const attendingFriendsItems = friends.filter((friend: any) => participants.includes(friend.id)).map((friend: any, index: number) => {
-    return <li key={index}>{friend.firstName} {friend.lastName} is attending!</li>
+    return <p key={index}>{friend.firstName} {friend.lastName} is attending!</p>
   })
 
   const invitedFriendsItems = friends.filter((friend: any) => invitees.includes(friend.id)).map((friend: any, index: number) => {
-    return <li key={index}>{friend.firstName} {friend.lastName} is already invited!</li>
+    return <p key={index}>{friend.firstName} {friend.lastName} is already invited!</p>
   })
 
   const uninvitedFriendsItems = friends.filter((friend: any) => !participants.includes(friend.id) && !invitees.includes(friend.id)).map((friend: any, index: number) => {
-    return <li key={index}>{friend.firstName} {friend.lastName} is not invited!
-      <Form.Switch
-        type="switch"
+    return <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'right' }} key={index}><p className='mx-3'>{friend.firstName} {friend.lastName} </p>
+      <Form.Check
+        type="checkbox"
         id="custom-switch"
-        label="Check too invite"
         onChange={() => toggleFriendInvite(friend.id)}
       />
-    </li>
+    </div>
   })
 
   return (
@@ -102,15 +102,16 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
       <Accordion.Item eventKey="0">
         <Accordion.Header>Who's Going?</Accordion.Header>
         <Accordion.Body>
-          <ul>
+          <div>
             {attendingFriendsItems}
-          </ul>
-          <ul>
+          </div>
+          <div>
             {invitedFriendsItems}
-          </ul>
-          <ul>
+          </div>
+          <div>
+            <p>Add invites</p>
             {uninvitedFriendsItems}
-          </ul>
+          </div>
           {isNewEvent === false && friendsToInvite.length > 0 && <button onClick={() => sendFriendInvites()}>Send Invites</button>}
         </Accordion.Body>
       </Accordion.Item>
@@ -120,8 +121,8 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
 
 const EventCreateModal: React.FC<EventCreateModalProps> = ({
   selectedEvent, setShowCreateModal, showCreateModal,
-  setSelectedEvent, friends, userId, getEventsInvited,
-  getEventsParticipating, isNewEvent, setIsNewEvent, getLocation, lng, lat }) => {
+  setSelectedEvent, friends, userId,
+  isNewEvent, setIsNewEvent, getLocation, lng, lat }) => {
 
   const [eventAddress, setEventAddress] = useState('');
   const [eventDescription, setEventDescription] = useState('')
@@ -138,7 +139,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   const [userLatitude, setUserLatitude] = useState(lat); // lat is user location from getLocation
   const [userLongitude, setUserLongitude] = useState(lng); // lng is user location from getLocation
-  
+
   // both get passed to accordion
   const [friendsToInvite, setFriendsToInvite] = useState([]);
 
@@ -159,7 +160,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventDescription(selectedEvent.description);
       setEventLatitude(Number(selectedEvent.latitude));
       setEventLongitude(Number(selectedEvent.longitude));
-      if (selectedEvent.startTime !== null && selectedEvent !== null){
+      if (selectedEvent.startTime !== null && selectedEvent !== null) {
         parseDateIntoDateAndTime(selectedEvent.startTime, 'start');
         parseDateIntoDateAndTime(selectedEvent.endTime, 'end');
       }
@@ -181,13 +182,13 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     // 2023-12-11 20:40:35.222-05
     const [date, time] = fullDate.split('T');
 
-    const timeRangeValue = Number(time.slice(0,5).replace(':', '.'))
+    const timeRangeValue = Number(time.slice(0, 5).replace(':', '.'))
 
-    if (startOrEnd === 'start'){
+    if (startOrEnd === 'start') {
       // console.log(date, time, timeRangeValue, startOrEnd);
       setEventStartDate(date);
       setEventStartTime(timeRangeValue);
-    } else if (startOrEnd === 'end'){
+    } else if (startOrEnd === 'end') {
       setEventEndDate(date);
       setEventEndTime(timeRangeValue);
     }
@@ -198,39 +199,58 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     setSelectedEvent({ latitude: 0, longitude: 0, startTime: null, endTime: null }); // set coordinates so map in modal doesn't throw error for invalid LngLat object
   }
 
-  const handleEventCreation = async () => {
-    
-    const stringifyDateTime = (date: string, time: number) => {
-      let formattedTime;
-      const timeString: string = time.toString()
-      
-      if (timeString.indexOf('.') === -1){
-        formattedTime = `${time}:00`
-      } else {
-        const hour = timeString.slice(0,2);
-        const minute = timeString.slice(3,5);
-        let formattedMinute; 
+  const convertDecimalToTime = (time: number, twelveHourClock: boolean = false) => {
+    let hour: any;
+    let minute: any;
+    const timeString: string = time.toString()
+    if (timeString.indexOf('.') === -1) {
+      hour = timeString;
+      minute = '00'
+    } else {
+      [hour, minute] = timeString.split('.');
 
-        switch (minute) {
-          case '25':
-            formattedMinute = '15';
-            break;
-          case '5': 
-            formattedMinute = '30'
-            break;
-          case '75': 
-            formattedMinute = '45'
-            break;
-        }
-
-       formattedTime = `${hour}:${formattedMinute}`
+      switch (minute) {
+        case '25':
+          minute = '15';
+          break;
+        case '5':
+          minute = '30'
+          break;
+        case '75':
+          minute = '45'
+          break;
       }
-
-      return `${date}T${formattedTime}`;
     }
-    
+
+    if (!twelveHourClock) {
+      return `${hour}:${minute}`
+    }
+
+    if (twelveHourClock){
+      if (hour === '24'){
+        return 'Midnight'
+      }
+      else if (hour === '12' &&  minute === '00'){
+        return 'Noon'
+      }
+      else if (Number(hour) > 12){
+        hour = Number(hour) - 12
+        return `${hour.toString()}:${minute} pm` 
+      } else {
+        return `${hour}:${minute} am`
+      }
+    }
+  }
+
+  const handleEventCreation = async () => {
+
+    const stringifyDateTime = (date: string, timeDecimal: number) => {
+      const formattedTime = convertDecimalToTime(timeDecimal)
+      return `${ date }T${ formattedTime } `;
+    }
+
     try {
-      const startTimeString= stringifyDateTime(eventStartDate, eventStartTime)
+      const startTimeString = stringifyDateTime(eventStartDate, eventStartTime)
       const endTimeString = stringifyDateTime(eventEndDate, eventEndTime)
       // console.log('sts,ets', startTimeString, endTimeString)
       const newEvent = await axios.post('/api/events/createEvent', {
@@ -295,13 +315,13 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
   }
 
-  const handleAddressToCoordinates = async (e:any) => {
+  const handleAddressToCoordinates = async (e: any) => {
     const { value } = e.target;
     const coordinatesResponse = await axios.post('/api/events/getCoordinatesFromAddress', {
       address: value
     })
 
-    const [ evtLongitude, evtLatitude] = coordinatesResponse.data;
+    const [evtLongitude, evtLatitude] = coordinatesResponse.data;
     setEventLongitude(evtLongitude);
     setEventLatitude(evtLatitude);
   }
@@ -309,7 +329,12 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   return (
     <Modal show={showCreateModal} onHide={handleClose}>
       <Modal.Header>
-        <Modal.Title>{isNewEvent ? 'Create new event' : `${eventName} -- your event`}</Modal.Title>
+        <Modal.Title>
+          {isNewEvent === false
+            ? eventName
+            : eventName ?
+              eventName : 'Create event'}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center' }}>
@@ -329,43 +354,46 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
             <Form>
               <Form.Group className="mb-5" controlId="formEvent">
 
-          {/* <p>{eventName}</p> */}
+                {/* <p>{eventName}</p> */}
                 <FloatingLabel
                   controlId="floatingEventNameInput"
                   label="Event Name"
-                  className="my-2"
+                  className="my-1"
                 >
                   <Form.Control type="text" name='name' value={eventName} onChange={handleInputChange} />
                 </FloatingLabel>
 
-          {/* <p>{eventDescription}</p> */}
+                {/* <p>{eventDescription}</p> */}
                 <FloatingLabel
                   controlId="floatingEventDescriptionInput"
                   label="Description"
-                  className="mb-2"
+                  className="mb-1"
                 >
                   <Form.Control type="text" name='description' value={eventDescription} onChange={handleInputChange} />
                 </FloatingLabel>
 
-          {/* <p>{eventAddress}</p> */}
+                {/* <p>{eventAddress}</p> */}
                 <FloatingLabel
                   controlId="floatingEventAddressInput"
                   label="Address"
-                  className="mb-2"
+                  className="mb-1"
                 >
                   <Form.Control type="text" name='address' value={eventAddress} onChange={handleInputChange} onBlur={handleAddressToCoordinates} />
                 </FloatingLabel>
 
-          {/* <p>{eventStartDate}</p> */}
+                {/* <p>{eventStartDate}</p> */}
                 <FloatingLabel
                   controlId="floatingEventStartDateInput"
                   label="Start Date: YYYY-MM-DD"
-                  className="my-2"
+                  className="mb-1"
                 >
                   <Form.Control type="text" name="start" value={eventStartDate} onChange={handleDateChange} />
                 </FloatingLabel>
 
-                <div style={{ display: 'flex', flexDirection: 'row' }}><p>{eventStartTime}</p>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                  <div style={{ width: '85px' }}>
+                    <p>{convertDecimalToTime(eventStartTime, true)}</p>
+                  </div>
                   <Form.Range
                     min={0}
                     max={24}
@@ -375,16 +403,16 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                     onChange={handleRangeChange}
                   /></div>
 
-          {/* <p>{eventEndDate}</p> */}
+                {/* <p>{eventEndDate}</p> */}
                 <FloatingLabel
                   controlId="floatingEventEndDateInput"
                   label="End Date: YYYY-MM-DD"
-                  className="my-2"
+                  className="mb-1"
                 >
                   <Form.Control type="text" name="end" value={eventEndDate} onChange={handleDateChange} />
                 </FloatingLabel>
 
-                <div style={{ display: 'flex', flexDirection: 'row' }}><p>{eventEndTime}</p>
+                <div style={{ display: 'flex', flexDirection: 'row' }}><div style={{ width: '85px' }}><p>{convertDecimalToTime(eventEndTime, true)}</p></div>
                   <Form.Range
                     min={0}
                     max={24}
