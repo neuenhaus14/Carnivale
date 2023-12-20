@@ -16,6 +16,7 @@ import HomeRoutes from "./routes/Home";
 import FeedRoutes from "./routes/Feed";
 import ImageRouter from "./routes/PhotoUpload";
 import ParadesRoutes from "./routes/Parades";
+import GigsRoutes from "./routes/ScrapeEvents";
 import { User } from './db/index'
 import { Sequelize } from "sequelize";
 //start()
@@ -45,7 +46,7 @@ app.use("/api/pins", PinRoutes);
 app.use("/api/feed", FeedRoutes);
 app.use("/api/images", ImageRouter);
 app.use("/api/parades", ParadesRoutes);
-
+app.use("/api/gigs", GigsRoutes)
 app.use(cors({
   origin: ['http://localhost:4000'], 
   credentials: true
