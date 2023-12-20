@@ -4,11 +4,11 @@ import { useParams} from 'react-router-dom'
 import axios from 'axios'
 import Photos from './Photos'
 import ShareModal from './ShareModal'
- 
+
 interface Props {
   setShowModal: any
   markers: any
-  setMarkers: any 
+  setMarkers: any
   isPinSelected: boolean
   setIsPinSelected: any
   selectedPin: any
@@ -27,15 +27,15 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
   const [isSaved, setIsSaved] = useState(false);
   const [showPhoto, setShowPhoto] = useState(true);
   //const [marker, setMarkers] = useState([markers]);
-  
+
   const urlSearchString = window.location.search.substring(1);
   const parsedParams = JSON.parse('{"' + urlSearchString.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
-  
+
   const { lng } = parsedParams;
   const { lat } = parsedParams;
 
   const initModal = () => {
-    setShow(!isShow); 
+    setShow(!isShow);
     setShowModal(!isShow)
     setIsPinSelected(false);
   };
@@ -73,29 +73,29 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
       } catch (err)  {
         console.error(err)
       }
-    } 
+    }
   }
-  
+
 
   return (
     <>
-    { isPinSelected 
+    { isPinSelected
     ? (
         <Modal show={isShow} onHide={initModal}>
           <Modal.Header >
             <Modal.Title> {selectedPin[0].pinCategory.slice(2)} Pins</Modal.Title>
           </Modal.Header>
           { showPhoto ? (
-          <div> 
+          <div>
           <Modal.Body>
             <div id="pin-photos">
                 {
                   selectedPin.map((pin: any) => (
                     <div key={pin.id}>
                       <p><b>Submitted by: </b>{pin.firstName} {pin.lastName}</p>
-                      <img src={pin.photoURL} alt="Pin Photo" height="300" width='300'/> 
+                      <img src={pin.photoURL} alt="Pin Photo" height="300" width='300'/>
                       <p>{pin.description}</p>
-                    </div>  
+                    </div>
                   ))
                 }
             </div>
@@ -111,11 +111,11 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
           <Modal.Body>
             <Form.Group className="mb-3" controlId="picture spot" >
             { selectedPin.map((pin: any) => (
-            <Photos 
-            key={pin.id} 
-            lat={pin.latitude} 
-            lng={pin.longitude} 
-            saveCreatedPin={saveCreatedPin} 
+            <Photos
+            key={pin.id}
+            lat={pin.latitude}
+            lng={pin.longitude}
+            saveCreatedPin={saveCreatedPin}
             latPost={null}
               lngPost={null}
               isThrow={null}
@@ -133,42 +133,42 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
             }
         </Modal>
       )
-    : 
+    :
     (
       <Modal show={isShow} onHide={initModal}>
         <Modal.Header >
           <Modal.Title>Create a Pin</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Select a category, add a picture, and save your pin. 
+          Select a category, add a picture, and save your pin.
           <Form>
             <Form.Group className ='mb-3' controlId="pinType">
-              <Form.Check type="radio" id="freeToilet" name="pin-cat" 
-                label="Free Toilet" value="isFree" inline isValid 
+              <Form.Check type="radio" id="freeToilet" name="pin-cat"
+                label="Free Toilet" value="isFree" inline isValid
                 onClick={() => {resetBooleanState(); setIsFree(!isFree)} }
               />
-              <Form.Check type="radio" id="toilet" name="pin-cat" 
-                label="Toilet" value="isToilet" inline isValid 
+              <Form.Check type="radio" id="toilet" name="pin-cat"
+                label="Toilet" value="isToilet" inline isValid
                 onClick={() => {resetBooleanState(); setIsToilet(!isToilet)} }
               />
-              <Form.Check type="radio" id="food" name="pin-cat" 
-                label="Food" value="isFood" inline isValid 
+              <Form.Check type="radio" id="food" name="pin-cat"
+                label="Food" value="isFood" inline isValid
                 onClick={() => {resetBooleanState(); setIsFood(!isFood)} }
               />
-              <Form.Check type="radio" id="personal" name="pin-cat" 
-                label="Personal" value="isPersonal" inline isValid 
+              <Form.Check type="radio" id="personal" name="pin-cat"
+                label="Personal" value="isPersonal" inline isValid
                 onClick={() => {resetBooleanState(); setIsPersonal(!isPersonal)} }
               />
-              <Form.Check type="radio" id="PhoneCharger" name="pin-cat" 
-                label="Charging Station" value="PhoneCharger" inline isValid 
+              <Form.Check type="radio" id="PhoneCharger" name="pin-cat"
+                label="Charging Station" value="PhoneCharger" inline isValid
                 onClick={() => {resetBooleanState(); setIsPhoneCharger(!isPhoneCharger)} }
               />
-              <Form.Check type="radio" id="PoliceStation" name="pin-cat" 
-                label="Police Station" value="PoliceStation" inline isValid 
+              <Form.Check type="radio" id="PoliceStation" name="pin-cat"
+                label="Police Station" value="PoliceStation" inline isValid
                 onClick={() => {resetBooleanState(); setIsPoliceStation(!isPoliceStation)} }
               />
-              <Form.Check type="radio" id="EMT Station" name="pin-cat" 
-                label="EMT Station" value="EMT Station" inline isValid 
+              <Form.Check type="radio" id="EMT Station" name="pin-cat"
+                label="EMT Station" value="EMT Station" inline isValid
                 onClick={() => {resetBooleanState(); setIsEMTStation(!isEMTStation)} }
               />
             </Form.Group>
