@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
-import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+import { IoArrowUpCircle, IoArrowDownCircle } from "react-icons/io5";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface SharedPost {
   upvotes: number;
@@ -87,10 +89,10 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     const fetchData = async () => {
       try {
         const [postsResponse, userResponse] = await Promise.all([
-          // axios.get(`/api/feed/shared-posts/${userId}`),
-          // axios.get(`/api/feed/user/${userId}`),
-          axios.get(`/api/feed/shared-posts/1`),
-          axios.get(`/api/feed/user/1`),
+          axios.get(`/api/feed/shared-posts/${userId}`),
+          axios.get(`/api/feed/user/${userId}`),
+          // axios.get(`/api/feed/shared-posts/1`),
+          // axios.get(`/api/feed/user/1`),
         ]);
 
         setSharedPosts(postsResponse.data);
@@ -126,7 +128,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
             }));
           }
 
-          console.error(`${type} with ID ${postId} is deleted.`);
+          toast.error("Post deleted due to too many downvotes!");
+          setTimeout(() => {
+            window.location.reload();
+          }, 5000);
+
           return;
         }
 
@@ -250,9 +256,9 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         )
       );
 
-      console.log(`Upvoted ${type} with ID ${postId}`);
+      // Show success toast
     } catch (error) {
-      console.log(`Already upvoted ${type} with ID ${postId}`);
+      toast.warning("You've already upvoted this post!");
     }
   };
 
@@ -301,14 +307,17 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
 
       if (updatedUpvotes === -5) {
         setDeletedPosts((prevDeletedPosts) => [...prevDeletedPosts, postId]);
+        // Show deletion toast
+        toast.error(`Post deleted due to too many downvotes: ID ${postId}`);
+        // Delay the page refresh by 2 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       }
-
-      console.log(`Downvoted ${type} with ID ${postId}`);
     } catch (error) {
-      console.log(`Already downvoted ${type} with ID ${postId}`);
+      toast.warning("You've already upvoted this post!");
     }
   };
-
   const fetchPostDetails = async (postId: number, type: string) => {
     try {
       if (!sharedPosts.some((post) => post.id === postId)) {
@@ -335,11 +344,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         setPinDetails((prevDetails) => ({
           ...prevDetails,
           [postId]: {
-            ownerId: response.data.ownerId,
-            isToilet: response.data.isToilet,
-            isFood: response.data.isFood,
-            isPersonal: response.data.isPersonal,
-            upvotes: response.data.upvotes,
+            ownerId: null,
+            isToilet: null,
+            isFood: null,
+            isPersonal: null,
+            upvotes: null,
           },
         }));
       } else if (type === "photo") {
@@ -417,10 +426,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                             ]
                           }
                         </p>
-                        <p style={{ margin: 0 }}>
-                          Upvotes:{" "}
-                          {commentDetails[post.shared_commentId].upvotes}
-                        </p>
+
                         <div>
                           <button
                             style={{
@@ -438,14 +444,14 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                               "upvoted"
                             }
                           >
-                            <FaArrowUp
+                            <IoArrowUpCircle
                               style={{
                                 color:
                                   commentVotingStatus[post.shared_commentId] ===
                                   "upvoted"
                                     ? "green"
                                     : "black",
-                                fontSize: "40px",
+                                fontSize: "30px",
                               }}
                             />
                           </button>
@@ -470,14 +476,14 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                               "downvoted"
                             }
                           >
-                            <FaArrowDown
+                            <IoArrowDownCircle
                               style={{
                                 color:
                                   commentVotingStatus[post.shared_commentId] ===
                                   "downvoted"
                                     ? "red"
                                     : "black",
-                                fontSize: "40px",
+                                fontSize: "30px",
                               }}
                             />
                           </button>
@@ -486,11 +492,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                           Delete Post
                         </button>
                       </div>
-                    ) : (
-                      <p style={{ color: "red" }}>
-                        This post has been deleted due to too many downvotes.
-                      </p>
-                    )}
+                    ) : null}
                   </div>
                 )}
                 {/* Pins */}
@@ -521,9 +523,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                           Creator:{" "}
                           {userNames[pinDetails[post.shared_pinId].ownerId]}
                         </p>
-                        <p style={{ margin: 0 }}>
-                          Upvotes: {pinDetails[post.shared_pinId].upvotes}
-                        </p>
+
                         <button
                           style={{
                             border: "none",
@@ -539,13 +539,13 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                             pinVotingStatus[post.shared_pinId] === "upvoted"
                           }
                         >
-                          <FaArrowUp
+                          <IoArrowUpCircle
                             style={{
                               color:
                                 pinVotingStatus[post.shared_pinId] === "upvoted"
                                   ? "green"
                                   : "black",
-                              fontSize: "40px",
+                              fontSize: "30px",
                             }}
                           />
                         </button>
@@ -567,23 +567,19 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                             pinVotingStatus[post.shared_pinId] === "downvoted"
                           }
                         >
-                          <FaArrowDown
+                          <IoArrowDownCircle
                             style={{
                               color:
                                 pinVotingStatus[post.shared_pinId] ===
                                 "downvoted"
                                   ? "red"
                                   : "black",
-                              fontSize: "40px",
+                              fontSize: "30px",
                             }}
                           />
                         </button>
                       </div>
-                    ) : (
-                      <p style={{ color: "red" }}>
-                        This post has been deleted due to too many downvotes.
-                      </p>
-                    )}
+                    ) : null}
                     <button onClick={() => handleDelete(post.id)}>
                       Delete Post
                     </button>
@@ -605,9 +601,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                           Creator:{" "}
                           {userNames[photoDetails[post.shared_photoId].ownerId]}
                         </p>
-                        <p style={{ margin: 0 }}>
-                          Upvotes: {photoDetails[post.shared_photoId].upvotes}
-                        </p>
+
                         <img
                           src={photoDetails[post.shared_photoId].url}
                           alt="Shared Photo"
@@ -632,14 +626,14 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                             photoVotingStatus[post.shared_photoId] === "upvoted"
                           }
                         >
-                          <FaArrowUp
+                          <IoArrowUpCircle
                             style={{
                               color:
                                 photoVotingStatus[post.shared_photoId] ===
                                 "upvoted"
                                   ? "green"
                                   : "black",
-                              fontSize: "40px",
+                              fontSize: "30px",
                             }}
                           />
                         </button>
@@ -662,14 +656,14 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                             "downvoted"
                           }
                         >
-                          <FaArrowDown
+                          <IoArrowDownCircle
                             style={{
                               color:
                                 photoVotingStatus[post.shared_photoId] ===
                                 "downvoted"
                                   ? "red"
                                   : "black",
-                              fontSize: "40px",
+                              fontSize: "30px",
                             }}
                           />
                         </button>
@@ -677,11 +671,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                           Delete Post
                         </button>
                       </div>
-                    ) : (
-                      <p style={{ color: "red" }}>
-                        This post has been deleted due to too many downvotes.
-                      </p>
-                    )}
+                    ) : null}
                   </div>
                 )}
                 <p style={{ margin: 0 }}>
@@ -695,6 +685,18 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           <p>No shared posts available.</p>
         )}
       </ul>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };
