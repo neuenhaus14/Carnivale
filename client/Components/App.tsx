@@ -38,7 +38,16 @@ const App = () => {
       console.error(err);
     }
   }
-
+  
+  // this get coordinates from the browser
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      return navigator.geolocation.getCurrentPosition(showPosition, (error => console.log(error)), {enableHighAccuracy: true})
+    } else {
+      console.log("Geolocation is not supported by this browser")
+      return null
+    }
+  }
 
   // this sends coordinates to socket
   const showPosition = (position: any) => {
@@ -46,38 +55,11 @@ const App = () => {
     setLng(position.coords.longitude);
     setLat(position.coords.latitude);
 
-    // it first inits with the emit when home page calls the function,
-    // this is sent to the server side to udate the database
+    console.log('accuracy: off by '+ position.coords.accuracy/1609 + ' miles')
     console.log('userId in socket, userID', userId, 'long/lat', position.coords.longitude, position.coords.latitude)
-    //socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
+   
     socket.emit('userLoc', { longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
   }
-
-  // this get coordinates from the browser
-
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      return navigator.geolocation.getCurrentPosition(showPosition)
-    } else {
-      console.log("Geolocation is not supported by this browser")
-      return null
-    }
-  }
-
-  
-  const showPosition = (position: any) => {
-    //console.log(position)
-    setLng(position.coords.longitude);
-    setLat(position.coords.latitude);
-
-    // it first inits with the emit when home page calls the function, 
-    // this is sent to the server side to udate the database
-    console.log('userId in socket', userId)
-    //socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
-    socket.emit('userLoc', {longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
-  }
-
-
 
   // The two useEffects below both run on the first load,
   // but have conditions to check if the next operation
@@ -121,14 +103,14 @@ const App = () => {
     createRoutesFromElements(
       <Route>
           <Route path='/' element={<Login />} />
-        <Route element={<ProtectedRoute />}> 
-          <Route path='/homepage' element={<div><HomePage lat={lat} lng={lng}/> <NavBar /></div>}  />
-          <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng} userId={userId}/> <NavBar /></div>}/>
+        {/* <Route element={<ProtectedRoute />}>  */}
+          <Route path='/homepage' element={<div><HomePage userId={userId} lat={lat} lng={lng}/> <NavBar /></div>}  />
+          <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng} userId={userId} getLocation={getLocation}/> <NavBar /></div>}/>
           <Route path='/feedpage' element={<div><FeedPage userId={userId}/> <NavBar /></div>}/>
           <Route path='/parades' element={<div><Parades /> <NavBar /></div>}/>
           <Route path='/eventpage' element={<div><EventPage userId={userId} getLocation={getLocation} lng={lng} lat={lat}/> <NavBar /></div>} />
           <Route path='/userpage' element={<div><UserPage userId={userId} getLocation = {getLocation} lng={lng} lat={lat} /> <NavBar /></div>} />
-        </Route> 
+        {/* </Route>  */}
       </Route>,
     ),
   );
