@@ -13,15 +13,16 @@ interface EventCreateModalProps {
   showCreateModal: boolean,
   friends: any,
   userId: number,
-  isUserAttending: boolean,
-  setIsUserAttending: any,
-  getEventsInvited: any,
-  getEventsParticipating: any,
+  //isUserAttending: boolean,
+  //setIsUserAttending: any,
+  // getEventsInvited: any,
+  // getEventsParticipating: any,
   isNewEvent: boolean,
   setIsNewEvent: any,
-  getLocation: any,
   lng: number,
   lat: number,
+  //getLocation: any,
+  eventType: string,
 }
 
 interface EventCreateAccordionProps {
@@ -122,7 +123,7 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({ friends, se
 const EventCreateModal: React.FC<EventCreateModalProps> = ({
   selectedEvent, setShowCreateModal, showCreateModal,
   setSelectedEvent, friends, userId,
-  isNewEvent, setIsNewEvent, getLocation, lng, lat }) => {
+  isNewEvent, setIsNewEvent, lng, lat, eventType }) => {
 
   const [eventAddress, setEventAddress] = useState('');
   const [eventDescription, setEventDescription] = useState('')
@@ -153,8 +154,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   useEffect(() => {
     //console.log('inside Modal. isNewEvent', isNewEvent, 'selectedEvent', selectedEvent)
 
-    // event edit mode
+    // user event edit mode
     if (isNewEvent === false) {
+      console.log('inNewEvent', isNewEvent)
       setEventName(selectedEvent.name)
       setEventAddress(selectedEvent.address);
       setEventDescription(selectedEvent.description);
@@ -165,14 +167,25 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         parseDateIntoDateAndTime(selectedEvent.endTime, 'end');
       }
     }
-    // event create mode
-    else if (isNewEvent === true) {
+    // user event create mode
+    else if (isNewEvent === true && eventType === 'user') {
+      console.log('eventType', eventType, 'selectedEvent', selectedEvent)
       setEventName('');
       setEventAddress('');
       setEventDescription('');
       setEventStartTime(12);
       setEventEndTime(14);
     }
+
+    // parade event create mode
+    else if (isNewEvent === true && eventType === 'parade'){
+      
+      console.log('eventType', eventType, 'SelectedEvent', selectedEvent)
+      setEventName(selectedEvent.title);
+      setEventAddress(selectedEvent.location);
+    }
+
+
   }, [selectedEvent, isNewEvent])
 
 
@@ -326,6 +339,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     setEventLatitude(evtLatitude);
   }
 
+  console.log('rock bottom, isNewEvent',isNewEvent)
   return (
     <Modal show={showCreateModal} onHide={handleClose}>
       <Modal.Header>
