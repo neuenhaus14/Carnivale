@@ -70,6 +70,7 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
       console.error('CLIENT ERROR: failed to GET user friends', err)
     }
   }
+  //drop down for choosing a date to get search data into scrapeEvents
 
   // location
   useEffect(() => {
