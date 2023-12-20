@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Card,
   Form,
@@ -9,30 +9,27 @@ import {
   Tab,
   Tabs,
 } from "react-bootstrap";
-import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import HomeModal from "./HomeModal";
 import WeatherCard from "./WeatherCard";
 import PostCard from "./PostCard";
-import { ThemeContext } from './Context';
 
 //PARENT OF HOMEMODAL
 
 interface HomePageProps {
-  lat: number
-  lng: number
-  userId: number
+  lat: number;
+  lng: number;
+  userId: number;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
-  //const { user } = useAuth0();
-  const [comment, setComment] = useState("");
-  // const [userId, setUserId] = useState(null);
+const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
+  const [comment, setComment] = useState('');
   const [posts, setPosts] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [key, setKey] = useState('posts');
   const [key, setKey] = useState("posts");
   const theme = useContext(ThemeContext);
-  
+
   // useEffect(() => {
   //   getLocation()
   // }, []);
@@ -54,23 +51,33 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
   // }, [userData])
 
   const modalTrigger = () => {
-   setShowModal(true)
-  }
-
+    setShowModal(true);
+  };
 
   function handleInput(e: any) {
     setComment(e.target.value);
-    console.log(comment.length);
   }
 
-  function handleSelect(k: string){
+  function handleKeyDown(e: any) {
+    //if key is enter, prevent default
+    if (e.key === 'Enter' && comment.length > 0) {
+      //if comment is valid, submit comment
+      e.preventDefault();
+      handleSubmit();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  }
+
+  //when tab is changed, set tab key and getPost for that tab
+  function handleSelect(k: string) {
     setKey(k);
     getPosts(k);
   }
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
     try {
-      axios.post(`/api/home/${userId}`, { comment });
+      await axios.post(`/api/home/${userId}`, { comment });
       setComment('');
     } catch (err) {
       console.error(err);
@@ -90,11 +97,12 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
   };
 
   useEffect(() => {
-    //getUser();
+    //on initial render, or tab click
+    //getPosts and setInterval for 5 sec
     getPosts(key);
     const interval = setInterval(() => {
       getPosts(key);
-      //console.log("fetch");
+      console.log('fetch');
     }, 5000);
     return () => clearInterval(interval);
   }, [key]);
@@ -107,18 +115,15 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
 
       <Row>
         <WeatherCard />
-      <button onClick={modalTrigger}>
-        Upload a pic!
-      </button>
-      { showModal ?
-      <HomeModal
-        setShowModal={setShowModal}
-        lat={lat}
-        lng={lng}
-        userId={userId}
-       />
-      : null
-    }
+        <button onClick={modalTrigger}>Upload a pic!</button>
+        {showModal ? (
+          <HomeModal
+            setShowModal={setShowModal}
+            lat={lat}
+            lng={lng}
+            userId={userId}
+          />
+        ) : null}
       </Row>
 
       <Row>
@@ -127,8 +132,8 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
           onSelect={handleSelect}
         >
           <Tab
-            eventKey="posts"
-            title="All"
+            eventKey='posts'
+            title='All'
           >
             {posts
               ? posts.map((item: any, index: number) => (
@@ -138,11 +143,11 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
                     userId={userId}
                   />
                 ))
-              : ""}
+              : ''}
           </Tab>
           <Tab
-            eventKey="costumes"
-            title="Costumes"
+            eventKey='costumes'
+            title='Costumes'
           >
             {posts
               ? posts.map((item: any, index: number) => (
@@ -152,11 +157,11 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
                     userId={userId}
                   />
                 ))
-              : ""}
+              : ''}
           </Tab>
           <Tab
-            eventKey="throws"
-            title="Throws"
+            eventKey='throws'
+            title='Throws'
           >
             {posts
               ? posts.map((item: any, index: number) => (
@@ -166,22 +171,25 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
                     userId={userId}
                   />
                 ))
-              : ""}
+              : ''}
           </Tab>
         </Tabs>
       </Row>
 
-      {key === "posts" ? (
+      {key === 'posts' ? (
         <Row>
           <Form>
             <Form.Group>
               <Form.Label>COMMENT</Form.Label>
               <Form.Control
-              onChange={handleInput}
-              value={comment}
-               />
+                onChange={handleInput}
+                value={comment}
+                onKeyDown={(e) => {
+                  handleKeyDown(e);
+                }}
+              />
               <Button
-                variant="primary"
+                variant='primary'
                 onClick={handleSubmit}
                 disabled={comment.length <= 0}
               >
@@ -191,7 +199,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
           </Form>
         </Row>
       ) : (
-        ""
+        ''
       )}
     </Container>
   );
