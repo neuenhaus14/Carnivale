@@ -24,7 +24,7 @@ const ShareModal = (props: { postId: number; userId: number; postType: string })
 
   useEffect(() => {
     getFriends();
-  }, []);
+  }, [userId]);
 
   const sharePost = async (share: string) => {
     try {
