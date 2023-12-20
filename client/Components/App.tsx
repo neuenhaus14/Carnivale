@@ -72,7 +72,7 @@ const App = () => {
       return null
     }
   }
-  watchLocation();
+  // watchLocation();
 
   // const stopWatchingLocation = (): void => {
   //   if (watchId !== undefined) {

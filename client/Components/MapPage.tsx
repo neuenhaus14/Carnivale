@@ -8,6 +8,8 @@ import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
+import { getSearchParamsForLocation } from "react-router-dom/dist/dom";
+import { watch } from "fs";
 
 
 interface MapProps {
@@ -18,6 +20,8 @@ interface MapProps {
 }
 
 const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) => {
+  watchLocation();
+
   const mapRef = useRef(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -59,7 +63,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
     getPins();
     getFriends();
     getEvents();
-    console.log('userId', userId)
   }, [setMarkers]);
 
 
@@ -238,7 +241,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
 
   const filterResults = (e: string) => {
     const filterChoice = e;
-    console.log(e)
 
     const filteredPins = markers.filter((marker) => {
       for(const key in marker){
@@ -261,7 +263,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
           <Accordion.Body className="map-accordion-body">
             <center>
             <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
-              <button type="button" value="isFree" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
+              <button type="button" value="isFree" className="btn" style={{ borderColor: "#53CA3C", color: "#53CA3C" }} onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
               <button type="button" value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
               <button type="button" value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
               <button type="button" value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button> 
@@ -375,7 +377,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
       <div id="map-direction-card" className='card w-35'>
         {showDirections ? (
           <div className= 'card-body'>
-            <span> Walking Directions: </span> <br />
+            <span> <b>Walking Directions: </b></span> <br />
             <span> Time to Location: </span> <br /><span><b>{humanizedDuration(duration)}</b></span> <br />
             <span> Distance to Location:</span> <br /><span> <b>{distance} miles</b></span><br />
             <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
