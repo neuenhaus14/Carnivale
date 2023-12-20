@@ -61,6 +61,7 @@ const App = () => {
     socket.emit('userLoc', { longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
   }
 
+
   // The two useEffects below both run on the first load,
   // but have conditions to check if the next operation
   // should execute.
