@@ -14,7 +14,7 @@ import axios from "axios";
 import HomeModal from "./HomeModal";
 import WeatherCard from "./WeatherCard";
 import PostCard from "./PostCard";
-import LocContext from "./App"
+import { ThemeContext } from './Context';
 
 //PARENT OF HOMEMODAL
 
@@ -31,7 +31,8 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
   const [posts, setPosts] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [key, setKey] = useState("posts");
-
+  const theme = useContext(ThemeContext);
+  
   // useEffect(() => {
   //   getLocation()
   // }, []);
@@ -71,6 +72,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
     try {
       const { data } = await axios.get(`/api/home/${e}`);
       setPosts(data);
+      console.log(theme, user);
     } catch (err) {
       console.error(err);
     }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import EventBasicModal from './EventBasicModal';
 import axios from 'axios';
-
+import dayjs from "dayjs";
 
 interface EventPageProps {
   getLocation: any,
@@ -70,6 +70,7 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
       console.error('CLIENT ERROR: failed to GET user friends', err)
     }
   }
+  //drop down for choosing a date to get search data into scrapeEvents
 
   // location
   useEffect(() => {
@@ -82,11 +83,12 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
 
 
   const allPublicEventItems = allPublicEvents.map((event: any, index: number) => {
-    return <li
+    return <ul
       key={index}
       style={{
         color: eventsParticipating.includes(event.id) ? 'green'
           : eventsInvited.includes(event.id) ? 'orange' : 'black'
+        
       }}
       onClick={() => {
         setShowBasicModal(true);
@@ -97,8 +99,11 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
         }
       }}
     >
-     {event.id} {event.name} {event.startTime}
-    </li>
+     <h4>{event.name}</h4>
+     <h5>{event.address}</h5>
+    <h6>{dayjs(event.startTime).format(' MMMM D, YYYY h:mm')}
+</h6>
+    </ul>
   })
 
   // console.log('inside eventPage. isUserAttending', isUserAttending)
