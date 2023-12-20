@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
 import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer, Popup } from 'react-map-gl';
+import { Card, Button, Accordion } from 'react-bootstrap'
 import PointAnnotation from 'react-map-gl'
 import { useSearchParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
@@ -58,8 +59,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     getFriends();
     getEvents();
     console.log('userId', userId)
-    getLocation()
-    console.log('get Location has been called in useEffect')
   }, [setMarkers]);
 
   
@@ -230,6 +229,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
   const filterResults = (e: string) => {
     const filterChoice = e;
+    console.log(e)
 
     const filteredPins = markers.filter((marker) => {
       for(const key in marker){
@@ -246,28 +246,26 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   return (
     <div>
       <h1>Map Page!</h1>
-      {/* <div className="accordion" id="map-filter-accordion">
-        <div className="map-accordion-item">
-          <h2 className="map-accordion-header" id="headingOne">
-            <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              Filter Pins
-            </button>
-          </h2>
-          <div id="collapseOne" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#map-filter-accordion">
-            <div className="accordion-body"> */}
-              <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
-                <button type="button" value="isFree" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
-                <button type="button" value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
-                <button type="button" value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
-                <button type="button" value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button>
-                <button type="button" value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
-                <button type="button" value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
-                <button type="button" value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button>
-              </div>
+      <Accordion>
+        <Accordion.Item eventKey="0">
+        <Accordion.Header>Filter Pins</Accordion.Header>  
+          <Accordion.Body>
+          {/* <div className= 'card'>
+            <div className="card-body"> */}
+            <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
+              <button type="button" value="isFree" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
+              <button type="button" value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
+              <button type="button" value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
+              <button type="button" value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button>
+              <button type="button" value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
+              <button type="button" value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
+              <button type="button" value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button>
+            </div>
             {/* </div>
-          </div>
-        </div>
-      </div>   */}
+          </div> */}
+          </Accordion.Body>
+        </Accordion.Item>
+    </Accordion>
       { showModal ? 
         <PinModal 
           userId={userId}

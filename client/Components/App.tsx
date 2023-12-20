@@ -84,6 +84,7 @@ const App = () => {
     }
   }, [userId])
 
+
   // useEffect(() => {
   //   // this coords is data.dataValues from the database as a response to the emit
   //   socket.on('userLoc', (coords: any) => {

@@ -76,14 +76,30 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     } 
   }
   
+  const pinCategory = (category: string) => {
+    console.log(category)
+
+    const categoryMapping: PinCategoryMapping = {
+      isFree:"Free Toilet",
+      isToilet: "Pay for Toilet",
+      isFood: "Food",
+      isPersonal: "Personal",
+      isPhoneCharger: 'Phone Charger',
+      isPoliceStation: "Police Post",
+      isEMTStation:"EMT Station"
+    }
+
+    return categoryMapping[category]
+  }
+
 
   return (
     <>
     { isPinSelected 
     ? (
-        <Modal show={isShow} onHide={initModal}>
+      <Modal show={isShow} onHide={initModal}>
           <Modal.Header >
-            <Modal.Title> {selectedPin[0].pinCategory.slice(2)} Pins</Modal.Title>
+            <Modal.Title> {pinCategory(selectedPin[0].pinCategory)} Pins</Modal.Title>
           </Modal.Header>
           { showPhoto ? (
           <div> 
@@ -193,6 +209,17 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
       }
     </>
   )
+}
+
+interface PinCategoryMapping {
+  [key: string]: string;
+  isFree: string;
+  isToilet: string;
+  isFood: string;
+  isPersonal: string;
+  isPhoneCharger: string;
+  isPoliceStation: string;
+  isEMTStation: string;
 }
 
 export default PinModal;
