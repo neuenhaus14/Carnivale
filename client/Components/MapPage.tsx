@@ -14,10 +14,10 @@ interface MapProps {
   userLat: number
   userLng: number
   userId: number
-  getLocation: any
+  watchLocation: any
 }
 
-const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) => {
+const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) => {
   const mapRef = useRef(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -71,7 +71,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
     geoControlRef.current?.trigger();
-    getLocation();
   }, [geoControlRef.current]);
 
 

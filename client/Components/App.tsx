@@ -39,15 +39,6 @@ const App = () => {
     }
   }
   
-  // this get coordinates from the browser
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      return navigator.geolocation.getCurrentPosition(showPosition, (error => console.log(error)), {enableHighAccuracy: true})
-    } else {
-      console.log("Geolocation is not supported by this browser")
-      return null
-    }
-  }
 
   // this sends coordinates to socket
   const showPosition = (position: any) => {
@@ -60,6 +51,36 @@ const App = () => {
    
     socket.emit('userLoc', { longitude: position.coords.longitude, latitude: position.coords.latitude, id: userId })
   }
+
+  // this get coordinates from the browser
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      return navigator.geolocation.getCurrentPosition(showPosition, error => console.log(error), {enableHighAccuracy: true})
+    } else {
+      console.log("Geolocation is not supported by this browser")
+      return null
+    }
+  }
+
+  let watchId: number;
+  const watchLocation = (): void => {
+    if (navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition(showPosition, error => console.log(error), { enableHighAccuracy: true })
+      console.log(`GeoLoc is watching ${userId} Location`)
+    } else {
+      console.log("Geolocation is not supported by this browser")
+      return null
+    }
+  }
+  watchLocation();
+
+  // const stopWatchingLocation = (): void => {
+  //   if (watchId !== undefined) {
+  //     navigator.geolocation.clearWatch(watchId)
+  //     console.log('Stopped watching location')
+  //   }
+  // };
+
 
   // The two useEffects below both run on the first load,
   // but have conditions to check if the next operation
@@ -81,6 +102,7 @@ const App = () => {
     if (userId !== null){
       console.log('userRef.current is not null')
       getLocation();
+
     }
   }, [userId])
 
@@ -106,7 +128,7 @@ const App = () => {
           <Route path='/' element={<Login />} />
         {/* <Route element={<ProtectedRoute />}>  */}
           <Route path='/homepage' element={<div><HomePage userId={userId} lat={lat} lng={lng}/> <NavBar /></div>}  />
-          <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng} userId={userId} getLocation={getLocation}/> <NavBar /></div>}/>
+          <Route path='/mappage' element={<div><MapPage userLat={lat} userLng={lng} userId={userId} watchLocation={watchLocation}/> <NavBar /></div>}/>
           <Route path='/feedpage' element={<div><FeedPage userId={userId}/> <NavBar /></div>}/>
           <Route path='/parades' element={<div><Parades /> <NavBar /></div>}/>
           <Route path='/eventpage' element={<div><EventPage userId={userId} getLocation={getLocation} lng={lng} lat={lat}/> <NavBar /></div>} />
