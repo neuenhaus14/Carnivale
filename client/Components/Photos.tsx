@@ -69,7 +69,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
     }
   };
 
-  
+
 
   //considering this put request as part of our post request due to the multer middleware
   const saveToDb = async () => {
@@ -114,30 +114,46 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
 
   return (
     <div className="App">
-    
+
       <Form.Label><b>Add a picture below!</b></Form.Label><br />
           {previewSource && (
           <img src={previewSource} alt="chosen"
           style={{width: '100%', height: '50vh'}}/>)}
-          <input  id="file" type="file" name="image"
-            onChange={handleSelectFile} multiple={false}
-          /><br />
+          <div>
+            <label htmlFor="environment">Take a pic!</label>
+            <input
+              type="file"
+              name="picture"
+              accept="image/*"
+              capture="environment"
+              onChange={handleSelectFile}
+            />
+            <label htmlFor="user">Take a Selfie!</label>
+            <input
+              type="file"
+              id="selfie"
+              name="selfie"
+              accept="image/*"
+              capture="user"
+              />
+            <input
+              type="submit"
+              value="Upload Selfie"
+              onChange={handleSelectFile}
+              />
+          </div>
+          <input
+          id="file"
+          type="file"
+          name="image"
+          onChange={handleSelectFile}
+          multiple={false}
+          />
+          <br />
           <Form.Label><b>Description is Mandatory</b></Form.Label>
           <Form.Control as="textarea" rows={1} placeholder="Please add a description"
             name="descinput" onChange={handleDescInput}/> <br />
-            <div><label htmlFor="environment">Capture environment:</label>
-  
-  <input
-    type="file"
-    id="environment"
-    capture="user" //environment could be wrong camera 
-    accept="video/*"
-  />
-  
-  <label htmlFor="user">Capture user:</label>
 
-  <input type="file" name="image" accept="image/*" capture="user"/>
-  <input type="submit" value="Upload"/></div>
           <Button variant="dark" onClick={uploadFile}> {loading ? "Saving..." : "Save"} </Button>
 
     </div>
