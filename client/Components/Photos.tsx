@@ -114,6 +114,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
 
   return (
     <div className="App">
+    
       <Form.Label><b>Add a picture below!</b></Form.Label><br />
           {previewSource && (
           <img src={previewSource} alt="chosen"
@@ -124,6 +125,19 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
           <Form.Label><b>Description is Mandatory</b></Form.Label>
           <Form.Control as="textarea" rows={1} placeholder="Please add a description"
             name="descinput" onChange={handleDescInput}/> <br />
+            <div><label htmlFor="environment">Capture environment:</label>
+  
+  <input
+    type="file"
+    id="environment"
+    capture="user" //environment could be wrong camera 
+    accept="video/*"
+  />
+  
+  <label htmlFor="user">Capture user:</label>
+
+  <input type="file" name="image" accept="image/*" capture="user"/>
+  <input type="submit" value="Upload"/></div>
           <Button variant="dark" onClick={uploadFile}> {loading ? "Saving..." : "Save"} </Button>
 
     </div>
