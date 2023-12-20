@@ -26,12 +26,13 @@ import EventPage from './EventPage';
 import NavBar from './NavBar';
 import Loading from './Loading';
 import Parades from './Parades';
+import { ThemeContext } from './Context';
 
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
-  const userRef = useRef(null);
+  const theme = 'light'
 
   const [lng, setLng] = useState(0);
   const [lat, setLat] = useState(0);
@@ -98,7 +99,6 @@ const App = () => {
   useEffect(() => {
     if (user) {
       getUser();
-      userRef.current = userData; // do we need this?
     }
   }, [isAuthenticated]);
 
@@ -128,13 +128,21 @@ const App = () => {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
-        <Route path='/' element={<Login />} />
+        <Route
+          path='/'
+          element={<Login />}
+        />
         {/* <Route element={<ProtectedRoute />}>  */}
         <Route
           path='/homepage'
           element={
             <div>
-              <HomePage userId={userId} lat={lat} lng={lng} /> <NavBar />
+              <HomePage
+                userId={userId}
+                lat={lat}
+                lng={lng}
+              />{' '}
+              <NavBar />
             </div>
           }
         />
@@ -202,7 +210,11 @@ const App = () => {
   );
 
   console.log('bottom of app', userId, lng, lat);
-  return <RouterProvider router={router} />;
+  return (
+    <ThemeContext.Provider value={theme}>
+        <RouterProvider router={router} />
+    </ThemeContext.Provider>
+  );
 };
 
 export default App;
