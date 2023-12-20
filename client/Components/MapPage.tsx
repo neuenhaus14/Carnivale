@@ -103,7 +103,11 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
-    modalTrigger()
+
+    setTimeout (() => {
+      modalTrigger()
+    }, 250)
+   // modalTrigger()
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
   }
 
