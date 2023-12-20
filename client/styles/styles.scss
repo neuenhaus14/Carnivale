@@ -11,7 +11,7 @@
 
 #map-direction-card{
   max-width: 8rem;
-  max-height: 8rem;
+  max-height: 9rem;
   margin: left;
 
   .card-body{
@@ -21,4 +21,9 @@
     padding-left: 2px;
   }
 
+}
+
+.map-accordion-body{
+  padding-top: 2px;
+  padding-bottom: 2px;
 }

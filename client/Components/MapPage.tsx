@@ -29,11 +29,12 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   const [filteredMarkers, setFilteredMarkers] = useState([])
   const [filterOn, setFilterOn] = useState<boolean>(false)
   const [userLocation, setUserLocation] = useState<[number, number]>([userLng, userLat]);
-  const [clickedPinCoords, setClickedPinCoords] = useState<[number, number]>([0, 0]);
+  const [clickedPinCoords, setClickedPinCoords] = useState<[number, number]>([0, 0])
   const [distance, setDistance] = useState(null);
   const [duration, setDuration] = useState(null);
   const [destinationCoords, setDestinationCoords] = useState<[number, number]>([0, 0]);
   const [routeDirections, setRouteDirections] = useState<any | null>(null);
+  const [showRouteDirections, setShowRouteDirections] = useState<boolean>(false)
   const [friends, setFriends] = useState([])
   const [events, setEvents] = useState([])
   const [showDirections, setShowDirections]= useState<boolean>(false);
@@ -61,6 +62,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     console.log('userId', userId)
   }, [setMarkers]);
 
+
+  // setTimeout (() => {
+  //  getLocation()
+  // }, 12000)
   
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
@@ -107,7 +112,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     setTimeout (() => {
       modalTrigger()
     }, 250)
-   // modalTrigger()
+
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
   }
 
@@ -184,6 +189,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       if (coordinates.length) {
         const routerFeature = makeRouterFeature([...coordinates])
         setRouteDirections(routerFeature)
+        setShowRouteDirections(true);
       }
     } catch (err) {
       console.error(err);
@@ -253,20 +259,20 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       <Accordion>
         <Accordion.Item eventKey="0">
         <Accordion.Header>Filter Pins</Accordion.Header>  
-          <Accordion.Body>
-          {/* <div className= 'card'>
-            <div className="card-body"> */}
+          <Accordion.Body className="map-accordion-body">
+            <center>
             <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
               <button type="button" value="isFree" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
               <button type="button" value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
               <button type="button" value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
-              <button type="button" value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button>
+              <button type="button" value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button> 
+            </div>
+            <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
               <button type="button" value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
               <button type="button" value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
               <button type="button" value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button>
             </div>
-            {/* </div>
-          </div> */}
+            </center>
           </Accordion.Body>
         </Accordion.Item>
     </Accordion>
@@ -339,7 +345,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           ))
         }
       </div>
-      {routeDirections && (
+      {showRouteDirections ? (
           <Source id="line1" type="geojson" data={routeDirections}>
             <Layer
               id="routerLine01"
@@ -350,7 +356,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
               }}
             />
           </Source>
-        )}
+        ): null}
       <NavigationControl />
       {showFriendPopup ? (
           <>
@@ -370,9 +376,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       <div id="map-direction-card" className='card w-35'>
         {showDirections ? (
           <div className= 'card-body'>
+            <span> Walking Directions: </span> <br />
             <span> Time to Location: </span> <br /><span><b>{humanizedDuration(duration)}</b></span> <br />
             <span> Distance to Location:</span> <br /><span> <b>{distance} miles</b></span><br />
-            <button type="button" className="btn btn-primary btn-sm" onClick={() => setShowDirections(false)}>Close</button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
         </div>
         ) 
         : null }      
