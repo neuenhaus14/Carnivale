@@ -58,9 +58,20 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
   }
 
 
+  function handleInput(e: any) {
+    setComment(e.target.value);
+    console.log(comment.length);
+  }
+
+  function handleSelect(k: string){
+    setKey(k);
+    getPosts(k);
+  }
+
   const handleSubmit = async() => {
     try {
       axios.post(`/api/home/${userId}`, { comment });
+      setComment('');
     } catch (err) {
       console.error(err);
     } finally {
@@ -113,10 +124,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
       <Row>
         <Tabs
           activeKey={key}
-          onSelect={(k) => {
-            setKey(k);
-            getPosts(k);
-          }}
+          onSelect={handleSelect}
         >
           <Tab
             eventKey="posts"
@@ -168,10 +176,14 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
           <Form>
             <Form.Group>
               <Form.Label>COMMENT</Form.Label>
-              <Form.Control onChange={(e) => setComment(e.target.value)} />
+              <Form.Control
+              onChange={handleInput}
+              value={comment}
+               />
               <Button
                 variant="primary"
-                onClick={() => handleSubmit()}
+                onClick={handleSubmit}
+                disabled={comment.length <= 0}
               >
                 SEND!!!
               </Button>
