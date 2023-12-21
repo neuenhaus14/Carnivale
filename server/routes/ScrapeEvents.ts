@@ -16,7 +16,7 @@ async function start(userDate: string) {
   const url = `https://www.wwoz.org/calendar/livewire-music?date=${userDate}`
 
   try {
-    const response = await axios.get(url); 
+    const response = await axios.get(url);
     const htmlString = response.data;
     const $ = cheerio.load(htmlString); //actual scraping function
       //content I'm receiving from scaping. Pointing to the h3 container and am returning all a tags. the replace and trim are to clean up the data a little bit
@@ -54,17 +54,27 @@ async function start(userDate: string) {
   for (let i = 0; i < day.length; i++) {
     const test = day[i].split(' at ')
     date.push(test[0])
-    time.push(test[1].replace(/[amp]/g, '').trim()) 
+    time.push(test[1].replace(/[amp]/g, '').trim())
   }
   //array for proper time numbers for next for loop
   const proper = []
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < day.length; i++) {
     proper.push(new Date(new Date(`${date[i]} 2023 ${time[i]}:00`)))
   }
   //finally, array to hold individual objects to be added to db
-  const mainArr = []
+  //console.log('date', date.length, 'act', act.length, 'location', location.length, 'proper', proper.length, 'day', day.length)
+//   const coords = []
+//   for (let i = 0; i < 1; i++) {
+//     const getCoors = await axios.post(`${location[i]} New Orleans La`)
+//     const coor = getCoors.data
+//     console.log(coor)
+//     coords.push(coor)
+//       }
+// console.log('coords', coords[0])
+console.log(location[0])
 
-  for (let i = 0; i < 7; i++) {
+  const mainArr = []
+  for (let i = 0; i < day.length; i++) {
     mainArr.push({
       name: act[i],
       startTime: proper[i],
@@ -83,16 +93,16 @@ async function start(userDate: string) {
       ownerId: null
     })
   }
-  console.log(mainArr)
+  //console.log(mainArr)
   //conditional logic to prevent duplicates. Find or Create
   for (let i = 0; i < mainArr.length; i++) {
     const rand = Math.floor(Math.random() * mainArr.length)
     Event.findOrCreate({where: mainArr[i]})
     .then(() => {
-      console.log('Successfully written to Event Database')
+      console.log("Successfully written to Event Database")
     })
     .catch((err) => {
-      console.error('Failed to write to event db', err)
+      console.error("Failed to write to event db", err)
     })
   }
   return {
@@ -101,25 +111,11 @@ async function start(userDate: string) {
   }
 } catch (error) {
   throw new Error(
-    `Error scraping parade info for ${error.message}`
+    `Error scraping parade info for ${error}`
   );
 }
 }
-// console.log('outside',venueTagContent,
-// info )
-  // const names = await page.evaluate(() => {
-  //   return Array.from(document.querySelectorAll('.truncate a')).map(e => ({
-  //     name: e.textContent
-  //   })
-  //     )
-  // })
-  // const info = await page.evaluate(() => {
-  //   return Array.from(document.querySelectorAll('.col-xs-10.calendar-info p')).map(e => ({
-  //     date: e.textContent
-  //   })
-  //     )
-  // })
-  Gigs.get('/gigs-list/:date', async (req: Request, res: Response) => {
+  Gigs.get("/gigs-list/:date", async (req: Request, res: Response) => {
     const {date} = req.params;
     try {
       const scrape = await start(date);
@@ -130,109 +126,22 @@ async function start(userDate: string) {
     }
   });
 
-  //console.log (venues, info)//pluralize
-  // const day = []
-  // // const date = []
-  // const act = []
-  // const time = []
-  // const location = []
-  
-//   for (let i = 0; i < info.length; i++) {
-//     const iso = info[i].date
-//     if (i % 2 === 0) {
-//     act.push(iso.replace(/\s\s+/g, ' ').trim())
-//     } else {
-//     day.push(iso.replace(/\s\s+/g, ' ').trim())
-//     }
-//   }
-  
-//   for (let i = 0; i < act.length; i++) {
-//     const test = day[i].split(' at ')
-//     date.push(test[0].trim())
-//     time.push(parseInt(test[1].replace(/[amp]/g, '').trim())) //need to remove : and am
-//   }
-  
-//   for (let i = 0; i < venues.length; i++) {
-//     const iso = venues[i].venue
-//   location.push(iso.replace(/\s\s+/g, ' ').trim())
-//   }
-  
-//   const proper = []
-//   // const randInt = Math.floor(Math.random() * venues.length)
-  
-//   for (let i = 0; i < 7; i++) {
-//     proper.push(new Date(`${date[i]} 2023 ${time[i]}:00`))
-//     console.log(time[i])
-//     console.log('proper', proper)
-//   }
-//   const mainArr = []
-//   //console.log(date)
-//   for (let i = 0; i < 7; i++) {
-//     mainArr.push({
-//       name: act[i],
-//       startTime: proper[i],
-//       endTime: new Date(`${date[i]} 2023 11:59`),
-//       description: act[i],
-//       longitude: null,
-//       latitude: null,
+  Gigs.post('/events/getCoordinatesFromAddress', async( req: Request, res: Response) => {
+    const {address} = req.body
+    try {
+      console.log('address success', res)
+    } catch (error) {
+      console.error(error.message)
+      res.status(500).json({ error: "Get coords problem" });
+    }
+  });
+ //next attempting to get coordinates from the location
+//   let coordsArr = []
+//   for (let i = 0; i < location.length; i++) {
+//   await axios.post('/getCoordinatesFromAddress', async( req: Request, res: Response) => {
+//     const {
 //       address: location[i],
-//       link: url,
-//       system: true,
-//       //invitees: [],
-//       invitedCount: 0,
-//       attendingCount: 0,
-//       imageUrl: null,
-//       upvotes: 0,
-//       ownerId: null
-//     })
-//   }
-//   //conditional logic to prevent duplicates. Find or Create
-
-//   for (let i = 0; i < mainArr.length; i++) {
-//     Event.findOrCreate({where: mainArr[i]})
-//     .then(() => {
-//       console.log('Successfully written to Event Database')
-//     })
-//     .catch((err) => {
-//       console.error('Failed to write to event db', err)
-//     })
-//   }
-// //fs.writeFile('eventScrapeVenue.json', JSON.stringify(venues))
-// // fs.writeFile('eventScrapeName.json', JSON.stringify(names))
-// //fs.writeFile('eventScrapeDate.json', JSON.stringify(info))
-
-
-//   await browser.close()
-
-
-//start()
-
-
-
-// async function start() {
-//   const browser = await puppeteer.launch()
-//   const page = await browser.newPage()
-//   const url = `https://www.wwoz.org/calendar/livewire-music?date=2023-12-21`
-//   await page.goto(url)
-
-//   const venues = await page.evaluate(() => {
-//     return Array.from(document.querySelectorAll('h3 a')).map(e => ({
-//       venue: e.textContent
-//     })
-//       )
-//   })
-//   // const names = await page.evaluate(() => {
-//   //   return Array.from(document.querySelectorAll('.truncate a')).map(e => ({
-//   //     name: e.textContent
-//   //   })
-//   //     )
-//   // })
-//   const info = await page.evaluate(() => {
-//     return Array.from(document.querySelectorAll('.col-xs-10.calendar-info p')).map(e => ({
-//       date: e.textContent
-//     })
-//       )
-//   })
-
-
+//     } = req.body.loc
+//   });
+// }
 export default Gigs;
