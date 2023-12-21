@@ -136,13 +136,15 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
             title='All'
           >
             {posts
-              ? posts.map((item: any, index: number) => (
-                  <PostCard
-                    key={`${item.id} + ${index}`}
-                    post={item}
-                    userId={userId}
-                  />
-                ))
+              ? posts
+                  .sort((a, b) => b.updatedAt - a.updatedAt)
+                  .map((item: any, index: number) => (
+                    <PostCard
+                      key={`${item.id} + ${index}`}
+                      post={item}
+                      userId={userId}
+                    />
+                  ))
               : ''}
           </Tab>
           <Tab
