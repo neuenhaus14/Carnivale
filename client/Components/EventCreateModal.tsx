@@ -87,13 +87,13 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({
     }
   };
 
-  const toggleEventIsUpdated = async () => {
-    if (friendsToInvite.length > 0) {
-      setIsEventUpdated(true);
-    } else {
-      setIsEventUpdated(false);
-    }
-  }
+  // const toggleEventIsUpdated = async () => {
+  //   if (friendsToInvite.length > 0) {
+  //     setIsEventUpdated(true);
+  //   } else {
+  //     setIsEventUpdated(false);
+  //   }
+  // }
   // const sendFriendInvites = () => {
   //   try {
   //     const inviteResponse = axios.post('/api/events/inviteToEvent', {
@@ -220,8 +220,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   // new/old event modal
   useEffect(() => {
-    //console.log('inside Modal. isNewEvent', isNewEvent, 'selectedEvent', selectedEvent)
-
     // user event edit mode
     if (isNewEvent === false) {
       console.log('inNewEvent', isNewEvent);
@@ -249,7 +247,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
     // parade event create mode
     else if (isNewEvent === true && eventType === 'parade') {
-      console.log('eventType', eventType, 'SelectedEvent', selectedEvent);
       setEventName(selectedEvent.title);
       setEventAddress(selectedEvent.location);
       setCoordinatesFromAddress(selectedEvent.location);
@@ -272,7 +269,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     const timeRangeValue = Number(time.slice(0, 5).replace(':', '.'));
 
     if (startOrEnd === 'start') {
-      // console.log(date, time, timeRangeValue, startOrEnd);
       setEventStartDate(date);
       setEventStartTime(timeRangeValue);
     } else if (startOrEnd === 'end') {
@@ -484,7 +480,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     setCoordinatesFromAddress(value);
   };
 
-  console.log('rock bottom, friendsToInvite', friendsToInvite, 'isEventUpdated', isEventUpdated);
+  console.log('rock bottom, isEventUpdated',isEventUpdated,', isNewEvent', isNewEvent);
   return (
     <Modal show={showCreateModal} onHide={handleClose}>
       <Modal.Header>
@@ -493,7 +489,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
             ? eventName
             : eventName
             ? eventName
-            : 'Create event'}
+            : 'Drop a pin for your event'}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

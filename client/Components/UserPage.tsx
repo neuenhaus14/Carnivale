@@ -5,7 +5,7 @@ import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
 import { Button } from 'react-bootstrap';
 
-//                                     add userId as prop to get it from App
+//                              add userId as prop to get it from App
 const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, }) => {
 
 
@@ -81,12 +81,12 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, }) => {
   useEffect(() => {
     // getLocation() DON'T NEED THIS, IT'S GETTING PASSED IN
 
-    // for updating events on userpage when 
+    // for updating events on userpage when
     // responding to invites or inviting other users
 
     // TODO: I think isNewEvent gets flipped
     // to false from the eventCreateModal,
-    // so isNewEvent should realistically 
+    // so isNewEvent should realistically
     // always be false. This uE only
     // runs on the first page load, right?
     if (isNewEvent === false) {
@@ -96,7 +96,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, }) => {
       getEventsInvited();
       getFriendRequests();
     }
-  }, [userId])
+  }, [userId, isNewEvent])
 
   // ALL RENDERED DATA ARE IN LIST ITEMS
   let userFriendsItems = null;

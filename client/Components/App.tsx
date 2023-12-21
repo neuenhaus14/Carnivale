@@ -196,7 +196,12 @@ const App = () => {
           path='/parades'
           element={
             <div>
-              <Parades /> <NavBar />
+              <Parades
+              userId={userId}
+              lng={lng}
+              lat={lat}
+
+              /> <NavBar />
             </div>
           }
         />

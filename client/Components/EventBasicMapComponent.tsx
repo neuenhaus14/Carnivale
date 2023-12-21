@@ -1,23 +1,38 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { Map, Marker, NavigationControl, Layer, Source } from 'react-map-gl';
+import {
+  Map,
+  Marker,
+  NavigationControl,
+  GeolocateControl,
+  Layer,
+  Source,
+} from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface EventBasicMapComponentProps {
-  longitude: number,
-  latitude: number
+  longitude: number;
+  latitude: number;
 }
 
-// This map component is for displaying a pin, 
+// This map component is for displaying a pin,
 // it does not have functionality for moving the pin, or
 // setting the location
 
-const EventBasicMapComponent: React.FC<EventBasicMapComponentProps>= ({ latitude, longitude}) => {
-
+const EventBasicMapComponent: React.FC<EventBasicMapComponentProps> = ({
+  latitude,
+  longitude,
+}) => {
   const markerClicked = () => {
     window.alert('the marker was clicked');
   };
 
   const mapRef = useRef(null);
+
+  // in tandem, these load the userLoc marker immediately
+  const geoControlRef = useRef<mapboxgl.GeolocateControl>();
+  useEffect(() => {
+    geoControlRef.current?.trigger();
+  }, [geoControlRef.current, latitude, longitude]);
 
   const [viewState, setViewState] = useState({
     latitude,
@@ -31,16 +46,29 @@ const EventBasicMapComponent: React.FC<EventBasicMapComponentProps>= ({ latitude
         ref={mapRef}
         {...viewState}
         onMove={(evt) => setViewState(evt.viewState)}
-        mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
+        mapboxAccessToken='pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw'
         style={{ position: 'relative', width: '100%', height: '25vh' }}
-        mapStyle="mapbox://styles/mapbox/streets-v9"
+        mapStyle='mapbox://styles/mapbox/streets-v9'
       >
-        <Marker onClick={() => markerClicked()} longitude={longitude} latitude={latitude} anchor="bottom"> 
-        </Marker>
-        <NavigationControl />
+        <Marker
+          onClick={() => markerClicked()}
+          longitude={longitude}
+          latitude={latitude}
+          anchor='bottom'
+        ></Marker>
+        <GeolocateControl
+          positionOptions={{ enableHighAccuracy: true }}
+          // prevents zooming directly to user loc
+          // map center stays on selectedEvent
+          trackUserLocation={false}
+          showUserHeading={true}
+          showUserLocation={true}
+          showAccuracyCircle={false}
+          ref={geoControlRef}
+        />
       </Map>
     </div>
-  )
-}
+  );
+};
 
 export default EventBasicMapComponent;
