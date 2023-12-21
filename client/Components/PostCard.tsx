@@ -1,22 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import ShareModal from "./ShareModal";
+import { IoArrowUpCircle, IoArrowDownCircle } from "react-icons/io5";
 
 dayjs.extend(relativeTime);
 
-const PostCard = (props: { post: any; userId: number }) => {
-  const { post, userId } = props;
+interface Post {
+  id: number;
+  comment?: string;
+  ownerId: number;
+  photoURL?: string;
+  description?: string;
+  createdAt: string;
+  upvotes: number;
+}
+
+interface PostCardProps {
+  post: Post;
+  userId: number;
+}
+
+const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
   const [owner, setOwner] = useState("");
+  const [commentVotingStatus, setCommentVotingStatus] = useState<
+    "upvoted" | "downvoted" | "none"
+  >("none");
 
   const getOwner = async () => {
     try {
       const { data } = await axios.get(`api/home/post/${post.ownerId}`);
-      //TODO: change to name
-      setOwner(data.email);
+      setOwner(data.firstName + " " + data.lastName);
     } catch (err) {
       console.error(err);
     }
@@ -31,14 +50,27 @@ const PostCard = (props: { post: any; userId: number }) => {
             : `upvote-photo/${userId}/${post.id}`
         }`
       );
+
+      if (commentVotingStatus !== "upvoted") {
+        setCommentVotingStatus("upvoted");
+        // toast("🎭Upvoted successfully!🎭", {
+        //   position: "top-right",
+        //   autoClose: 5000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        //   theme: "light",
+        // });
+      }
     } catch (err) {
-      console.error(err);
+      toast.warning("You've already upvoted this post!");
     }
   };
 
   const handleDownvote = async (type: string) => {
     try {
-      console.log(`great job:${post.id}`);
       await axios.post(
         `/api/feed/${
           type === "comment"
@@ -46,10 +78,27 @@ const PostCard = (props: { post: any; userId: number }) => {
             : `downvote-photo/${userId}/${post.id}`
         }`
       );
+
+      if (commentVotingStatus !== "downvoted") {
+        setCommentVotingStatus("downvoted");
+        // toast.error("Downvoted!", {
+        //   position: "top-right",
+        //   autoClose: 5000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        //   theme: "light",
+        // });
+
+        if (post.upvotes - 1 <= -5) {
+          toast.error("Post deleted due to too many downvotes!");
+        }
+      }
     } catch (err) {
-      console.error(err);
+      toast.warning("You've already downvoted this post!");
     }
-    console.log(`Boo:${post.id}`);
   };
 
   useEffect(() => {
@@ -57,43 +106,118 @@ const PostCard = (props: { post: any; userId: number }) => {
   }, []);
 
   return (
-    <Card>
-      {post.comment ? (
-        <Card.Body>
-          <Card.Text>
-            {post.comment} - {owner}:{" "}
-            {dayjs(post.createdAt.toString()).fromNow()}
-          </Card.Text>
-          <ShareModal
-            postId={post.id}
-            userId={userId}
-            postType={"comment"}
-          />
-          Upvotes: {post.upvotes}
-          <Button onClick={() => handleUpvote("comment")}>Upvote</Button>
-          <Button onClick={() => handleDownvote("comment")}>Downvote</Button>
-        </Card.Body>
-      ) : (
-        <Card.Body>
-          <Card.Img
-            variant="top"
-            src={post.photoURL}
-          />
-          <Card.Text>
-            {post.description} - {owner}:{" "}
-            {dayjs(post.createdAt.toString()).fromNow()}
-          </Card.Text>
-          <ShareModal
-            postId={post.id}
-            userId={userId}
-            postType={"photo"}
-          />
-          Upvotes: {post.upvotes}
-          <Button onClick={() => handleUpvote("photo")}>Upvote</Button>
-          <Button onClick={() => handleDownvote("photo")}>Downvote</Button>
-        </Card.Body>
-      )}
-    </Card>
+    <>
+      <Card>
+        {post.comment ? (
+          <Card.Body>
+            <Card.Text>
+              {post.comment} - {owner}:{" "}
+              {dayjs(post.createdAt.toString()).fromNow()}
+            </Card.Text>
+            <ShareModal postId={post.id} userId={userId} postType={"comment"} />
+
+            <button
+              style={{
+                border: "none",
+                cursor: "pointer",
+                outline: "none",
+                boxShadow: "none",
+                background: "transparent",
+              }}
+              onClick={() => handleUpvote("comment")}
+              disabled={commentVotingStatus === "upvoted"}
+            >
+              <IoArrowUpCircle
+                style={{
+                  color: commentVotingStatus === "upvoted" ? "green" : "black",
+                  fontSize: "30px",
+                }}
+              />
+            </button>
+            <span style={{ margin: "0 5px" }}>{post.upvotes}</span>
+            <button
+              style={{
+                border: "none",
+                cursor: "pointer",
+                outline: "none",
+                boxShadow: "none",
+                background: "transparent",
+              }}
+              onClick={() => handleDownvote("comment")}
+              disabled={commentVotingStatus === "downvoted"}
+            >
+              <IoArrowDownCircle
+                style={{
+                  color: commentVotingStatus === "downvoted" ? "red" : "black",
+                  fontSize: "30px",
+                }}
+              />
+            </button>
+          </Card.Body>
+        ) : (
+          <Card.Body>
+            <Card.Img variant="top" src={post.photoURL} />
+            <Card.Text>
+              {post.description} - {owner}:{" "}
+              {dayjs(post.createdAt.toString()).fromNow()}
+            </Card.Text>
+            <ShareModal postId={post.id} userId={userId} postType={"photo"} />
+
+            <button
+              style={{
+                border: "none",
+                cursor: "pointer",
+                outline: "none",
+                boxShadow: "none",
+                background: "transparent",
+              }}
+              onClick={() => handleUpvote("photo")}
+              disabled={commentVotingStatus === "upvoted"}
+            >
+              <IoArrowUpCircle
+                style={{
+                  color: commentVotingStatus === "upvoted" ? "green" : "black",
+                  fontSize: "30px",
+                }}
+              />
+            </button>
+            <span style={{ margin: "0 5px" }}>{post.upvotes}</span>
+            <button
+              style={{
+                border: "none",
+                cursor: "pointer",
+                outline: "none",
+                boxShadow: "none",
+                background: "transparent",
+              }}
+              onClick={() => handleDownvote("photo")}
+              disabled={commentVotingStatus === "downvoted"}
+            >
+              <IoArrowDownCircle
+                style={{
+                  color: commentVotingStatus === "downvoted" ? "red" : "black",
+                  fontSize: "30px",
+                }}
+              />
+            </button>
+          </Card.Body>
+        )}
+      </Card>
+
+      {/* Toast containers */}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </>
   );
 };
 
