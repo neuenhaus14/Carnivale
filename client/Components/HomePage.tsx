@@ -72,7 +72,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
     try {
       const { data } = await axios.get(`/api/home/${e}`);
       setPosts(data);
-      console.log(theme, user);
+      console.log(theme);
     } catch (err) {
       console.error(err);
     }

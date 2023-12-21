@@ -1,22 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
 import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer, Popup } from 'react-map-gl';
+import { Card, Button, Accordion } from 'react-bootstrap'
 import PointAnnotation from 'react-map-gl'
 import { useSearchParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
+import { getSearchParamsForLocation } from "react-router-dom/dist/dom";
+import { watch } from "fs";
 
 
 interface MapProps {
   userLat: number
   userLng: number
   userId: number
-  getLocation: any
+  watchLocation: any
 }
 
-const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) => {
+const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) => {
+  watchLocation();
+
   const mapRef = useRef(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -28,11 +33,12 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   const [filteredMarkers, setFilteredMarkers] = useState([])
   const [filterOn, setFilterOn] = useState<boolean>(false)
   const [userLocation, setUserLocation] = useState<[number, number]>([userLng, userLat]);
-  const [clickedPinCoords, setClickedPinCoords] = useState<[number, number]>([0, 0]);
+  const [clickedPinCoords, setClickedPinCoords] = useState<[number, number]>([0, 0])
   const [distance, setDistance] = useState(null);
   const [duration, setDuration] = useState(null);
   const [destinationCoords, setDestinationCoords] = useState<[number, number]>([0, 0]);
   const [routeDirections, setRouteDirections] = useState<any | null>(null);
+  const [showRouteDirections, setShowRouteDirections] = useState<boolean>(false)
   const [friends, setFriends] = useState([])
   const [events, setEvents] = useState([])
   const [showDirections, setShowDirections]= useState<boolean>(false);
@@ -57,17 +63,17 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     getPins();
     getFriends();
     getEvents();
-    console.log('userId', userId)
-    getLocation()
-    console.log('get Location has been called in useEffect')
   }, [setMarkers]);
 
+
+  // setTimeout (() => {
+  //  getLocation()
+  // }, 12000)
   
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
     geoControlRef.current?.trigger();
-    getLocation();
   }, [geoControlRef.current]);
 
 
@@ -104,7 +110,11 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
-    modalTrigger()
+
+    setTimeout (() => {
+      modalTrigger()
+    }, 250)
+
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
   }
 
@@ -181,6 +191,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       if (coordinates.length) {
         const routerFeature = makeRouterFeature([...coordinates])
         setRouteDirections(routerFeature)
+        setShowRouteDirections(true);
       }
     } catch (err) {
       console.error(err);
@@ -246,28 +257,26 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   return (
     <div>
       <h1>Map Page!</h1>
-      {/* <div className="accordion" id="map-filter-accordion">
-        <div className="map-accordion-item">
-          <h2 className="map-accordion-header" id="headingOne">
-            <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              Filter Pins
-            </button>
-          </h2>
-          <div id="collapseOne" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#map-filter-accordion">
-            <div className="accordion-body"> */}
-              <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
-                <button type="button" value="isFree" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
-                <button type="button" value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
-                <button type="button" value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
-                <button type="button" value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button>
-                <button type="button" value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
-                <button type="button" value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
-                <button type="button" value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button>
-              </div>
-            {/* </div>
-          </div>
-        </div>
-      </div>   */}
+      <Accordion>
+        <Accordion.Item eventKey="0">
+        <Accordion.Header>Filter Pins</Accordion.Header>  
+          <Accordion.Body className="map-accordion-body">
+            <center>
+            <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
+              <button type="button" value="isFree" className="btn" style={{ borderColor: "#53CA3C", color: "#53CA3C" }} onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
+              <button type="button" value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
+              <button type="button" value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
+              <button type="button" value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button> 
+            </div>
+            <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
+              <button type="button" value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
+              <button type="button" value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
+              <button type="button" value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button>
+            </div>
+            </center>
+          </Accordion.Body>
+        </Accordion.Item>
+    </Accordion>
       { showModal ? 
         <PinModal 
           userId={userId}
@@ -337,7 +346,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           ))
         }
       </div>
-      {routeDirections && (
+      {showRouteDirections ? (
           <Source id="line1" type="geojson" data={routeDirections}>
             <Layer
               id="routerLine01"
@@ -348,7 +357,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
               }}
             />
           </Source>
-        )}
+        ): null}
       <NavigationControl />
       {showFriendPopup ? (
           <>
@@ -368,9 +377,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       <div id="map-direction-card" className='card w-35'>
         {showDirections ? (
           <div className= 'card-body'>
+            <span> <b>Walking Directions: </b></span> <br />
             <span> Time to Location: </span> <br /><span><b>{humanizedDuration(duration)}</b></span> <br />
             <span> Distance to Location:</span> <br /><span> <b>{distance} miles</b></span><br />
-            <button type="button" className="btn btn-primary btn-sm" onClick={() => setShowDirections(false)}>Close</button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
         </div>
         ) 
         : null }      

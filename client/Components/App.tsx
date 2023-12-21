@@ -50,20 +50,7 @@ const App = () => {
     }
   };
 
-  // this get coordinates from the browser
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      return navigator.geolocation.getCurrentPosition(
-        showPosition,
-        (error) => console.log(error),
-        { enableHighAccuracy: true }
-      );
-    } else {
-      console.log('Geolocation is not supported by this browser');
-      return null;
-    }
-  };
-
+  
   // this sends coordinates to socket
   const showPosition = (position: any) => {
     //console.log(position)
@@ -88,6 +75,40 @@ const App = () => {
     });
   };
 
+  // this get coordinates from the browser
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      return navigator.geolocation.getCurrentPosition(
+        showPosition,
+        (error) => console.log(error),
+        { enableHighAccuracy: true }
+      );
+    } else {
+      console.log('Geolocation is not supported by this browser');
+      return null;
+    }
+  };
+
+  let watchId: number;
+  const watchLocation = (): void => {
+    if (navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition(showPosition, error => console.log(error), { enableHighAccuracy: true })
+      console.log(`GeoLoc is watching ${userId} Location`)
+    } else {
+      console.log("Geolocation is not supported by this browser")
+      return null
+    }
+  }
+  // watchLocation();
+
+  // const stopWatchingLocation = (): void => {
+  //   if (watchId !== undefined) {
+  //     navigator.geolocation.clearWatch(watchId)
+  //     console.log('Stopped watching location')
+  //   }
+  // };
+
+
   // The two useEffects below both run on the first load,
   // but have conditions to check if the next operation
   // should execute.
@@ -107,8 +128,10 @@ const App = () => {
     if (userId !== null) {
       console.log('userRef.current is not null');
       getLocation();
+
     }
   }, [userId]);
+
 
   // useEffect(() => {
   //   // this coords is data.dataValues from the database as a response to the emit
@@ -154,7 +177,7 @@ const App = () => {
                 userLat={lat}
                 userLng={lng}
                 userId={userId}
-                getLocation={getLocation}
+                watchLocation={watchLocation}
               />{' '}
               <NavBar />
             </div>
