@@ -2,25 +2,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer, Popup } from 'react-map-gl';
 import { Card, Button, Accordion } from 'react-bootstrap'
-import PointAnnotation from 'react-map-gl'
 import { useSearchParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
-import { getSearchParamsForLocation } from "react-router-dom/dist/dom";
-import { watch } from "fs";
+
+import { io } from 'socket.io-client';
+const socket = io();
 
 
 interface MapProps {
   userLat: number
   userLng: number
   userId: number
-  watchLocation: any
+  getLocation: any
 }
 
-const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) => {
-  watchLocation();
+const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) => {
+  // watchLocation();
 
   const mapRef = useRef(null);
 
@@ -61,14 +61,18 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
   //loads pins immediately on page render
   useEffect(() => {
     getPins();
-    getFriends();
+    //getFriends();
     getEvents();
   }, [setMarkers]);
 
 
   // setTimeout (() => {
   //  getLocation()
-  // }, 12000)
+  //  if(showDirections){
+  //    createRouterLine(selectedRouteProfile)
+  //    console.log('createRouterLine called in setTimout')
+  //  }
+  // }, 240000)
   
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
@@ -99,15 +103,54 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
   }
 
   // gets friends from the database
-  const getFriends = async () => {
-    try {
-      const friends = await axios.get(`/api/friends/getFriends/${userId}`)
-      setFriends(friends.data)
-    } catch (err)  {
-      console.error(err)
-    }
-  }
+  // const getFriends = async () => {
+  //   try {
+  //     const friends = await axios.get(`/api/friends/getFriends/${userId}`)
+  //     setFriends(friends.data)
+  //   } catch (err)  {
+  //     console.error(err)
+  //   }
+  // }
 
+  useEffect (() => {
+    socket.emit("getFriends:read", {userId})
+    console.log('socket emitted from map page')
+
+    const handleGetFriends = (allFriendsUsers: any) => {
+      console.log('Got friends from socket', allFriendsUsers)
+      setFriends(allFriendsUsers)
+    };
+  
+    socket.on("getFriends:send", handleGetFriends)
+  
+    return () => {
+      socket.off("getFriends:send", handleGetFriends)
+    };
+
+  }, []);
+
+ 
+
+  // useEffect (() => {
+  //   socket.on("otherUserLocs", (otherUserLocs) => {
+  //     console.log('Got friends from socket', otherUserLocs)
+  //     setFriends(otherUserLocs)
+  //   })
+  // })
+
+  // useEffect (() => {
+  //   socket.on("otherUserLocs", (otherUserLocs) => {
+  //     console.log('Got friends from socket', otherUserLocs)
+  //     setFriends(otherUserLocs)
+  //   })
+  // }, [setMarkers])
+
+  // socket.on("otherUserLocs", (otherUserLocs) => {
+  //   console.log('Got friends from socket', otherUserLocs)
+  //   setFriends(otherUserLocs)
+  // })
+
+  
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
 
@@ -135,7 +178,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
         setShowDirections(true);
         modalTrigger()
       } catch (err)  {
-        console.error(err); 
+        // console.error(err); 
         try {
           const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
           console.log('clickedFriend', data);
@@ -169,7 +212,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
 
  // handles the route line creation by making the response from the directions API into a geoJSON 
  // which is the only way to use it in the <Source> tag (displays the "route/line")
-  const createRouterLine = async (userLocation: [number, number], routeProfile: string,): Promise<void> => {
+  const createRouterLine = async (routeProfile: string,): Promise<void> => {
     console.log('userCoords', userLng, userLat)
     const startCoords = `${userLng},${userLat}`
     const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`
@@ -294,7 +337,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
         ref={mapRef}
         {...viewState}
         onMove={(e) => setViewState(e.viewState)}
-        onClick={(e) => {dropPin(e); createRouterLine(userLocation, selectedRouteProfile)}}
+        onClick={(e) => {dropPin(e); createRouterLine(selectedRouteProfile)}}
         mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
         style={{ position: 'relative', bottom: '0px', width: '100vw', height: "50vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
@@ -359,7 +402,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
           </Source>
         ): null}
       <NavigationControl />
-      {showFriendPopup ? (
+      {/* {showFriendPopup ? (
           <>
             {friends.map((friend) => (
               <Popup
@@ -373,7 +416,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
               </Popup>
             ))}
           </>
-        ) : null} 
+        ) : null}  */}
       <div id="map-direction-card" className='card w-35'>
         {showDirections ? (
           <div className= 'card-body'>

@@ -77,8 +77,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
   }
   
   const pinCategory = (category: string) => {
-    console.log(category)
-
+    
     const categoryMapping: PinCategoryMapping = {
       isFree:"Free Toilet",
       isToilet: "Pay for Toilet",

@@ -4,6 +4,7 @@ import "./db"; //importing not using. so it does the same thing
 import { auth, requiresAuth } from 'express-openid-connect';
 import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER } from './config';
 import { Server } from 'socket.io';
+import { Op, Model } from "sequelize";
 import PinRoutes from './routes/Pins';
 import http from 'http'
 import cors from 'cors'
@@ -17,8 +18,9 @@ import FeedRoutes from "./routes/Feed";
 import ImageRouter from "./routes/PhotoUpload";
 import ParadesRoutes from "./routes/Parades";
 import GigsRoutes from "./routes/ScrapeEvents";
-import { User } from './db/index'
+import { User, Join_friend } from './db/index'
 import { Sequelize } from "sequelize";
+import { Socket } from "dgram";
 //start()
 //this is declaring db as an obj so it can be ran when server starts
 //this is running db/index.ts
@@ -73,6 +75,8 @@ app.get("/auth", (req, res) => {
 io.on('connection', (socket: any) => {
   console.log('a user connected');
   socket.on('userLoc', (userLoc: any) => {
+    // console.log('userLoc', userLoc)
+    // socket.broadcast.emit('otherUserLocs', userLoc)
     console.log('userLoc', userLoc.longitude, userLoc.latitude, userLoc.id)
       User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: userLoc.id}})
       .then(() => {
@@ -83,6 +87,36 @@ io.on('connection', (socket: any) => {
         //   })
       )
       .catch((err) => console.error(err))
+  })
+
+  socket.on("getFriends:read", (user: any) => {
+    const userId = user.userId
+
+    Join_friend.findAll({
+        where: {
+          [Op.or]: [{ requester_userId: userId },{ recipient_userId: userId } ],
+          isConfirmed: true, 
+        }
+      })
+      .then((allFriendships: Array<Model>) => {
+        if (allFriendships.length > 0) {
+          const allFriendsIds = allFriendships.map((friendship: RelationshipModel) => {
+            return friendship.requester_userId === Number(userId) ? friendship.recipient_userId : friendship.requester_userId
+          });
+          return User.findAll({where: {id: {[Op.or]: [...allFriendsIds]}}})
+        } else {
+          return []
+        }  
+      })
+      .then((allFriendsUsers: Array<Model>) => {
+          if (allFriendsUsers.length > 0){
+          console.log('sending back friends from server')  
+          socket.emit("getFriends:send", allFriendsUsers)
+        }
+      })
+    .catch((err) => {
+      console.error("SERVER ERROR: could not DELETE friendship", err);
+    }) 
   })
 
   socket.on('disconnect', () => {
@@ -114,3 +148,12 @@ server.listen(port, () => {
 // this inits the type for req/res for typescript
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+interface RelationshipModel extends Model {
+  id: number,
+  isConfirmed: boolean,
+  requester_userId: number,
+  recipient_userId: number,
+  createdAt: Date,
+  updatedAt: Date,
+}
