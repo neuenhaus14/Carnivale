@@ -66,14 +66,14 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     getEvents();
   }, [setMarkers]);
 
-
+  // this calls the getLocation and show directions function to update every 30 seconds (in theory)
   setTimeout (() => {
    getLocation()
    if(showDirections){
      createRouterLine(selectedRouteProfile)
      console.log('createRouterLine called in setTimout')
    }
-  }, 120000)
+  }, 30000)
   
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
