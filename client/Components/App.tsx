@@ -73,8 +73,8 @@ const App = () => {
       latitude: position.coords.latitude,
       id: userId,
     });
-    socket.emit("getFriends:read", {userId})
-    console.log('socket emitted from App')
+    // socket.emit("getFriends:read", {userId})
+    // console.log('socket emitted from App')
   };
 
   // this get coordinates from the browser

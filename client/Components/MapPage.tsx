@@ -39,6 +39,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   const [destinationCoords, setDestinationCoords] = useState<[number, number]>([0, 0]);
   const [routeDirections, setRouteDirections] = useState<any | null>(null);
   const [showRouteDirections, setShowRouteDirections] = useState<boolean>(false)
+  const [isFriendSelected, setIsFriendSelected] = useState<boolean>(false)
   const [friends, setFriends] = useState([])
   const [events, setEvents] = useState([])
   const [showDirections, setShowDirections]= useState<boolean>(false);
@@ -66,13 +67,13 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   }, [setMarkers]);
 
 
-  // setTimeout (() => {
-  //  getLocation()
-  //  if(showDirections){
-  //    createRouterLine(selectedRouteProfile)
-  //    console.log('createRouterLine called in setTimout')
-  //  }
-  // }, 240000)
+  setTimeout (() => {
+   getLocation()
+   if(showDirections){
+     createRouterLine(selectedRouteProfile)
+     console.log('createRouterLine called in setTimout')
+   }
+  }, 120000)
   
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
@@ -132,6 +133,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
  
 
   // useEffect (() => {
+  //   console.log('hitting this block')
   //   socket.on("otherUserLocs", (otherUserLocs) => {
   //     console.log('Got friends from socket', otherUserLocs)
   //     setFriends(otherUserLocs)
@@ -139,16 +141,16 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   // })
 
   // useEffect (() => {
-  //   socket.on("otherUserLocs", (otherUserLocs) => {
+
+  //   const handleOtherLocs = (otherUserLocs: any) => {
   //     console.log('Got friends from socket', otherUserLocs)
   //     setFriends(otherUserLocs)
-  //   })
+  //   }
+  //   socket.on("otherUserLocs", handleOtherLocs)
+  //   return () => {
+  //     socket.off('otherUserLocs', handleOtherLocs)
+  //   };
   // }, [setMarkers])
-
-  // socket.on("otherUserLocs", (otherUserLocs) => {
-  //   console.log('Got friends from socket', otherUserLocs)
-  //   setFriends(otherUserLocs)
-  // })
 
   
   //this sets the map touch coordinates to the url as params
@@ -173,23 +175,30 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`)
-        setSelectedPin(data);
-        setIsPinSelected(true);
-        setShowDirections(true);
-        modalTrigger()
-      } catch (err)  {
-        // console.error(err); 
-        try {
-          const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
-          console.log('clickedFriend', data);
-          setShowModal(false)
+        if (data) {
+          setSelectedPin(data);
+          setIsPinSelected(true);
+          setShowDirections(true);
+          modalTrigger()
+        } else {
+          setIsFriendSelected(true)
           setShowFriendPopup(true)
           setShowDirections(true)
-        } catch (err)  {
-          console.error(err);
         }
-      }
 
+        // try {
+        //   const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
+        //   console.log('clickedFriend', data);
+        //   setIsFriendSelected(true)
+        //   setShowFriendPopup(true)
+        //   setShowDirections(true)
+        // } catch (err)  {
+        //   console.error(err);
+        // }
+      } catch (err)  {
+        console.error(err); 
+      }
+      
   };
 
  // these are the details that are being set to build the "route"/ line for the directions
@@ -246,6 +255,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     if (isPinSelected === true){
       setCreatePin(false)
       setShowModal(true)
+    } else if (isFriendSelected === true){
+      setCreatePin(false)
+      setShowModal(false)
     } else {
       setShowModal(true)
     }
@@ -402,7 +414,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           </Source>
         ): null}
       <NavigationControl />
-      {/* {showFriendPopup ? (
+      {showFriendPopup ? (
           <>
             {friends.map((friend) => (
               <Popup
@@ -416,7 +428,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
               </Popup>
             ))}
           </>
-        ) : null}  */}
+        ) : null} 
       <div id="map-direction-card" className='card w-35'>
         {showDirections ? (
           <div className= 'card-body'>
