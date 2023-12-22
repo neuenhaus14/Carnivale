@@ -63,15 +63,7 @@ async function start(userDate: string) {
   }
   //finally, array to hold individual objects to be added to db
   //console.log('date', date.length, 'act', act.length, 'location', location.length, 'proper', proper.length, 'day', day.length)
-//   const coords = []
-//   for (let i = 0; i < 1; i++) {
-//     const getCoors = await axios.post(`${location[i]} New Orleans La`)
-//     const coor = getCoors.data
-//     console.log(coor)
-//     coords.push(coor)
-//       }
-// console.log('coords', coords[0])
-console.log(location[0])
+
 
   const mainArr = []
   for (let i = 0; i < day.length; i++) {
@@ -111,10 +103,37 @@ console.log(location[0])
   }
 } catch (error) {
   throw new Error(
-    `Error scraping parade info for ${error}`
+    `Error scraping parade info for ${error.errors}`
   );
+// } finally {
+//   const addresses = [];
+// Event.findOne({where: {lat : null}}) //get back array of objects
+// .then((coordinates) => {
+// //take the address, put it through converter, put to db the coords
+// console.log('address from psql', coordinates.address)
+// // const convert = address
+// const { data } = await axios.post('/api/events/getCoordinatesFromAddress', {address:`Blue Nile New Orleans La`})
+// // convert.update({latitude: data[0], longitude: data[1]}, {where: {}})
+
+// })
+// .catch((err) => {
+//   console.error("Failed to convert to coords for db", err)
+// })
+
+
+//   const coords = []
+
+// //   const { data } = await axios.post('/api/gigs/events/getCoordinatesFromAddress', {address:`${location[0]} New Orleans La`})
+// //   const coor = data
+// //   console.log('Address Success', coor)
+// //   coords.push(coor)
+
+// // console.log('coords', coords[0])
+// // console.log(location[0])
+ }
 }
-}
+
+
   Gigs.get("/gigs-list/:date", async (req: Request, res: Response) => {
     const {date} = req.params;
     try {
@@ -126,15 +145,16 @@ console.log(location[0])
     }
   });
 
-  Gigs.post('/events/getCoordinatesFromAddress', async( req: Request, res: Response) => {
-    const {address} = req.body
-    try {
-      console.log('address success', res)
-    } catch (error) {
-      console.error(error.message)
-      res.status(500).json({ error: "Get coords problem" });
-    }
-  });
+  // Gigs.post('/events/getCoordinatesFromAddress', async( req: Request, res: Response) => {
+  //   const {address} = req.body
+  //   try {
+  //     res.send(address)
+  //     console.log('address success', res.json())
+  //   } catch (error) {
+  //     console.error(error.message)
+  //     res.status(500).json({ error: "Get coords problem" });
+  //   }
+  // });
  //next attempting to get coordinates from the location
 //   let coordsArr = []
 //   for (let i = 0; i < location.length; i++) {
