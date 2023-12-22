@@ -8,11 +8,13 @@ import {
   Col,
   Tab,
   Tabs,
-} from "react-bootstrap";
-import axios from "axios";
-import HomeModal from "./HomeModal";
-import WeatherCard from "./WeatherCard";
-import PostCard from "./PostCard";
+  DropdownButton,
+  Dropdown,
+} from 'react-bootstrap';
+import axios from 'axios';
+import HomeModal from './HomeModal';
+import WeatherCard from './WeatherCard';
+import PostCard from './PostCard';
 
 //PARENT OF HOMEMODAL
 
@@ -27,28 +29,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   const [posts, setPosts] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [key, setKey] = useState('posts');
-  const [key, setKey] = useState("posts");
-  const theme = useContext(ThemeContext);
-
-  // useEffect(() => {
-  //   getLocation()
-  // }, []);
-
-  // const getUser = async () => {
-  //   try {
-  //     const { data } = await axios.post(`api/home/user/`, { user });
-  //     setUserId(data[0].id);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if(userData !== null){
-  //     setUserId(userData.id)
-  //     getLocation()
-  //   }
-  // }, [userData])
+  const [order, setOrder] = useState('updatedAt');
 
   const modalTrigger = () => {
     setShowModal(true);
@@ -89,8 +70,8 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   const getPosts = async (e: string) => {
     try {
       const { data } = await axios.get(`/api/home/${e}`);
-      setPosts(data);
-      console.log(theme);
+
+      setPosts(data.sort((a: any, b: any) => b[order] - a[order]));
     } catch (err) {
       console.error(err);
     }
@@ -102,10 +83,10 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
     getPosts(key);
     const interval = setInterval(() => {
       getPosts(key);
-      console.log('fetch');
+      console.log('fetch', order);
     }, 5000);
     return () => clearInterval(interval);
-  }, [key]);
+  }, [key, order]);
 
   return (
     <Container>
@@ -115,15 +96,14 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
 
       <Row>
         <WeatherCard />
-        <button onClick={modalTrigger}>Upload a pic!</button>
-        {showModal ? (
-          <HomeModal
-            setShowModal={setShowModal}
-            lat={lat}
-            lng={lng}
-            userId={userId}
-          />
-        ) : null}
+        <DropdownButton
+          title='Sort'
+          onSelect={setOrder}
+        >
+          <Dropdown.Item eventKey={'updatedAt'}>Updated</Dropdown.Item>
+          <Dropdown.Item eventKey={'createdAt'}>Created</Dropdown.Item>
+          <Dropdown.Item eventKey={'upvotes'}>Upvotes</Dropdown.Item>
+        </DropdownButton>
       </Row>
 
       <Row>
@@ -136,15 +116,13 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
             title='All'
           >
             {posts
-              ? posts
-                  .sort((a, b) => b.updatedAt - a.updatedAt)
-                  .map((item: any, index: number) => (
-                    <PostCard
-                      key={`${item.id} + ${index}`}
-                      post={item}
-                      userId={userId}
-                    />
-                  ))
+              ? posts.map((item: any, index: number) => (
+                  <PostCard
+                    key={`${item.id} + ${index}`}
+                    post={item}
+                    userId={userId}
+                  />
+                ))
               : ''}
           </Tab>
           <Tab
@@ -197,6 +175,15 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
               >
                 SEND!!!
               </Button>
+              <Button onClick={modalTrigger}>Upload a pic!</Button>
+              {showModal ? (
+                <HomeModal
+                  setShowModal={setShowModal}
+                  lat={lat}
+                  lng={lng}
+                  userId={userId}
+                />
+              ) : null}
             </Form.Group>
           </Form>
         </Row>
