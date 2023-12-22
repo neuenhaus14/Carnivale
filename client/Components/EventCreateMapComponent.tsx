@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Map, Marker, NavigationControl, Layer, Source } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
-// This map displays in the Create Modal for either 
+// This map displays in the Create Modal for either
 // creating a new event or editing an existing event that
-// is owned by the user. You must own the 
+// is owned by the user. You must own the
 // event to edit it.
 
 interface EventCreateMapComponentProps {
@@ -16,16 +16,17 @@ interface EventCreateMapComponentProps {
   setEventLongitude: any,
   setEventLatitude: any,
   setEventAddress: any,
+  setIsEventUpdated: any,
 }
 
-const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNewEvent, eventLatitude, eventLongitude, userLatitude, userLongitude, setEventLatitude, setEventLongitude, setEventAddress }) => {
+const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNewEvent, eventLatitude, eventLongitude, userLatitude, userLongitude, setEventLatitude, setEventLongitude, setEventAddress, setIsEventUpdated }) => {
 
   const markerClicked = () => {
     window.alert('the marker was clicked');
   };
 
   const mapRef = useRef(null);
-  
+
   useEffect(()=>{
    console.log('eventLat or eventLong CHANGED')
     mapRef.current?.flyTo({ center: [eventLongitude, eventLatitude] });
@@ -33,8 +34,9 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
 
 
   const [viewState, setViewState] = useState({
-    latitude: isNewEvent ? userLatitude : eventLatitude,
-    longitude: isNewEvent ? userLongitude : eventLongitude,
+    // lat and long default to zero, so new events will not have lat/long
+    latitude: eventLatitude > 0 ? eventLatitude : userLatitude,
+    longitude: eventLongitude > 0 ? eventLongitude : userLongitude,
     zoom: 12,
   });
 
@@ -51,6 +53,7 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
     });
     console.log(eventAddressResponse);
     const eventAddress = eventAddressResponse.data;
+    setIsEventUpdated(true);
     setEventAddress(eventAddress)
   }
 

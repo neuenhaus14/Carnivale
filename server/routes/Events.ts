@@ -293,32 +293,30 @@ Events.get('/getPeopleForEvent/:userId-:eventId', async (req: Request, res: Resp
 
 // creating an event from user events page updates events
 // (many fields, new entry), join_event_participants (whoever
-// created it), and join_event_invitees (array of user id's (numbers) who 
-// are friends). 
+// created it), and join_event_invitees (array of user id's (numbers) who
+// are friends).
 Events.post('/createEvent', async (req: Request, res: Response) => {
   const {
-
-
-    name, 
-    startTime, 
-    endTime, 
+    name,
+    startTime,
+    endTime,
     description,
-    longitude, 
-    latitude, 
+    longitude,
+    latitude,
     address,
     link,
-    system, 
-    invitees, 
-    invitedCount, 
+    system,
+    invitees,
+    invitedCount,
     attendingCount,
     upvotes,
-    ownerId, 
+    ownerId,
    } = req.body.event;
 
 
   try {
     // figure out how to type this properly
-    // how do interfaces get passed from 
+    // how do interfaces get passed from
     // db's index.js? Event interface is created,
     // but not working
     const newEvent: any = await Event.create({
@@ -360,14 +358,52 @@ Events.post('/createEvent', async (req: Request, res: Response) => {
       attending: newParticipantRecord,
       invited: newInviteeRecord
     }
-
     res.status(200).send(response);
-
   } catch (err) {
     console.error("SERVER ERROR: could not POST event", err);
     res.status(500).send(err)
   }
 })
+
+Events.patch('/updateEvent', async (req: Request, res: Response) => {
+  try {
+  const {
+    id,
+    name,
+    startTime,
+    endTime,
+    description,
+    longitude,
+    latitude,
+    address,
+    //link,
+    //system,
+    //invitees,
+    //invitedCount,
+    //attendingCount,
+    //upvotes,
+    //ownerId,
+   } = req.body.event;
+
+     const updatedEvent = await Event.update({name, startTime, endTime, description, longitude, latitude, address}, {
+      where : {
+        id
+      }
+     })
+
+     console.log('updatedEvent', updatedEvent);
+
+
+
+     res.status(200).send(updatedEvent)
+    } catch (err) {
+      console.error('SERVER ERROR: failed to PATCH event', err);
+      res.status(500).send(err);
+    }
+})
+
+
+
 
 // request will have instructions whether to attend or not, invitee_userId and eventId
 // The record inside JOIN_EVENT_INVITEES gets deleted every time--will need to refactor

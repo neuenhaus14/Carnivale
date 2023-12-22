@@ -4,14 +4,13 @@ import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
 import { Button } from 'react-bootstrap';
-// import EventPage from './EventPage';
+
+//                                     add userId as prop to get it from App
+const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, }) => {
 
 
-const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, userId}) => {
-
-
-  //const [searchParams] = useSearchParams();
-  //const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  const [searchParams] = useSearchParams();
+  const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
@@ -80,7 +79,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, userId}) => 
 
 
   useEffect(() => {
-    getLocation()
+    // getLocation() DON'T NEED THIS, IT'S GETTING PASSED IN
 
     // for updating events on userpage when 
     // responding to invites or inviting other users
@@ -250,15 +249,16 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat, userId}) => 
         showCreateModal={showCreateModal}
         friends={friends}
         userId={userId}
-        isUserAttending={isUserAttending}
-        setIsUserAttending={setIsUserAttending}
-        getEventsInvited={getEventsInvited}
-        getEventsParticipating={getEventsParticipating}
+        // isUserAttending={isUserAttending}
+        // setIsUserAttending={setIsUserAttending}
+        // getEventsInvited={getEventsInvited}
+        // getEventsParticipating={getEventsParticipating}
         isNewEvent={isNewEvent}
         setIsNewEvent={setIsNewEvent}
         lat={lat}
         lng={lng}
-        getLocation={getLocation}
+        //getLocation={getLocation}
+        eventType = {'user'}
       />
 
       <h5> Mon Krewe </h5>

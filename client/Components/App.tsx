@@ -50,7 +50,7 @@ const App = () => {
     }
   };
 
-  
+
   // this sends coordinates to socket
   const showPosition = (position: any) => {
     //console.log(position)
@@ -101,6 +101,7 @@ const App = () => {
   //     return null
   //   }
   // }
+
   // watchLocation();
 
   // const stopWatchingLocation = (): void => {
