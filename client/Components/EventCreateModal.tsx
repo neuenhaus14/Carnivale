@@ -4,9 +4,9 @@ import EventCreateMapComponent from './EventCreateMapComponent';
 import axios from 'axios';
 import Events from '../../server/routes/Events';
 import dayjs = require('dayjs');
-import { timeLog } from 'console';
-import { send } from 'process';
-import { getDropdownMenuPlacement } from 'react-bootstrap/esm/DropdownMenu';
+// import { timeLog } from 'console';
+// import { send } from 'process';
+// import { getDropdownMenuPlacement } from 'react-bootstrap/esm/DropdownMenu';
 
 interface EventCreateModalProps {
   selectedEvent: any;
@@ -25,6 +25,7 @@ interface EventCreateModalProps {
   lat: number;
   //getLocation: any,
   eventType: string;
+  getEventsOwned: any; // needed for reloading owned events after event update
 }
 
 interface EventCreateAccordionProps {
@@ -149,7 +150,7 @@ const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({
           <Form.Check
             type='checkbox'
             id='custom-switch'
-            onChange={async () => { await toggleFriendInvite(friend.id); await toggleEventIsUpdated(); }}
+            onChange={async () => { await toggleFriendInvite(friend.id); }}
           />
         </div>
       );
@@ -184,6 +185,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   lng,
   lat,
   eventType,
+  getEventsOwned,
 }) => {
   const [eventAddress, setEventAddress] = useState('');
   const [eventDescription, setEventDescription] = useState('');
@@ -229,9 +231,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventLatitude(Number(selectedEvent.latitude));
       setEventLongitude(Number(selectedEvent.longitude));
       if (selectedEvent.startTime !== null && selectedEvent !== null) {
+        console.log('incoming selectedEvent startTime', selectedEvent.startTime);
         parseDateIntoDateAndTime(selectedEvent.startTime, 'start');
       }
       if (selectedEvent.endTime !== null && selectedEvent !== null) {
+        console.log('incoming selectedEvent endTime', selectedEvent.endTime);
         parseDateIntoDateAndTime(selectedEvent.endTime, 'end');
       }
     }
@@ -257,7 +261,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   // to populate date input and time ranges
   const parseDateIntoDateAndTime = (fullDate: string, startOrEnd: string) => {
     // 2023-12-11 20:40:35.222-05
-
+    console.log('parseDID&T', fullDate, startOrEnd);
     let date;
     let time;
     if (fullDate.indexOf('T')) {
@@ -267,7 +271,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
 
     const timeRangeValue = Number(time.slice(0, 5).replace(':', '.'));
-
+    console.log('tRV', timeRangeValue);
     if (startOrEnd === 'start') {
       setEventStartDate(date);
       setEventStartTime(timeRangeValue);
@@ -288,6 +292,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     });
     setIsNewEvent(false); // returns to default state
     setIsEventUpdated(false); // also default state
+    getEventsOwned(); // retrieves updated or newly created events
   };
 
   const convertDecimalToTime = (
@@ -356,8 +361,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           link: null,
           invitedCount: friendsToInvite.length,
           attendingCount: 1,
-          startTime: new Date(startTimeString),
-          endTime: new Date(endTimeString),
+          startTime: startTimeString,
+          endTime: endTimeString,
           invitees: friendsToInvite,
         },
       });
@@ -405,8 +410,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           description: eventDescription,
           latitude: eventLatitude,
           longitude: eventLongitude,
-          startTime: new Date(startTimeString),
-          endTime: new Date(endTimeString),
+          startTime: startTimeString,
+          endTime: endTimeString,
           //system: false,
           //link: null,
           //invitedCount: friendsToInvite.length,
@@ -415,10 +420,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         },
       });
       setIsEventUpdated(false); // return to default state
-      console.log('updatedEvent response', updatedEvent.data);
-      if (friendsToInvite.length > 0) {
-        sendFriendInvites();
-      }
+      // console.log('updatedEvent response', updatedEvent.data);
+      // if (friendsToInvite.length > 0) {
+      //   sendFriendInvites();
+      // }
       handleClose();
     } catch (err) {
       console.error('CLIENT ERROR: failed to PUT event update', err);
@@ -480,7 +485,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     setCoordinatesFromAddress(value);
   };
 
-  console.log('rock bottom, isEventUpdated',isEventUpdated,', isNewEvent', isNewEvent);
+  console.log('rock bottom, isEventUpdated',isEventUpdated,'selectedEvent', selectedEvent, 'isNewEvent', isNewEvent);
   return (
     <Modal show={showCreateModal} onHide={handleClose}>
       <Modal.Header>

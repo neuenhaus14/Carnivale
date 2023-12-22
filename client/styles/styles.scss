@@ -1,5 +1,6 @@
-@import "~bootstrap/scss/bootstrap";
+// @import "~bootstrap/scss/bootstrap";
 
+@import "../../node_modules/bootstrap/scss/bootstrap";
 // .friend-markers{
 //   background-image: url("/images/friend_dot.png");
 //   background-size: cover;
@@ -26,4 +27,25 @@
 .map-accordion-body{
   padding-top: 2px;
   padding-bottom: 2px;
+}
+
+$greeny: #169874;
+$pinky: #e7abff;
+$yeller: #ecc800;
+
+.btn {
+  border: none;
+}
+
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+  background-color: $yeller !important;
+}
+
+.btn-success {
+  background-color: $greeny !important;
+}
+
+.btn-sm {
+  border-radius: 15px;
+  padding: 3px 9px;
 }

@@ -68,8 +68,8 @@ module.exports = {
     await queryInterface.bulkInsert("events", [
       {
         name: "Meetup at the Friendly Bar",
-        startTime: new Date("2023-12-24T18:00"),
-        endTime: new Date("2023-12-24T19:00"),
+        startTime: "2023-12-24T18:00",
+        endTime: "2023-12-24T19:00",
         description: "Grabbing a pint for old time's sake",
         longitude: -90.05951,
         latitude: 29.963724,
@@ -86,8 +86,8 @@ module.exports = {
       },
       {
         name: "DJ set at PvF Marker",
-        startTime: new Date("2023-12-24T21:00"),
-        endTime: new Date("2023-12-24T22:00"),
+        startTime: "2023-12-24T21:00",
+        endTime: "2023-12-24T22:00",
         description: "Hot tracks by the tracks",
         longitude: -90.048717,
         latitude: 29.964642,
@@ -103,8 +103,8 @@ module.exports = {
       },
       {
         name: "Boil",
-        startTime: new Date("2023-12-24T14:00"),
-        endTime: new Date("2023-12-24T15:00"),
+        startTime: "2023-12-24T14:00",
+        endTime: "2023-12-24T15:00",
         description: "Parade pregame",
         longitude: -90.052452,
         latitude: 29.964846,

@@ -14,7 +14,9 @@ Set the following at some point after launching the instance.
 | ------------- | ------------- | ------------- | ------------ | --------- |
 | SSH           |  22           | Local-Dev-IP/32  |  SSH into instance from your computer | N/A |
 | Custom TCP    | server port (4000)  | 0.0.0.0/0 | User access from internet | N/A |
-| PostgreSQL    | 5432         |  VM-public-IP/32 | Instance Postgres server access | There's a preset for Postgres in the Type dropdown
+| PostgreSQL    | 5432         |  VM-public-IP/32 | Instance Postgres server access | There's a preset for Postgres in the Type dropdown |
+| HTTP          | 80          |  Any (0.0.0.0/0) | ||
+| HTTPS         | 443         | Any (0.0.0.0/0) ||
 
 ## Setting Up an Instance
 
@@ -102,11 +104,11 @@ Next you'll set some environment variables, some of which are database-oriented.
 
 ### 5. Set environment variables
 
-There are a number of environment variables that support the app, and they must be assigned in the instance with the following command, administered from the project's root directory:
+There are a number of environment variables that support the app, and they must be assigned in the instance thru a .env file or with the following command, administered from the project's root directory:
 
 > export SOME_ENV_VAR = 'someValue'
 
-Run that command on all items in the list below:
+Run that command on all items in the list below, or place the following in the instance's .env file:
 
 |  Env. Var.   |   Value   | Notes |
 | ------------ | --------- | ----- |
@@ -115,6 +117,12 @@ Run that command on all items in the list below:
 | WEATHER_API_KEY | << string of alphanumerics >> | You'll probably need a new one |
 | CLOUDINARY_API_KEY | << string of digits >> | Samesies |
 | CLOUDINARY_API_SECRET | << string of alphanumerics >> | Samesies |
+| CLOUDINARY_NAME| << string of alphanumerics >> | |
+| AUTH0_CLIENT_ID       |  << string of alphanumerics >> |  |
+| AUTH0_CLIENT_SECRET   |  << string of alphanumerics >> |  |
+| ISSUER | << web site>>| For Auth0|
+
+
 
 ### 6. Building & Running
 

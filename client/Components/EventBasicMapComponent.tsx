@@ -30,9 +30,7 @@ const EventBasicMapComponent: React.FC<EventBasicMapComponentProps> = ({
 
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
-  useEffect(() => {
-    geoControlRef.current?.trigger();
-  }, [geoControlRef.current, latitude, longitude]);
+
 
   const [viewState, setViewState] = useState({
     latitude,
@@ -60,7 +58,7 @@ const EventBasicMapComponent: React.FC<EventBasicMapComponentProps> = ({
           positionOptions={{ enableHighAccuracy: true }}
           // prevents zooming directly to user loc
           // map center stays on selectedEvent
-          trackUserLocation={false}
+          trackUserLocation={true}
           showUserHeading={true}
           showUserLocation={true}
           showAccuracyCircle={false}

@@ -36,7 +36,10 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
     // isNewEvent switches; isNewEvent defaults
     // to false whenever a modal closes
     if (isNewEvent){
-    geoControlRef.current?.trigger();
+      console.log('about to trigger')
+      setTimeout(()=>{
+        geoControlRef.current?.trigger();
+      }, 200)
     }
   }, [geoControlRef.current, isNewEvent]);
 
