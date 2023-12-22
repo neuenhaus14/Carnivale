@@ -73,6 +73,8 @@ const App = () => {
       latitude: position.coords.latitude,
       id: userId,
     });
+    // socket.emit("getFriends:read", {userId})
+    // console.log('socket emitted from App')
   };
 
   // this get coordinates from the browser
@@ -89,16 +91,16 @@ const App = () => {
     }
   };
 
-  let watchId: number;
-  const watchLocation = (): void => {
-    if (navigator.geolocation) {
-      watchId = navigator.geolocation.watchPosition(showPosition, error => console.log(error), { enableHighAccuracy: true })
-      console.log(`GeoLoc is watching ${userId} Location`)
-    } else {
-      console.log("Geolocation is not supported by this browser")
-      return null
-    }
-  }
+  // let watchId: number;
+  // const watchLocation = (): void => {
+  //   if (navigator.geolocation) {
+  //     watchId = navigator.geolocation.watchPosition(showPosition, error => console.log(error), { enableHighAccuracy: true })
+  //     console.log(`GeoLoc is watching ${userId} Location`)
+  //   } else {
+  //     console.log("Geolocation is not supported by this browser")
+  //     return null
+  //   }
+  // }
 
   // watchLocation();
 
@@ -178,7 +180,7 @@ const App = () => {
                 userLat={lat}
                 userLng={lng}
                 userId={userId}
-                watchLocation={watchLocation}
+                getLocation={getLocation}
               />{' '}
               <NavBar />
             </div>
