@@ -67,19 +67,38 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   }, [setMarkers]);
 
   // this calls the getLocation and show directions function to update every 30 seconds (in theory)
-  setTimeout (() => {
-   getLocation()
-   if(showDirections){
-     createRouterLine(selectedRouteProfile)
-     console.log('createRouterLine called in setTimout')
-   }
-  }, 30000)
-  
+//  useEffect(() => {
+//   getLocation()
+//   const interval = setInterval(() => {
+//     getLocation()
+//     if(showDirections){
+//       createRouterLine(selectedRouteProfile)
+//       console.log('createRouterLine called in setTimout')
+//     }
+//   }, 5000)
+//   return () => clearInterval(interval)
+//  })
 
+ useEffect(() => {
+  getLocation()
+  ('getLocation called in useEffect')
+  if(showDirections){
+       createRouterLine(selectedRouteProfile)
+       console.log('createRouterLine called in useEffect')
+     }
+ }, [setUserLocation])
+
+ 
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
     geoControlRef.current?.trigger();
+    getLocation()
+    ('getLocation called in geoLocation')
+    if(showDirections){
+       createRouterLine(selectedRouteProfile)
+       console.log('createRouterLine called in GEOCONTROL REF')
+    }
   }, [geoControlRef.current]);
 
 
@@ -114,9 +133,17 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   //   }
   // }
 
+  useEffect(() => {
+    // this coords is data.dataValues from the database as a response to the emit
+    socket.on('userLoc response', (userLoc) => {
+      console.log('userLoc response in map', userLoc)
+      setUserLocation([userLoc.longitude, userLoc.latitude])
+
+    })
+  });
+
   useEffect (() => {
     socket.emit("getFriends:read", {userId})
-    console.log('socket emitted from map page')
 
     const handleGetFriends = (allFriendsUsers: any) => {
       console.log('Got friends from socket', allFriendsUsers)
@@ -129,29 +156,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       socket.off("getFriends:send", handleGetFriends)
     };
 
-  }, []);
-
- 
-
-  // useEffect (() => {
-  //   console.log('hitting this block')
-  //   socket.on("otherUserLocs", (otherUserLocs) => {
-  //     console.log('Got friends from socket', otherUserLocs)
-  //     setFriends(otherUserLocs)
-  //   })
-  // })
-
-  // useEffect (() => {
-
-  //   const handleOtherLocs = (otherUserLocs: any) => {
-  //     console.log('Got friends from socket', otherUserLocs)
-  //     setFriends(otherUserLocs)
-  //   }
-  //   socket.on("otherUserLocs", handleOtherLocs)
-  //   return () => {
-  //     socket.off('otherUserLocs', handleOtherLocs)
-  //   };
-  // }, [setMarkers])
+}, [setUserLocation]);
 
   
   //this sets the map touch coordinates to the url as params
@@ -223,8 +228,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
  // handles the route line creation by making the response from the directions API into a geoJSON
  // which is the only way to use it in the <Source> tag (displays the "route/line")
   const createRouterLine = async (routeProfile: string,): Promise<void> => {
-    console.log('userCoords', userLng, userLat)
-    const startCoords = `${userLng},${userLat}`
+    console.log('userCoords', userLocation[0], userLocation[1])
+    const startCoords = `${userLocation[0]},${userLocation[1]}`
     const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`
     const geometries = 'geojson'
     const url = `https://api.mapbox.com/directions/v5/mapbox/${routeProfile}/${startCoords};${endCoords}?alternatives=true&geometries=${geometries}&steps=true&banner_instructions=true&overview=full&voice_instructions=true&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw`;
@@ -312,7 +317,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
   return (
     <Container className="body">
-      <h1>Map Page!</h1>
+      <h3>Click on the Map to add a Pin </h3>
+      <h3>or on a Pin to see the details</h3>
       <Accordion>
         <Accordion.Item eventKey="0">
         <Accordion.Header>Filter Pins</Accordion.Header>
