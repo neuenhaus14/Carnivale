@@ -36,7 +36,7 @@ Events.get('/getEventsOwned/:userId', async (req: Request, res: Response) => {
         ['startTime', 'ASC']
       ]
     })
-
+    console.log('userEventsOwned', userEventsOwned)
     res.status(200).send(userEventsOwned);
 
   } catch (err) {
