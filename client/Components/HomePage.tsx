@@ -11,6 +11,7 @@ import {
   DropdownButton,
   Dropdown,
 } from 'react-bootstrap';
+import {FaCamera} from 'react-icons/fa'
 import axios from 'axios';
 import HomeModal from './HomeModal';
 import WeatherCard from './WeatherCard';
@@ -175,7 +176,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
               >
                 SEND!!!
               </Button>
-              <Button onClick={modalTrigger}>Upload a pic!</Button>
+              <Button onClick={modalTrigger} style={{verticalAlign: '-2px'}}><FaCamera /></Button>
               {showModal ? (
                 <HomeModal
                   setShowModal={setShowModal}
