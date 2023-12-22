@@ -32,7 +32,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
   const [showModal, setShowModal] = useState(false);
   const [key, setKey] = useState("posts");
   const theme = useContext(ThemeContext);
-  
+
   // useEffect(() => {
   //   getLocation()
   // }, []);
@@ -89,7 +89,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
   }, [key]);
 
   return (
-    <Container>
+    <Container className="body">
       <Row>
         <h1>HomePage!</h1>
       </Row>

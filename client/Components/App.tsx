@@ -27,6 +27,9 @@ import NavBar from './NavBar';
 import Loading from './Loading';
 import Parades from './Parades';
 import { ThemeContext } from './Context';
+import TopNavBar from './TopNavBar';
+
+
 
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
@@ -161,6 +164,7 @@ const App = () => {
           path='/homepage'
           element={
             <div>
+              <TopNavBar title={'Home Page'}/>
               <HomePage
                 userId={userId}
                 lat={lat}
@@ -174,6 +178,7 @@ const App = () => {
           path='/mappage'
           element={
             <div>
+              <TopNavBar title={'Map Page'}/>
               <MapPage
                 userLat={lat}
                 userLng={lng}
@@ -188,6 +193,7 @@ const App = () => {
           path='/feedpage'
           element={
             <div>
+              <TopNavBar title={'Feed Page'}/>
               <FeedPage userId={userId} /> <NavBar />
             </div>
           }
@@ -196,6 +202,7 @@ const App = () => {
           path='/parades'
           element={
             <div>
+              <TopNavBar title={'Parades Page'}/>
               <Parades
               userId={userId}
               lng={lng}
@@ -209,6 +216,7 @@ const App = () => {
           path='/eventpage'
           element={
             <div>
+              <TopNavBar title={'Events Page'}/>
               <EventPage
                 userId={userId}
                 getLocation={getLocation}
@@ -223,6 +231,7 @@ const App = () => {
           path='/userpage'
           element={
             <div>
+              <TopNavBar title={'User Page'}/>
               <UserPage
                 userId={userId}
                 getLocation={getLocation}

@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
-import { Button } from 'react-bootstrap';
+import { Button, Container } from 'react-bootstrap';
 import { LuThumbsUp, LuThumbsDown } from "react-icons/lu";
 import { MdCancel, MdOutlineRemoveCircle } from "react-icons/md";
 import { IoPersonRemoveSharp } from "react-icons/io5";
@@ -13,6 +13,13 @@ import dayjs from 'dayjs';
 // import calendar from 'dayjs/plugin/calendar'
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
+
+import { useAuth0 } from "@auth0/auth0-react";
+
+
+
+
+
 //                              add userId as prop to get it from App
 const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
   const [searchParams] = useSearchParams();
@@ -39,6 +46,10 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
   const [showBasicModal, setShowBasicModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isNewEvent, setIsNewEvent] = useState(false);
+
+  // logout functionality via auth0
+  const { logout } = useAuth0();
+
 
   const getFriends = async () => {
     try {
@@ -137,7 +148,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
             variant='danger'
             onClick={() => unfriend(friend.id)}
           >
-            Remove <IoPersonRemoveSharp style={{verticalAlign: '-2px'}}/>
+            {/*'REMOVE '*/} <IoPersonRemoveSharp style={{verticalAlign: '-2px'}}/>
           </Button>
         </div>
       );
@@ -155,7 +166,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
             size='sm'
             onClick={() => cancelFriendRequest(requestee.id)}
           >
-           {'Cancel '} <MdCancel style={{verticalAlign: '-2px'}}/>
+           {/*'CANCEL '*/} <MdCancel style={{verticalAlign: '-2px'}}/>
           </Button>
         </div>
       );
@@ -169,10 +180,10 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         <div key={index}>
           {requester.firstName} {`${requester.lastName.slice(0,1)}.`}
           <Button size="sm" variant="success" onClick={() => answerFriendRequest(requester.id, true)}>
-          {'Accept '} <FaThumbsUp style={{verticalAlign: '-2px'}}/>
+          {/*'ACCEPT '*/} <FaThumbsUp style={{verticalAlign: '-2px'}}/>
           </Button>
           <Button size="sm" variant="danger" onClick={() => answerFriendRequest(requester.id, false)}>
-          {'Ignore '} <FaThumbsDown style={{verticalAlign: '-2px'}}/>
+          {/*'IGNORE '*/} <FaThumbsDown style={{verticalAlign: '-2px'}}/>
           </Button>
         </div>
       );
@@ -308,7 +319,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
 
   // console.log('inside userpage. isNewEvent', isNewEvent)
   return (
-    <div>
+    <Container className='body'>
       <h1>
         UserPage {lng} {lat}
       </h1>
@@ -363,7 +374,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         onChange={handleFriendNameInput}
       ></input>
       <Button size='sm' variant='success' onClick={requestFriend}>
-        {'Invite '}<FaEnvelope style={{verticalAlign: '-2px'}}/>
+        {/*'INVITE '*/}<FaEnvelope style={{verticalAlign: '-2px'}}/>
       </Button>
 
       {
@@ -418,6 +429,16 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
 
       <div style={{display:'flex', flexDirection: 'row', justifyContent:'space-evenly'}}>
         <Button
+            variant="danger"
+            onClick={() =>
+              logout({ logoutParams: { returnTo: window.location.origin } })
+            }
+          >
+            Log Out
+          </Button>
+
+
+        <Button
           variant='primary'
           onClick={async () => {
             await setIsNewEvent(true);
@@ -436,10 +457,9 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
           Parades
         </Link>
       </div>
-    </div>
+    </Container>
   );
 };
-
 interface UserPageProps {
   getLocation: any;
   lng: number;
