@@ -64,8 +64,8 @@ interface Event
   latitude: number;
   address: string;
   link: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
   inviteCount: number;
   attendingCount: number;
   upvotes: number;
@@ -82,8 +82,8 @@ const Event = db.define(
     },
     imageUrl: DataTypes.STRING,
     name: DataTypes.STRING,
-    startTime: DataTypes.DATE,
-    endTime: DataTypes.DATE,
+    startTime: DataTypes.STRING,
+    endTime: DataTypes.STRING,
     description: DataTypes.STRING,
     longitude: DataTypes.DECIMAL,
     latitude: DataTypes.DECIMAL,

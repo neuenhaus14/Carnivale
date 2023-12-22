@@ -5,7 +5,7 @@ import axios from 'axios';
 
 // This modal displays for events that the user
 // is invited to and attending
-// you can only invite other people if you're 
+// you can only invite other people if you're
 // already attending
 
 
@@ -118,7 +118,7 @@ const EventBasicAccordion: React.FC<EventBasicAccordionProps> = ({ friends, sele
           <ul>
             {uninvitedFriendsItems}
           </ul>
-          <Button disabled={friendsToInvite.length === 0} onClick={() => sendFriendInvites()}>Send Invites</Button>
+          {isUserAttending && <Button disabled={friendsToInvite.length === 0} onClick={() => sendFriendInvites()}>Send Invites</Button>}
         </Accordion.Body>
       </Accordion.Item>
     </Accordion>
@@ -126,7 +126,7 @@ const EventBasicAccordion: React.FC<EventBasicAccordionProps> = ({ friends, sele
 }
 
 const EventBasicModal: React.FC<EventBasicModalProps> = ({ selectedEvent, setShowBasicModal, showBasicModal, setSelectedEvent, friends, userId, isUserAttending, setIsUserAttending, getEventsInvited, getEventsParticipating }) => {
-  
+
   const handleClose = () => {
     setShowBasicModal(false); // goes up to user page and sets to false
     setIsUserAttending(false);

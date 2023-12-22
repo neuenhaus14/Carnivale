@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { IoArrowUpCircle, IoArrowDownCircle } from "react-icons/io5";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Container } from "react-bootstrap";
 
 interface SharedPost {
   upvotes: number;
@@ -384,7 +385,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   };
 
   return (
-    <div>
+    <Container className="body">
       <h1>
         Welcome,{" "}
         {currentUser
@@ -697,7 +698,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         pauseOnHover
         theme="light"
       />
-    </div>
+    </Container>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { Map, Marker, NavigationControl, Layer, Source } from 'react-map-gl';
+import { Map, Marker, NavigationControl, GeolocateControl, Layer, Source } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
 // This map displays in the Create Modal for either
@@ -26,6 +26,22 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
   };
 
   const mapRef = useRef(null);
+
+
+  // in tandem, these load the userLoc marker immediately
+  const geoControlRef = useRef<mapboxgl.GeolocateControl>();
+
+  useEffect(() => {
+    // this useEffect runs whenever
+    // isNewEvent switches; isNewEvent defaults
+    // to false whenever a modal closes
+    if (isNewEvent){
+      console.log('about to trigger')
+      setTimeout(()=>{
+        geoControlRef.current?.trigger();
+      }, 200)
+    }
+  }, [geoControlRef.current, isNewEvent]);
 
   useEffect(()=>{
    console.log('eventLat or eventLong CHANGED')
@@ -75,7 +91,14 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
         <Marker onClick={() => markerClicked()} longitude={eventLongitude} latitude={eventLatitude} anchor="bottom"></Marker>
         }
 
-        <NavigationControl />
+        <GeolocateControl
+          positionOptions={{ enableHighAccuracy: true }}
+          trackUserLocation={true}
+          showUserHeading={true}
+          showUserLocation={true}
+          showAccuracyCircle={false}
+          ref={geoControlRef}
+          />
       </Map>
     </div>
   )
