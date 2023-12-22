@@ -27,6 +27,9 @@ import NavBar from './NavBar';
 import Loading from './Loading';
 import Parades from './Parades';
 import { ThemeContext } from './Context';
+import TopNavBar from './TopNavBar';
+
+
 
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
@@ -50,7 +53,7 @@ const App = () => {
     }
   };
 
-  
+
   // this sends coordinates to socket
   const showPosition = (position: any) => {
     //console.log(position)
@@ -73,6 +76,8 @@ const App = () => {
       latitude: position.coords.latitude,
       id: userId,
     });
+    // socket.emit("getFriends:read", {userId})
+    // console.log('socket emitted from App')
   };
 
   // this get coordinates from the browser
@@ -89,16 +94,17 @@ const App = () => {
     }
   };
 
-  let watchId: number;
-  const watchLocation = (): void => {
-    if (navigator.geolocation) {
-      watchId = navigator.geolocation.watchPosition(showPosition, error => console.log(error), { enableHighAccuracy: true })
-      console.log(`GeoLoc is watching ${userId} Location`)
-    } else {
-      console.log("Geolocation is not supported by this browser")
-      return null
-    }
-  }
+  // let watchId: number;
+  // const watchLocation = (): void => {
+  //   if (navigator.geolocation) {
+  //     watchId = navigator.geolocation.watchPosition(showPosition, error => console.log(error), { enableHighAccuracy: true })
+  //     console.log(`GeoLoc is watching ${userId} Location`)
+  //   } else {
+  //     console.log("Geolocation is not supported by this browser")
+  //     return null
+  //   }
+  // }
+
   // watchLocation();
 
   // const stopWatchingLocation = (): void => {
@@ -160,6 +166,7 @@ const App = () => {
           path='/homepage'
           element={
             <div>
+              <TopNavBar title={'Home Page'}/>
               <HomePage
                 userId={userId}
                 lat={lat}
@@ -173,11 +180,12 @@ const App = () => {
           path='/mappage'
           element={
             <div>
+              <TopNavBar title={'Map Page'}/>
               <MapPage
                 userLat={lat}
                 userLng={lng}
                 userId={userId}
-                watchLocation={watchLocation}
+                getLocation={getLocation}
               />{' '}
               <NavBar />
             </div>
@@ -187,6 +195,7 @@ const App = () => {
           path='/feedpage'
           element={
             <div>
+              <TopNavBar title={'Feed Page'}/>
               <FeedPage userId={userId} /> <NavBar />
             </div>
           }
@@ -195,7 +204,13 @@ const App = () => {
           path='/parades'
           element={
             <div>
-              <Parades /> <NavBar />
+              <TopNavBar title={'Parades Page'}/>
+              <Parades
+              userId={userId}
+              lng={lng}
+              lat={lat}
+
+              /> <NavBar />
             </div>
           }
         />
@@ -203,6 +218,7 @@ const App = () => {
           path='/eventpage'
           element={
             <div>
+              <TopNavBar title={'Events Page'}/>
               <EventPage
                 userId={userId}
                 getLocation={getLocation}
@@ -217,6 +233,7 @@ const App = () => {
           path='/userpage'
           element={
             <div>
+              <TopNavBar title={'User Page'}/>
               <UserPage
                 userId={userId}
                 getLocation={getLocation}

@@ -1,6 +1,8 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react"; //TODO: temporary
 import { Link, To, useNavigate } from "react-router-dom";
+import Navbar from 'react-bootstrap/Navbar';
+
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -11,45 +13,45 @@ const NavBar = () => {
   const { logout } = useAuth0();
 
   return (
-    <div>
-      <nav>
-        <span>
+      <Navbar fixed="bottom" className="bottom-nav">
+
           <button
+            className="bottom-nav-button"
             type="button"
             id="navButton"
             onClick={() => handleNavigation("/homepage")}
           >
-            Home Page
+            HP
           </button>
-        </span>
-        <span>
+
           <button
+          className="bottom-nav-button"
             type="button"
             id="navButton"
             onClick={() => handleNavigation("/mappage")}
           >
-            Map
+            M
           </button>
-        </span>
-        <span>
+
           <button
+          className="bottom-nav-button"
             type="button"
             id="navButton"
             onClick={() => handleNavigation("/feedpage")}
           >
-            Feed
+            F
           </button>
-        </span>
-        <span>
+
           <button
+            className="bottom-nav-button"
             type="button"
             id="navButton"
             onClick={() => handleNavigation("/userpage")}
           >
-            UserPage
+            UP
           </button>
-        </span>
-        <span>
+
+        {/* <span>
           <button
             onClick={() =>
               logout({ logoutParams: { returnTo: window.location.origin } })
@@ -57,9 +59,9 @@ const NavBar = () => {
           >
             Log Out
           </button>
-        </span>
-      </nav>
-    </div>
+        </span> */}
+      </Navbar>
+
   );
 };
 export default NavBar;

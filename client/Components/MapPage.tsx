@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
 import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer, Popup } from 'react-map-gl';
-import { Card, Button, Accordion } from 'react-bootstrap'
-import PointAnnotation from 'react-map-gl'
+import { Card, Button, Accordion, Container } from 'react-bootstrap'
 import { useSearchParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
-import { getSearchParamsForLocation } from "react-router-dom/dist/dom";
-import { watch } from "fs";
+
+import { io } from 'socket.io-client';
+const socket = io();
 
 
 interface MapProps {
   userLat: number
   userLng: number
   userId: number
-  watchLocation: any
+  getLocation: any
 }
 
-const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) => {
-  watchLocation();
+const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) => {
+  // watchLocation();
 
   const mapRef = useRef(null);
 
@@ -39,6 +39,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
   const [destinationCoords, setDestinationCoords] = useState<[number, number]>([0, 0]);
   const [routeDirections, setRouteDirections] = useState<any | null>(null);
   const [showRouteDirections, setShowRouteDirections] = useState<boolean>(false)
+  const [isFriendSelected, setIsFriendSelected] = useState<boolean>(false)
   const [friends, setFriends] = useState([])
   const [events, setEvents] = useState([])
   const [showDirections, setShowDirections]= useState<boolean>(false);
@@ -61,15 +62,21 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
   //loads pins immediately on page render
   useEffect(() => {
     getPins();
-    getFriends();
+    //getFriends();
     getEvents();
   }, [setMarkers]);
 
 
-  // setTimeout (() => {
-  //  getLocation()
-  // }, 12000)
+
+  setTimeout (() => {
+   getLocation()
+   if(showDirections){
+     createRouterLine(selectedRouteProfile)
+     console.log('createRouterLine called in setTimout')
+   }
+  }, 120000)
   
+
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
@@ -92,22 +99,62 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
     const endpoints = [`/api/events/getEventsOwned/${userId}`, `/api/events/getEventsParticipating/${userId}`]
     try {
       await axios.all(endpoints.map((endpoint) => axios.get(endpoint))).then(
-        (events) => {events.map((responseEvent) => setEvents(responseEvent.data))} );  
+        (events) => {events.map((responseEvent) => setEvents(responseEvent.data))} );
     } catch (err)  {
         console.error(err)
     }
   }
 
   // gets friends from the database
-  const getFriends = async () => {
-    try {
-      const friends = await axios.get(`/api/friends/getFriends/${userId}`)
-      setFriends(friends.data)
-    } catch (err)  {
-      console.error(err)
-    }
-  }
+  // const getFriends = async () => {
+  //   try {
+  //     const friends = await axios.get(`/api/friends/getFriends/${userId}`)
+  //     setFriends(friends.data)
+  //   } catch (err)  {
+  //     console.error(err)
+  //   }
+  // }
 
+  useEffect (() => {
+    socket.emit("getFriends:read", {userId})
+    console.log('socket emitted from map page')
+
+    const handleGetFriends = (allFriendsUsers: any) => {
+      console.log('Got friends from socket', allFriendsUsers)
+      setFriends(allFriendsUsers)
+    };
+  
+    socket.on("getFriends:send", handleGetFriends)
+  
+    return () => {
+      socket.off("getFriends:send", handleGetFriends)
+    };
+
+  }, []);
+
+ 
+
+  // useEffect (() => {
+  //   console.log('hitting this block')
+  //   socket.on("otherUserLocs", (otherUserLocs) => {
+  //     console.log('Got friends from socket', otherUserLocs)
+  //     setFriends(otherUserLocs)
+  //   })
+  // })
+
+  // useEffect (() => {
+
+  //   const handleOtherLocs = (otherUserLocs: any) => {
+  //     console.log('Got friends from socket', otherUserLocs)
+  //     setFriends(otherUserLocs)
+  //   }
+  //   socket.on("otherUserLocs", handleOtherLocs)
+  //   return () => {
+  //     socket.off('otherUserLocs', handleOtherLocs)
+  //   };
+  // }, [setMarkers])
+
+  
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
 
@@ -115,38 +162,45 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
       modalTrigger()
     }, 250)
 
-    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})  
+    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   }
 
   //finds clicked marker/pin from database
   const clickedMarker = async (e: any) => {
     const currMarkerLng = e._lngLat.lng;
     const currMarkerLat = e._lngLat.lat;
-    
+
     const  lngRounded = currMarkerLng.toString().slice(0,10)
     const  latRounded = currMarkerLat.toString().slice(0,9)
     setClickedPinCoords([lngRounded, latRounded])
-    
+
 
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`)
-        setSelectedPin(data);
-        setIsPinSelected(true);
-        setShowDirections(true);
-        modalTrigger()
-      } catch (err)  {
-        console.error(err); 
-        try {
-          const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
-          console.log('clickedFriend', data);
-          setShowModal(false)
+        if (data) {
+          setSelectedPin(data);
+          setIsPinSelected(true);
+          setShowDirections(true);
+          modalTrigger()
+        } else {
+          setIsFriendSelected(true)
           setShowFriendPopup(true)
           setShowDirections(true)
-        } catch (err)  {
-          console.error(err);
         }
-      }
 
+        // try {
+        //   const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
+        //   console.log('clickedFriend', data);
+        //   setIsFriendSelected(true)
+        //   setShowFriendPopup(true)
+        //   setShowDirections(true)
+        // } catch (err)  {
+        //   console.error(err);
+        // }
+      } catch (err)  {
+        console.error(err); 
+      }
+      
   };
 
  // these are the details that are being set to build the "route"/ line for the directions
@@ -167,9 +221,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
     return routerFeature
   }
 
- // handles the route line creation by making the response from the directions API into a geoJSON 
+ // handles the route line creation by making the response from the directions API into a geoJSON
  // which is the only way to use it in the <Source> tag (displays the "route/line")
-  const createRouterLine = async (userLocation: [number, number], routeProfile: string,): Promise<void> => {
+  const createRouterLine = async (routeProfile: string,): Promise<void> => {
     console.log('userCoords', userLng, userLat)
     const startCoords = `${userLng},${userLat}`
     const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`
@@ -203,21 +257,24 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
     if (isPinSelected === true){
       setCreatePin(false)
       setShowModal(true)
+    } else if (isFriendSelected === true){
+      setCreatePin(false)
+      setShowModal(false)
     } else {
       setShowModal(true)
     }
   }
-  
+
   // converts meters to miles and seconds to hours and minutes
   const humanizedDuration = (duration: number) => {
     duration = Number(duration);
     const h = Math.floor(duration / 3600);
     const m = Math.floor(duration % 3600 / 60);
-   
+
     const hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
     const mDisplay = m > 0 ? m + (m == 1 ? " minute " : " minutes") : "";
 
-    return `${hDisplay + mDisplay}`; 
+    return `${hDisplay + mDisplay}`;
 }
 
  // sets pin category color when the pins load on the map
@@ -255,18 +312,18 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
   }
 
   return (
-    <div>
+    <Container className="body">
       <h1>Map Page!</h1>
       <Accordion>
         <Accordion.Item eventKey="0">
-        <Accordion.Header>Filter Pins</Accordion.Header>  
+        <Accordion.Header>Filter Pins</Accordion.Header>
           <Accordion.Body className="map-accordion-body">
             <center>
             <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
               <button type="button" value="isFree" className="btn" style={{ borderColor: "#53CA3C", color: "#53CA3C" }} onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
               <button type="button" value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
               <button type="button" value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
-              <button type="button" value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button> 
+              <button type="button" value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button>
             </div>
             <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
               <button type="button" value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
@@ -277,16 +334,16 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
           </Accordion.Body>
         </Accordion.Item>
     </Accordion>
-      { showModal ? 
-        <PinModal 
+      { showModal ?
+        <PinModal
           userId={userId}
           setShowModal={setShowModal}
           markers={markers}
           setMarkers={setMarkers}
           isPinSelected={isPinSelected}
           selectedPin={selectedPin}
-          setIsPinSelected={setIsPinSelected} 
-        /> 
+          setIsPinSelected={setIsPinSelected}
+        />
         : null }
       <div id='map-page-filter' >
       </div>
@@ -294,7 +351,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
         ref={mapRef}
         {...viewState}
         onMove={(e) => setViewState(e.viewState)}
-        onClick={(e) => {dropPin(e); createRouterLine(userLocation, selectedRouteProfile)}}
+        onClick={(e) => {dropPin(e); createRouterLine(selectedRouteProfile)}}
         mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
         style={{ position: 'relative', bottom: '0px', width: '100vw', height: "50vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
@@ -305,17 +362,17 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
           showUserHeading={true}
           showUserLocation={true}
           showAccuracyCircle={false}
-          ref={geoControlRef}       
+          ref={geoControlRef}
           />
       <div id='map-markers'>
         {
           renderMarkers.map((marker) => (
-            <Marker 
+            <Marker
             key={marker.id}
-            onClick={(e) => {clickedMarker(e.target)}} 
+            onClick={(e) => {clickedMarker(e.target)}}
             longitude={marker.longitude} latitude={marker.latitude}
             anchor="bottom"
-            color={pinCategoryColor(marker)}> 
+            color={pinCategoryColor(marker)}>
             </Marker>
           ))
         }
@@ -323,12 +380,12 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
       <div id='friend-markers'>
         {
           friends.map((friend) => (
-            <Marker 
+            <Marker
             key={friend.id}
-            onClick={(e) => {clickedMarker(e.target)}} 
+            onClick={(e) => {clickedMarker(e.target)}}
             longitude={friend.longitude} latitude={friend.latitude}
-            anchor="bottom" 
-            color="white"> 
+            anchor="bottom"
+            color="white">
             </Marker>
           ))
         }
@@ -336,12 +393,12 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
       <div id='event-markers'>
         {
           events.map((event) => (
-            <Marker 
+            <Marker
             key={event.id}
-            onClick={(e) => {clickedMarker(e.target)}} 
+            onClick={(e) => {clickedMarker(e.target)}}
             longitude={event.longitude} latitude={event.latitude}
             anchor="bottom"
-            color="#ffbdf0"> 
+            color="#ffbdf0">
             </Marker>
           ))
         }
@@ -373,7 +430,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
               </Popup>
             ))}
           </>
-        ) : null} 
+        ) : null}
       <div id="map-direction-card" className='card w-35'>
         {showDirections ? (
           <div className= 'card-body'>
@@ -382,17 +439,17 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, watchLocation}) 
             <span> Distance to Location:</span> <br /><span> <b>{distance} miles</b></span><br />
             <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
         </div>
-        ) 
-        : null }      
+        )
+        : null }
       </div>
       </Map>
       <center>
       <div id="map-pin-key-img">
         <h3><b>MAP KEY</b></h3>
-        <img src="img/Map_pin_key.jpg" alt="Map Pin Key" width='300' height= "225"/>      
+        <img src="img/Map_pin_key.jpg" alt="Map Pin Key" width='300' height= "225"/>
       </div>
       </center>
-    </div>
+    </Container>
   )
 }
 
