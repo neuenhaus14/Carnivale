@@ -81,7 +81,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
  useEffect(() => {
   getLocation()
-  ('getLocation called in useEffect')
+  console.log('getLocation called in useEffect')
   if(showDirections){
        createRouterLine(selectedRouteProfile)
        console.log('createRouterLine called in useEffect')
