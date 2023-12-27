@@ -50,6 +50,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     zoom: 16,
   });
 
+
   const routeProfiles = [
     {id: 'walking', label: 'Walking'},
     {id: 'cycling', label: 'Cylcing'},
@@ -80,28 +81,19 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 //   return () => clearInterval(interval)
 //  })
 
- useEffect(() => { // this works once
+ useEffect(() => { 
   getLocation()
   console.log('getLocation called in useEffect')
-  if(showDirections){
-       createRouterLine(selectedRouteProfile)
-       console.log('createRouterLine called in useEffect')
-     }
  }, [setUserLocation])
 
  
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
-  useEffect(() => { // this works once
+  useEffect(() => {
     geoControlRef.current?.trigger();
     getLocation()
     console.log('getLocation called in geoLocation')
-    if(showDirections){
-       createRouterLine(selectedRouteProfile)
-       console.log('createRouterLine called in GEOCONTROL REF')
-    }
   }, [geoControlRef.current]);
-
 
   //gets pins from database
   const getPins = async () => {
@@ -151,14 +143,13 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
   useEffect (() => {
     socket.emit("getFriends:read", {userId})
-
     const handleGetFriends = (allFriendsUsers: any) => {
       console.log('Got friends from socket', allFriendsUsers)
       setFriends(allFriendsUsers)
     };
-  
+
     socket.on("getFriends:send", handleGetFriends)
-  
+
     return () => {
       socket.off("getFriends:send", handleGetFriends)
     };
@@ -168,7 +159,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
-
     setTimeout (() => {
       modalTrigger()
     }, 250)
@@ -191,6 +181,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       console.log('clickedMarkerRes', data);
         setSelectedPin(data);
         setIsPinSelected(true);
+        console.log('setispin selected in func', isPinSelected)
         setShowDirections(true);
         modalTrigger()
       } catch (err)  {
@@ -200,14 +191,29 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           console.log('clickedFriend', data);
           setShowFriendPopup(true)
           setShowDirections(true)
+          setIsFriendSelected(true)
+          console.log('setisfriend selected in func', isFriendSelected)
         } catch (err)  {
           console.error(err);
         }
       }
-  
-
-    // modalTrigger()
   };
+
+  // calls the router function/ shows line when a pin or friend is selected
+  useEffect(() => {
+    createRouterLine(selectedRouteProfile)
+    console.log('router line called in useEffect')
+  }, [isPinSelected])
+  useEffect(() => {
+    createRouterLine(selectedRouteProfile)
+    console.log('router line called in useEffect')
+  }, [isFriendSelected])
+
+
+  useEffect(() => {
+    setShowModal(false)
+  }, [isFriendSelected])
+
 
  // these are the details that are being set to build the "route"/ line for the directions
   const makeRouterFeature = (coordinates: [number, number][]): any => {
@@ -230,45 +236,53 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
  // handles the route line creation by making the response from the directions API into a geoJSON
  // which is the only way to use it in the <Source> tag (displays the "route/line")
   const createRouterLine = async (routeProfile: string,): Promise<void> => {
-    console.log('userCoords', userLocation[0], userLocation[1])
-    const startCoords = `${userLocation[0]},${userLocation[1]}`
-    const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`
-    const geometries = 'geojson'
-    const url = `https://api.mapbox.com/directions/v5/mapbox/${routeProfile}/${startCoords};${endCoords}?alternatives=true&geometries=${geometries}&steps=true&banner_instructions=true&overview=full&voice_instructions=true&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw`;
+    //console.log(isPinSelected, isFriendSelected)
+    if (isPinSelected === true || isFriendSelected === true){
+      console.log('userCoords', userLocation[0], userLocation[1])
+      const startCoords = `${userLocation[0]},${userLocation[1]}`
+      const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`
+      const geometries = 'geojson'
+      const url = `https://api.mapbox.com/directions/v5/mapbox/${routeProfile}/${startCoords};${endCoords}?alternatives=true&geometries=${geometries}&steps=true&banner_instructions=true&overview=full&voice_instructions=true&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw`;
 
-    try {
-      const { data } = await axios.get(url);
+      try {
+        const { data } = await axios.get(url);
 
-      data.routes.map((route: any) => {
-        setDistance((route.distance / 1609).toFixed(2)) // meters to miles
-        setDuration((route.duration).toFixed(2)) // hours
-      });
+        data.routes.map((route: any) => {
+          setDistance((route.distance / 1609).toFixed(2)) // meters to miles
+          setDuration((route.duration).toFixed(2)) // hours
+        });
 
-      const coordinates = data['routes'][0]['geometry']['coordinates']
-      const destinationCoordinates = data['routes'][0]['geometry']['coordinates'].slice(-1)[0]
-      setDestinationCoords(destinationCoordinates)
+        const coordinates = data['routes'][0]['geometry']['coordinates']
+        const destinationCoordinates = data['routes'][0]['geometry']['coordinates'].slice(-1)[0]
+        setDestinationCoords(destinationCoordinates)
 
-      if (coordinates.length) {
-        const routerFeature = makeRouterFeature([...coordinates])
-        setRouteDirections(routerFeature)
-        setShowRouteDirections(true);
+        if (coordinates.length) {
+          const routerFeature = makeRouterFeature([...coordinates])
+          setRouteDirections(routerFeature)
+          setShowRouteDirections(true);
+        }
+      } catch (err) {
+        console.error(err);
       }
-    } catch (err) {
-      console.error(err);
     }
   }
 
+
+
   // prompts the modal to open/close
   const modalTrigger = () => {
-    if (isPinSelected === true){
-      setCreatePin(false)
+    // if (isPinSelected === true){
+    //   setCreatePin(false)
+    //   setShowModal(true)
+    // } 
+    // else if (isFriendSelected === true){
+    //   setCreatePin(false)
+    //   setShowModal(false)
+    // } else {
       setShowModal(true)
-    } else if (isFriendSelected === true){
-      setCreatePin(false)
-      setShowModal(false)
-    } else {
-      setShowModal(true)
-    }
+    //   setShowRouteDirections(false)
+    //   console.log('route directions false in modal trigger')
+    // }
   }
 
   // converts meters to miles and seconds to hours and minutes
@@ -358,7 +372,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
         ref={mapRef}
         {...viewState}
         onMove={(e) => setViewState(e.viewState)}
-        onClick={(e) => {dropPin(e); createRouterLine(selectedRouteProfile)}}
+        onClick={(e) => {dropPin(e)}}
         mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
         style={{ position: 'relative', bottom: '0px', width: '100vw', height: "50vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
@@ -444,7 +458,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
             <span> <b>Walking Directions: </b></span> <br />
             <span> Time to Location: </span> <br /><span><b>{humanizedDuration(duration)}</b></span> <br />
             <span> Distance to Location:</span> <br /><span> <b>{distance} miles</b></span><br />
-            <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false); getLocation()}}>Close</button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
         </div>
         )
         : null }
