@@ -66,6 +66,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     getEvents();
   }, [setMarkers]);
 
+
   // this calls the getLocation and show directions function to update every 30 seconds (in theory)
 //  useEffect(() => {
 //   getLocation()
@@ -79,7 +80,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 //   return () => clearInterval(interval)
 //  })
 
- useEffect(() => {
+ useEffect(() => { // this works once
   getLocation()
   console.log('getLocation called in useEffect')
   if(showDirections){
@@ -91,10 +92,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
  
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
-  useEffect(() => {
+  useEffect(() => { // this works once
     geoControlRef.current?.trigger();
     getLocation()
-    ('getLocation called in geoLocation')
+    console.log('getLocation called in geoLocation')
     if(showDirections){
        createRouterLine(selectedRouteProfile)
        console.log('createRouterLine called in GEOCONTROL REF')
@@ -123,7 +124,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     }
   }
 
-  // gets friends from the database
+  //gets friends from the database
   // const getFriends = async () => {
   //   try {
   //     const friends = await axios.get(`/api/friends/getFriends/${userId}`)
@@ -137,8 +138,14 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     // this coords is data.dataValues from the database as a response to the emit
     socket.on('userLoc response', (userLoc) => {
       console.log('userLoc response in map', userLoc)
-      setUserLocation([userLoc.longitude, userLoc.latitude])
-
+      if (userLoc.id === userId){
+        setUserLocation([userLoc.longitude, userLoc.latitude]) // assuming everytime state is set there is a new render with updated loc
+        console.log('userLoc set')
+      } else {
+        const friend = friends.filter((friend) => friend.id === userLoc.id)
+        console.log('friend', friend)
+        setFriends((friends) => [...friends, ...friend]) // assuming everytime state is set there is a new render with updated loc
+      }
     })
   });
 
@@ -178,33 +185,28 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     const  latRounded = currMarkerLat.toString().slice(0,9)
     setClickedPinCoords([lngRounded, latRounded])
 
-
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`)
-        if (data) {
-          setSelectedPin(data);
-          setIsPinSelected(true);
-          setShowDirections(true);
-          modalTrigger()
-        } else {
-          setIsFriendSelected(true)
-          setShowFriendPopup(true)
-          setShowDirections(true)
-        }
-
-        // try {
-        //   const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
-        //   console.log('clickedFriend', data);
-        //   setIsFriendSelected(true)
-        //   setShowFriendPopup(true)
-        //   setShowDirections(true)
-        // } catch (err)  {
-        //   console.error(err);
-        // }
+      console.log('response data', data[0].longitude, data[0].latitude)
+      console.log('clickedMarkerRes', data);
+        setSelectedPin(data);
+        setIsPinSelected(true);
+        setShowDirections(true);
+        modalTrigger()
       } catch (err)  {
         console.error(err); 
+        try {
+          const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
+          console.log('clickedFriend', data);
+          setShowFriendPopup(true)
+          setShowDirections(true)
+        } catch (err)  {
+          console.error(err);
+        }
       }
-      
+  
+
+    // modalTrigger()
   };
 
  // these are the details that are being set to build the "route"/ line for the directions
@@ -442,7 +444,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
             <span> <b>Walking Directions: </b></span> <br />
             <span> Time to Location: </span> <br /><span><b>{humanizedDuration(duration)}</b></span> <br />
             <span> Distance to Location:</span> <br /><span> <b>{distance} miles</b></span><br />
-            <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false); getLocation()}}>Close</button>
         </div>
         )
         : null }
