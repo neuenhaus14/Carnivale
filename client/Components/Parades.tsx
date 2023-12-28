@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import EventCreateModal from "./EventCreateModal";
-import { Button }  from 'react-bootstrap'
+import { Button } from "react-bootstrap";
 
 interface ParadeInfo {
   title: string;
@@ -17,35 +17,39 @@ interface ParadeInfo {
 }
 
 interface ParadeProps {
-  lng: number,
-  lat: number,
-  userId: number,
+  lng: number;
+  lat: number;
+  userId: number;
 }
 
-const Parade: React.FC<ParadeProps> = ({ userId, lng, lat}) => {
+const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   const [paradeInfo, setParadeInfo] = useState<ParadeInfo | null>(null);
   const [selectedParade, setSelectedParade] = useState<string | null>(null);
   const [paradeList, setParadeList] = useState<string[]>([]);
-  
+
   // state needed for create event modal
   const [showCreateModal, setShowCreateModal] = useState(false);
   // determines whether creating or updating
-  const [isNewEvent, setIsNewEvent] = useState(false); 
+  const [isNewEvent, setIsNewEvent] = useState(false);
   const [friends, setFriends] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState({ latitude: 0, longitude: 0, startTime: null, endTime: null })
+  const [selectedEvent, setSelectedEvent] = useState({
+    latitude: 0,
+    longitude: 0,
+    startTime: null,
+    endTime: null,
+  });
 
-
-  // need to get friends in order to know 
+  // need to get friends in order to know
   // who we can invite to the event being created
   const getFriends = async () => {
     try {
-      const friends = await axios.get(`/api/friends/getFriends/${userId}`)
+      const friends = await axios.get(`/api/friends/getFriends/${userId}`);
       // console.log('here', friends.data);
       setFriends(friends.data);
     } catch (err) {
-      console.error('CLIENT ERROR: failed to GET user friends', err)
+      console.error("CLIENT ERROR: failed to GET user friends", err);
     }
-  }
+  };
 
   const fetchParadeInfo = async (paradeName: string) => {
     try {
@@ -74,9 +78,9 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat}) => {
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const selectedParadeName = event.target.value;
-    const formattedParadeName = selectedParadeName
-      .replace(/\s+/g, "-")
-      .toLowerCase();
+    const formattedParadeName = encodeURIComponent(
+      selectedParadeName.replace(/\s+/g, "-").toLowerCase()
+    );
 
     try {
       const response: any = await axios.get<ParadeInfo>(
@@ -114,15 +118,23 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat}) => {
         </select>
       </div>
 
-
-
       {paradeInfo && (
         <div>
-          <Button onClick={async () => {
-            await setIsNewEvent(true);
-            await setShowCreateModal(true);
-            await setSelectedEvent({...paradeInfo, latitude: 0, longitude: 0, endTime: null, startTime: null});
-            }}>Create Event</Button>
+          <Button
+            onClick={async () => {
+              await setIsNewEvent(true);
+              await setShowCreateModal(true);
+              await setSelectedEvent({
+                ...paradeInfo,
+                latitude: 0,
+                longitude: 0,
+                endTime: null,
+                startTime: null,
+              });
+            }}
+          >
+            Create Event
+          </Button>
           <h2>{paradeInfo.title}</h2>
           <p>
             Start Time: {""}
@@ -192,14 +204,13 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat}) => {
         </div>
       )}
 
-<EventCreateModal
+      <EventCreateModal
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
         setShowCreateModal={setShowCreateModal}
         showCreateModal={showCreateModal}
         friends={friends}
         userId={userId}
-
         // isUserAttending={isUserAttending}
         // setIsUserAttending={setIsUserAttending}
         // getEventsInvited={getEventsInvited}
@@ -209,7 +220,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat}) => {
         lat={lat}
         lng={lng}
         //getLocation={getLocation}
-        eventType={'parade'}
+        eventType={"parade"}
       />
     </div>
   );
