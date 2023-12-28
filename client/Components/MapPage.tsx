@@ -342,9 +342,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       backgroundColor: "white",
       color: `${colorMapping[value]}`,
       borderColor: `${colorMapping[value]}`,
+      borderWidth: "5px"
     }
 
-    if (value === filterChoice){
+    if (value === filterChoice && filterOn === true){
       return on
     } else {
       return off
@@ -383,7 +384,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
             <button type="button" style={filterStyling("isPoliceStation")} value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
             <button type="button" style={filterStyling("isEMTStation")} value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button>
           </div><br />
-          <button type="button" value="clearFilters" className="btn" onClick={()=> {setFilterOn(false)}}>Clear Filter</button>
+          <button type="button" value="clearFilters" className="btn" onClick={()=> {setFilterOn(false); filterStyling(filterChoice)}}>Clear Filter</button>
         </center>
       { showModal ?
         <PinModal
