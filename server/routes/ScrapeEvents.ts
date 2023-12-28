@@ -2,14 +2,19 @@ import express, {Router, Request, Response } from 'express';
 import axios from 'axios'
 import puppeteer from 'puppeteer';
 import fs from 'fs/promises'
-import {Event} from '../db'
+import {Event} from '../db';
 import cheerio from "cheerio";
 
+
 const Gigs = express.Router()
-
+//new Date makes todays date
+//LOOK INTO PROMISESALL
+const userDate = new Date().toISOString().slice(0, 10)
 //TODO: add  UI drop down for date requests. If already scraped, return the scraped dates. If not, scrape and add to db
-const userDate = ""
 
+//const userDate = ""
+//setInterval(start(userDate), 1000*60*60*24)
+//const job = schedule.scheduleJob('10 12 * * 1-7', function(start(userDate)));
 //making an async function for cheerio scraping
 async function start(userDate: string) {
 //string interpolation for the UI date request (YYYY-MM-DD)
@@ -59,11 +64,11 @@ async function start(userDate: string) {
   //array for proper time numbers for next for loop
   const proper = []
   for (let i = 0; i < day.length; i++) {
-    proper.push(new Date(new Date(`${date[i]} 2023 ${time[i]}:00`)))
+    proper.push(new Date(`${date[i]} 2023 ${time[i]}:00`))
   }
   //finally, array to hold individual objects to be added to db
   //console.log('date', date.length, 'act', act.length, 'location', location.length, 'proper', proper.length, 'day', day.length)
-
+//await for all the addresses in the location array, make an array of tuples [lat lng] for every address, send a reqquest for the coordis converter
 
   const mainArr = []
   for (let i = 0; i < day.length; i++) {
@@ -89,7 +94,7 @@ async function start(userDate: string) {
   //conditional logic to prevent duplicates. Find or Create
   for (let i = 0; i < mainArr.length; i++) {
     const rand = Math.floor(Math.random() * mainArr.length)
-    Event.findOrCreate({where: mainArr[i]})
+    await Event.findOrCreate({where: mainArr[i]})
     .then(() => {
       console.log("Successfully written to Event Database")
     })
