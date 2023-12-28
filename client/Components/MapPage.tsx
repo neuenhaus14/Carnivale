@@ -342,7 +342,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       backgroundColor: "white",
       color: `${colorMapping[value]}`,
       borderColor: `${colorMapping[value]}`,
-      borderWidth: "5px"
+      borderWidth: "3px",
+      borderStyle: "solid",
+      fontWeight: "bold"
     }
 
     if (value === filterChoice && filterOn === true){
@@ -371,21 +373,22 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
   return (
     <Container className="body">
-      <span>Click on the Map to add a Pin or on a Pin to see the details</span><br />
+      <span>Click on the Map to add a Pin or on a Pin to see the details</span>
+      <span>FILTER PINS</span>
         <center id='map-filter-buttons'>
-          <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
+          <div className="btn-group" role="group" aria-label="Basic example">
             <button type="button" style={filterStyling("isFree")} value="isFree"  className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
             <button type="button" style={filterStyling("isToilet")} value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
             <button type="button" style={filterStyling("isFood")} value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
             <button type="button" style={filterStyling("isPersonal")} value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button>
           </div>
-          <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
+          <div className="btn-group" role="group" aria-label="Basic example">
             <button type="button" style={filterStyling("isPhoneCharger")} value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
             <button type="button" style={filterStyling("isPoliceStation")} value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
             <button type="button" style={filterStyling("isEMTStation")} value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button>
           </div><br />
           <button type="button" value="clearFilters" className="btn" onClick={()=> {setFilterOn(false); filterStyling(filterChoice)}}>Clear Filter</button>
-        </center>
+        </center><br />
       { showModal ?
         <PinModal
           userId={userId}
