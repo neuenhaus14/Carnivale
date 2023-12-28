@@ -476,14 +476,15 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
         {showDirections ? (
           <div className= 'card-body'>
             {/* <span> <b>Walking Directions: </b></span> <br /> */}
-            <span><b>{humanizedDuration(duration)}</b> away</span> <br />
-            <span> <b>{distance}</b> miles</span><br />
+            <p style={{fontSize: "15px"}}><b>{humanizedDuration(duration)}</b> away</p> <br />
+            <p style={{fontSize: "15px"}}> <b>{distance}</b> miles</p><br />
             <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
         </div>
         )
         : null }
       </div>
       </Map>
+      <div id="map-filter-container" className="container">
       <span>FILTER PINS</span>
         <center id='map-filter-buttons'>
           <div className="btn-group" role="group" aria-label="Basic example"> 
@@ -497,8 +498,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
             <button type="button" style={filterStyling("isPoliceStation")} value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
             <button type="button" style={filterStyling("isEMTStation")} value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button><br />
            </div><br /> 
-          <button type="button" value="clearFilters" className="btn" onClick={()=> {setFilterOn(false); filterStyling(filterChoice)}}>Clear Filter</button>
+          <button type="button" value="clearFilters" className="btn btn-wide" onClick={()=> {setFilterOn(false); filterStyling(filterChoice)}}>Clear Filter</button>
         </center><br />
+        </div>
       {/* <center>
       <div id="map-pin-key-img">
       <h3><b>MAP KEY</b></h3>

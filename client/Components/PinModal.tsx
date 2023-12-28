@@ -97,8 +97,8 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     { isPinSelected
     ? (
       <Modal show={isShow} onHide={initModal}>
-          <Modal.Header >
-            <Modal.Title> {pinCategory(selectedPin[0].pinCategory)} Pins</Modal.Title>
+          <Modal.Header id="modal-header">
+            <Modal.Title > {pinCategory(selectedPin[0].pinCategory)} Pins</Modal.Title>
           </Modal.Header>
           { showPhoto ? (
           <div>
@@ -108,17 +108,17 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
                   selectedPin.map((pin: any) => (
                     <div key={pin.id}>
                       <p><b>Submitted by: </b>{pin.firstName} {pin.lastName}</p>
-                      <img src={pin.photoURL} alt="Pin Photo" height="300" width='300'/>
-                      <p>{pin.description}</p>
+                      <img src={pin.photoURL} alt="Pin Photo" style={{ maxWidth: "100%", height: "auto",  marginTop: "10px"}}/>
+                      <br /><p>{pin.description}</p>
                     </div>
                   ))
                 }
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <ShareModal postId={selectedPin[0].id} userId={1} postType={"pin"}/>
-            <Button variant="danger" onClick={initModal}> Close </Button>
-            <Button variant="dark "onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
+            {/* <ShareModal postId={selectedPin[0].id} userId={1} postType={"pin"}/> */}
+            <Button onClick={initModal} style={{backgroundColor: "#53CA3C"}}> Close </Button>
+            <Button id="modal-addPhoto-btn" onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
           </Modal.Footer>
           </div>
             ) : (
@@ -131,17 +131,12 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
             lat={pin.latitude}
             lng={pin.longitude}
             saveCreatedPin={saveCreatedPin}
-            latPost={null}
-              lngPost={null}
-              isThrow={null}
-              isCostume={null}
-              createPhoto={null}
-              userId={userId}
-            /> ))}
+            latPost={null} lngPost={null} isThrow={null} isCostume={null} createPhoto={null} userId={userId}/> 
+            ))}
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="danger" onClick={initModal}> Close </Button>
+            <Button id="modal-close-btn" onClick={initModal}> Close </Button>
           </Modal.Footer>
           </div>
               )
@@ -202,7 +197,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
           </Form>
         </Modal.Body>
         <Modal.Footer>
-        <Button variant="danger" onClick={initModal}> Close </Button>
+        <Button id="modal-close-btn" onClick={initModal}> Close </Button>
         </Modal.Footer>
       </Modal>)
       }

@@ -1,9 +1,11 @@
 @import "~bootstrap/scss/bootstrap";
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700&family=Inter:wght@600;700&family=Shrikhand&display=swap');
 
 
 $greeny: #169874;
 $pinky: #e7abff;
-$yeller: #ecc800;
+$yeller: #FCC54E;
+$dark: #301A4B;
 
 $isFree:#53CA3C;
 $isToilet: #169873;
@@ -13,9 +15,6 @@ $isPhoneCharger: #53e3d4;
 $isPoliceStation: #E7ABFF;
 $isEMTStation:#f27d52;
 
-$greeny: #169874;
-$pinky: #e7abff;
-$yeller: #fcc54e;
 
 .card {
   padding: 10px;
@@ -25,13 +24,15 @@ $yeller: #fcc54e;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
   margin-top: 10px;
-  border: 2px solid #8d3dad;
+  border: 2px solid #BA37DD;
 }
 
 #map-direction-card{
   max-width: 8rem;
   max-height: 12rem;
   margin: left;
+  border: none;
+  box-shadow: none;
 
   .card-body{
     padding-top: 2px;
@@ -40,6 +41,35 @@ $yeller: #fcc54e;
     padding-left: 2px;
   }
 
+}
+
+// #map-direction-card{
+//   max-width: 8rem;
+//   max-height: 12rem;
+//   margin: left;
+//   border: 2px solid #BA37DD;
+//   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+//   background-color: white;
+
+//   #card-body{
+//     padding-top: 2px;
+//     padding-right: 2px;
+//     padding-bottom: 2px;
+//     padding-left: 2px;
+//   }
+
+// }
+
+#map-filter-container {
+  background-color: white;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  margin-top: 10px;
+  // border: 2px solid #BA37DD;
 }
 
 // .map-accordion-body{
@@ -60,7 +90,8 @@ span {
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin: 20px;
+  margin: 4px;
+  padding-bottom: 1rem;
 }
 
 
@@ -72,11 +103,12 @@ span {
   width: 80vw;
   max-width: 400px;
   margin: 10px auto;
+  border-top: $dark solid 2px;
 }
 
 .btn-primary {
   background-color: $yeller !important;
-  color: black;
+  color: $dark;
 }
 
 .btn-success {
@@ -93,11 +125,11 @@ span {
 }
 
 .bottom-nav-button {
-  height: 50px;
-  width: 50px;
+  height: 70px;
+  width: 70px;
   background-color: $yeller;
-  color: black;
-  font-size: 30px;
+  color: $dark;
+  font-size: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,7 +142,7 @@ span {
   justify-content: space-evenly;
   background-color: white;
   height: 12vh;
-  border-top: black solid 2px;
+  border-top: $dark solid 2px;
 }
 
 .top-nav {
@@ -121,7 +153,7 @@ span {
   background-color: $greeny;
   height: 8vh;
   color: white;
-  font-size: 16px;
+  font-size: 30px;
   font-weight: bold;
 }
 
@@ -130,7 +162,8 @@ span {
   padding-bottom: 14vh;
   display: flex;
   flex-direction: column;
-  background-color: #f3d7fe;
+  // background-color: #f3d7fe;
+  background-color: $pinky;
 }
 
 
@@ -141,10 +174,14 @@ span {
   background-color: #e7abff;
 }
 
-.userPage-tabs {
-  // border: 2px solid black;
-
+#modal-header{
+  background-color: $greeny;
 }
+
+#modal-close-btn{
+  background-color: #BA37DD;
+}
+
 
 h5 {
 text-align: center;
@@ -154,3 +191,11 @@ text-transform: uppercase;
 font-weight: bold;
 }
 
+p {
+  font-size: 20px
+}
+
+body{
+  color: $dark;
+  font-family: 'Fredoka', sans-serif;
+}
