@@ -1,14 +1,17 @@
 @import "~bootstrap/scss/bootstrap";
 
-// @import "../../node_modules/bootstrap/scss/bootstrap";
-// .friend-markers{
-//   background-image: url("/images/friend_dot.png");
-//   background-size: cover;
-//   width: 50px;
-//   height: 50px;
-//   border-radius: 50%;
-//   cursor: pointer;
-// }
+
+$greeny: #169874;
+$pinky: #e7abff;
+$yeller: #ecc800;
+
+$isFree:#53CA3C;
+$isToilet: #169873;
+$isFood: #FCC54E;
+$isPersonal: #BA37DD;
+$isPhoneCharger: #53e3d4;
+$isPoliceStation: #E7ABFF;
+$isEMTStation:#f27d52;
 
 #map-direction-card{
   max-width: 8rem;
@@ -24,14 +27,10 @@
 
 }
 
-.map-accordion-body{
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
-
-$greeny: #169874;
-$pinky: #e7abff;
-$yeller: #ecc800;
+// .map-accordion-body{
+//   padding-top: 2px;
+//   padding-bottom: 2px;
+// }
 
 .btn {
   border: none;

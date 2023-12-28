@@ -28,11 +28,10 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
   const [showPhoto, setShowPhoto] = useState(true);
   //const [marker, setMarkers] = useState([markers]);
 
-  const urlSearchString = window.location.search.substring(1);
-  const parsedParams = JSON.parse('{"' + urlSearchString.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
-
-  const { lng } = parsedParams;
-  const { lat } = parsedParams;
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const params = Object.fromEntries(urlSearchParams.entries());
+  
+  const { lng, lat } = params;
 
   const initModal = () => {
     setShow(!isShow);
@@ -48,6 +47,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     setIsPhoneCharger(false)
     setIsPoliceStation(false)
     setIsEMTStation(false)
+    setIsPinSelected(false);
   }
 
   const saveCreatedPin = async () => {

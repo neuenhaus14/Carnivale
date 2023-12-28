@@ -25,13 +25,13 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   const mapRef = useRef(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [createPin, setCreatePin] = useState<boolean>(false)
   const [isPinSelected, setIsPinSelected] = useState<boolean>(false)
   const [selectedPin, setSelectedPin] = useState({})
   const [showModal, setShowModal] = useState<boolean>(false)
   const [markers, setMarkers] = useState([]);
   const [filteredMarkers, setFilteredMarkers] = useState([])
   const [filterOn, setFilterOn] = useState<boolean>(false)
+  const [filterChoice, setFilterChoice] = useState<string>('')
   const [userLocation, setUserLocation] = useState<[number, number]>([userLng, userLat]);
   const [clickedPinCoords, setClickedPinCoords] = useState<[number, number]>([0, 0])
   const [distance, setDistance] = useState(null);
@@ -91,7 +91,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
     geoControlRef.current?.trigger();
-    getLocation()
     console.log('getLocation called in geoLocation')
   }, [geoControlRef.current]);
 
@@ -159,10 +158,12 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
-    setTimeout (() => {
-      modalTrigger()
-    }, 250)
+    setShowModal(true)
 
+      // setTimeout (() => {
+      //   setShowModal(true)
+      // }, 100)
+ 
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   }
 
@@ -183,12 +184,14 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
         setIsPinSelected(true);
         console.log('setispin selected in func', isPinSelected)
         setShowDirections(true);
-        modalTrigger()
+        setIsFriendSelected(true)
+        //modalTrigger()
       } catch (err)  {
         console.error(err); 
         try {
           const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
           console.log('clickedFriend', data);
+          setSelectedPin(data);
           setShowFriendPopup(true)
           setShowDirections(true)
           setIsFriendSelected(true)
@@ -202,16 +205,20 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   // calls the router function/ shows line when a pin or friend is selected
   useEffect(() => {
     createRouterLine(selectedRouteProfile)
-    console.log('router line called in useEffect')
+    // setShowModal(true)
+    // console.log('useeffect showmodal', showModal)
   }, [isPinSelected])
+
   useEffect(() => {
     createRouterLine(selectedRouteProfile)
-    console.log('router line called in useEffect')
+    console.log('router is called in friend useEffect')
   }, [isFriendSelected])
 
 
   useEffect(() => {
+    console.log('in friend use effect', showModal)
     setShowModal(false)
+    console.log('in friend use effect after state', showModal)
   }, [isFriendSelected])
 
 
@@ -237,8 +244,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
  // which is the only way to use it in the <Source> tag (displays the "route/line")
   const createRouterLine = async (routeProfile: string,): Promise<void> => {
     //console.log(isPinSelected, isFriendSelected)
-    if (isPinSelected === true || isFriendSelected === true){
-      console.log('userCoords', userLocation[0], userLocation[1])
+    // if (isPinSelected === true || isFriendSelected === true){
       const startCoords = `${userLocation[0]},${userLocation[1]}`
       const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`
       const geometries = 'geojson'
@@ -264,26 +270,26 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       } catch (err) {
         console.error(err);
       }
-    }
+    // }
   }
 
 
 
   // prompts the modal to open/close
-  const modalTrigger = () => {
-    // if (isPinSelected === true){
-    //   setCreatePin(false)
-    //   setShowModal(true)
-    // } 
-    // else if (isFriendSelected === true){
-    //   setCreatePin(false)
-    //   setShowModal(false)
-    // } else {
-      setShowModal(true)
-    //   setShowRouteDirections(false)
-    //   console.log('route directions false in modal trigger')
-    // }
-  }
+  // const modalTrigger = () => {
+  //   // if (isPinSelected === true){
+  //   //   setCreatePin(false)
+  //   //   setShowModal(true)
+  //   // } 
+  //   // else if (isFriendSelected === true){
+  //   //   setCreatePin(false)
+  //   //   setShowModal(false)
+  //   // } else {
+  //    setShowModal(true)
+  //   //   setShowRouteDirections(false)
+  //   //   console.log('route directions false in modal trigger')
+  //   // }
+  // }
 
   // converts meters to miles and seconds to hours and minutes
   const humanizedDuration = (duration: number) => {
@@ -316,45 +322,69 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     }
   }
 
-  const filterResults = (e: string) => {
-    const filterChoice = e;
+  const filterStyling = (value: string) => {
+    const colorMapping: PinColorMapping = {
+      isFree:"#53CA3C",
+      isToilet: "#169873",
+      isFood: "#FCC54E",
+      isPersonal: "#BA37DD",
+      isPhoneCharger: '#53e3d4',
+      isPoliceStation: "#E7ABFF",
+      isEMTStation:"#f27d52"
+    }
 
+    const off = {
+      backgroundColor: `${colorMapping[value]}`,
+      color: "black"
+    }
+
+    const on = {
+      backgroundColor: "white",
+      color: `${colorMapping[value]}`,
+      borderColor: `${colorMapping[value]}`,
+    }
+
+    if (value === filterChoice){
+      return on
+    } else {
+      return off
+    }    
+  }
+
+  const filterResults = (e: string) => {
+    setFilterOn(false)
+    const choice = e;
+    
     const filteredPins = markers.filter((marker) => {
       for(const key in marker){
-       if (marker[filterChoice] === true){
+       if (marker[choice] === true){
         return marker
        }
       }
     })
 
-    setFilterOn(!filterOn)
+    setFilterOn(true)
+    setFilterChoice(choice)
     setFilteredMarkers(filteredPins)
   }
 
   return (
     <Container className="body">
-      <h3>Click on the Map to add a Pin </h3>
-      <h3>or on a Pin to see the details</h3>
-      <Accordion>
-        <Accordion.Item eventKey="0">
-        <Accordion.Header>Filter Pins</Accordion.Header>
-          <Accordion.Body className="map-accordion-body">
-            <center>
-            <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
-              <button type="button" value="isFree" className="btn" style={{ borderColor: "#53CA3C", color: "#53CA3C" }} onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
-              <button type="button" value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
-              <button type="button" value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
-              <button type="button" value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button>
-            </div>
-            <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
-              <button type="button" value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
-              <button type="button" value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
-              <button type="button" value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button>
-            </div>
-            </center>
-          </Accordion.Body>
-        </Accordion.Item>
-    </Accordion>
+      <span>Click on the Map to add a Pin or on a Pin to see the details</span><br />
+        <center id='map-filter-buttons'>
+          <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
+            <button type="button" style={filterStyling("isFree")} value="isFree"  className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
+            <button type="button" style={filterStyling("isToilet")} value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
+            <button type="button" style={filterStyling("isFood")} value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
+            <button type="button" style={filterStyling("isPersonal")} value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button>
+          </div>
+          <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
+            <button type="button" style={filterStyling("isPhoneCharger")} value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
+            <button type="button" style={filterStyling("isPoliceStation")} value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
+            <button type="button" style={filterStyling("isEMTStation")} value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button>
+          </div><br />
+          <button type="button" value="clearFilters" className="btn" onClick={()=> {setFilterOn(false)}}>Clear Filter</button>
+        </center>
       { showModal ?
         <PinModal
           userId={userId}
@@ -464,12 +494,12 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
         : null }
       </div>
       </Map>
-      <center>
+      {/* <center>
       <div id="map-pin-key-img">
         <h3><b>MAP KEY</b></h3>
         <img src="img/Map_pin_key.jpg" alt="Map Pin Key" width='300' height= "225"/>
       </div>
-      </center>
+      </center> */}
     </Container>
   )
 }
