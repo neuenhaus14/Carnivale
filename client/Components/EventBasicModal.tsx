@@ -254,21 +254,21 @@ const EventBasicKreweTab: React.FC<EventBasicKreweTabProps> = ({
       );
     });
 
-    return (
+  return (
     <Tab eventKey='people' title='People'>
       <ul>{attendingFriendsItems}</ul>
-          <ul>{invitedFriendsItems}</ul>
-          <ul>{uninvitedFriendsItems}</ul>
-          {isUserAttending && (
-            <Button
-              disabled={friendsToInvite.length === 0}
-              onClick={() => sendFriendInvites()}
-            >
-              Send Invites
-            </Button>
-          )}
+      <ul>{invitedFriendsItems}</ul>
+      <ul>{uninvitedFriendsItems}</ul>
+      {isUserAttending && (
+        <Button
+          disabled={friendsToInvite.length === 0}
+          onClick={() => sendFriendInvites()}
+        >
+          Send Invites
+        </Button>
+      )}
     </Tab>
-    )
+  );
 };
 
 const EventBasicModal: React.FC<EventBasicModalProps> = ({
@@ -341,13 +341,11 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
     setIsUserAttending(!isUserAttending);
   };
 
+  //    PEOPLE ACCORDION FUNCTIONALITY
 
-//    PEOPLE ACCORDION FUNCTIONALITY
-
-const [invitees, setInvitees] = useState([]);
+  const [invitees, setInvitees] = useState([]);
   const [participants, setParticipants] = useState([]);
   const [friendsToInvite, setFriendsToInvite] = useState([]); // collects friends to invite as group to event
-
 
   useEffect(() => {
     getPeopleForEvent();
@@ -434,15 +432,7 @@ const [invitees, setInvitees] = useState([]);
       );
     });
 
-
-
-
-
-
-
-
-////////////////////////////////////////
-
+  ////////////////////////////////////////
 
   return (
     <Modal className='event-modal' show={showBasicModal} onHide={handleClose}>
@@ -487,18 +477,18 @@ const [invitees, setInvitees] = useState([]);
           </Tab>
 
           <Tab eventKey='people' title='People'>
-      <ul>{attendingFriendsItems}</ul>
-          <ul>{invitedFriendsItems}</ul>
-          <ul>{uninvitedFriendsItems}</ul>
-          {isUserAttending && (
-            <Button
-              disabled={friendsToInvite.length === 0}
-              onClick={() => sendFriendInvites()}
-            >
-              Send Invites
-            </Button>
-          )}
-    </Tab>
+            <ul>{attendingFriendsItems}</ul>
+            <ul>{invitedFriendsItems}</ul>
+            <ul>{uninvitedFriendsItems}</ul>
+            {isUserAttending && (
+              <Button
+                disabled={friendsToInvite.length === 0}
+                onClick={() => sendFriendInvites()}
+              >
+                Send Invites
+              </Button>
+            )}
+          </Tab>
 
           {/* <EventBasicKreweTab
                 isUserAttending={isUserAttending}
@@ -507,13 +497,13 @@ const [invitees, setInvitees] = useState([]);
                 userId={userId}/> */}
 
           <Tab eventKey='people1' title='People1'>
-            <Form.Switch
+            {/* <Form.Switch
               type='switch'
               id='attending-switch'
               label='Attending?'
               onChange={() => toggleAttendance()}
               defaultChecked={isUserAttending}
-            />
+            /> */}
 
             {
               // only allow invites if the user is attending the event
@@ -527,7 +517,14 @@ const [invitees, setInvitees] = useState([]);
           </Tab>
         </Tabs>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer style={{ display: 'flex', justifyContent: 'around' }}>
+        <Form.Switch
+          type='switch'
+          id='attending-switch'
+          label='Attending?'
+          onChange={() => toggleAttendance()}
+          defaultChecked={isUserAttending}
+        />
         <Button variant='danger' onClick={handleClose}>
           Close Event
         </Button>
