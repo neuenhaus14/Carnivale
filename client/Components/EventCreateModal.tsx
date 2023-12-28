@@ -487,7 +487,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   console.log('rock bottom, isEventUpdated',isEventUpdated,'selectedEvent', selectedEvent, 'isNewEvent', isNewEvent);
   return (
-    <Modal show={showCreateModal} onHide={handleClose}>
+    <Modal className="event-modal" show={showCreateModal} onHide={handleClose}>
       <Modal.Header>
         <Modal.Title>
           {isNewEvent === false
@@ -520,63 +520,50 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           </div>
           <div>
             <Form>
-              <Form.Group className='mb-5' controlId='formEvent'>
+              <Form.Group controlId='formEvent'>
                 {/* <p>{eventName}</p> */}
-                <FloatingLabel
-                  controlId='floatingEventNameInput'
-                  label='Event Name'
-                  className='my-1'
-                >
+
                   <Form.Control
                     type='text'
                     name='name'
                     value={eventName}
                     onChange={handleInputChange}
+                    placeholder='Event Name'
                   />
-                </FloatingLabel>
+
 
                 {/* <p>{eventDescription}</p> */}
-                <FloatingLabel
-                  controlId='floatingEventDescriptionInput'
-                  label='Description'
-                  className='mb-1'
-                >
+
                   <Form.Control
                     type='text'
                     name='description'
                     value={eventDescription}
                     onChange={handleInputChange}
+                    placeholder='Description'
                   />
-                </FloatingLabel>
+
 
                 {/* <p>{eventAddress}</p> */}
-                <FloatingLabel
-                  controlId='floatingEventAddressInput'
-                  label='Address'
-                  className='mb-1'
-                >
+
                   <Form.Control
                     type='text'
                     name='address'
                     value={eventAddress}
                     onChange={handleInputChange}
                     onBlur={handleAddressToCoordinates}
+                    placeholder='Address'
                   />
-                </FloatingLabel>
+
 
                 {/* <p>{eventStartDate}</p> */}
-                <FloatingLabel
-                  controlId='floatingEventStartDateInput'
-                  label='Start Date: YYYY-MM-DD'
-                  className='mb-1'
-                >
                   <Form.Control
                     type='text'
                     name='start'
                     value={eventStartDate}
                     onChange={handleDateChange}
+                    placeholder='Start Date: YYYY-MM-DD'
                   />
-                </FloatingLabel>
+
 
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                   <div style={{ width: '85px' }}>
@@ -593,18 +580,13 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                 </div>
 
                 {/* <p>{eventEndDate}</p> */}
-                <FloatingLabel
-                  controlId='floatingEventEndDateInput'
-                  label='End Date: YYYY-MM-DD'
-                  className='mb-1'
-                >
                   <Form.Control
                     type='text'
                     name='end'
                     value={eventEndDate}
                     onChange={handleDateChange}
+                    placeholder='End Date: YYYY-MM-DD'
                   />
-                </FloatingLabel>
 
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                   <div style={{ width: '85px' }}>

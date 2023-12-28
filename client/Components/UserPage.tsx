@@ -3,22 +3,25 @@ import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
-import { Button, Container } from 'react-bootstrap';
-import { LuThumbsUp, LuThumbsDown } from "react-icons/lu";
-import { MdCancel, MdOutlineRemoveCircle } from "react-icons/md";
-import { IoPersonRemoveSharp } from "react-icons/io5";
-import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
-import { FaEnvelope } from "react-icons/fa";
+import {
+  Button,
+  Container,
+  Accordion,
+  Row,
+  Col,
+  Tab,
+  Tabs,
+} from 'react-bootstrap';
+import { LuThumbsUp, LuThumbsDown } from 'react-icons/lu';
+import { MdCancel, MdOutlineRemoveCircle } from 'react-icons/md';
+import { IoPersonRemoveSharp } from 'react-icons/io5';
+import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
+import { FaEnvelope } from 'react-icons/fa';
 import dayjs from 'dayjs';
-// import calendar from 'dayjs/plugin/calendar'
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
-import { useAuth0 } from "@auth0/auth0-react";
-
-
-
-
+import { useAuth0 } from '@auth0/auth0-react';
 
 //                              add userId as prop to get it from App
 const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
@@ -33,8 +36,10 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
   const [eventsInvited, setEventsInvited] = useState([{ name: 'event2' }]);
   const [eventsOwned, setEventsOwned] = useState([{ name: 'event3' }]);
 
-  const [phoneForFriendRequest, setPhoneForFriendRequest] = useState('');
-  const [nameForFriendRequest, setNameForFriendRequest] = useState('');
+  // const [phoneForFriendRequest, setPhoneForFriendRequest] = useState('');
+  // const [nameForFriendRequest, setNameForFriendRequest] = useState('');
+  const [nameOrPhoneForFriendRequest, setNameOrPhoneForFriendRequest] =
+    useState('');
 
   const [selectedEvent, setSelectedEvent] = useState({
     latitude: 0,
@@ -49,7 +54,6 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
 
   // logout functionality via auth0
   const { logout } = useAuth0();
-
 
   const getFriends = async () => {
     try {
@@ -141,15 +145,20 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
   if (friends.length > 0) {
     userFriendsItems = friends.map((friend: any, index: number) => {
       return (
-        <div key={index}>
-          {friend.firstName} {`${friend.lastName.slice(0,1)}.`}
-          <Button
-            size='sm'
-            variant='danger'
-            onClick={() => unfriend(friend.id)}
-          >
-            {/*'REMOVE '*/} <IoPersonRemoveSharp style={{verticalAlign: '-2px'}}/>
-          </Button>
+        <div className='d-flex' key={index}>
+          <div className='flex-grow-1  mx-5'>
+            {friend.firstName} {`${friend.lastName.slice(0, 1)}.`}
+          </div>
+          <div className='mx-5'>
+            <Button
+              size='sm'
+              variant='danger'
+              onClick={() => unfriend(friend.id)}
+            >
+              {/*'REMOVE '*/}{' '}
+              <IoPersonRemoveSharp style={{ verticalAlign: '-2px' }} />
+            </Button>
+          </div>
         </div>
       );
     });
@@ -159,15 +168,19 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
   if (friendRequestsMade.length > 0) {
     requestsMadeItems = friendRequestsMade.map((requestee, index: number) => {
       return (
-        <div key={index}>
-          {requestee.firstName} {`${requestee.lastName.slice(0,1)}.`}
-          <Button
-            variant='danger'
-            size='sm'
-            onClick={() => cancelFriendRequest(requestee.id)}
-          >
-           {/*'CANCEL '*/} <MdCancel style={{verticalAlign: '-2px'}}/>
-          </Button>
+        <div className='d-flex' key={index}>
+          <div className='flex-grow-1  mx-5'>
+            {requestee.firstName} {`${requestee.lastName.slice(0, 1)}.`}
+          </div>
+          <div className='mx-5'>
+            <Button
+              variant='danger'
+              size='sm'
+              onClick={() => cancelFriendRequest(requestee.id)}
+            >
+              {/*'CANCEL '*/} <MdCancel style={{ verticalAlign: '-2px' }} />
+            </Button>
+          </div>
         </div>
       );
     });
@@ -177,14 +190,28 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
   if (friendRequestsReceived.length > 0) {
     requestsReceivedItems = friendRequestsReceived.map((requester, index) => {
       return (
-        <div key={index}>
-          {requester.firstName} {`${requester.lastName.slice(0,1)}.`}
-          <Button size="sm" variant="success" onClick={() => answerFriendRequest(requester.id, true)}>
-          {/*'ACCEPT '*/} <FaThumbsUp style={{verticalAlign: '-2px'}}/>
-          </Button>
-          <Button size="sm" variant="danger" onClick={() => answerFriendRequest(requester.id, false)}>
-          {/*'IGNORE '*/} <FaThumbsDown style={{verticalAlign: '-2px'}}/>
-          </Button>
+        <div className='d-flex' key={index}>
+          <div className='flex-grow-1  mx-5'>
+            {requester.firstName} {`${requester.lastName.slice(0, 1)}.`}
+          </div>
+          <div className='mx-5'>
+            <Button
+              className='mx-1'
+              size='sm'
+              variant='success'
+              onClick={() => answerFriendRequest(requester.id, true)}
+            >
+              {/*'ACCEPT '*/} <FaThumbsUp style={{ verticalAlign: '-2px' }} />
+            </Button>
+            <Button
+              className='mx-1'
+              size='sm'
+              variant='danger'
+              onClick={() => answerFriendRequest(requester.id, false)}
+            >
+              {/*'IGNORE '*/} <FaThumbsDown style={{ verticalAlign: '-2px' }} />
+            </Button>
+          </div>
         </div>
       );
     });
@@ -254,6 +281,14 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
   async function requestFriend() {
     try {
       // checking for phoneNumber
+      let phoneForFriendRequest = '';
+      let nameForFriendRequest = '';
+
+      if (nameOrPhoneForFriendRequest.indexOf('-') !== -1) {
+        phoneForFriendRequest = nameOrPhoneForFriendRequest;
+      } else if (nameOrPhoneForFriendRequest.indexOf(' ') !== -1) {
+        nameForFriendRequest = nameOrPhoneForFriendRequest;
+      }
 
       const friendRequestResponse = await axios.post(
         '/api/friends/requestFriend',
@@ -266,8 +301,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         }
       );
 
-      setPhoneForFriendRequest('');
-      setNameForFriendRequest('');
+      setNameOrPhoneForFriendRequest('');
       getFriendRequests();
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST friend request', err);
@@ -309,20 +343,21 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
     getFriends();
   }
 
-  function handlePhoneInput(e: any) {
-    setPhoneForFriendRequest(e.target.value);
-  }
+  // function handlePhoneInput(e: any) {
+  //   setPhoneForFriendRequest(e.target.value);
+  // }
 
-  function handleFriendNameInput(e: any) {
-    setNameForFriendRequest(e.target.value);
+  // function handleFriendNameInput(e: any) {
+  //   setNameForFriendRequest(e.target.value);
+  // }
+
+  function handleNameOrPhoneInput(e: any) {
+    setNameOrPhoneForFriendRequest(e.target.value);
   }
 
   // console.log('inside userpage. isNewEvent', isNewEvent)
   return (
-    <Container className='body'>
-      <h1>
-        UserPage {lng} {lat}
-      </h1>
+    <Container className='body' style={{ justifyContent: 'space-between' }}>
       <EventBasicModal
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
@@ -356,80 +391,105 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
         getEventsOwned={getEventsOwned}
       />
 
-      <h5> My Krewe </h5>
-      {friends.length > 0 ? (
-        <div>{userFriendsItems}</div>
-      ) : (
-        'Assemble your krewe below'
-      )}
+      <Row>
+        <Tabs className='mt-3 userPage-tabs' defaultActiveKey='krewe'>
+          <Tab eventKey='krewe' title='Krewe'>
+            <h5> Krewe </h5>
+            {friends.length > 0 ? (
+              <div className="m-2">{userFriendsItems}</div>
+            ) : (
+              'Assemble your krewe below'
+            )}
 
-      <input
-        placeholder='Search people by phone'
-        value={phoneForFriendRequest}
-        onChange={handlePhoneInput}
-      ></input>
-      <input
-        placeholder='Or by first & last name'
-        value={nameForFriendRequest}
-        onChange={handleFriendNameInput}
-      ></input>
-      <Button size='sm' variant='success' onClick={requestFriend}>
-        {/*'INVITE '*/}<FaEnvelope style={{verticalAlign: '-2px'}}/>
-      </Button>
+            <div className='d-flex flex-column align-items-center p-2'>
+              <input
+                style={{ width: '60vw' }}
+                placeholder='###-###-#### || First Last'
+                value={nameOrPhoneForFriendRequest}
+                onChange={handleNameOrPhoneInput}
+              ></input>
+              <div className='d-flex flew-row m-2'>
+                <small className="mx-1">Invite to Krewe</small>
+                <Button
+                  className="mx-1"
+                  style={{ width: '23px' }}
+                  size='sm'
+                  variant='success'
+                  onClick={requestFriend}
+                >
+                  <FaEnvelope style={{ verticalAlign: '-2px' }} />
+                </Button>
+              </div>
+            </div>
 
-      {
-        // conditional checks for outgoing requests
-        friendRequestsMade.length > 0 && (
-          <>
-            <h5> Waiting on... </h5>
-            <div>{requestsMadeItems}</div>
-          </>
-        )
-      }
+            {
+              // conditional checks for outgoing requests
+              friendRequestsMade.length > 0 && (
+                <>
+                  <h5> Waiting on... </h5>
+                  <div>{requestsMadeItems}</div>
+                </>
+              )
+            }
 
-      {
-        // conditional checks for incoming requests
-        friendRequestsReceived.length > 0 && (
-          <>
-            <h5> Respond to... </h5>
-            <div>{requestsReceivedItems}</div>
-          </>
-        )
-      }
+            {
+              // conditional checks for incoming requests
+              friendRequestsReceived.length > 0 && (
+                <>
+                  <h5> Respond to... </h5>
+                  <div>{requestsReceivedItems}</div>
+                </>
+              )
+            }
+          </Tab>
 
-      {
-        // conditional check for events you own
-        eventsOwned.length > 0 && (
-          <>
-            <h5> Your Events </h5>
-            <div>{eventsOwnedItems}</div>
-          </>
-        )
-      }
+          <Tab eventKey='calendar' title='Calendar'>
+            {
+              // conditional check for events you own
+              eventsOwned.length > 0 && (
+                <>
+                  <h5> Your Plans </h5>
+                  <div>{eventsOwnedItems}</div>
+                </>
+              )
+            }
 
-      {
-        // conditional checks for events you've attending
-        eventsParticipating.length > 0 && (
-          <>
-            <h5> You're Attending </h5>
-            <div>{eventsParticipatingItems}</div>
-          </>
-        )
-      }
+            {
+              // conditional checks for events you've attending
+              eventsParticipating.length > 0 && (
+                <>
+                  <h5> Your Schedule </h5>
+                  <div>{eventsParticipatingItems}</div>
+                </>
+              )
+            }
 
-      {
-        // conditional checks for events you've invited to
-        eventsInvited.length > 0 && (
-          <>
-            <h5> Archived & Invited </h5>
-            <div>{eventsInvitedItems}</div>
-          </>
-        )
-      }
+            {
+              // conditional checks for events you've invited to
+              eventsInvited.length > 0 && (
+                <>
+                  <h5> Archived & Invited </h5>
+                  <div>{eventsInvitedItems}</div>
+                </>
+              )
+            }
+          </Tab>
+        </Tabs>
+      </Row>
 
-      <div style={{display:'flex', flexDirection: 'row', justifyContent:'space-evenly'}}>
-        <Button
-            variant="danger"
+      {/* Buttons for logout, other events */}
+
+      <Row>
+        <div
+          className='mb-3'
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+          }}
+        >
+          <Button
+            variant='danger'
             onClick={() =>
               logout({ logoutParams: { returnTo: window.location.origin } })
             }
@@ -437,26 +497,26 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
             Log Out
           </Button>
 
+          <Button
+            variant='primary'
+            onClick={async () => {
+              await setIsNewEvent(true);
+              await setIsUserAttending(true);
+              await setShowCreateModal(true);
+            }}
+          >
+            Make A Plan
+          </Button>
 
-        <Button
-          variant='primary'
-          onClick={async () => {
-            await setIsNewEvent(true);
-            await setIsUserAttending(true);
-            await setShowCreateModal(true);
-          }}
-        >
-          Make A Plan
-        </Button>
-
-        {/* Link below is styled like a bootstrap button */}
-        <Link className='btn btn-primary' role='button' to='/eventpage'>
-          Gigs
-        </Link>
-        <Link className='btn btn-primary' role='button' to='/parades'>
-          Parades
-        </Link>
-      </div>
+          {/* Link below is styled like a bootstrap button */}
+          <Link className='btn btn-primary' role='button' to='/eventpage'>
+            Gigs
+          </Link>
+          <Link className='btn btn-primary' role='button' to='/parades'>
+            Parades
+          </Link>
+        </div>
+      </Row>
     </Container>
   );
 };
