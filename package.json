@@ -54,7 +54,8 @@
     "sequelize-cli": "^6.6.2",
     "sequelize-typescript": "^2.1.6",
     "socket.io": "^4.7.2",
-    "socket.io-cli": "^0.2.0"
+    "socket.io-cli": "^0.2.0",
+    "toastify": "^2.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.23.5",
