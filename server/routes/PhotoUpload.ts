@@ -1,5 +1,5 @@
 import  { v2 as cloudinary }  from "cloudinary" //grabbing reference to an already configured cloudinary object
-import handleUpload from "../utils/cloudinary_helpers" 
+import handleUpload from "../utils/cloudinary_helpers"
 import express, { Request, Response, Router } from "express";
 import multer from 'multer';
 import { Join_pin_photo, Photo } from '../db'
@@ -83,16 +83,16 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
   ImageRouter.put('/post/:ownerId', async (req: Request, res: Response) => {
     const {latitude, longitude, isThrow, isPin, isCostume, description} = req.body.options
     const { ownerId } = req.params
-  
+
       try{
         await Photo.update({latitude, longitude, isThrow, isPin, isCostume, ownerId, description}, {where: {photoURL}})
-  
+
         res.status(200).send('you did it!')
-  
+
       } catch (error) {
         console.error(error);
       }
-  
+
    })
 /////////////////////////
 // Uploads an image file
@@ -104,13 +104,14 @@ const uploadImage = async (imagePath: string) => {
   const options = {
     use_filename: true,
     unique_filename: false,
+    chunk_size: 6000000,
     overwrite: true,
     folder : "Carnivale"
   };
 
   try {
     // Upload the image
-    const result = await cloudinary.uploader.upload(imagePath,
+    const result = await cloudinary.uploader.upload_large(imagePath,
        options);
     //console.log(result);
     return result.public_id;
