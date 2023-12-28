@@ -10,8 +10,9 @@ import {
   Tabs,
   DropdownButton,
   Dropdown,
+  Navbar,
 } from 'react-bootstrap';
-import {FaCamera} from 'react-icons/fa'
+import { FaCamera } from 'react-icons/fa';
 import axios from 'axios';
 import HomeModal from './HomeModal';
 import WeatherCard from './WeatherCard';
@@ -29,28 +30,6 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   const [comment, setComment] = useState('');
   const [posts, setPosts] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [key, setKey] = useState("posts");
-  const theme = useContext(ThemeContext);
-
-  // useEffect(() => {
-  //   getLocation()
-  // }, []);
-
-  // const getUser = async () => {
-  //   try {
-  //     const { data } = await axios.post(`api/home/user/`, { user });
-  //     setUserId(data[0].id);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if(userData !== null){
-  //     setUserId(userData.id)
-  //     getLocation()
-  //   }
-  // }, [userData])
   const [key, setKey] = useState('posts');
   const [order, setOrder] = useState('updatedAt');
 
@@ -112,7 +91,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   }, [key, order]);
 
   return (
-    <Container className="body">
+    <Container className='body'>
       <Row>
         <h1>HomePage!</h1>
       </Row>
@@ -198,7 +177,12 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
               >
                 SEND!!!
               </Button>
-              <Button onClick={modalTrigger} style={{verticalAlign: '-2px'}}><FaCamera /></Button>
+              <Button
+                onClick={modalTrigger}
+                style={{ verticalAlign: '-8px' }}
+              >
+                <FaCamera />
+              </Button>
               {showModal ? (
                 <HomeModal
                   setShowModal={setShowModal}
