@@ -9,7 +9,7 @@ interface TopNavBarProps {
 const TopNavBar: React.FC<TopNavBarProps> = ({title}) => {
 
 return (
-  <Navbar sticky="top" className="top-nav">
+  <Navbar fixed="top" className="top-nav">
     {title}
   </Navbar>
 )

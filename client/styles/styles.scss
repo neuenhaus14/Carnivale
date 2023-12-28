@@ -10,9 +10,19 @@
 //   cursor: pointer;
 // }
 
+.card {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
 #map-direction-card{
   max-width: 8rem;
-  max-height: 9rem;
+  max-height: 12rem;
   margin: left;
 
   .card-body{
@@ -23,6 +33,7 @@
   }
 
 }
+
 
 .map-accordion-body{
   padding-top: 2px;
@@ -79,8 +90,8 @@ $yeller: #ecc800;
 }
 
 .body {
-  // padding: 8vh 0px;
-  height: 84vh;
+  padding-top: 10vh;
+  padding-bottom: 10vh;
   display: flex;
   flex-direction: column;
 }

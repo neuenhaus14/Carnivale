@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import EventCreateModal from "./EventCreateModal";
-import { Button } from "react-bootstrap";
+import { Button, Container } from "react-bootstrap";
 
 interface ParadeInfo {
   title: string;
@@ -83,7 +83,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
     );
 
     try {
-      const response: any = await axios.get<ParadeInfo>(
+      const response = await axios.get<ParadeInfo>(
         `/api/parades/parade-info/${formattedParadeName}`
       );
       console.log("parade response", response.data);
@@ -99,7 +99,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   }, []);
 
   return (
-    <div>
+    <Container className='body'>
       <div>
         <label htmlFor="paradeSelect">Select a Parade: </label>
         <select
@@ -221,8 +221,9 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
         lng={lng}
         //getLocation={getLocation}
         eventType={"parade"}
+        getEventsOwned={null} // not needed for parades
       />
-    </div>
+    </Container>
   );
 };
 
