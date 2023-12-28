@@ -406,6 +406,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                   display: "flex",
                   flexDirection: "column",
                   position: "relative",
+                  backgroundColor: "white",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center" }}>
