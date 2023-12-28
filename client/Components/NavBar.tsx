@@ -1,7 +1,11 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react"; //TODO: temporary
 import { Link, To, useNavigate } from "react-router-dom";
-import Navbar from 'react-bootstrap/Navbar';
+import { Navbar, Button} from 'react-bootstrap/';
+import { MdDynamicFeed } from "react-icons/md";
+import { VscFeedback } from "react-icons/vsc"
+import { FaMapMarkedAlt } from "react-icons/fa"
+import { IoHomeOutline, IoPeople } from "react-icons/io5";
 
 
 const NavBar = () => {
@@ -15,41 +19,45 @@ const NavBar = () => {
   return (
       <Navbar fixed="bottom" className="bottom-nav">
 
-          <button
-            className="bottom-nav-button"
+          <div className="d-flex flex-column">
+          <Button
+            className="bottom-nav-button rounded-circle"
             type="button"
-            id="navButton"
+            id="homeButton"
             onClick={() => handleNavigation("/homepage")}
           >
-            HP
-          </button>
+            <IoHomeOutline />
+          </Button>
 
-          <button
-          className="bottom-nav-button"
+
+          </div>
+
+          <Button
+          className="bottom-nav-button rounded-circle"
             type="button"
-            id="navButton"
+            id="mapButton"
             onClick={() => handleNavigation("/mappage")}
           >
-            M
-          </button>
+            <FaMapMarkedAlt />
+          </Button>
 
-          <button
-          className="bottom-nav-button"
+          <Button
+          className="bottom-nav-button rounded-circle"
             type="button"
-            id="navButton"
+            id="feedButton"
             onClick={() => handleNavigation("/feedpage")}
           >
-            F
-          </button>
+            <MdDynamicFeed />
+          </Button>
 
-          <button
-            className="bottom-nav-button"
+          <Button
+            className="bottom-nav-button rounded-circle"
             type="button"
-            id="navButton"
+            id="userButton"
             onClick={() => handleNavigation("/userpage")}
           >
-            UP
-          </button>
+            <IoPeople />
+          </Button>
 
         {/* <span>
           <button

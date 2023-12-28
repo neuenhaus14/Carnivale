@@ -34,7 +34,6 @@
 
 }
 
-
 .map-accordion-body{
   padding-top: 2px;
   padding-bottom: 2px;
@@ -46,6 +45,14 @@ $yeller: #ecc800;
 
 .btn {
   border: none;
+}
+
+// class for buttons that span the whole
+// screen
+.btn-wide {
+  width: 80vw;
+  max-width: 400px;
+  margin: 10px auto;
 }
 
 .btn-primary {
@@ -66,9 +73,14 @@ $yeller: #ecc800;
 }
 
 .bottom-nav-button {
-  height: 40px;
-  width: 40px;
-  color: crimson;
+  height: 50px;
+  width: 50px;
+  background-color: $yeller;
+  color: black;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bottom-nav {
@@ -76,8 +88,10 @@ $yeller: #ecc800;
   // display: flex;
   // flex-direction: row;
   justify-content: space-evenly;
-  background-color: $pinky;
-  height: 8vh;
+  background-color: white;
+  height: 12vh;
+  border-top: black solid 2px;
+
 }
 
 .top-nav {
@@ -90,8 +104,8 @@ $yeller: #ecc800;
 }
 
 .body {
-  padding-top: 10vh;
-  padding-bottom: 10vh;
+  margin-top: 10vh;
+  margin-bottom: 14vh;
   display: flex;
   flex-direction: column;
 }
