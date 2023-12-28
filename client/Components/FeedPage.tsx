@@ -396,7 +396,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
       <ul style={{ padding: 0, listStyle: "none" }}>
         {Array.isArray(sharedPosts) && sharedPosts.length > 0 ? (
           sharedPosts.map((post) => (
-            <li key={post.id} style={{ marginBottom: "20px" }}>
+            <li key={post.id} style={{ marginBottom: "10px" }}>
               <div
                 style={{
                   border: "1px solid #ccc",
@@ -406,6 +406,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                   display: "flex",
                   flexDirection: "column",
                   position: "relative",
+                  backgroundColor: "white",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center" }}>
