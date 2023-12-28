@@ -2,6 +2,7 @@ import React, { useState, useEffect, } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { IoArrowUpCircle, IoArrowDownCircle } from "react-icons/io5";
+import { BsTrash } from "react-icons/bs";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Container } from "react-bootstrap";
@@ -90,10 +91,10 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     const fetchData = async () => {
       try {
         const [postsResponse, userResponse] = await Promise.all([
-          axios.get(`/api/feed/shared-posts/${userId}`),
-          axios.get(`/api/feed/user/${userId}`),
-          // axios.get(`/api/feed/shared-posts/1`),
-          // axios.get(`/api/feed/user/1`),
+          // axios.get(`/api/feed/shared-posts/${userId}`),
+          // axios.get(`/api/feed/user/${userId}`),
+          axios.get(`/api/feed/shared-posts/1`),
+          axios.get(`/api/feed/user/1`),
         ]);
 
         setSharedPosts(postsResponse.data);
@@ -128,8 +129,9 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
               [postId]: null,
             }));
           }
-
-          toast.error("Post deleted due to too many downvotes!");
+          {
+            toast.error("Post deleted due to too many downvotes!");
+          }
           setTimeout(() => {
             window.location.reload();
           }, 5000);
@@ -256,8 +258,6 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
             : post
         )
       );
-
-      // Show success toast
     } catch (error) {
       toast.warning("You've already upvoted this post!");
     }
@@ -316,7 +316,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         }, 2000);
       }
     } catch (error) {
-      toast.warning("You've already upvoted this post!");
+      toast.warning("You've already downvoted this post!");
     }
   };
   const fetchPostDetails = async (postId: number, type: string) => {
@@ -357,10 +357,10 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         setPhotoDetails((prevDetails) => ({
           ...prevDetails,
           [postId]: {
-            description: response.data.description,
-            ownerId: response.data.ownerId,
-            upvotes: response.data.upvotes,
-            url: response.data.photoURL,
+            description: null,
+            ownerId: null,
+            upvotes: null,
+            url: null,
           },
         }));
       }
@@ -403,11 +403,16 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                   borderRadius: "8px",
                   padding: "10px",
                   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  display: "flex",
+                  flexDirection: "column",
+                  position: "relative",
                 }}
               >
-                <p style={{ margin: 0 }}>
-                  Sender: {userNames[post.sender_userId]}
-                </p>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <p style={{ margin: 0, marginRight: "10px" }}>
+                    Sender: {userNames[post.sender_userId]}
+                  </p>
+                </div>
                 {post.shared_commentId && (
                   <div style={{ marginTop: "5px" }}>
                     <p style={{ margin: 0 }}>
@@ -427,8 +432,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                             ]
                           }
                         </p>
-
-                        <div>
+                        <p style={{ margin: 0 }}>
+                          Created At:{" "}
+                          {dayjs(post.createdAt).format("MM/D/YY, h:mm:ss A")}
+                        </p>
+                        <div style={{ display: "flex", alignItems: "center" }}>
                           <button
                             style={{
                               border: "none",
@@ -456,11 +464,9 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                               }}
                             />
                           </button>
-
                           <span style={{ margin: "0 5px" }}>
                             {commentDetails[post.shared_commentId]?.upvotes}
                           </span>
-
                           <button
                             style={{
                               border: "none",
@@ -488,12 +494,38 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                               }}
                             />
                           </button>
+                          <button
+                            style={{
+                              border: "none",
+                              cursor: "pointer",
+                              outline: "none",
+                              boxShadow: "none",
+                              background: "transparent",
+                              marginLeft: "auto",
+                            }}
+                            onClick={() => handleDelete(post.id)}
+                          >
+                            <BsTrash
+                              style={{
+                                color: "gold",
+                                fontSize: "30px",
+                                border: "1px solid black",
+                                borderRadius: "50%",
+                                padding: "5px",
+                              }}
+                            />
+                          </button>
                         </div>
-                        <button onClick={() => handleDelete(post.id)}>
-                          Delete Post
-                        </button>
                       </div>
-                    ) : null}
+                    ) : (
+                      post.upvotes <= -5 && (
+                        <div>
+                          {toast.error(
+                            "Post deleted due to too many downvotes!"
+                          )}
+                        </div>
+                      )
+                    )}
                   </div>
                 )}
                 {/* Pins */}
@@ -524,66 +556,90 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                           Creator:{" "}
                           {userNames[pinDetails[post.shared_pinId].ownerId]}
                         </p>
-
-                        <button
-                          style={{
-                            border: "none",
-                            cursor: "pointer",
-                            outline: "none",
-                            boxShadow: "none",
-                            background: "transparent",
-                          }}
-                          onClick={() => {
-                            handleUpvote(post.shared_pinId, "pin");
-                          }}
-                          disabled={
-                            pinVotingStatus[post.shared_pinId] === "upvoted"
-                          }
-                        >
-                          <IoArrowUpCircle
+                        <p style={{ margin: 0 }}>
+                          Created At:{" "}
+                          {dayjs(post.createdAt).format("MM/D/YY, h:mm:ss A")}
+                        </p>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <button
                             style={{
-                              color:
-                                pinVotingStatus[post.shared_pinId] === "upvoted"
-                                  ? "green"
-                                  : "black",
-                              fontSize: "30px",
+                              border: "none",
+                              cursor: "pointer",
+                              outline: "none",
+                              boxShadow: "none",
+                              background: "transparent",
                             }}
-                          />
-                        </button>
-                        <span style={{ margin: "0 5px" }}>
-                          {pinDetails[post.shared_pinId]?.upvotes}
-                        </span>
-                        <button
-                          style={{
-                            border: "none",
-                            cursor: "pointer",
-                            outline: "none",
-                            boxShadow: "none",
-                            background: "transparent",
-                          }}
-                          onClick={() => {
-                            handleDownvote(post.shared_pinId, "pin");
-                          }}
-                          disabled={
-                            pinVotingStatus[post.shared_pinId] === "downvoted"
-                          }
-                        >
-                          <IoArrowDownCircle
+                            onClick={() => {
+                              handleUpvote(post.shared_pinId, "pin");
+                            }}
+                            disabled={
+                              pinVotingStatus[post.shared_pinId] === "upvoted"
+                            }
+                          >
+                            <IoArrowUpCircle
+                              style={{
+                                color:
+                                  pinVotingStatus[post.shared_pinId] ===
+                                  "upvoted"
+                                    ? "green"
+                                    : "black",
+                                fontSize: "30px",
+                              }}
+                            />
+                          </button>
+                          <span style={{ margin: "0 5px" }}>
+                            {pinDetails[post.shared_pinId]?.upvotes}
+                          </span>
+                          <button
                             style={{
-                              color:
-                                pinVotingStatus[post.shared_pinId] ===
-                                "downvoted"
-                                  ? "red"
-                                  : "black",
-                              fontSize: "30px",
+                              border: "none",
+                              cursor: "pointer",
+                              outline: "none",
+                              boxShadow: "none",
+                              background: "transparent",
                             }}
-                          />
-                        </button>
+                            onClick={() => {
+                              handleDownvote(post.shared_pinId, "pin");
+                            }}
+                            disabled={
+                              pinVotingStatus[post.shared_pinId] === "downvoted"
+                            }
+                          >
+                            <IoArrowDownCircle
+                              style={{
+                                color:
+                                  pinVotingStatus[post.shared_pinId] ===
+                                  "downvoted"
+                                    ? "red"
+                                    : "black",
+                                fontSize: "30px",
+                              }}
+                            />
+                          </button>
+                          <button
+                            style={{
+                              border: "none",
+                              cursor: "pointer",
+                              outline: "none",
+                              boxShadow: "none",
+                              background: "transparent",
+                              marginLeft: "auto",
+                            }}
+                            onClick={() => handleDelete(post.id)}
+                          >
+                            <BsTrash
+                              style={{
+                                color: "gold",
+                                fontSize: "30px",
+                                border: "1px solid black",
+                                borderRadius: "50%",
+                                padding: "5px",
+                              }}
+                            />
+                          </button>
+                        </div>
                       </div>
                     ) : null}
-                    <button onClick={() => handleDelete(post.id)}>
-                      Delete Post
-                    </button>
                   </div>
                 )}
                 {/* Photos */}
@@ -602,7 +658,10 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                           Creator:{" "}
                           {userNames[photoDetails[post.shared_photoId].ownerId]}
                         </p>
-
+                        <p style={{ margin: 0 }}>
+                          Created At:{" "}
+                          {dayjs(post.createdAt).format("MM/D/YY, h:mm:ss A")}
+                        </p>
                         <img
                           src={photoDetails[post.shared_photoId].url}
                           alt="Shared Photo"
@@ -612,73 +671,90 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                             marginTop: "10px",
                           }}
                         />
-                        <button
-                          style={{
-                            border: "none",
-                            cursor: "pointer",
-                            outline: "none",
-                            boxShadow: "none",
-                            background: "transparent",
-                          }}
-                          onClick={() => {
-                            handleUpvote(post.shared_photoId, "photo");
-                          }}
-                          disabled={
-                            photoVotingStatus[post.shared_photoId] === "upvoted"
-                          }
-                        >
-                          <IoArrowUpCircle
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <button
                             style={{
-                              color:
-                                photoVotingStatus[post.shared_photoId] ===
-                                "upvoted"
-                                  ? "green"
-                                  : "black",
-                              fontSize: "30px",
+                              border: "none",
+                              cursor: "pointer",
+                              outline: "none",
+                              boxShadow: "none",
+                              background: "transparent",
                             }}
-                          />
-                        </button>
-                        <span style={{ margin: "0 5px" }}>
-                          {photoDetails[post.shared_photoId]?.upvotes}
-                        </span>
-                        <button
-                          style={{
-                            border: "none",
-                            cursor: "pointer",
-                            outline: "none",
-                            boxShadow: "none",
-                            background: "transparent",
-                          }}
-                          onClick={() => {
-                            handleDownvote(post.shared_photoId, "photo");
-                          }}
-                          disabled={
-                            photoVotingStatus[post.shared_photoId] ===
-                            "downvoted"
-                          }
-                        >
-                          <IoArrowDownCircle
+                            onClick={() => {
+                              handleUpvote(post.shared_photoId, "photo");
+                            }}
+                            disabled={
+                              photoVotingStatus[post.shared_photoId] ===
+                              "upvoted"
+                            }
+                          >
+                            <IoArrowUpCircle
+                              style={{
+                                color:
+                                  photoVotingStatus[post.shared_photoId] ===
+                                  "upvoted"
+                                    ? "green"
+                                    : "black",
+                                fontSize: "30px",
+                              }}
+                            />
+                          </button>
+                          <span style={{ margin: "0 5px" }}>
+                            {photoDetails[post.shared_photoId]?.upvotes}
+                          </span>
+                          <button
                             style={{
-                              color:
-                                photoVotingStatus[post.shared_photoId] ===
-                                "downvoted"
-                                  ? "red"
-                                  : "black",
-                              fontSize: "30px",
+                              border: "none",
+                              cursor: "pointer",
+                              outline: "none",
+                              boxShadow: "none",
+                              background: "transparent",
                             }}
-                          />
-                        </button>
-                        <button onClick={() => handleDelete(post.id)}>
-                          Delete Post
-                        </button>
+                            onClick={() => {
+                              handleDownvote(post.shared_photoId, "photo");
+                            }}
+                            disabled={
+                              photoVotingStatus[post.shared_photoId] ===
+                              "downvoted"
+                            }
+                          >
+                            <IoArrowDownCircle
+                              style={{
+                                color:
+                                  photoVotingStatus[post.shared_photoId] ===
+                                  "downvoted"
+                                    ? "red"
+                                    : "black",
+                                fontSize: "30px",
+                              }}
+                            />
+                          </button>
+                          <button
+                            style={{
+                              border: "none",
+                              cursor: "pointer",
+                              outline: "none",
+                              boxShadow: "none",
+                              background: "transparent",
+                              marginLeft: "auto",
+                            }}
+                            onClick={() => handleDelete(post.id)}
+                          >
+                            <BsTrash
+                              style={{
+                                color: "gold",
+                                fontSize: "30px",
+                                border: "1px solid black",
+                                borderRadius: "50%",
+                                padding: "5px",
+                              }}
+                            />
+                          </button>
+                        </div>
                       </div>
                     ) : null}
                   </div>
                 )}
-                <p style={{ margin: 0 }}>
-                  Created At:{" "}
-                  {dayjs(post.createdAt).format("MMMM D YYYY, h:mm:ss A")}
-                </p>
               </div>
             </li>
           ))
@@ -686,6 +762,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           <p>No shared posts available.</p>
         )}
       </ul>
+
       <ToastContainer
         position="top-right"
         autoClose={5000}
