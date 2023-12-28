@@ -13,9 +13,24 @@ $isPhoneCharger: #53e3d4;
 $isPoliceStation: #E7ABFF;
 $isEMTStation:#f27d52;
 
+$greeny: #169874;
+$pinky: #e7abff;
+$yeller: #fcc54e;
+
+.card {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  margin-top: 10px;
+  border: 2px solid #8d3dad;
+}
+
 #map-direction-card{
   max-width: 8rem;
-  max-height: 9rem;
+  max-height: 12rem;
   margin: left;
 
   .card-body{
@@ -48,21 +63,20 @@ span {
   margin: 20px;
 }
 
-// .map-page {
-//   // margin-top: 10px;
-//   padding-top: 25vh;
-// }
 
 .btn {
   border: none;
 }
 
-.btn-group {
-  padding: 3px;
+.btn-wide {
+  width: 80vw;
+  max-width: 400px;
+  margin: 10px auto;
 }
 
 .btn-primary {
   background-color: $yeller !important;
+  color: black;
 }
 
 .btn-success {
@@ -79,9 +93,14 @@ span {
 }
 
 .bottom-nav-button {
-  height: 40px;
-  width: 40px;
-  color: crimson;
+  height: 50px;
+  width: 50px;
+  background-color: $yeller;
+  color: black;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bottom-nav {
@@ -89,9 +108,9 @@ span {
   // display: flex;
   // flex-direction: row;
   justify-content: space-evenly;
-  background-color: $pinky;
-  padding: 10px 0;
-  height: 8vh;
+  background-color: white;
+  height: 12vh;
+  border-top: black solid 2px;
 }
 
 .top-nav {
@@ -100,10 +119,38 @@ span {
   // flex-direction: row;
   justify-content: space-evenly;
   background-color: $greeny;
-  padding: 10px 0;
   height: 8vh;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .body {
-  padding: 8vh 0px 0px 0px;
+  padding-top: 10vh;
+  padding-bottom: 14vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f3d7fe;
 }
+
+
+// USER PAGE
+
+.event-modal {
+  min-height: 95vh;
+  background-color: #e7abff;
+}
+
+.userPage-tabs {
+  // border: 2px solid black;
+
+}
+
+h5 {
+text-align: center;
+color: $greeny;
+margin: 10px;
+text-transform: uppercase;
+font-weight: bold;
+}
+

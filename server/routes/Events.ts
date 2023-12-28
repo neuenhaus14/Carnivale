@@ -295,8 +295,12 @@ Events.get('/getPeopleForEvent/:userId-:eventId', async (req: Request, res: Resp
 // (many fields, new entry), join_event_participants (whoever
 // created it), and join_event_invitees (array of user id's (numbers) who
 // are friends).
+// created it), and join_event_invitees (array of user id's (numbers) who
+// are friends).
 Events.post('/createEvent', async (req: Request, res: Response) => {
   const {
+
+
     name,
     startTime,
     endTime,
@@ -479,7 +483,10 @@ Events.post('/inviteToEvent', async (req: Request, res: Response) => {
     res.status(500).send(err);
   }
 })
-
+// Events.get('/trial-endpoint', async (req: Request, res: Response) => {
+//   console.log('Trial endpoint')
+//   res.status(201).send('Connected in trial endpoint')
+// })
 Events.post('/getCoordinatesFromAddress', async (req: Request, res: Response) => {
 
   const apiUrlBeginning = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
@@ -490,6 +497,7 @@ Events.post('/getCoordinatesFromAddress', async (req: Request, res: Response) =>
     const apiUrl = apiUrlBeginning + address + apiUrlEnd;
     const coordinateResponse: any = await axios.get(apiUrl).catch((error) => console.error(error));
     const coordinates = coordinateResponse.data.features[0].center;
+    console.log('address success')
     res.status(200).send(coordinates);
   } catch (err) {
     console.error("SERVER ERROR: failed to 'POST' new coordinates from address", err);

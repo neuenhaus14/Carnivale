@@ -155,7 +155,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
 }, [setUserLocation]);
 
-  
+
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
     setShowModal(true)
@@ -394,7 +394,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
         onMove={(e) => setViewState(e.viewState)}
         onClick={(e) => {dropPin(e)}}
         mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
-        style={{ position: 'relative', bottom: '0px', width: '100vw', height: "50vh" }}
+        style={{ position: 'relative', bottom: '0px', maxWidth: '100vw', height: "50vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
       >
         <GeolocateControl
@@ -475,9 +475,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       <div id="map-direction-card" className='card w-35'>
         {showDirections ? (
           <div className= 'card-body'>
-            <span> <b>Walking Directions: </b></span> <br />
-            <span> Time to Location: </span> <br /><span><b>{humanizedDuration(duration)}</b></span> <br />
-            <span> Distance to Location:</span> <br /><span> <b>{distance} miles</b></span><br />
+            {/* <span> <b>Walking Directions: </b></span> <br /> */}
+            <span><b>{humanizedDuration(duration)}</b> away</span> <br />
+            <span> <b>{distance}</b> miles</span><br />
             <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
         </div>
         )
