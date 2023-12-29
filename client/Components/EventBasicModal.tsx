@@ -105,7 +105,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
   const [friendsToInvite, setFriendsToInvite] = useState([]); // collects friends to invite as group to event
 
   useEffect(() => {
-    if (selectedEvent) {
+    if (selectedEvent.latitude !== 0) {
       getPeopleForEvent();
     }
   }, [selectedEvent]);
@@ -187,7 +187,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
           {friend.firstName} {friend.lastName}
           {isUserAttending && (
             <Form.Check
-              style={{ float: 'right', paddingRight: '10px' }}
+              style={{ float: 'right', paddingRight: '20px' }}
               type='checkbox'
               id='invite-checkbox'
               label='Add invite'
