@@ -189,7 +189,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           console.log('setispin selected in func', isPinSelected)
           setShowDirections(true);
           setIsFriendSelected(false)
-          // modalTrigger()
 
       } catch (err)  {
         try {
@@ -216,6 +215,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   useEffect(() => {
     createRouterLine(selectedRouteProfile)
     setRouteDirections(true)
+    if(isFriendSelected === true){
+      setIsFriendSelected(false)
+    }
   }, [isFriendSelected])
 
 
