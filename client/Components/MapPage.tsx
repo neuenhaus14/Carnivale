@@ -51,7 +51,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     zoom: 16,
   });
 
-
+  // determines which path to take on route render ie walk, cycle, or drive
   const routeProfiles = [
     {id: 'walking', label: 'Walking'},
     {id: 'cycling', label: 'Cylcing'},
@@ -59,6 +59,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   ];
   const [selectedRouteProfile, setselectedRouteProfile] = useState<string>('walking');
 
+  //determines which pins to show- filter or not filter 
   const renderMarkers = filterOn ? filteredMarkers : markers
 
   //loads pins immediately on page render
@@ -68,19 +69,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     getEvents();
   }, [setMarkers]);
 
-
-  // this calls the getLocation and show directions function to update every 30 seconds (in theory)
-//  useEffect(() => {
-//   getLocation()
-//   const interval = setInterval(() => {
-//     getLocation()
-//     if(showDirections){
-//       createRouterLine(selectedRouteProfile)
-//       console.log('createRouterLine called in setTimout')
-//     }
-//   }, 5000)
-//   return () => clearInterval(interval)
-//  })
 
  useEffect(() => { 
   getLocation()
@@ -116,7 +104,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     }
   }
 
-  //gets friends from the database
+  //gets friends from the database- commented out bc friend sockets
   // const getFriends = async () => {
   //   try {
   //     const friends = await axios.get(`/api/friends/getFriends/${userId}`)
@@ -126,6 +114,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   //   }
   // }
 
+  //this useEffect should update user or friend locations everytime they move
   useEffect(() => {
     // this coords is data.dataValues from the database as a response to the emit
     socket.on('userLoc response', (userLoc) => {
@@ -133,7 +122,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       if (userLoc.id === userId){
         setUserLocation([userLoc.longitude, userLoc.latitude]) // assuming everytime state is set there is a new render with updated loc
         console.log('userLoc set')
-      } else {
+      } else { // TODO: THIS DOESN'T WORK
         const friend = friends.filter((friend) => friend.id === userLoc.id)
         console.log('friend', friend)
         setFriends((friends) => [...friends, ...friend]) // assuming everytime state is set there is a new render with updated loc
@@ -141,6 +130,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     })
   });
 
+  // gets friends from database? probably unnecessary with the previous useEffect??
   useEffect (() => {
     socket.emit("getFriends:read", {userId})
     const handleGetFriends = (allFriendsUsers: any) => {
@@ -157,17 +147,11 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 }, [setUserLocation]);
 
 
-  //this sets the map touch coordinates to the url as params
+  //this sets the map touch coordinates to the url as params and shows createPin modal
   const dropPin = (e: any) => {
-    //setShowModal(true)
     if (isPinSelected === false && isFriendSelected === false){
       setShowModal(true)
     }
-      // setTimeout (() => {
-      //   //setShowModal(true)
-      //   modalTrigger()
-      // }, 100)
- 
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   }
 
@@ -182,36 +166,32 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`)
-        console.log('response data', data[0].longitude, data[0].latitude)
-        console.log('clickedMarkerRes', data);
           setSelectedPin(data);
           setIsPinSelected(true);
-          console.log('setispin selected in func', isPinSelected)
           setShowDirections(true);
           setIsFriendSelected(false)
 
       } catch (err)  {
         try {
           const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
-          console.log('clickedFriend', data);
           setSelectedPin(data);
           setShowFriendPopup(true)
           setShowDirections(true)
           setIsFriendSelected(true)
           setShowModal(false)
-          console.log('setisfriend selected in func', isFriendSelected)
         } catch (err)  {
           console.error(err);
        }
       }
   };
 
-  // calls the router function/ shows line when a pin or friend is selected
+  // when pin is selected, route and modal are triggered
   useEffect(() => {
     createRouterLine(selectedRouteProfile)
     modalTrigger()
   }, [isPinSelected])
 
+  // when friend is selected, route is called and friend state is reset
   useEffect(() => {
     createRouterLine(selectedRouteProfile)
     setRouteDirections(true)
@@ -272,22 +252,13 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     // }
   }
 
-
-
-  //prompts the modal to open/close
+  //prompts the modal to open/close on pin vs map(empty) click
   const modalTrigger = () => {
-    // if (isPinSelected === true){
-    //   setCreatePin(false)
-    //   setShowModal(true)
-    // } 
     if (isPinSelected === false){
       setShowModal(false)
     } else {
      setShowModal(true)
-    //   setShowRouteDirections(false)
-    //   console.log('route directions false in modal trigger')
     }
-    // setIsFriendSelected(false)
   }
 
   // converts meters to miles and seconds to hours and minutes
@@ -321,6 +292,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     }
   }
 
+  // styles the filter buttons
   const filterStyling = (value: string) => {
     const colorMapping: PinColorMapping = {
       isFree:"#53CA3C",
@@ -353,6 +325,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     }    
   }
 
+  // manages the rendering for the filter element
   const filterResults = (e: string) => {
     setFilterOn(false)
     const choice = e;
@@ -449,8 +422,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
               id="routerLine01"
               type="line"
               paint={{
-                'line-color': '#000000',
-                'line-width': 4,
+                'line-color': '#BA37DD',
+                'line-width': 3,
               }}
             />
           </Source>
@@ -471,17 +444,18 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
             ))}
           </>
         ) : null}
-      <div id="map-direction-card" className='card w-35'>
-        {showDirections ? (
+        {showDirections ? 
+        (
+          <div id="map-direction-card" className='card w-35'>
           <div className= 'card-body'>
-            {/* <span> <b>Walking Directions: </b></span> <br /> */}
-            <p style={{fontSize: "15px"}}><b>{humanizedDuration(duration)}</b> away</p> <br />
-            <p style={{fontSize: "15px"}}> <b>{distance}</b> miles</p><br />
+            <p style={{fontSize: "15px"}}><b>{humanizedDuration(duration)}</b> away</p>
+            <p style={{fontSize: "15px"}}> <b>{distance}</b> miles</p>
             <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
         </div>
-        )
-        : null }
       </div>
+        )
+        : null 
+        }
       </Map>
       <div id="map-filter-container" className="container">
       <span>FILTER PINS</span>
@@ -500,14 +474,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           <button type="button" value="clearFilters" className="btn btn-wide" onClick={()=> {setFilterOn(false); filterStyling(filterChoice)}}>Clear Filter</button>
         </center><br />
         </div>
-      {/* <center>
-      <div id="map-pin-key-img">
-      <h3><b>MAP KEY</b></h3>
-      <img src="img/Map_pin_key.jpg" alt="Map Pin Key" width='300' height= "225"/>
-      </div>
-    </center> */}
    </Container>
-    // </div>
   )
 }
 

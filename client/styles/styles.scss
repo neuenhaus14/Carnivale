@@ -28,20 +28,19 @@ $isEMTStation:#f27d52;
 }
 
 #map-direction-card{
-  max-width: 8rem;
-  max-height: 12rem;
-  margin: left;
-  border: none;
-  box-shadow: none;
+  max-width: 7rem;
+  max-height: 10rem;
+  margin-left: 10px;
 
   .card-body{
-    padding-top: 2px;
-    padding-right: 2px;
-    padding-bottom: 2px;
-    padding-left: 2px;
+    padding-top: 1px;
+    padding-right: 1px;
+    padding-bottom: 1px;
+    padding-left: 1px;
   }
 
 }
+
 
 // #map-direction-card{
 //   max-width: 8rem;
@@ -69,7 +68,7 @@ $isEMTStation:#f27d52;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
   margin-top: 10px;
-  // border: 2px solid #BA37DD;
+  border: 2px solid #BA37DD;
 }
 
 // .map-accordion-body{
@@ -92,6 +91,7 @@ span {
   text-align: center;
   margin: 4px;
   padding-bottom: 1rem;
+  color: $dark;
 }
 
 
@@ -103,7 +103,7 @@ span {
   width: 80vw;
   max-width: 400px;
   margin: 10px auto;
-  border-top: $dark solid 2px;
+  border: $dark solid 2px;
 }
 
 .btn-primary {
@@ -192,7 +192,8 @@ font-weight: bold;
 }
 
 p {
-  font-size: 20px
+  font-size: 20px;
+  color: $dark;
 }
 
 body{
