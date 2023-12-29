@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Accordion, Tabs, Tab } from 'react-bootstrap';
+import { Modal, Button, Form, Tabs, Tab } from 'react-bootstrap';
 import EventBasicMapComponent from './EventBasicMapComponent';
 import axios from 'axios';
 import dayjs = require('dayjs');
@@ -49,35 +49,6 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
       startTime: null,
       endTime: null,
     }); // set coordinates so map in modal doesn't throw error for invalid LngLat object
-  };
-
-  const parseDateIntoDateAndTime = (fullDate: string, returnType: string) => {
-    // 2023-12-11 20:40:35.222-05
-    console.log('parseDID&T', fullDate);
-    let date;
-    let time;
-    if (fullDate.indexOf('T')) {
-      [date, time] = fullDate.split('T');
-    } else if (fullDate.indexOf(' ')) {
-      [date, time] = fullDate.split(' ');
-    }
-
-    if (returnType === 'date') {
-      return date;
-    } else if (returnType === 'time') {
-      return time;
-    }
-
-    // const timeRangeValue = Number(time.slice(0, 5).replace(':', '.'));
-
-    // console.log('tRV', timeRangeValue);
-    // if (startOrEnd === 'start') {
-    //   setEventStartDate(date);
-    //   setEventStartTime(timeRangeValue);
-    // } else if (startOrEnd === 'end') {
-    //   setEventEndDate(date);
-    //   setEventEndTime(timeRangeValue);
-    // }
   };
 
   const toggleAttendance = async () => {
