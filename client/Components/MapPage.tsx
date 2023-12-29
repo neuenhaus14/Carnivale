@@ -9,6 +9,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
 
 import { io } from 'socket.io-client';
+import { FaDoorClosed, FaLessThanEqual } from "react-icons/fa";
 const socket = io();
 
 
@@ -158,10 +159,12 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
-    setShowModal(true)
+    //setShowModal(true)
+
 
       // setTimeout (() => {
-      //   setShowModal(true)
+      //   //setShowModal(true)
+      //   modalTrigger()
       // }, 100)
  
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
@@ -178,16 +181,16 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`)
-      console.log('response data', data[0].longitude, data[0].latitude)
-      console.log('clickedMarkerRes', data);
-        setSelectedPin(data);
-        setIsPinSelected(true);
-        console.log('setispin selected in func', isPinSelected)
-        setShowDirections(true);
-        setIsFriendSelected(true)
-        //modalTrigger()
+        console.log('response data', data[0].longitude, data[0].latitude)
+        console.log('clickedMarkerRes', data);
+          setSelectedPin(data);
+          setIsPinSelected(true);
+          console.log('setispin selected in func', isPinSelected)
+          setShowDirections(true);
+          setIsFriendSelected(false)
+          // modalTrigger()
+
       } catch (err)  {
-        console.error(err); 
         try {
           const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
           console.log('clickedFriend', data);
@@ -195,6 +198,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           setShowFriendPopup(true)
           setShowDirections(true)
           setIsFriendSelected(true)
+          setShowModal(false)
           console.log('setisfriend selected in func', isFriendSelected)
         } catch (err)  {
           console.error(err);
@@ -205,21 +209,23 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   // calls the router function/ shows line when a pin or friend is selected
   useEffect(() => {
     createRouterLine(selectedRouteProfile)
+    modalTrigger()
     // setShowModal(true)
     // console.log('useeffect showmodal', showModal)
   }, [isPinSelected])
 
   useEffect(() => {
     createRouterLine(selectedRouteProfile)
+    setRouteDirections(true)
     console.log('router is called in friend useEffect')
   }, [isFriendSelected])
 
 
-  useEffect(() => {
-    console.log('in friend use effect', showModal)
-    setShowModal(false)
-    console.log('in friend use effect after state', showModal)
-  }, [isFriendSelected])
+  // useEffect(() => {
+  //   console.log('in friend use effect', showModal)
+  //   setShowModal(false)
+  //   console.log('in friend use effect after state', showModal)
+  // }, [isFriendSelected])
 
 
  // these are the details that are being set to build the "route"/ line for the directions
@@ -275,21 +281,21 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
 
 
-  // prompts the modal to open/close
-  // const modalTrigger = () => {
-  //   // if (isPinSelected === true){
-  //   //   setCreatePin(false)
-  //   //   setShowModal(true)
-  //   // } 
-  //   // else if (isFriendSelected === true){
-  //   //   setCreatePin(false)
-  //   //   setShowModal(false)
-  //   // } else {
-  //    setShowModal(true)
-  //   //   setShowRouteDirections(false)
-  //   //   console.log('route directions false in modal trigger')
-  //   // }
-  // }
+  //prompts the modal to open/close
+  const modalTrigger = () => {
+    // if (isPinSelected === true){
+    //   setCreatePin(false)
+    //   setShowModal(true)
+    // } 
+    if (isPinSelected === false){
+      setShowModal(false)
+    } else {
+     setShowModal(true)
+    //   setShowRouteDirections(false)
+    //   console.log('route directions false in modal trigger')
+    }
+    // setIsFriendSelected(false)
+  }
 
   // converts meters to miles and seconds to hours and minutes
   const humanizedDuration = (duration: number) => {
