@@ -1,4 +1,4 @@
-import React, { useState, useEffect, } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { IoArrowUpCircle, IoArrowDownCircle } from "react-icons/io5";
@@ -33,13 +33,13 @@ interface Comment {
   upvotes: number;
 }
 
-interface Pin {
-  ownerId: number;
-  isToilet: boolean;
-  isFood: boolean;
-  isPersonal: boolean;
-  upvotes: number;
-}
+// interface Pin {
+//   ownerId: number;
+//   isToilet: boolean;
+//   isFood: boolean;
+//   isPersonal: boolean;
+//   upvotes: number;
+// }
 
 interface Photo {
   description: string;
@@ -59,7 +59,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   const [commentDetails, setCommentDetails] = useState<{
     [postId: number]: Comment;
   }>({});
-  const [pinDetails, setPinDetails] = useState<{ [postId: number]: Pin }>({});
+  // const [pinDetails, setPinDetails] = useState<{ [postId: number]: Pin }>({});
   const [photoDetails, setPhotoDetails] = useState<{ [postId: number]: Photo }>(
     {}
   );
@@ -118,11 +118,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
               ...prevDetails,
               [postId]: null,
             }));
-          } else if (type === "pin") {
-            setPinDetails((prevDetails) => ({
-              ...prevDetails,
-              [postId]: null,
-            }));
+            // } else if (type === "pin") {
+            //   setPinDetails((prevDetails) => ({
+            //     ...prevDetails,
+            //     [postId]: null,
+            //   }));
           } else if (type === "photo") {
             setPhotoDetails((prevDetails) => ({
               ...prevDetails,
@@ -145,13 +145,13 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
             ownerId: response.data.ownerId,
             upvotes: response.data.upvotes,
           },
-          pin: {
-            ownerId: response.data.ownerId,
-            isToilet: response.data.isToilet,
-            isFood: response.data.isFood,
-            isPersonal: response.data.isPersonal,
-            upvotes: response.data.upvotes,
-          },
+          // pin: {
+          //   ownerId: response.data.ownerId,
+          //   isToilet: response.data.isToilet,
+          //   isFood: response.data.isFood,
+          //   isPersonal: response.data.isPersonal,
+          //   upvotes: response.data.upvotes,
+          // },
           photo: {
             description: response.data.description,
             ownerId: response.data.ownerId,
@@ -165,11 +165,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
             ...prevDetails,
             [postId]: details.comment,
           }));
-        } else if (type === "pin") {
-          setPinDetails((prevDetails) => ({
-            ...prevDetails,
-            [postId]: details.pin,
-          }));
+          // } else if (type === "pin") {
+          //   setPinDetails((prevDetails) => ({
+          //     ...prevDetails,
+          //     [postId]: details.pin,
+          //   }));
         } else if (type === "photo") {
           setPhotoDetails((prevDetails) => ({
             ...prevDetails,
@@ -204,9 +204,9 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           fetchPromises.push(fetchDetails(post.shared_commentId, "comment"));
         }
 
-        if (post.shared_pinId) {
-          fetchPromises.push(fetchDetails(post.shared_pinId, "pin"));
-        }
+        // if (post.shared_pinId) {
+        //   fetchPromises.push(fetchDetails(post.shared_pinId, "pin"));
+        // }
 
         if (post.shared_photoId) {
           fetchPromises.push(fetchDetails(post.shared_photoId, "photo"));
@@ -340,18 +340,18 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         } else {
           console.error(`Error: Comment with ID ${postId} not found.`);
         }
-      } else if (type === "pin") {
-        const response = await axios.get(`/api/feed/shared-pin/${postId}`);
-        setPinDetails((prevDetails) => ({
-          ...prevDetails,
-          [postId]: {
-            ownerId: null,
-            isToilet: null,
-            isFood: null,
-            isPersonal: null,
-            upvotes: null,
-          },
-        }));
+        // } else if (type === "pin") {
+        //   const response = await axios.get(`/api/feed/shared-pin/${postId}`);
+        //   setPinDetails((prevDetails) => ({
+        //     ...prevDetails,
+        //     [postId]: {
+        //       ownerId: null,
+        //       isToilet: null,
+        //       isFood: null,
+        //       isPersonal: null,
+        //       upvotes: null,
+        //     },
+        //   }));
       } else if (type === "photo") {
         const response = await axios.get(`/api/feed/shared-photo/${postId}`);
         setPhotoDetails((prevDetails) => ({
@@ -397,45 +397,24 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         {Array.isArray(sharedPosts) && sharedPosts.length > 0 ? (
           sharedPosts.map((post) => (
             <li key={post.id} style={{ marginBottom: "10px" }}>
-              <div
-                style={{
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  padding: "10px",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  display: "flex",
-                  flexDirection: "column",
-                  position: "relative",
-                  backgroundColor: "white",
-                }}
-              >
+              <div className="card">
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <p style={{ margin: 0, marginRight: "10px" }}>
-                    Sender: {userNames[post.sender_userId]}
+                    Shared by: {userNames[post.sender_userId]}
                   </p>
                 </div>
                 {post.shared_commentId && (
                   <div style={{ marginTop: "5px" }}>
-                    <p style={{ margin: 0 }}>
-                      Shared Comment ID: {post.shared_commentId}
-                    </p>
                     {commentDetails[post.shared_commentId] ? (
                       <div>
                         <p style={{ margin: 0 }}>
-                          Comment:{" "}
-                          {commentDetails[post.shared_commentId].comment}
-                        </p>
-                        <p style={{ margin: 0 }}>
-                          Creator:{" "}
+                          {commentDetails[post.shared_commentId].comment} -{" "}
                           {
                             userNames[
                               commentDetails[post.shared_commentId].ownerId
                             ]
                           }
-                        </p>
-                        <p style={{ margin: 0 }}>
-                          Created At:{" "}
-                          {dayjs(post.createdAt).format("MM/D/YY, h:mm:ss A")}
+                          : {dayjs(post.createdAt.toString()).fromNow()}
                         </p>
                         <div style={{ display: "flex", alignItems: "center" }}>
                           <button
@@ -513,6 +492,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                                 border: "1px solid black",
                                 borderRadius: "50%",
                                 padding: "5px",
+                                background: "black",
                               }}
                             />
                           </button>
@@ -529,139 +509,15 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                     )}
                   </div>
                 )}
-                {/* Pins */}
-                {post.shared_pinId && (
-                  <div style={{ marginTop: "5px" }}>
-                    <p style={{ margin: 0 }}>
-                      Shared Pin ID: {post.shared_pinId}
-                    </p>
-                    {pinDetails[post.shared_pinId] ? (
-                      <div>
-                        <p style={{ margin: 0 }}>
-                          Is Toilet:{" "}
-                          {pinDetails[post.shared_pinId].isToilet
-                            ? "Yes"
-                            : "No"}
-                        </p>
-                        <p style={{ margin: 0 }}>
-                          Is Food:{" "}
-                          {pinDetails[post.shared_pinId].isFood ? "Yes" : "No"}
-                        </p>
-                        <p style={{ margin: 0 }}>
-                          Is Personal:{" "}
-                          {pinDetails[post.shared_pinId].isPersonal
-                            ? "Yes"
-                            : "No"}
-                        </p>
-                        <p style={{ margin: 0 }}>
-                          Creator:{" "}
-                          {userNames[pinDetails[post.shared_pinId].ownerId]}
-                        </p>
-                        <p style={{ margin: 0 }}>
-                          Created At:{" "}
-                          {dayjs(post.createdAt).format("MM/D/YY, h:mm:ss A")}
-                        </p>
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          <button
-                            style={{
-                              border: "none",
-                              cursor: "pointer",
-                              outline: "none",
-                              boxShadow: "none",
-                              background: "transparent",
-                            }}
-                            onClick={() => {
-                              handleUpvote(post.shared_pinId, "pin");
-                            }}
-                            disabled={
-                              pinVotingStatus[post.shared_pinId] === "upvoted"
-                            }
-                          >
-                            <IoArrowUpCircle
-                              style={{
-                                color:
-                                  pinVotingStatus[post.shared_pinId] ===
-                                  "upvoted"
-                                    ? "green"
-                                    : "black",
-                                fontSize: "30px",
-                              }}
-                            />
-                          </button>
-                          <span style={{ margin: "0 5px" }}>
-                            {pinDetails[post.shared_pinId]?.upvotes}
-                          </span>
-                          <button
-                            style={{
-                              border: "none",
-                              cursor: "pointer",
-                              outline: "none",
-                              boxShadow: "none",
-                              background: "transparent",
-                            }}
-                            onClick={() => {
-                              handleDownvote(post.shared_pinId, "pin");
-                            }}
-                            disabled={
-                              pinVotingStatus[post.shared_pinId] === "downvoted"
-                            }
-                          >
-                            <IoArrowDownCircle
-                              style={{
-                                color:
-                                  pinVotingStatus[post.shared_pinId] ===
-                                  "downvoted"
-                                    ? "red"
-                                    : "black",
-                                fontSize: "30px",
-                              }}
-                            />
-                          </button>
-                          <button
-                            style={{
-                              border: "none",
-                              cursor: "pointer",
-                              outline: "none",
-                              boxShadow: "none",
-                              background: "transparent",
-                              marginLeft: "auto",
-                            }}
-                            onClick={() => handleDelete(post.id)}
-                          >
-                            <BsTrash
-                              style={{
-                                color: "gold",
-                                fontSize: "30px",
-                                border: "1px solid black",
-                                borderRadius: "50%",
-                                padding: "5px",
-                              }}
-                            />
-                          </button>
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-                )}
-                {/* Photos */}
+
                 {post.shared_photoId && (
                   <div style={{ marginTop: "5px" }}>
-                    <p style={{ margin: 0 }}>
-                      Shared Photo ID: {post.shared_photoId}
-                    </p>
                     {photoDetails[post.shared_photoId] ? (
                       <div>
                         <p style={{ margin: 0 }}>
-                          Description:{" "}
-                          {photoDetails[post.shared_photoId].description}
-                        </p>
-                        <p style={{ margin: 0 }}>
-                          Creator:{" "}
+                          {photoDetails[post.shared_photoId].description} -{" "}
                           {userNames[photoDetails[post.shared_photoId].ownerId]}
-                        </p>
-                        <p style={{ margin: 0 }}>
-                          Created At:{" "}
-                          {dayjs(post.createdAt).format("MM/D/YY, h:mm:ss A")}
+                          : {dayjs(post.createdAt.toString()).fromNow()}
                         </p>
                         <img
                           src={photoDetails[post.shared_photoId].url}
@@ -748,6 +604,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                                 border: "1px solid black",
                                 borderRadius: "50%",
                                 padding: "5px",
+                                background: "black",
                               }}
                             />
                           </button>
@@ -756,6 +613,119 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                     ) : null}
                   </div>
                 )}
+                {/* {post.shared_pinId && (
+  <div style={{ marginTop: "5px" }}>
+    <p style={{ margin: 0 }}>
+      Shared Pin ID: {post.shared_pinId}
+    </p>
+    {pinDetails[post.shared_pinId] ? (
+      <div>
+        <p style={{ margin: 0 }}>
+          Is Toilet:{" "}
+          {pinDetails[post.shared_pinId].isToilet
+            ? "Yes"
+            : "No"}
+        </p>
+        <p style={{ margin: 0 }}>
+          Is Food:{" "}
+          {pinDetails[post.shared_pinId].isFood ? "Yes" : "No"}
+        </p>
+        <p style={{ margin: 0 }}>
+          Is Personal:{" "}
+          {pinDetails[post.shared_pinId].isPersonal
+            ? "Yes"
+            : "No"}
+        </p>
+        <p style={{ margin: 0 }}>
+          Creator:{" "}
+          {userNames[pinDetails[post.shared_pinId].ownerId]}
+        </p>
+        <p style={{ margin: 0 }}>
+          Created At:{" "}
+          {dayjs(post.createdAt).format("MM/D/YY, h:mm:ss A")}
+        </p>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <button
+            style={{
+              border: "none",
+              cursor: "pointer",
+              outline: "none",
+              boxShadow: "none",
+              background: "transparent",
+            }}
+            onClick={() => {
+              handleUpvote(post.shared_pinId, "pin");
+            }}
+            disabled={
+              pinVotingStatus[post.shared_pinId] === "upvoted"
+            }
+          >
+            <IoArrowUpCircle
+              style={{
+                color:
+                  pinVotingStatus[post.shared_pinId] ===
+                  "upvoted"
+                    ? "green"
+                    : "black",
+                fontSize: "30px",
+              }}
+            />
+          </button>
+          <span style={{ margin: "0 5px" }}>
+            {pinDetails[post.shared_pinId]?.upvotes}
+          </span>
+          <button
+            style={{
+              border: "none",
+              cursor: "pointer",
+              outline: "none",
+              boxShadow: "none",
+              background: "transparent",
+            }}
+            onClick={() => {
+              handleDownvote(post.shared_pinId, "pin");
+            }}
+            disabled={
+              pinVotingStatus[post.shared_pinId] === "downvoted"
+            }
+          >
+            <IoArrowDownCircle
+              style={{
+                color:
+                  pinVotingStatus[post.shared_pinId] ===
+                  "downvoted"
+                    ? "red"
+                    : "black",
+                fontSize: "30px",
+              }}
+            />
+          </button>
+          <button
+            style={{
+              border: "none",
+              cursor: "pointer",
+              outline: "none",
+              boxShadow: "none",
+              background: "transparent",
+              marginLeft: "auto",
+            }}
+            onClick={() => handleDelete(post.id)}
+          >
+            <BsTrash
+              style={{
+                color: "gold",
+                fontSize: "30px",
+                border: "1px solid black",
+                borderRadius: "50%",
+                padding: "5px",
+              }}
+            />
+          </button>
+        </div>
+      </div>
+    ) : null}
+  </div>
+)} */}
               </div>
             </li>
           ))
