@@ -160,8 +160,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
     //setShowModal(true)
-
-
+    if (isPinSelected === false && isFriendSelected === false){
+      setShowModal(true)
+    }
       // setTimeout (() => {
       //   //setShowModal(true)
       //   modalTrigger()
@@ -172,8 +173,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
   //finds clicked marker/pin from database
   const clickedMarker = async (e: any) => {
-    const currMarkerLng = e._lngLat.lng;
-    const currMarkerLat = e._lngLat.lat;
+    const currMarkerLng = e._lngLat.lng || e.lngLat.lng 
+    const currMarkerLat = e._lngLat.lat || e.lngLat.lat;
 
     const  lngRounded = currMarkerLng.toString().slice(0,10)
     const  latRounded = currMarkerLat.toString().slice(0,9)
@@ -202,7 +203,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           console.log('setisfriend selected in func', isFriendSelected)
         } catch (err)  {
           console.error(err);
-        }
+       }
       }
   };
 
@@ -210,22 +211,12 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   useEffect(() => {
     createRouterLine(selectedRouteProfile)
     modalTrigger()
-    // setShowModal(true)
-    // console.log('useeffect showmodal', showModal)
   }, [isPinSelected])
 
   useEffect(() => {
     createRouterLine(selectedRouteProfile)
     setRouteDirections(true)
-    console.log('router is called in friend useEffect')
   }, [isFriendSelected])
-
-
-  // useEffect(() => {
-  //   console.log('in friend use effect', showModal)
-  //   setShowModal(false)
-  //   console.log('in friend use effect after state', showModal)
-  // }, [isFriendSelected])
 
 
  // these are the details that are being set to build the "route"/ line for the directions
