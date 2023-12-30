@@ -117,8 +117,8 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
           </Modal.Body>
           <Modal.Footer>
             {/* <ShareModal postId={selectedPin[0].id} userId={1} postType={"pin"}/> */}
-            <Button onClick={initModal} style={{backgroundColor: "#53CA3C"}}> Close </Button>
-            <Button id="modal-addPhoto-btn" onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
+            <Button onClick={initModal}> Close </Button>
+            <Button className="btn-success" onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
           </Modal.Footer>
           </div>
             ) : (
@@ -136,7 +136,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
-            <Button id="modal-close-btn" onClick={initModal}> Close </Button>
+            <Button onClick={initModal} > Close </Button>
           </Modal.Footer>
           </div>
               )
@@ -197,7 +197,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
           </Form>
         </Modal.Body>
         <Modal.Footer>
-        <Button id="modal-close-btn" onClick={initModal}> Close </Button>
+        <Button onClick={initModal}> Close </Button>
         </Modal.Footer>
       </Modal>)
       }

@@ -3,6 +3,7 @@
 
 
 $greeny: #169874;
+$lightGreeny: #53CA3C;
 $pinky: #e7abff;
 $yeller: #FCC54E;
 $dark: #301A4B;
@@ -71,18 +72,6 @@ $isEMTStation:#f27d52;
   border: 2px solid #BA37DD;
 }
 
-// .map-accordion-body{
-//   padding-top: 2px;
-//   padding-bottom: 2px;
-// }
-
-// #map-filter-buttons {
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   margin: 20px 20px, 20px, 10px;
-// }
-
 span {
   font-size: medium;
   display: flex;
@@ -99,6 +88,10 @@ span {
   border: none;
 }
 
+.btn-login{
+  background-color: #E7ABFF;
+}
+
 .btn-wide {
   width: 80vw;
   max-width: 400px;
@@ -107,12 +100,13 @@ span {
 }
 
 .btn-primary {
-  background-color: $yeller !important;
+  background-color: $yeller ;
   color: $dark;
 }
 
 .btn-success {
   background-color: $greeny !important;
+  color: white
 }
 
 // buttons to put icons inside for
@@ -178,10 +172,16 @@ span {
   background-color: $greeny;
 }
 
-#modal-close-btn{
-  background-color: #BA37DD;
+#login{
+  background-color: $greeny;
+  padding: 100px
 }
 
+#login-img{
+  display:block;
+  margin: 0 auto;
+  padding-bottom: 20px;
+}
 
 h5 {
 text-align: center;
