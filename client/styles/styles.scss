@@ -13,6 +13,15 @@
 $greeny: #169874;
 $pinky: #e7abff;
 $yeller: #fcc54e;
+$purpley: #8d3dad;
+
+
+$lightPinky: #fbf4fe;
+$tabSelected: $lightPinky;
+$tabSelectedBorder: $purpley;
+$tabUnselected: #c1c1c1;
+$tabUnselectedBorder: #e3e3e3;
+
 
 .card {
   padding: 10px;
@@ -22,7 +31,7 @@ $yeller: #fcc54e;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
   margin-top: 10px;
-  border: 2px solid #8d3dad;
+  border: 2px solid $purpley;
 }
 
 #map-direction-card{
@@ -88,9 +97,6 @@ $yeller: #fcc54e;
 }
 
 .bottom-nav {
-  // width: 100vw;
-  // display: flex;
-  // flex-direction: row;
   justify-content: space-evenly;
   background-color: white;
   height: 12vh;
@@ -98,9 +104,6 @@ $yeller: #fcc54e;
 }
 
 .top-nav {
-  // width: 100vw;
-  // display: flex;
-  // flex-direction: row;
   justify-content: space-evenly;
   background-color: $greeny;
   height: 8vh;
@@ -114,27 +117,57 @@ $yeller: #fcc54e;
   padding-bottom: 14vh;
   display: flex;
   flex-direction: column;
-  background-color: #f3d7fe;
+  background-color: $lightPinky;
+  min-height: 100vh;
 }
 
 
 // USER PAGE
 
-.event-modal {
-  min-height: 95vh;
-  background-color: #e7abff;
+.modal {
+  background-color: $pinky;
 }
 
-.userPage-tabs {
-  // border: 2px solid black;
-
+.modal-body {
+  height: 76vh
 }
 
 h5 {
-text-align: center;
+text-align: left;
 color: $greeny;
 margin: 10px;
 text-transform: uppercase;
 font-weight: bold;
+}
+
+// purple border for tab
+.nav-tabs {
+  border-bottom: 1px solid $tabSelectedBorder
+}
+
+.nav-tabs .nav-item.show {
+  background-color: $tabSelected;
+}
+
+.tab-content {
+  background-color: $tabSelected;
+}
+
+.nav-tabs .nav-link {
+  color: white;
+  background-color: $tabUnselected;
+  border-top: 1px solid $tabUnselectedBorder;
+  border-left: 1px solid $tabUnselectedBorder;
+  border-right: 1px solid $tabUnselectedBorder;
+  border-bottom: 1px solid $tabSelectedBorder;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: $tabSelected;
+  color: black;
+  border-top: solid 1px $tabSelectedBorder;
+  border-left: solid 1px $tabSelectedBorder;
+  border-right: solid 1px $tabSelectedBorder;
+  border-bottom: solid 1px $tabSelected;
 }
 
