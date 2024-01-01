@@ -60,8 +60,8 @@ const ShareModal = (props: {
   };
 
   return (
-    <div style={{ float: 'right'}}>
-      <Button onClick={handleShow}>
+    <div >
+      <Button onClick={handleShow} style={{ marginLeft: '150px'}}>
         <IoIosSend />
       </Button>
 

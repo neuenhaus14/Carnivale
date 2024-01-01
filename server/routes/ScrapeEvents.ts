@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 const Gigs = express.Router()
 //new Date makes todays date
 //LOOK INTO PROMISESALL
-const userDate = new Date().toISOString().slice(0, 10)
+//const userDate = new Date().toISOString().slice(0, 10)
 
 //TODO: add  UI drop down for date requests. If already scraped, return the scraped dates. If not, scrape and add to db
 
@@ -20,7 +20,8 @@ const userDate = new Date().toISOString().slice(0, 10)
 //making an async function for cheerio scraping
 async function start(userDate: string) {
 //string interpolation for the UI date request (YYYY-MM-DD)
-  const url = `https://www.wwoz.org/calendar/livewire-music?date=${userDate}`
+  //const url = `https://www.wwoz.org/calendar/livewire-music?date=${userDate}`
+  const url = `https://www.wwoz.org/calendar/livewire-music?date=2024-01-02`
   console.log(userDate)
   try {
     const response = await axios.get(url);
@@ -111,7 +112,7 @@ async function start(userDate: string) {
   }
 } catch (error) {
   throw new Error(
-    `Error scraping parade info for ${error.errors}`
+    `Error scraping parade info for ${error}`
   );
 // } finally {
 //   const addresses = [];

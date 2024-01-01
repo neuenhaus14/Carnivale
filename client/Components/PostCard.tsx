@@ -114,7 +114,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
               {post.comment} - {owner}:{" "}
               {dayjs(post.createdAt.toString()).fromNow()}
             </Card.Text>
-            <ButtonGroup style={{ display: 'block'}}>
+            <ButtonGroup style={{ display: 'flex', flexDirection: 'row'}}>
             <button
               style={{
                 border: "none",
@@ -152,8 +152,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                 }}
               />
             </button>
-
-            <ShareModal postId={post.id} userId={userId} postType={"comment"} />
+            <ShareModal postId={post.id} userId={userId} postType={"comment"}/>
             </ButtonGroup>
           </Card.Body>
         ) : (
@@ -163,7 +162,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
               {post.description} - {owner}:{" "}
               {dayjs(post.createdAt.toString()).fromNow()}
             </Card.Text>
-            <ShareModal postId={post.id} userId={userId} postType={"photo"} />
+            <ButtonGroup style={{ display: 'flex', flexDirection: 'row'}}>
 
             <button
               style={{
@@ -202,6 +201,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                 }}
               />
             </button>
+            <ShareModal postId={post.id} userId={userId} postType={"photo"} />
+          </ButtonGroup>
           </Card.Body>
         )}
       </Card>

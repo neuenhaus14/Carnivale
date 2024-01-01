@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
 import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer, Popup } from 'react-map-gl';
-import { Card, Button, Accordion, Container } from 'react-bootstrap'
-import { useSearchParams, useLoaderData } from 'react-router-dom';
+import { Container } from 'react-bootstrap'
+import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -10,7 +10,6 @@ import PinModal from './PinModal';
 
 import { io } from 'socket.io-client';
 const socket = io();
-
 
 interface MapProps {
   userLat: number
@@ -20,18 +19,17 @@ interface MapProps {
 }
 
 const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) => {
-  // watchLocation();
 
   const mapRef = useRef(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [createPin, setCreatePin] = useState<boolean>(false)
   const [isPinSelected, setIsPinSelected] = useState<boolean>(false)
   const [selectedPin, setSelectedPin] = useState({})
   const [showModal, setShowModal] = useState<boolean>(false)
   const [markers, setMarkers] = useState([]);
   const [filteredMarkers, setFilteredMarkers] = useState([])
   const [filterOn, setFilterOn] = useState<boolean>(false)
+  const [filterChoice, setFilterChoice] = useState<string>('')
   const [userLocation, setUserLocation] = useState<[number, number]>([userLng, userLat]);
   const [clickedPinCoords, setClickedPinCoords] = useState<[number, number]>([0, 0])
   const [distance, setDistance] = useState(null);
@@ -50,6 +48,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     zoom: 16,
   });
 
+  // determines which path to take on route render ie walk, cycle, or drive
   const routeProfiles = [
     {id: 'walking', label: 'Walking'},
     {id: 'cycling', label: 'Cylcing'},
@@ -57,32 +56,29 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   ];
   const [selectedRouteProfile, setselectedRouteProfile] = useState<string>('walking');
 
+  //determines which pins to show- filter or not filter 
   const renderMarkers = filterOn ? filteredMarkers : markers
 
   //loads pins immediately on page render
   useEffect(() => {
     getPins();
-    //getFriends();
+    getFriends();
     getEvents();
   }, [setMarkers]);
 
 
+ useEffect(() => { 
+  getLocation()
+  console.log('getLocation called in useEffect')
+ }, [setUserLocation])
 
-  setTimeout (() => {
-   getLocation()
-   if(showDirections){
-     createRouterLine(selectedRouteProfile)
-     console.log('createRouterLine called in setTimout')
-   }
-  }, 120000)
-
-
+ 
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
     geoControlRef.current?.trigger();
+    console.log('getLocation called in geoLocation')
   }, [geoControlRef.current]);
-
 
   //gets pins from database
   const getPins = async () => {
@@ -105,103 +101,93 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     }
   }
 
-  // gets friends from the database
-  // const getFriends = async () => {
-  //   try {
-  //     const friends = await axios.get(`/api/friends/getFriends/${userId}`)
-  //     setFriends(friends.data)
-  //   } catch (err)  {
-  //     console.error(err)
-  //   }
-  // }
+  //gets friends from the database- commented out bc friend sockets
+  const getFriends = async () => {
+    try {
+      const friends = await axios.get(`/api/friends/getFriends/${userId}`)
+      setFriends(friends.data)
+    } catch (err)  {
+      console.error(err)
+    }
+  }
 
-  useEffect (() => {
-    socket.emit("getFriends:read", {userId})
-    console.log('socket emitted from map page')
+  //this useEffect should update user or friend locations everytime they move
+  useEffect(() => {
+    socket.on('userLoc response', (userLoc) => {
+      console.log('userLoc response in map', userLoc)
 
-    const handleGetFriends = (allFriendsUsers: any) => {
-      console.log('Got friends from socket', allFriendsUsers)
-      setFriends(allFriendsUsers)
-    };
+      if (userLoc.id === userId){
+        setUserLocation([userLoc.longitude, userLoc.latitude]) // assuming everytime state is set there is a new render with updated loc
+        console.log('userLoc set')
 
-    socket.on("getFriends:send", handleGetFriends)
+      } else { 
+        console.log('made it to else statement in socket')
+        friends.forEach((friend) => {
+          console.log('friend inside socket', friend)
+          if (friend.id === userLoc.id){
+            friend.longitude = userLoc.longitude
+            friend.latitude = userLoc.latitude
+            console.log('friendID that matched', friend)
+          }
+        })
+        setFriends(prevFriends => [...prevFriends]); // assuming everytime state is set there is a new render with updated friend loc
+      }
 
-    return () => {
-      socket.off("getFriends:send", handleGetFriends)
-    };
+    })
+  });
 
-  }, []);
-
-
-
-  // useEffect (() => {
-  //   console.log('hitting this block')
-  //   socket.on("otherUserLocs", (otherUserLocs) => {
-  //     console.log('Got friends from socket', otherUserLocs)
-  //     setFriends(otherUserLocs)
-  //   })
-  // })
-
-  // useEffect (() => {
-
-  //   const handleOtherLocs = (otherUserLocs: any) => {
-  //     console.log('Got friends from socket', otherUserLocs)
-  //     setFriends(otherUserLocs)
-  //   }
-  //   socket.on("otherUserLocs", handleOtherLocs)
-  //   return () => {
-  //     socket.off('otherUserLocs', handleOtherLocs)
-  //   };
-  // }, [setMarkers])
-
-
-  //this sets the map touch coordinates to the url as params
+  //this sets the map touch coordinates to the url as params and shows createPin modal
   const dropPin = (e: any) => {
-
-    setTimeout (() => {
-      modalTrigger()
-    }, 250)
-
+    if (isPinSelected === false && isFriendSelected === false){
+      setShowModal(true)
+    }
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   }
 
   //finds clicked marker/pin from database
   const clickedMarker = async (e: any) => {
-    const currMarkerLng = e._lngLat.lng;
-    const currMarkerLat = e._lngLat.lat;
+    const currMarkerLng = e._lngLat.lng || e.lngLat.lng 
+    const currMarkerLat = e._lngLat.lat || e.lngLat.lat;
 
     const  lngRounded = currMarkerLng.toString().slice(0,10)
     const  latRounded = currMarkerLat.toString().slice(0,9)
     setClickedPinCoords([lngRounded, latRounded])
 
-
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`)
-        if (data) {
           setSelectedPin(data);
           setIsPinSelected(true);
           setShowDirections(true);
-          modalTrigger()
-        } else {
-          setIsFriendSelected(true)
+          setIsFriendSelected(false)
+
+      } catch (err)  {
+        try {
+          const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
+          setSelectedPin(data);
           setShowFriendPopup(true)
           setShowDirections(true)
+          setIsFriendSelected(true)
+          setShowModal(false)
+        } catch (err)  {
+          console.error(err);
         }
-
-        // try {
-        //   const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
-        //   console.log('clickedFriend', data);
-        //   setIsFriendSelected(true)
-        //   setShowFriendPopup(true)
-        //   setShowDirections(true)
-        // } catch (err)  {
-        //   console.error(err);
-        // }
-      } catch (err)  {
-        console.error(err);
       }
-
   };
+
+  // when pin is selected, route and modal are triggered
+  useEffect(() => {
+    createRouterLine(selectedRouteProfile)
+    modalTrigger()
+  }, [isPinSelected])
+
+  // when friend is selected, route is called and friend state is reset
+  useEffect(() => {
+    createRouterLine(selectedRouteProfile)
+    setRouteDirections(true)
+    if(isFriendSelected === true){
+      setIsFriendSelected(false)
+    }
+  }, [isFriendSelected])
 
  // these are the details that are being set to build the "route"/ line for the directions
   const makeRouterFeature = (coordinates: [number, number][]): any => {
@@ -224,44 +210,42 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
  // handles the route line creation by making the response from the directions API into a geoJSON
  // which is the only way to use it in the <Source> tag (displays the "route/line")
   const createRouterLine = async (routeProfile: string,): Promise<void> => {
-    console.log('userCoords', userLng, userLat)
-    const startCoords = `${userLng},${userLat}`
-    const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`
-    const geometries = 'geojson'
-    const url = `https://api.mapbox.com/directions/v5/mapbox/${routeProfile}/${startCoords};${endCoords}?alternatives=true&geometries=${geometries}&steps=true&banner_instructions=true&overview=full&voice_instructions=true&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw`;
+    //console.log(isPinSelected, isFriendSelected)
+    // if (isPinSelected === true || isFriendSelected === true){
+      const startCoords = `${userLocation[0]},${userLocation[1]}`
+      const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`
+      const geometries = 'geojson'
+      const url = `https://api.mapbox.com/directions/v5/mapbox/${routeProfile}/${startCoords};${endCoords}?alternatives=true&geometries=${geometries}&steps=true&banner_instructions=true&overview=full&voice_instructions=true&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw`;
 
-    try {
-      const { data } = await axios.get(url);
+      try {
+        const { data } = await axios.get(url);
 
-      data.routes.map((route: any) => {
-        setDistance((route.distance / 1609).toFixed(2)) // meters to miles
-        setDuration((route.duration).toFixed(2)) // hours
-      });
+        data.routes.map((route: any) => {
+          setDistance((route.distance / 1609).toFixed(2)) // meters to miles
+          setDuration((route.duration).toFixed(2)) // hours
+        });
 
-      const coordinates = data['routes'][0]['geometry']['coordinates']
-      const destinationCoordinates = data['routes'][0]['geometry']['coordinates'].slice(-1)[0]
-      setDestinationCoords(destinationCoordinates)
+        const coordinates = data['routes'][0]['geometry']['coordinates']
+        const destinationCoordinates = data['routes'][0]['geometry']['coordinates'].slice(-1)[0]
+        setDestinationCoords(destinationCoordinates)
 
-      if (coordinates.length) {
-        const routerFeature = makeRouterFeature([...coordinates])
-        setRouteDirections(routerFeature)
-        setShowRouteDirections(true);
+        if (coordinates.length) {
+          const routerFeature = makeRouterFeature([...coordinates])
+          setRouteDirections(routerFeature)
+          setShowRouteDirections(true);
+        }
+      } catch (err) {
+        console.error(err);
       }
-    } catch (err) {
-      console.error(err);
-    }
+    // }
   }
 
-  // prompts the modal to open/close
+  //prompts the modal to open/close on pin vs map(empty) click
   const modalTrigger = () => {
-    if (isPinSelected === true){
-      setCreatePin(false)
-      setShowModal(true)
-    } else if (isFriendSelected === true){
-      setCreatePin(false)
+    if (isPinSelected === false){
       setShowModal(false)
     } else {
-      setShowModal(true)
+     setShowModal(true)
     }
   }
 
@@ -296,43 +280,60 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     }
   }
 
-  const filterResults = (e: string) => {
-    const filterChoice = e;
+  // styles the filter buttons
+  const filterStyling = (value: string) => {
+    const colorMapping: PinColorMapping = {
+      isFree:"#53CA3C",
+      isToilet: "#169873",
+      isFood: "#FCC54E",
+      isPersonal: "#BA37DD",
+      isPhoneCharger: '#53e3d4',
+      isPoliceStation: "#E7ABFF",
+      isEMTStation:"#f27d52"
+    }
 
+    const off = {
+      backgroundColor: `${colorMapping[value]}`,
+      color: "black"
+    }
+
+    const on = {
+      backgroundColor: "white",
+      color: `${colorMapping[value]}`,
+      borderColor: `${colorMapping[value]}`,
+      borderWidth: "3px",
+      borderStyle: "solid",
+      fontWeight: "bold"
+    }
+
+    if (value === filterChoice && filterOn === true){
+      return on
+    } else {
+      return off
+    }    
+  }
+
+  // manages the rendering for the filter element
+  const filterResults = (e: string) => {
+    setFilterOn(false)
+    const choice = e;
+    
     const filteredPins = markers.filter((marker) => {
       for(const key in marker){
-       if (marker[filterChoice] === true){
+       if (marker[choice] === true){
         return marker
        }
       }
     })
 
-    setFilterOn(!filterOn)
+    setFilterOn(true)
+    setFilterChoice(choice)
     setFilteredMarkers(filteredPins)
   }
 
   return (
     <Container className="body">
-      <Accordion>
-        <Accordion.Item eventKey="0">
-        <Accordion.Header>Filter Pins</Accordion.Header>
-          <Accordion.Body className="map-accordion-body">
-            <center>
-            <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
-              <button type="button" value="isFree" className="btn" style={{ borderColor: "#53CA3C", color: "#53CA3C" }} onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
-              <button type="button" value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
-              <button type="button" value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
-              <button type="button" value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button>
-            </div>
-            <div className="btn-group btn-group-sm" role="group" aria-label="Basic example">
-              <button type="button" value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
-              <button type="button" value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
-              <button type="button" value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button>
-            </div>
-            </center>
-          </Accordion.Body>
-        </Accordion.Item>
-    </Accordion>
+      <span>Click on the Map to add a Pin or on a Pin to see the details</span>
       { showModal ?
         <PinModal
           userId={userId}
@@ -344,13 +345,11 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           setIsPinSelected={setIsPinSelected}
         />
         : null }
-      <div id='map-page-filter' >
-      </div>
       <Map
         ref={mapRef}
         {...viewState}
         onMove={(e) => setViewState(e.viewState)}
-        onClick={(e) => {dropPin(e); createRouterLine(selectedRouteProfile)}}
+        onClick={(e) => {dropPin(e)}}
         mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
         style={{ position: 'relative', bottom: '0px', maxWidth: '100vw', height: "50vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
@@ -362,7 +361,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           showUserLocation={true}
           showAccuracyCircle={false}
           ref={geoControlRef}
-          />
+        />
       <div id='map-markers'>
         {
           renderMarkers.map((marker) => (
@@ -383,8 +382,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
             key={friend.id}
             onClick={(e) => {clickedMarker(e.target)}}
             longitude={friend.longitude} latitude={friend.latitude}
-            anchor="bottom"
-            color="white">
+            anchor="center"
+            >
+              <img src="img/friend_dot.png" width="30px" height="30px"/>
             </Marker>
           ))
         }
@@ -408,8 +408,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
               id="routerLine01"
               type="line"
               paint={{
-                'line-color': '#000000',
-                'line-width': 4,
+                'line-color': '#BA37DD',
+                'line-width': 3,
               }}
             />
           </Source>
@@ -425,30 +425,39 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
                 closeOnMove={true}
                 onClose={() => setShowFriendPopup(false)}
               >
-                <b>{friend.firstName} {friend.lastName}</b>
+                <b>{friend.firstName[0]}{friend.lastName[0]}</b>
               </Popup>
             ))}
           </>
         ) : null}
-      <div id="map-direction-card" className='card w-35'>
-        {showDirections ? (
-          <div className= 'card-body'>
-            {/* <span> <b>Walking Directions: </b></span> <br /> */}
-            <span><b>{humanizedDuration(duration)}</b> away</span> <br />
-            <span> <b>{distance}</b> miles</span><br />
-            <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
-        </div>
-        )
-        : null }
-      </div>
+        { showDirections ? (
+          <div id="map-direction-card" className='card w-35'>
+            <div className= 'card-body'>
+              <p style={{fontSize: "15px"}}><b>{humanizedDuration(duration)}</b> away</p>
+              <p style={{fontSize: "15px"}}> <b>{distance}</b> miles</p>
+              <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
+            </div>
+          </div> 
+        ) : null}
       </Map>
-      <center>
-      <div id="map-pin-key-img">
-        <h3><b>MAP KEY</b></h3>
-        <img src="img/Map_pin_key.jpg" alt="Map Pin Key" width='300' height= "225"/>
+      <div id="map-filter-container" className="container">
+        <span>FILTER PINS</span>
+          <center id='map-filter-buttons'>
+            <div className="btn-group" role="group" aria-label="Basic example"> 
+              <button type="button" style={filterStyling("isFree")} value="isFree"  className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
+              <button type="button" style={filterStyling("isToilet")} value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
+              <button type="button" style={filterStyling("isFood")} value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
+              <button type="button" style={filterStyling("isPersonal")} value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button>
+            </div>
+            <div className="btn-group" role="group" aria-label="Basic example"> 
+              <button type="button" style={filterStyling("isPhoneCharger")} value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
+              <button type="button" style={filterStyling("isPoliceStation")} value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
+              <button type="button" style={filterStyling("isEMTStation")} value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button><br />
+            </div><br /> 
+            <button type="button" value="clearFilters" className="btn btn-wide" onClick={()=> {setFilterOn(false); filterStyling(filterChoice)}}>Clear Filter</button>
+          </center><br />
       </div>
-      </center>
-    </Container>
+   </Container>
   )
 }
 
@@ -464,3 +473,19 @@ interface PinColorMapping {
 }
 
 export default MapPage;
+
+// gets friends from database? probably unnecessary with the getFriends axios call
+//   useEffect (() => {
+//     socket.emit("getFriends:read", {userId})
+//     const handleGetFriends = (allFriendsUsers: any) => {
+//       console.log('Got friends from socket', allFriendsUsers)
+//       setFriends(allFriendsUsers)
+//     };
+
+//     socket.on("getFriends:send", handleGetFriends)
+
+//     return () => {
+//       socket.off("getFriends:send", handleGetFriends)
+//     };
+
+// }, [setUserLocation]);

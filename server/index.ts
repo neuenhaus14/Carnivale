@@ -72,22 +72,34 @@ app.get("/auth", (req, res) => {
   res.render("index", { isAuthenticated: req.oidc.isAuthenticated() });
 });
 
+
+// app.post('/userLoc', (req, res) => {
+//   const {userLoc} = req.body
+//   io.emit('userLoc response', userLoc)
+//   res.sendStatus(200)
+// })
+
+
 io.on('connection', (socket: any) => {
   console.log('a user connected');
+
   socket.on('userLoc', (userLoc: any) => {
-    // console.log('userLoc', userLoc)
-    // socket.broadcast.emit('otherUserLocs', userLoc)
+    console.log('userLoc', userLoc)
+       //io.emit('userLoc response', userLoc)
+       socket.broadcast.emit('userLoc response', userLoc)
+
+
     //   console.log('emitted userLoc')
-    console.log('userLoc', userLoc.longitude, userLoc.latitude, userLoc.id)
-      User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: userLoc.id}})
-      .then(() => {
-        console.log('successfully updated location')}
-        // User.findOne({where: {id: userLoc.id}})
-        //   .then((data) => {
-        //     io.emit('userLoc', data.dataValues)
-        //   })
-      )
-      .catch((err) => console.error(err))
+    //console.log('userLoc', userLoc.longitude, userLoc.latitude, userLoc.id)
+      // User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: userLoc.id}})
+      // .then(() => {
+      //   console.log('successfully updated location')}
+      //   User.findOne({where: {id: userLoc.id}})
+      //     .then((data) => {
+      //       io.emit('userLoc response', data.dataValues)
+      //     })
+      // )
+      // .catch((err) => console.error(err))
   })
 
   socket.on("getFriends:read", (user: any) => {

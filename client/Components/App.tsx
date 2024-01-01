@@ -60,22 +60,18 @@ const App = () => {
     setLng(position.coords.longitude);
     setLat(position.coords.latitude);
 
-    console.log(
-      'accuracy: off by ' + position.coords.accuracy / 1609 + ' miles'
-    );
-    console.log(
-      'userId in socket, userID',
-      userId,
-      'long/lat',
-      position.coords.longitude,
-      position.coords.latitude
-    );
+    // axios.post('/userLoc', {
+    //   longitude: position.coords.longitude,
+    //   latitude: position.coords.latitude,
+    //   id: userId,
+    // }).then(res => console.log('done', res)).catch(err => console.log(err))
 
     socket.emit('userLoc', {
       longitude: position.coords.longitude,
       latitude: position.coords.latitude,
       id: userId,
     });
+    
     // socket.emit("getFriends:read", {userId})
     // console.log('socket emitted from App')
   };
@@ -130,25 +126,18 @@ const App = () => {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    console.log('userId changes');
     if (userId !== null) {
-      console.log('userRef.current is not null');
       getLocation();
-
     }
   }, [userId]);
 
 
-  // useEffect(() => {
-  //   // this coords is data.dataValues from the database as a response to the emit
-  //   socket.on('userLoc', (coords: any) => {
-  //     console.log('userLoc', coords.longitude, coords.latitude)
-
-  //     //set the coords with the response
-  //     setLng(coords.longitude);
-  //     setLat(coords.latitude);
-  //   })
-  // }, [])
+  useEffect(() => {
+    // this coords is data.dataValues from the database as a response to the emit
+    socket.on('userLoc response', (userLoc: any) => {
+      console.log('userLoc response in App', userLoc)
+    })
+  }, [])
 
   if (isLoading) {
     return <Loading />;
