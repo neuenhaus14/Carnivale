@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Card,
   Form,
@@ -8,59 +8,61 @@ import {
   Col,
   Tab,
   Tabs,
-} from "react-bootstrap";
-import { useAuth0 } from "@auth0/auth0-react";
-import axios from "axios";
-import HomeModal from "./HomeModal";
-import WeatherCard from "./WeatherCard";
-import PostCard from "./PostCard";
-import { ThemeContext } from './Context';
+  DropdownButton,
+  Dropdown,
+  Navbar,
+  ButtonGroup,
+} from 'react-bootstrap';
+import { FaCamera, FaEnvelope } from 'react-icons/fa';
+import axios from 'axios';
+import HomeModal from './HomeModal';
+import WeatherCard from './WeatherCard';
+import PostCard from './PostCard';
 
 //PARENT OF HOMEMODAL
 
 interface HomePageProps {
-  lat: number
-  lng: number
-  userId: number
+  lat: number;
+  lng: number;
+  userId: number;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
-  //const { user } = useAuth0();
-  const [comment, setComment] = useState("");
-  // const [userId, setUserId] = useState(null);
+const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
+  const [comment, setComment] = useState('');
   const [posts, setPosts] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [key, setKey] = useState("posts");
-  const theme = useContext(ThemeContext);
-
-  // useEffect(() => {
-  //   getLocation()
-  // }, []);
-
-  // const getUser = async () => {
-  //   try {
-  //     const { data } = await axios.post(`api/home/user/`, { user });
-  //     setUserId(data[0].id);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if(userData !== null){
-  //     setUserId(userData.id)
-  //     getLocation()
-  //   }
-  // }, [userData])
+  const [key, setKey] = useState('posts');
+  const [order, setOrder] = useState('updatedAt');
 
   const modalTrigger = () => {
-   setShowModal(true)
+    setShowModal(true);
+  };
+
+  function handleInput(e: any) {
+    setComment(e.target.value);
   }
 
+  function handleKeyDown(e: any) {
+    //if key is enter, prevent default
+    if (e.key === 'Enter' && comment.length > 0) {
+      //if comment is valid, submit comment
+      e.preventDefault();
+      handleSubmit();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  }
 
-  const handleSubmit = async() => {
+  //when tab is changed, set tab key and getPost for that tab
+  function handleSelect(k: string) {
+    setKey(k);
+    getPosts(k);
+  }
+
+  const handleSubmit = async () => {
     try {
-      axios.post(`/api/home/${userId}`, { comment });
+      await axios.post(`/api/home/${userId}`, { comment });
+      setComment('');
     } catch (err) {
       console.error(err);
     } finally {
@@ -71,52 +73,46 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
   const getPosts = async (e: string) => {
     try {
       const { data } = await axios.get(`/api/home/${e}`);
-      setPosts(data);
-      console.log(theme);
+
+      setPosts(data.sort((a: any, b: any) => b[order] - a[order]));
     } catch (err) {
       console.error(err);
     }
   };
 
   useEffect(() => {
-    //getUser();
+    //on initial render, or tab click
+    //getPosts and setInterval for 5 sec
     getPosts(key);
     const interval = setInterval(() => {
       getPosts(key);
-      //console.log("fetch");
+      console.log('fetch', order);
     }, 5000);
     return () => clearInterval(interval);
-  }, [key]);
+  }, [key, order]);
 
   return (
-    <Container className="body">
+    <Container className='body-home'>
       <Row>
         <WeatherCard />
-      <Button className="btn-wide" onClick={modalTrigger}>
-        Upload a pic!
-      </Button>
-      { showModal ?
-      <HomeModal
-        setShowModal={setShowModal}
-        lat={lat}
-        lng={lng}
-        userId={userId}
-       />
-      : null
-    }
+        <DropdownButton
+          title='Sort'
+          onSelect={setOrder}
+        >
+          <Dropdown.Item eventKey={'updatedAt'}>Updated</Dropdown.Item>
+          <Dropdown.Item eventKey={'createdAt'}>Created</Dropdown.Item>
+          <Dropdown.Item eventKey={'upvotes'}>Upvotes</Dropdown.Item>
+        </DropdownButton>
       </Row>
 
       <Row>
         <Tabs
           activeKey={key}
-          onSelect={(k) => {
-            setKey(k);
-            getPosts(k);
-          }}
+          onSelect={handleSelect}
         >
           <Tab
-            eventKey="posts"
-            title="All"
+            eventKey='posts'
+            title='All'
           >
             {posts
               ? posts.map((item: any, index: number) => (
@@ -126,11 +122,11 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
                     userId={userId}
                   />
                 ))
-              : ""}
+              : ''}
           </Tab>
           <Tab
-            eventKey="costumes"
-            title="Costumes"
+            eventKey='costumes'
+            title='Costumes'
           >
             {posts
               ? posts.map((item: any, index: number) => (
@@ -140,11 +136,11 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
                     userId={userId}
                   />
                 ))
-              : ""}
+              : ''}
           </Tab>
           <Tab
-            eventKey="throws"
-            title="Throws"
+            eventKey='throws'
+            title='Throws'
           >
             {posts
               ? posts.map((item: any, index: number) => (
@@ -154,28 +150,60 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId}) => {
                     userId={userId}
                   />
                 ))
-              : ""}
+              : ''}
           </Tab>
         </Tabs>
       </Row>
 
-      {key === "posts" ? (
-        <Row>
+      {key === 'posts' ? (
+        <Card
+          style={{
+            position: 'fixed',
+            bottom: '12vh',
+            display: 'flex',
+            flexDirection: 'column',
+            maxHeight: '12vh',
+            width: '90vw',
+            margin: '10px auto',
+            border: '2px solid black',
+          }}
+        >
           <Form>
             <Form.Group>
-              <Form.Label>COMMENT</Form.Label>
-              <Form.Control onChange={(e) => setComment(e.target.value)} />
-              <Button
-                variant="primary"
-                onClick={() => handleSubmit()}
-              >
-                SEND!!!
-              </Button>
+              <Form.Control
+                onChange={handleInput}
+                value={comment}
+                onKeyDown={(e) => {
+                  handleKeyDown(e);
+                }}
+              />
+                <Button
+                  onClick={modalTrigger}
+                  className='comment-btn'
+                >
+                  <FaCamera />
+                </Button>
+                {showModal ? (
+                  <HomeModal
+                    setShowModal={setShowModal}
+                    lat={lat}
+                    lng={lng}
+                    userId={userId}
+                  />
+                ) : null}
+                <Button
+                  variant='primary'
+                  onClick={handleSubmit}
+                  disabled={comment.length <= 0}
+                  className='comment-btn'
+                >
+                  <FaEnvelope />
+                  </Button>
             </Form.Group>
           </Form>
-        </Row>
+        </Card>
       ) : (
-        ""
+        ''
       )}
     </Container>
   );
