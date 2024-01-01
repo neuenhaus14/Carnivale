@@ -88,7 +88,7 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
       style={{
         color: eventsParticipating.includes(event.id) ? 'green'
           : eventsInvited.includes(event.id) ? 'orange' : 'black'
-        
+
       }}
       onClick={() => {
         setShowBasicModal(true);
@@ -101,7 +101,7 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
     >
      <h4>{event.name}</h4>
      <h5>{event.address}</h5>
-    <h6>{dayjs(event.startTime).format(' MMMM D, YYYY h:mm')}
+    <h6>{dayjs(event.startTime).format(' MMMM D, YYYY h:mm') + 'pm'}
 </h6>
     </ul>
   })
