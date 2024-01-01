@@ -82,7 +82,8 @@ module.exports = {
         ownerId: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
-        imageUrl: 'https://www.shutterstock.com/shutterstock/photos/1930257152/display_1500/stock-photo-seven-horses-force-running-out-1930257152.jpg'
+        imageUrl:
+          "https://www.shutterstock.com/shutterstock/photos/1930257152/display_1500/stock-photo-seven-horses-force-running-out-1930257152.jpg",
       },
       {
         name: "DJ set at PvF Marker",
@@ -196,7 +197,7 @@ module.exports = {
         isFree: true,
         isPhoneCharger: false,
         isPoliceStation: false,
-        isEMTStation:false,
+        isEMTStation: false,
         upvotes: 1,
         ownerId: 1,
         createdAt: new Date(),
@@ -211,7 +212,7 @@ module.exports = {
         isFree: false,
         isPhoneCharger: false,
         isPoliceStation: false,
-        isEMTStation:false,
+        isEMTStation: false,
         upvotes: 0,
         ownerId: 2,
         createdAt: new Date(),
@@ -226,7 +227,7 @@ module.exports = {
         isFree: false,
         isPhoneCharger: false,
         isPoliceStation: false,
-        isEMTStation:false,
+        isEMTStation: false,
         upvotes: 0,
         ownerId: 3,
         createdAt: new Date(),
@@ -241,7 +242,7 @@ module.exports = {
         isFree: false,
         isPhoneCharger: false,
         isPoliceStation: false,
-        isEMTStation:false,
+        isEMTStation: false,
         upvotes: 0,
         ownerId: 1,
         createdAt: new Date(),
@@ -617,24 +618,24 @@ module.exports = {
     ]);
 
     await queryInterface.bulkInsert("join_shared_posts", [
-      {
-        sender_userId: 2,
-        recipient_userId: 1,
-        shared_commentId: null,
-        shared_pinId: 3,
-        shared_photoId: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        sender_userId: 5,
-        recipient_userId: 1,
-        shared_commentId: null,
-        shared_pinId: 2,
-        shared_photoId: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
+      // {
+      //   sender_userId: 2,
+      //   recipient_userId: 1,
+      //   shared_commentId: null,
+      //   shared_pinId: 3,
+      //   shared_photoId: null,
+      //   createdAt: new Date(),
+      //   updatedAt: new Date(),
+      // },
+      // {
+      //   sender_userId: 5,
+      //   recipient_userId: 1,
+      //   shared_commentId: null,
+      //   shared_pinId: 2,
+      //   shared_photoId: null,
+      //   createdAt: new Date(),
+      //   updatedAt: new Date(),
+      // },
       {
         sender_userId: 3,
         recipient_userId: 1,

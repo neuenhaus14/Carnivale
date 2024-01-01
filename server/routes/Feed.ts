@@ -78,16 +78,16 @@ feedRouter.get(
   }
 );
 
-feedRouter.get("/shared-pin/:pin_id", async (req: Request, res: Response) => {
-  try {
-    const pinId = req.params.pin_id;
-    const sharedPin = await Pin.findByPk(pinId);
-    res.json(sharedPin);
-  } catch (error) {
-    console.error("Error getting shared pin information:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+// feedRouter.get("/shared-pin/:pin_id", async (req: Request, res: Response) => {
+//   try {
+//     const pinId = req.params.pin_id;
+//     const sharedPin = await Pin.findByPk(pinId);
+//     res.json(sharedPin);
+//   } catch (error) {
+//     console.error("Error getting shared pin information:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 feedRouter.post(
   "/upvote-comment/:user_id/:comment_id",

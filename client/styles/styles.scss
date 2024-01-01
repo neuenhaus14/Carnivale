@@ -34,26 +34,23 @@ $tabUnselectedBorder: #e3e3e3;
   border: 2px solid $purpley;
 }
 
-#map-direction-card{
+#map-direction-card {
   max-width: 8rem;
   max-height: 12rem;
   margin: left;
 
-  .card-body{
+  .card-body {
     padding-top: 2px;
     padding-right: 2px;
     padding-bottom: 2px;
     padding-left: 2px;
   }
-
 }
 
-.map-accordion-body{
+.map-accordion-body {
   padding-top: 2px;
   padding-bottom: 2px;
 }
-
-
 
 .btn {
   border: none;
@@ -117,16 +114,18 @@ $tabUnselectedBorder: #e3e3e3;
   padding-bottom: 14vh;
   display: flex;
   flex-direction: column;
+
   background-color: $lightPinky;
+
   min-height: 100vh;
 }
-
 
 // USER PAGE
 
 .modal {
   background-color: $pinky;
 }
+
 
 .modal-body {
   height: 76vh
@@ -170,4 +169,5 @@ font-weight: bold;
   border-right: solid 1px $tabSelectedBorder;
   border-bottom: solid 1px $tabSelected;
 }
+
 
