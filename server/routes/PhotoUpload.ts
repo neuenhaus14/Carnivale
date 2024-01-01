@@ -8,7 +8,10 @@ import { Pin } from '../db'
 //Multer provides us with two storage options: disk and memory storage. In the below snippet, we start by selecting the storage option we want for our Multer instance. We choose the memory storage option because we do not want to store parsed files on our server; instead, we want them temporarily stored on the RAM so that we can quickly upload them to Cloudinary.
 const storage = multer.memoryStorage();
 //console.log('storage', storage)
-const upload = multer({ storage });
+const upload = multer({  storage: storage,
+  limits: {
+    fileSize: 10000000 // 10000000 Bytes = 10 MB
+  }});
 //console.log('upload', upload)
 const myUploadMiddleware = upload.single("sample_file");
 const ImageRouter = express.Router()

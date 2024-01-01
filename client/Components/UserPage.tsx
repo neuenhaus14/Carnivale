@@ -24,9 +24,9 @@ dayjs.extend(relativeTime);
 import { useAuth0 } from '@auth0/auth0-react';
 
 //                              add userId as prop to get it from App
-const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
+const UserPage: React.FC<UserPageProps> = ({ getLocation, userId, lng, lat }) => {
   const [searchParams] = useSearchParams();
-  const [userId] = useState(Number(searchParams.get('userid')) || 1);
+ //const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
@@ -355,6 +355,13 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
     setNameOrPhoneForFriendRequest(e.target.value);
   }
 
+
+  async function scrapeEventsActivate(e: any) {
+    const userDate = new Date().toISOString().slice(0, 10)
+    const scrape = await axios.get(`/api/gigs/gigs-list/${userDate}`)
+    window.location.reload()
+  }
+
   // console.log('inside userpage. isNewEvent', isNewEvent)
   return (
     <Container className='body' style={{ justifyContent: 'space-between' }}>
@@ -508,18 +515,19 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, lng, lat }) => {
             Make A Plan
           </Button>
 
-          {/* Link below is styled like a bootstrap button */}
-          <Link className='btn btn-primary' role='button' to='/eventpage'>
-            Gigs
-          </Link>
-          <Link className='btn btn-primary' role='button' to='/parades'>
-            Parades
-          </Link>
-        </div>
+        {/* Link below is styled like a bootstrap button */}
+        <Link className='btn btn-primary' role='button' to='/eventpage' onClick={scrapeEventsActivate}>
+          Gigs
+        </Link>
+        <Link className='btn btn-primary' role='button' to='/parades'>
+          Parades
+        </Link>
+       </div>
       </Row>
     </Container>
   );
 };
+
 interface UserPageProps {
   getLocation: any;
   lng: number;

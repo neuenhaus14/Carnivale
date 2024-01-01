@@ -5,7 +5,6 @@
 $greeny: #169874;
 $lightGreeny: #53CA3C;
 $pinky: #e7abff;
-$yeller: #FCC54E;
 $dark: #301A4B;
 
 $isFree:#53CA3C;
@@ -16,6 +15,15 @@ $isPhoneCharger: #53e3d4;
 $isPoliceStation: #E7ABFF;
 $isEMTStation:#f27d52;
 
+$yeller: #fcc54e;
+$purpley: #8d3dad;
+
+
+$lightPinky: #fbf4fe;
+$tabSelected: $lightPinky;
+$tabSelectedBorder: $purpley;
+$tabUnselected: #c1c1c1;
+$tabUnselectedBorder: #e3e3e3;
 
 .card {
   padding: 10px;
@@ -39,26 +47,7 @@ $isEMTStation:#f27d52;
     padding-bottom: 1px;
     padding-left: 1px;
   }
-
 }
-
-
-// #map-direction-card{
-//   max-width: 8rem;
-//   max-height: 12rem;
-//   margin: left;
-//   border: 2px solid #BA37DD;
-//   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-//   background-color: white;
-
-//   #card-body{
-//     padding-top: 2px;
-//     padding-right: 2px;
-//     padding-bottom: 2px;
-//     padding-left: 2px;
-//   }
-
-// }
 
 #map-filter-container {
   background-color: white;
@@ -72,7 +61,7 @@ $isEMTStation:#f27d52;
   border: 2px solid #BA37DD;
 }
 
-span { // keep this?
+span { 
   font-size: medium;
   display: flex;
   align-items: center;
@@ -83,14 +72,10 @@ span { // keep this?
   color: $dark;
 }
 
-
 .btn {
   border: none;
 }
 
-.btn-login{
-  background-color: #E7ABFF;
-}
 
 .btn-wide {
   width: 80vw;
@@ -100,7 +85,7 @@ span { // keep this?
 }
 
 .btn-primary {
-  background-color: $yeller ;
+  background-color: $yeller !important;
   color: $dark;
 }
 
@@ -119,8 +104,8 @@ span { // keep this?
 }
 
 .bottom-nav-button {
-  height: 70px;
-  width: 70px;
+  height: 50px;
+  width: 50px;
   background-color: $yeller;
   color: $dark;
   font-size: 50px;
@@ -130,9 +115,6 @@ span { // keep this?
 }
 
 .bottom-nav {
-  // width: 100vw;
-  // display: flex;
-  // flex-direction: row;
   justify-content: space-evenly;
   background-color: white;
   height: 12vh;
@@ -140,9 +122,6 @@ span { // keep this?
 }
 
 .top-nav {
-  // width: 100vw;
-  // display: flex;
-  // flex-direction: row;
   justify-content: space-evenly;
   background-color: $greeny;
   height: 8vh;
@@ -156,17 +135,13 @@ span { // keep this?
   padding-bottom: 14vh;
   display: flex;
   flex-direction: column;
-  // background-color: #f3d7fe;
-  background-color: $pinky;
-}
 
+  background-color: $lightPinky;
+
+  min-height: 100vh;
+}
 
 // USER PAGE
-
-.event-modal {
-  min-height: 95vh;
-  background-color: #e7abff;
-}
 
 #modal-header{
   background-color: $greeny;
@@ -174,6 +149,7 @@ span { // keep this?
 
 #login{
   background-color: $greeny;
+  min-height: 100vh;
   padding: 100px
 }
 
@@ -183,8 +159,12 @@ span { // keep this?
   padding-bottom: 20px;
 }
 
+// .modal-body {
+//   height: 76vh
+// }
+
 h5 {
-text-align: center;
+text-align: left;
 color: $greeny;
 margin: 10px;
 text-transform: uppercase;
@@ -201,3 +181,50 @@ body{
   font-family: 'Fredoka', sans-serif;
 }
 
+// purple border for tab
+.nav-tabs {
+  border-bottom: 1px solid $tabSelectedBorder
+}
+
+.nav-tabs .nav-item.show {
+  background-color: $tabSelected;
+}
+
+.tab-content {
+  background-color: $tabSelected;
+}
+
+.nav-tabs .nav-link {
+  color: white;
+  background-color: $tabUnselected;
+  border-top: 1px solid $tabUnselectedBorder;
+  border-left: 1px solid $tabUnselectedBorder;
+  border-right: 1px solid $tabUnselectedBorder;
+  border-bottom: 1px solid $tabSelectedBorder;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: $tabSelected;
+  color: black;
+  border-top: solid 1px $tabSelectedBorder;
+  border-left: solid 1px $tabSelectedBorder;
+  border-right: solid 1px $tabSelectedBorder;
+  border-bottom: solid 1px $tabSelected;
+}
+
+
+//HOMEPAGE
+
+.body-home {
+  padding-top: 10vh;
+  padding-bottom: 25vh;
+  display: flex;
+  flex-direction: column;
+  background-color: $lightPinky;
+  min-height: 100vh;
+}
+
+.comment-btn {
+  border-radius: 17px;
+  padding: 3px 6px;
+}

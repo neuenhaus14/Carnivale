@@ -4,12 +4,14 @@ import puppeteer from 'puppeteer';
 import fs from 'fs/promises'
 import {Event} from '../db';
 import cheerio from "cheerio";
+import dayjs from 'dayjs';
 
 
 const Gigs = express.Router()
 //new Date makes todays date
 //LOOK INTO PROMISESALL
-const userDate = new Date().toISOString().slice(0, 10)
+//const userDate = new Date().toISOString().slice(0, 10)
+
 //TODO: add  UI drop down for date requests. If already scraped, return the scraped dates. If not, scrape and add to db
 
 //const userDate = ""
@@ -18,8 +20,9 @@ const userDate = new Date().toISOString().slice(0, 10)
 //making an async function for cheerio scraping
 async function start(userDate: string) {
 //string interpolation for the UI date request (YYYY-MM-DD)
-  const url = `https://www.wwoz.org/calendar/livewire-music?date=${userDate}`
-
+  //const url = `https://www.wwoz.org/calendar/livewire-music?date=${userDate}`
+  const url = `https://www.wwoz.org/calendar/livewire-music?date=2024-01-02`
+  console.log(userDate)
   try {
     const response = await axios.get(url);
     const htmlString = response.data;
@@ -64,18 +67,19 @@ async function start(userDate: string) {
   //array for proper time numbers for next for loop
   const proper = []
   for (let i = 0; i < day.length; i++) {
-    proper.push(new Date(`${date[i]} 2023 ${time[i]}:00`))
+    proper.push(dayjs(`${date[i]} 2023 ${time[i]}`).format('YYYY-MM-DDTHH:mm'))
   }
+  console.log('proper', proper[0])
   //finally, array to hold individual objects to be added to db
   //console.log('date', date.length, 'act', act.length, 'location', location.length, 'proper', proper.length, 'day', day.length)
 //await for all the addresses in the location array, make an array of tuples [lat lng] for every address, send a reqquest for the coordis converter
 
   const mainArr = []
-  for (let i = 0; i < day.length; i++) {
+  for (let i = 0; i < 15; i++) { //or day.length
     mainArr.push({
       name: act[i],
       startTime: proper[i],
-      endTime: new Date(`${date[i]} 2023 11:59`),
+      endTime: dayjs(`${date[i]} 2023 11:45`).format('YYYY-MM-DDTHH:mm'),
       description: act[i],
       longitude: null,
       latitude: null,
@@ -99,7 +103,7 @@ async function start(userDate: string) {
       console.log("Successfully written to Event Database")
     })
     .catch((err) => {
-      console.error("Failed to write to event db", err)
+      console.error("Failed to write to event db")
     })
   }
   return {
@@ -108,7 +112,7 @@ async function start(userDate: string) {
   }
 } catch (error) {
   throw new Error(
-    `Error scraping parade info for ${error.errors}`
+    `Error scraping parade info for ${error}`
   );
 // } finally {
 //   const addresses = [];
@@ -149,7 +153,7 @@ async function start(userDate: string) {
       res.status(500).json({ error: "Internal Server Error" });
     }
   });
-
+//start(userDate)
   // Gigs.post('/events/getCoordinatesFromAddress', async( req: Request, res: Response) => {
   //   const {address} = req.body
   //   try {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card } from "react-bootstrap";
+import { ButtonGroup, Card } from "react-bootstrap";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import axios from "axios";
@@ -114,8 +114,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
               {post.comment} - {owner}:{" "}
               {dayjs(post.createdAt.toString()).fromNow()}
             </Card.Text>
-            <ShareModal postId={post.id} userId={userId} postType={"comment"} />
-
+            <ButtonGroup style={{ display: 'flex', flexDirection: 'row'}}>
             <button
               style={{
                 border: "none",
@@ -153,6 +152,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                 }}
               />
             </button>
+            <ShareModal postId={post.id} userId={userId} postType={"comment"}/>
+            </ButtonGroup>
           </Card.Body>
         ) : (
           <Card.Body>
@@ -161,7 +162,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
               {post.description} - {owner}:{" "}
               {dayjs(post.createdAt.toString()).fromNow()}
             </Card.Text>
-            <ShareModal postId={post.id} userId={userId} postType={"photo"} />
+            <ButtonGroup style={{ display: 'flex', flexDirection: 'row'}}>
 
             <button
               style={{
@@ -200,6 +201,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                 }}
               />
             </button>
+            <ShareModal postId={post.id} userId={userId} postType={"photo"} />
+          </ButtonGroup>
           </Card.Body>
         )}
       </Card>
