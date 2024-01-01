@@ -126,12 +126,12 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
           onChange={handleSelectFile}
           multiple={false}
           />
-          <br />
+          <br /><br /><br />
           <Form.Label><b>Description is Mandatory</b></Form.Label>
           <Form.Control as="textarea" rows={1} placeholder="Please add a description"
             name="descinput" onChange={handleDescInput}/> <br />
 
-          <Button variant="dark" onClick={uploadFile}> {loading ? "Saving..." : "Save"} </Button>
+          <Button className="btn-success" onClick={uploadFile}> {loading ? "Saving..." : "Save"} </Button>
 
     </div>
   );

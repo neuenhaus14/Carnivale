@@ -146,7 +146,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     :
     (
       <Modal show={isShow} onHide={initModal}>
-        <Modal.Header >
+        <Modal.Header id="modal-header">
           <Modal.Title>Create a Pin</Modal.Title>
         </Modal.Header>
         <Modal.Body>

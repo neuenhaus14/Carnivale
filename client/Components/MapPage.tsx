@@ -121,11 +121,16 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
         console.log('userLoc set')
 
       } else { 
-        friends.map((friend) => {
+        console.log('made it to else statement in socket')
+        friends.forEach((friend) => {
+          console.log('friend inside socket', friend)
           if (friend.id === userLoc.id){
-            setFriends((friends) => [...friends, ...friend]) // assuming everytime state is set there is a new render with updated friend loc
+            friend.longitude = userLoc.longitude
+            friend.latitude = userLoc.latitude
+            console.log('friendID that matched', friend)
           }
         })
+        setFriends(prevFriends => [...prevFriends]); // assuming everytime state is set there is a new render with updated friend loc
       }
 
     })
