@@ -11,8 +11,9 @@ import {
   DropdownButton,
   Dropdown,
   Navbar,
+  ButtonGroup,
 } from 'react-bootstrap';
-import { FaCamera } from 'react-icons/fa';
+import { FaCamera, FaEnvelope } from 'react-icons/fa';
 import axios from 'axios';
 import HomeModal from './HomeModal';
 import WeatherCard from './WeatherCard';
@@ -91,7 +92,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   }, [key, order]);
 
   return (
-    <Container className='body'>
+    <Container className='body-home'>
       <Row>
         <WeatherCard />
         <DropdownButton
@@ -155,10 +156,20 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
       </Row>
 
       {key === 'posts' ? (
-        <Row>
+        <Card
+          style={{
+            position: 'fixed',
+            bottom: '12vh',
+            display: 'flex',
+            flexDirection: 'column',
+            maxHeight: '12vh',
+            width: '90vw',
+            margin: '10px auto',
+            border: '2px solid black',
+          }}
+        >
           <Form>
             <Form.Group>
-              <Form.Label>COMMENT</Form.Label>
               <Form.Control
                 onChange={handleInput}
                 value={comment}
@@ -166,30 +177,31 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                   handleKeyDown(e);
                 }}
               />
-              <Button
-                variant='primary'
-                onClick={handleSubmit}
-                disabled={comment.length <= 0}
-              >
-                SEND!!!
-              </Button>
-              <Button
-                onClick={modalTrigger}
-                style={{ verticalAlign: '-8px' }}
-              >
-                <FaCamera />
-              </Button>
-              {showModal ? (
-                <HomeModal
-                  setShowModal={setShowModal}
-                  lat={lat}
-                  lng={lng}
-                  userId={userId}
-                />
-              ) : null}
+                <Button
+                  onClick={modalTrigger}
+                  className='comment-btn'
+                >
+                  <FaCamera />
+                </Button>
+                {showModal ? (
+                  <HomeModal
+                    setShowModal={setShowModal}
+                    lat={lat}
+                    lng={lng}
+                    userId={userId}
+                  />
+                ) : null}
+                <Button
+                  variant='primary'
+                  onClick={handleSubmit}
+                  disabled={comment.length <= 0}
+                  className='comment-btn'
+                >
+                  <FaEnvelope />
+                  </Button>
             </Form.Group>
           </Form>
-        </Row>
+        </Card>
       ) : (
         ''
       )}
