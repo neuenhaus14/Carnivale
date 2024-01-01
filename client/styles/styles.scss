@@ -10,9 +10,33 @@
 //   cursor: pointer;
 // }
 
+$greeny: #169874;
+$pinky: #e7abff;
+$yeller: #fcc54e;
+$purpley: #8d3dad;
+
+
+$lightPinky: #fbf4fe;
+$tabSelected: $lightPinky;
+$tabSelectedBorder: $purpley;
+$tabUnselected: #c1c1c1;
+$tabUnselectedBorder: #e3e3e3;
+
+
+.card {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  margin-top: 10px;
+  border: 2px solid $purpley;
+}
+
 #map-direction-card{
   max-width: 8rem;
-  max-height: 9rem;
+  max-height: 12rem;
   margin: left;
 
   .card-body{
@@ -29,16 +53,23 @@
   padding-bottom: 2px;
 }
 
-$greeny: #169874;
-$pinky: #e7abff;
-$yeller: #ecc800;
+
 
 .btn {
   border: none;
 }
 
+// class for buttons that span the whole
+// screen
+.btn-wide {
+  width: 80vw;
+  max-width: 400px;
+  margin: 10px auto;
+}
+
 .btn-primary {
   background-color: $yeller !important;
+  color: black;
 }
 
 .btn-success {
@@ -55,31 +86,88 @@ $yeller: #ecc800;
 }
 
 .bottom-nav-button {
-  height: 40px;
-  width: 40px;
-  color: crimson;
+  height: 50px;
+  width: 50px;
+  background-color: $yeller;
+  color: black;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bottom-nav {
-  // width: 100vw;
-  // display: flex;
-  // flex-direction: row;
   justify-content: space-evenly;
-  background-color: $pinky;
-  padding: 10px 0;
-  height: 8vh;
+  background-color: white;
+  height: 12vh;
+  border-top: black solid 2px;
 }
 
 .top-nav {
-  // width: 100vw;
-  // display: flex;
-  // flex-direction: row;
   justify-content: space-evenly;
   background-color: $greeny;
-  padding: 10px 0;
   height: 8vh;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .body {
-  padding: 8vh 0px;
+  padding-top: 10vh;
+  padding-bottom: 14vh;
+  display: flex;
+  flex-direction: column;
+  background-color: $lightPinky;
+  min-height: 100vh;
 }
+
+
+// USER PAGE
+
+.modal {
+  background-color: $pinky;
+}
+
+.modal-body {
+  height: 76vh
+}
+
+h5 {
+text-align: left;
+color: $greeny;
+margin: 10px;
+text-transform: uppercase;
+font-weight: bold;
+}
+
+// purple border for tab
+.nav-tabs {
+  border-bottom: 1px solid $tabSelectedBorder
+}
+
+.nav-tabs .nav-item.show {
+  background-color: $tabSelected;
+}
+
+.tab-content {
+  background-color: $tabSelected;
+}
+
+.nav-tabs .nav-link {
+  color: white;
+  background-color: $tabUnselected;
+  border-top: 1px solid $tabUnselectedBorder;
+  border-left: 1px solid $tabUnselectedBorder;
+  border-right: 1px solid $tabUnselectedBorder;
+  border-bottom: 1px solid $tabSelectedBorder;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: $tabSelected;
+  color: black;
+  border-top: solid 1px $tabSelectedBorder;
+  border-left: solid 1px $tabSelectedBorder;
+  border-right: solid 1px $tabSelectedBorder;
+  border-bottom: solid 1px $tabSelected;
+}
+

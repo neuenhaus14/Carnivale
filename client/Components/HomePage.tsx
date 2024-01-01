@@ -93,10 +93,6 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   return (
     <Container className='body'>
       <Row>
-        <h1>HomePage!</h1>
-      </Row>
-
-      <Row>
         <WeatherCard />
         <DropdownButton
           title='Sort'

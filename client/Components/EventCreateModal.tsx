@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Accordion, FloatingLabel } from 'react-bootstrap';
+import { Modal, Button, Form, Tabs, Tab } from 'react-bootstrap';
 import EventCreateMapComponent from './EventCreateMapComponent';
 import axios from 'axios';
-import Events from '../../server/routes/Events';
 import dayjs = require('dayjs');
-// import { timeLog } from 'console';
-// import { send } from 'process';
-// import { getDropdownMenuPlacement } from 'react-bootstrap/esm/DropdownMenu';
 
 interface EventCreateModalProps {
   selectedEvent: any;
@@ -15,163 +11,13 @@ interface EventCreateModalProps {
   showCreateModal: boolean;
   friends: any;
   userId: number;
-  //isUserAttending: boolean,
-  //setIsUserAttending: any,
-  // getEventsInvited: any,
-  // getEventsParticipating: any,
   isNewEvent: boolean;
   setIsNewEvent: any;
   lng: number;
   lat: number;
-  //getLocation: any,
   eventType: string;
   getEventsOwned: any; // needed for reloading owned events after event update
 }
-
-interface EventCreateAccordionProps {
-  friends: any;
-  selectedEvent: any;
-  userId: number;
-  isNewEvent: boolean;
-  setFriendsToInvite: any;
-  friendsToInvite: Array<any>;
-  sendFriendInvites: any;
-  getPeopleForEvent: any;
-  invitees: any;
-  participants: any;
-  setIsEventUpdated: any;
-}
-
-const EventCreateAccordion: React.FC<EventCreateAccordionProps> = ({
-  friends,
-  selectedEvent,
-  userId,
-  isNewEvent,
-  setFriendsToInvite,
-  friendsToInvite,
-  sendFriendInvites,
-  getPeopleForEvent,
-  invitees,
-  participants,
-  setIsEventUpdated
-}) => {
-  //const [invitees, setInvitees] = useState([]);
-  //const [participants, setParticipants] = useState([]);
-
-  useEffect(() => {
-    if (isNewEvent === false) {
-      console.log('before getPeopleForEvent in accordion');
-      getPeopleForEvent();
-    }
-  }, []);
-
-  // ONLY A USER'S FRIENDS WILL POPULATE THESE AREA
-  // const getPeopleForEvent = async () => {
-  //   const eventPeopleData = await axios.get(
-  //     `/api/events/getPeopleForEvent/${userId}-${selectedEvent.id}`
-  //   );
-  //   const { eventParticipants, eventInvitees } = eventPeopleData.data;
-  //   setInvitees(eventInvitees);
-  //   setParticipants(eventParticipants);
-  // };
-
-  const toggleFriendInvite = (invitee_userId: number) => {
-    // if the user is already being invited
-    if (friendsToInvite.includes(invitee_userId)) {
-      // remove them
-      setFriendsToInvite(
-        friendsToInvite.filter((friend) => friend !== invitee_userId)
-      );
-    } else {
-      // or else add them to invite list
-     setFriendsToInvite([...friendsToInvite, invitee_userId]);
-    }
-  };
-
-  // const toggleEventIsUpdated = async () => {
-  //   if (friendsToInvite.length > 0) {
-  //     setIsEventUpdated(true);
-  //   } else {
-  //     setIsEventUpdated(false);
-  //   }
-  // }
-  // const sendFriendInvites = () => {
-  //   try {
-  //     const inviteResponse = axios.post('/api/events/inviteToEvent', {
-  //       invitations: {
-  //         eventId: selectedEvent.id,
-  //         invitees: friendsToInvite,
-  //       },
-  //     });
-  //     getPeopleForEvent();
-  //   } catch (err) {
-  //     console.error('CLIENT ERROR: failed to POST event invites', err);
-  //   }
-  // };
-
-  const attendingFriendsItems = friends
-    .filter((friend: any) => participants.includes(friend.id))
-    .map((friend: any, index: number) => {
-      return (
-        <p key={index}>
-          {friend.firstName} {friend.lastName} is attending!
-        </p>
-      );
-    });
-
-  const invitedFriendsItems = friends
-    .filter((friend: any) => invitees.includes(friend.id))
-    .map((friend: any, index: number) => {
-      return (
-        <p key={index}>
-          {friend.firstName} {friend.lastName} is already invited!
-        </p>
-      );
-    });
-
-  const uninvitedFriendsItems = friends
-    .filter(
-      (friend: any) =>
-        !participants.includes(friend.id) && !invitees.includes(friend.id)
-    )
-    .map((friend: any, index: number) => {
-      return (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'right',
-          }}
-          key={index}
-        >
-          <p className='mx-3'>
-            {friend.firstName} {friend.lastName}{' '}
-          </p>
-          <Form.Check
-            type='checkbox'
-            id='custom-switch'
-            onChange={async () => { await toggleFriendInvite(friend.id); }}
-          />
-        </div>
-      );
-    });
-
-  return (
-    <Accordion>
-      <Accordion.Item eventKey='0'>
-        <Accordion.Header>Who's Going?</Accordion.Header>
-        <Accordion.Body>
-          <div>{attendingFriendsItems}</div>
-          <div>{invitedFriendsItems}</div>
-          <div>{uninvitedFriendsItems}</div>
-          {isNewEvent === false && friendsToInvite.length > 0 && (
-            <Button onClick={() => sendFriendInvites()}>Send Invites</Button>
-          )}
-        </Accordion.Body>
-      </Accordion.Item>
-    </Accordion>
-  );
-};
 
 const EventCreateModal: React.FC<EventCreateModalProps> = ({
   selectedEvent,
@@ -220,7 +66,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     setUserLongitude(lng);
   }, [lng, lat]);
 
-  // new/old event modal
+  // this uE populates state with
+  // values from old events and sets
+  // state for parades (start time, location)
   useEffect(() => {
     // user event edit mode
     if (isNewEvent === false) {
@@ -231,7 +79,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventLatitude(Number(selectedEvent.latitude));
       setEventLongitude(Number(selectedEvent.longitude));
       if (selectedEvent.startTime !== null && selectedEvent !== null) {
-        console.log('incoming selectedEvent startTime', selectedEvent.startTime);
+        console.log(
+          'incoming selectedEvent startTime',
+          selectedEvent.startTime
+        );
         parseDateIntoDateAndTime(selectedEvent.startTime, 'start');
       }
       if (selectedEvent.endTime !== null && selectedEvent !== null) {
@@ -248,7 +99,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventStartTime(12);
       setEventEndTime(14);
     }
-
     // parade event create mode
     else if (isNewEvent === true && eventType === 'parade') {
       setEventName(selectedEvent.title);
@@ -373,14 +223,17 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
   };
 
-  // ONLY A USER'S FRIENDS WILL POPULATE THESE AREA
   const getPeopleForEvent = async () => {
-    const eventPeopleData = await axios.get(
-      `/api/events/getPeopleForEvent/${userId}-${selectedEvent.id}`
-    );
-    const { eventParticipants, eventInvitees } = eventPeopleData.data;
-    setInvitees(eventInvitees);
-    setParticipants(eventParticipants);
+    try {
+      const eventPeopleData = await axios.get(
+        `/api/events/getPeopleForEvent/${userId}-${selectedEvent.id}`
+      );
+      const { eventParticipants, eventInvitees } = eventPeopleData.data;
+      setInvitees(eventInvitees);
+      setParticipants(eventParticipants);
+    } catch (err) {
+      console.error('CLIENT ERROR: failed to GET people for event');
+    }
   };
 
   const sendFriendInvites = () => {
@@ -485,9 +338,83 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     setCoordinatesFromAddress(value);
   };
 
-  console.log('rock bottom, isEventUpdated',isEventUpdated,'selectedEvent', selectedEvent, 'isNewEvent', isNewEvent);
+  //  Accordion functionality
+  useEffect(() => {
+    // this conditions checks for an event that has a non-default
+    // latitude value (defaults to 0 to make map happy)
+    if (isNewEvent === false && selectedEvent.latitude !== 0) {
+      getPeopleForEvent();
+    }
+  }, [selectedEvent]);
+
+  const toggleFriendInvite = (invitee_userId: number) => {
+    // if the user is already being invited
+    if (friendsToInvite.includes(invitee_userId)) {
+      // remove them
+      setFriendsToInvite(
+        friendsToInvite.filter((friend) => friend !== invitee_userId)
+      );
+    } else {
+      // or else add them to invite list
+      setFriendsToInvite([...friendsToInvite, invitee_userId]);
+    }
+  };
+
+  const attendingFriendsItems = friends
+    .filter((friend: any) => participants.includes(friend.id))
+    .map((friend: any, index: number) => {
+      return (
+        <p key={index}>
+          {friend.firstName} {friend.lastName}
+        </p>
+      );
+    });
+
+  const invitedFriendsItems = friends
+    .filter((friend: any) => invitees.includes(friend.id))
+    .map((friend: any, index: number) => {
+      return (
+        <li key={index}>
+          {friend.firstName} {friend.lastName}
+        </li>
+      );
+    });
+
+  const uninvitedFriendsItems = friends
+    .filter(
+      (friend: any) =>
+        !participants.includes(friend.id) && !invitees.includes(friend.id)
+    )
+    .map((friend: any, index: number) => {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'right',
+          }}
+          key={index}
+        >
+          <li className='mx-3'>
+            {friend.firstName} {friend.lastName}{' '}
+          </li>
+          <Form.Check
+            style={{ float: 'right', paddingRight: '20px' }}
+            label='Add invite'
+            type='checkbox'
+            id='invite-checkbox'
+            onChange={async () => {
+              await toggleFriendInvite(friend.id);
+            }}
+          />
+        </div>
+      );
+    });
+
+  ///////////////////////////////////////////////
+
   return (
-    <Modal show={showCreateModal} onHide={handleClose}>
+    <Modal className='event-modal' show={showCreateModal} onHide={handleClose}>
       <Modal.Header>
         <Modal.Title>
           {isNewEvent === false
@@ -505,137 +432,137 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
             alignContent: 'center',
           }}
         >
-          <div>
-            <EventCreateMapComponent
-              isNewEvent={isNewEvent}
-              userLatitude={userLatitude}
-              userLongitude={userLongitude}
-              eventLatitude={eventLatitude}
-              eventLongitude={eventLongitude}
-              setEventLatitude={setEventLatitude}
-              setEventLongitude={setEventLongitude}
-              setEventAddress={setEventAddress}
-              setIsEventUpdated={setIsEventUpdated}
-            />
-          </div>
-          <div>
-            <Form>
-              <Form.Group className='mb-5' controlId='formEvent'>
-                {/* <p>{eventName}</p> */}
-                <FloatingLabel
-                  controlId='floatingEventNameInput'
-                  label='Event Name'
-                  className='my-1'
-                >
-                  <Form.Control
-                    type='text'
-                    name='name'
-                    value={eventName}
-                    onChange={handleInputChange}
-                  />
-                </FloatingLabel>
+          <Tabs defaultActiveKey='details'>
+            <Tab eventKey='details' title='Details'>
+              <div className='my-2 px-2'>
+                <EventCreateMapComponent
+                  isNewEvent={isNewEvent}
+                  userLatitude={userLatitude}
+                  userLongitude={userLongitude}
+                  eventLatitude={eventLatitude}
+                  eventLongitude={eventLongitude}
+                  setEventLatitude={setEventLatitude}
+                  setEventLongitude={setEventLongitude}
+                  setEventAddress={setEventAddress}
+                  setIsEventUpdated={setIsEventUpdated}
+                />
+              </div>
+              <div>
+                <Form>
+                  <Form.Group controlId='formEvent'>
+                    {/* <p>{eventName}</p> */}
 
-                {/* <p>{eventDescription}</p> */}
-                <FloatingLabel
-                  controlId='floatingEventDescriptionInput'
-                  label='Description'
-                  className='mb-1'
-                >
-                  <Form.Control
-                    type='text'
-                    name='description'
-                    value={eventDescription}
-                    onChange={handleInputChange}
-                  />
-                </FloatingLabel>
+                    <Form.Control
+                      type='text'
+                      name='name'
+                      value={eventName}
+                      onChange={handleInputChange}
+                      placeholder='Event Name'
+                    />
 
-                {/* <p>{eventAddress}</p> */}
-                <FloatingLabel
-                  controlId='floatingEventAddressInput'
-                  label='Address'
-                  className='mb-1'
-                >
-                  <Form.Control
-                    type='text'
-                    name='address'
-                    value={eventAddress}
-                    onChange={handleInputChange}
-                    onBlur={handleAddressToCoordinates}
-                  />
-                </FloatingLabel>
+                    {/* <p>{eventDescription}</p> */}
 
-                {/* <p>{eventStartDate}</p> */}
-                <FloatingLabel
-                  controlId='floatingEventStartDateInput'
-                  label='Start Date: YYYY-MM-DD'
-                  className='mb-1'
-                >
-                  <Form.Control
-                    type='text'
-                    name='start'
-                    value={eventStartDate}
-                    onChange={handleDateChange}
-                  />
-                </FloatingLabel>
+                    <Form.Control
+                      type='text'
+                      name='description'
+                      value={eventDescription}
+                      onChange={handleInputChange}
+                      placeholder='Description'
+                    />
 
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                  <div style={{ width: '85px' }}>
-                    <p>{convertDecimalToTime(eventStartTime, true)}</p>
-                  </div>
-                  <Form.Range
-                    min={0}
-                    max={24}
-                    value={eventStartTime}
-                    name='start'
-                    step={0.25}
-                    onChange={handleRangeChange}
-                  />
+                    {/* <p>{eventAddress}</p> */}
+
+                    <Form.Control
+                      type='text'
+                      name='address'
+                      value={eventAddress}
+                      onChange={handleInputChange}
+                      onBlur={handleAddressToCoordinates}
+                      placeholder='Address'
+                    />
+
+                    {/* <p>{eventStartDate}</p> */}
+                    <Form.Control
+                      type='text'
+                      name='start'
+                      value={eventStartDate}
+                      onChange={handleDateChange}
+                      placeholder='Start Date: YYYY-MM-DD'
+                    />
+
+                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                      <div style={{ width: '85px' }}>
+                        <p>{convertDecimalToTime(eventStartTime, true)}</p>
+                      </div>
+                      <Form.Range
+                        min={0}
+                        max={24}
+                        value={eventStartTime}
+                        name='start'
+                        step={0.25}
+                        onChange={handleRangeChange}
+                      />
+                    </div>
+
+                    {/* <p>{eventEndDate}</p> */}
+                    <Form.Control
+                      type='text'
+                      name='end'
+                      value={eventEndDate}
+                      onChange={handleDateChange}
+                      placeholder='End Date: YYYY-MM-DD'
+                    />
+
+                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                      <div style={{ width: '100px' }}>
+                        <p>{convertDecimalToTime(eventEndTime, true)}</p>
+                      </div>
+                      <Form.Range
+                        min={0}
+                        max={24}
+                        value={eventEndTime}
+                        step={0.25}
+                        name='end'
+                        onChange={handleRangeChange}
+                      />
+                    </div>
+                  </Form.Group>
+                </Form>
+              </div>
+            </Tab>
+
+            <Tab eventKey='people' title='People'>
+              {attendingFriendsItems.length > 0 && (
+                <div>
+                  <h5>Attending</h5>
+                  <ul>{attendingFriendsItems}</ul>
                 </div>
+              )}
 
-                {/* <p>{eventEndDate}</p> */}
-                <FloatingLabel
-                  controlId='floatingEventEndDateInput'
-                  label='End Date: YYYY-MM-DD'
-                  className='mb-1'
-                >
-                  <Form.Control
-                    type='text'
-                    name='end'
-                    value={eventEndDate}
-                    onChange={handleDateChange}
-                  />
-                </FloatingLabel>
-
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                  <div style={{ width: '85px' }}>
-                    <p>{convertDecimalToTime(eventEndTime, true)}</p>
-                  </div>
-                  <Form.Range
-                    min={0}
-                    max={24}
-                    value={eventEndTime}
-                    step={0.25}
-                    name='end'
-                    onChange={handleRangeChange}
-                  />
+              {invitedFriendsItems.length > 0 && (
+                <div>
+                  <h5>Invited</h5>
+                  <ul>{invitedFriendsItems}</ul>
                 </div>
-              </Form.Group>
-            </Form>
+              )}
 
-            <EventCreateAccordion
-              selectedEvent={selectedEvent}
-              friends={friends}
-              userId={userId}
-              isNewEvent={isNewEvent} // passing this thru to accordion to determine whether to get event's people
-              setFriendsToInvite={setFriendsToInvite}
-              friendsToInvite={friendsToInvite}
-              sendFriendInvites={sendFriendInvites}
-              getPeopleForEvent={getPeopleForEvent}
-              invitees={invitees}
-              participants={participants}
-              setIsEventUpdated={setIsEventUpdated}
-            />
-          </div>
+              {uninvitedFriendsItems.length > 0 && (
+                <div>
+                  <h5>Uninvited</h5>
+                  <ul>{uninvitedFriendsItems}</ul>
+                </div>
+              )}
+
+              {isNewEvent === false && uninvitedFriendsItems.length > 0 && (
+                <Button
+                  onClick={() => sendFriendInvites()}
+                  disabled={friendsToInvite.length === 0}
+                >
+                  Send Invites
+                </Button>
+              )}
+            </Tab>
+          </Tabs>
         </div>
       </Modal.Body>
       <Modal.Footer>
@@ -651,7 +578,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           </Button>
         )}
         <Button variant='danger' onClick={handleClose}>
-          X
+          Close Event
         </Button>
       </Modal.Footer>
     </Modal>

@@ -119,29 +119,6 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
           {previewSource && (
           <img src={previewSource} alt="chosen"
           style={{width: '100%', height: '50vh'}}/>)}
-          <div>
-            <label htmlFor="environment">Take a pic!</label>
-            <input
-              type="file"
-              name="picture"
-              accept="image/*"
-              capture="environment"
-              onChange={handleSelectFile}
-            />
-            <label htmlFor="user">Take a Selfie!</label>
-            <input
-              type="file"
-              id="selfie"
-              name="selfie"
-              accept="image/*"
-              capture="user"
-              />
-            <input
-              type="submit"
-              value="Upload Selfie"
-              onChange={handleSelectFile}
-              />
-          </div>
           <input
           id="file"
           type="file"

@@ -75,7 +75,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
      console.log('createRouterLine called in setTimout')
    }
   }, 120000)
-  
+
 
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
@@ -123,16 +123,16 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       console.log('Got friends from socket', allFriendsUsers)
       setFriends(allFriendsUsers)
     };
-  
+
     socket.on("getFriends:send", handleGetFriends)
-  
+
     return () => {
       socket.off("getFriends:send", handleGetFriends)
     };
 
   }, []);
 
- 
+
 
   // useEffect (() => {
   //   console.log('hitting this block')
@@ -154,7 +154,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   //   };
   // }, [setMarkers])
 
-  
+
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
 
@@ -198,9 +198,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
         //   console.error(err);
         // }
       } catch (err)  {
-        console.error(err); 
+        console.error(err);
       }
-      
+
   };
 
  // these are the details that are being set to build the "route"/ line for the directions
@@ -313,7 +313,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
   return (
     <Container className="body">
-      <h1>Map Page!</h1>
       <Accordion>
         <Accordion.Item eventKey="0">
         <Accordion.Header>Filter Pins</Accordion.Header>
@@ -353,7 +352,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
         onMove={(e) => setViewState(e.viewState)}
         onClick={(e) => {dropPin(e); createRouterLine(selectedRouteProfile)}}
         mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
-        style={{ position: 'relative', bottom: '0px', width: '100vw', height: "50vh" }}
+        style={{ position: 'relative', bottom: '0px', maxWidth: '100vw', height: "50vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
       >
         <GeolocateControl
@@ -434,9 +433,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       <div id="map-direction-card" className='card w-35'>
         {showDirections ? (
           <div className= 'card-body'>
-            <span> <b>Walking Directions: </b></span> <br />
-            <span> Time to Location: </span> <br /><span><b>{humanizedDuration(duration)}</b></span> <br />
-            <span> Distance to Location:</span> <br /><span> <b>{distance} miles</b></span><br />
+            {/* <span> <b>Walking Directions: </b></span> <br /> */}
+            <span><b>{humanizedDuration(duration)}</b> away</span> <br />
+            <span> <b>{distance}</b> miles</span><br />
             <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
         </div>
         )
