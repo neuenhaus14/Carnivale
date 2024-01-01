@@ -99,130 +99,135 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   }, []);
 
   return (
-    <Container className='body'>
-      <div>
-        <label htmlFor="paradeSelect">Select a Parade: </label>
-        <select
-          id="paradeSelect"
-          onChange={handleParadeChange}
-          value={selectedParade || ""}
-        >
-          <option value="" disabled>
-            Select a parade
-          </option>
-          {paradeList.map((paradeName) => (
-            <option key={paradeName} value={paradeName}>
-              {paradeName}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {paradeInfo && (
+    <Container className="body">
+      <div className="card">
         <div>
-          <Button
-            onClick={async () => {
-              await setIsNewEvent(true);
-              await setShowCreateModal(true);
-              await setSelectedEvent({
-                ...paradeInfo,
-                latitude: 0,
-                longitude: 0,
-                endTime: null,
-                startTime: null,
-              });
-            }}
+          <label htmlFor="paradeSelect">Select a Parade: </label>
+          <select
+            id="paradeSelect"
+            onChange={handleParadeChange}
+            value={selectedParade || ""}
           >
-            Create Event
-          </Button>
-          <h2>{paradeInfo.title}</h2>
-          <p>
-            Start Time: {""}
-            {dayjs(paradeInfo.startDate).format("MMMM D YYYY, h:mm:ss A")}
-          </p>
-          <p>
-            Parade Location: {""}
-            {paradeInfo.location}
-          </p>
-          <img
-            src={`https://www.mardigrasneworleans.com${paradeInfo.imageSrc}`}
-            alt="Parade Map"
-            style={{
-              maxWidth: "100%",
-              height: "auto",
-              marginTop: "10px",
-            }}
-          />
-          <img
-            src={`https://www.mardigrasneworleans.com${paradeInfo.imageParade}`}
-            alt="Parade Logo"
-          />
-
-          <p>
-            Parade History: <br />
-            {paradeInfo.paradeInfo
-              .replace(/(Year founded:)/g, ", $1")
-              .replace(/(Membership:)/g, ", $1")
-              .replace(/(Number of floats:)/g, ", $1")
-              .replace(/(Floats by Kern Studios »)/g, ", $1")}
-          </p>
-          <p>
-            Parade Directions: {""}
-            {paradeInfo.directionsText}
-          </p>
-          <p>
-            Other Parades on {dayjs(paradeInfo.startDate).format("MMMM D YYYY")}
-            : <br />
-            {paradeInfo.otherParades
-              .split("\n")
-              .filter(
-                (parade) =>
-                  !parade.includes(
-                    `Parades On ${dayjs(paradeInfo.startDate).format("MMM D")}`
-                  )
-              )
-              .map((parade) => (
-                <button
-                  key={parade}
-                  onClick={() =>
-                    fetchParadeInfo(parade.replace(/\s+/g, "-").toLowerCase())
-                  }
-                >
-                  {parade}
-                </button>
-              ))}
-          </p>
-          <p>
-            <a
-              href={paradeInfo.mapLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Parade Route on Google Maps
-            </a>
-          </p>
+            <option value="" disabled>
+              Select a parade
+            </option>
+            {paradeList.map((paradeName) => (
+              <option key={paradeName} value={paradeName}>
+                {paradeName}
+              </option>
+            ))}
+          </select>
         </div>
-      )}
 
-      <EventCreateModal
-        selectedEvent={selectedEvent}
-        setSelectedEvent={setSelectedEvent}
-        setShowCreateModal={setShowCreateModal}
-        showCreateModal={showCreateModal}
-        friends={friends}
-        userId={userId}
-        // isUserAttending={isUserAttending}
-        // setIsUserAttending={setIsUserAttending}
-        // getEventsInvited={getEventsInvited}
-        // getEventsParticipating={getEventsParticipating}
-        isNewEvent={isNewEvent}
-        setIsNewEvent={setIsNewEvent}
-        lat={lat}
-        lng={lng}
-        //getLocation={getLocation}
-        eventType={"parade"}
-        getEventsOwned={null} // not needed for parades
-      />
+        {paradeInfo && (
+          <div>
+            <Button
+              onClick={async () => {
+                await setIsNewEvent(true);
+                await setShowCreateModal(true);
+                await setSelectedEvent({
+                  ...paradeInfo,
+                  latitude: 0,
+                  longitude: 0,
+                  endTime: null,
+                  startTime: null,
+                });
+              }}
+            >
+              Create Event
+            </Button>
+            <h2>{paradeInfo.title}</h2>
+            <p>
+              Start Time: {""}
+              {dayjs(paradeInfo.startDate).format("MMMM D YYYY, h:mm:ss A")}
+            </p>
+            <p>
+              Parade Location: {""}
+              {paradeInfo.location}
+            </p>
+            <img
+              src={`https://www.mardigrasneworleans.com${paradeInfo.imageSrc}`}
+              alt="Parade Map"
+              style={{
+                maxWidth: "100%",
+                height: "auto",
+                marginTop: "10px",
+              }}
+            />
+            <img
+              src={`https://www.mardigrasneworleans.com${paradeInfo.imageParade}`}
+              alt="Parade Logo"
+            />
+
+            <p>
+              Parade History: <br />
+              {paradeInfo.paradeInfo
+                .replace(/(Year founded:)/g, ", $1")
+                .replace(/(Membership:)/g, ", $1")
+                .replace(/(Number of floats:)/g, ", $1")
+                .replace(/(Floats by Kern Studios »)/g, ", $1")}
+            </p>
+            <p>
+              Parade Directions: {""}
+              {paradeInfo.directionsText}
+            </p>
+            <p>
+              Other Parades on{" "}
+              {dayjs(paradeInfo.startDate).format("MMMM D YYYY")}
+              : <br />
+              {paradeInfo.otherParades
+                .split("\n")
+                .filter(
+                  (parade) =>
+                    !parade.includes(
+                      `Parades On ${dayjs(paradeInfo.startDate).format(
+                        "MMM D"
+                      )}`
+                    )
+                )
+                .map((parade) => (
+                  <button
+                    key={parade}
+                    onClick={() =>
+                      fetchParadeInfo(parade.replace(/\s+/g, "-").toLowerCase())
+                    }
+                  >
+                    {parade}
+                  </button>
+                ))}
+            </p>
+            <p>
+              <a
+                href={paradeInfo.mapLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View Parade Route on Google Maps
+              </a>
+            </p>
+          </div>
+        )}
+
+        <EventCreateModal
+          selectedEvent={selectedEvent}
+          setSelectedEvent={setSelectedEvent}
+          setShowCreateModal={setShowCreateModal}
+          showCreateModal={showCreateModal}
+          friends={friends}
+          userId={userId}
+          // isUserAttending={isUserAttending}
+          // setIsUserAttending={setIsUserAttending}
+          // getEventsInvited={getEventsInvited}
+          // getEventsParticipating={getEventsParticipating}
+          isNewEvent={isNewEvent}
+          setIsNewEvent={setIsNewEvent}
+          lat={lat}
+          lng={lng}
+          //getLocation={getLocation}
+          eventType={"parade"}
+          getEventsOwned={null} // not needed for parades
+        />
+      </div>
     </Container>
   );
 };
