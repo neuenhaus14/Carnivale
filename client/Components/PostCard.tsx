@@ -114,45 +114,53 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
               {post.comment} - {owner}:{" "}
               {dayjs(post.createdAt.toString()).fromNow()}
             </Card.Text>
-            <ButtonGroup style={{ display: 'flex', flexDirection: 'row'}}>
-            <button
-              style={{
-                border: "none",
-                cursor: "pointer",
-                outline: "none",
-                boxShadow: "none",
-                background: "transparent",
-              }}
-              onClick={() => handleUpvote("comment")}
-              disabled={commentVotingStatus === "upvoted"}
-            >
-              <IoArrowUpCircle
+            <ButtonGroup style={{ display: "flex", alignItems: "center" }}>
+              <button
                 style={{
-                  color: commentVotingStatus === "upvoted" ? "green" : "black",
-                  fontSize: "30px",
+                  border: "none",
+                  cursor: "pointer",
+                  outline: "none",
+                  boxShadow: "none",
+                  background: "transparent",
                 }}
-              />
-            </button>
-            <span style={{ margin: "0 5px" }}>{post.upvotes}</span>
-            <button
-              style={{
-                border: "none",
-                cursor: "pointer",
-                outline: "none",
-                boxShadow: "none",
-                background: "transparent",
-              }}
-              onClick={() => handleDownvote("comment")}
-              disabled={commentVotingStatus === "downvoted"}
-            >
-              <IoArrowDownCircle
+                onClick={() => handleUpvote("comment")}
+                disabled={commentVotingStatus === "upvoted"}
+              >
+                <IoArrowUpCircle
+                  style={{
+                    color:
+                      commentVotingStatus === "upvoted" ? "green" : "black",
+                    fontSize: "30px",
+                  }}
+                />
+              </button>
+              <span style={{ margin: "0 5px" }}>{post.upvotes}</span>
+              <button
                 style={{
-                  color: commentVotingStatus === "downvoted" ? "red" : "black",
-                  fontSize: "30px",
+                  border: "none",
+                  cursor: "pointer",
+                  outline: "none",
+                  boxShadow: "none",
+                  background: "transparent",
                 }}
-              />
-            </button>
-            <ShareModal postId={post.id} userId={userId} postType={"comment"}/>
+                onClick={() => handleDownvote("comment")}
+                disabled={commentVotingStatus === "downvoted"}
+              >
+                <IoArrowDownCircle
+                  style={{
+                    color:
+                      commentVotingStatus === "downvoted" ? "red" : "black",
+                    fontSize: "30px",
+                  }}
+                />
+              </button>
+              <div style={{ marginLeft: "auto" }}>
+                <ShareModal
+                  postId={post.id}
+                  userId={userId}
+                  postType={"comment"}
+                />
+              </div>
             </ButtonGroup>
           </Card.Body>
         ) : (
@@ -162,47 +170,54 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
               {post.description} - {owner}:{" "}
               {dayjs(post.createdAt.toString()).fromNow()}
             </Card.Text>
-            <ButtonGroup style={{ display: 'flex', flexDirection: 'row'}}>
-
-            <button
-              style={{
-                border: "none",
-                cursor: "pointer",
-                outline: "none",
-                boxShadow: "none",
-                background: "transparent",
-              }}
-              onClick={() => handleUpvote("photo")}
-              disabled={commentVotingStatus === "upvoted"}
-            >
-              <IoArrowUpCircle
+            <ButtonGroup style={{ display: "flex", flexDirection: "row" }}>
+              <button
                 style={{
-                  color: commentVotingStatus === "upvoted" ? "green" : "black",
-                  fontSize: "30px",
+                  border: "none",
+                  cursor: "pointer",
+                  outline: "none",
+                  boxShadow: "none",
+                  background: "transparent",
                 }}
-              />
-            </button>
-            <span style={{ margin: "0 5px" }}>{post.upvotes}</span>
-            <button
-              style={{
-                border: "none",
-                cursor: "pointer",
-                outline: "none",
-                boxShadow: "none",
-                background: "transparent",
-              }}
-              onClick={() => handleDownvote("photo")}
-              disabled={commentVotingStatus === "downvoted"}
-            >
-              <IoArrowDownCircle
+                onClick={() => handleUpvote("photo")}
+                disabled={commentVotingStatus === "upvoted"}
+              >
+                <IoArrowUpCircle
+                  style={{
+                    color:
+                      commentVotingStatus === "upvoted" ? "green" : "black",
+                    fontSize: "30px",
+                  }}
+                />
+              </button>
+              <span style={{ margin: "0 5px" }}>{post.upvotes}</span>
+              <button
                 style={{
-                  color: commentVotingStatus === "downvoted" ? "red" : "black",
-                  fontSize: "30px",
+                  border: "none",
+                  cursor: "pointer",
+                  outline: "none",
+                  boxShadow: "none",
+                  background: "transparent",
                 }}
-              />
-            </button>
-            <ShareModal postId={post.id} userId={userId} postType={"photo"} />
-          </ButtonGroup>
+                onClick={() => handleDownvote("photo")}
+                disabled={commentVotingStatus === "downvoted"}
+              >
+                <IoArrowDownCircle
+                  style={{
+                    color:
+                      commentVotingStatus === "downvoted" ? "red" : "black",
+                    fontSize: "30px",
+                  }}
+                />
+              </button>
+              <div style={{ marginLeft: "auto" }}>
+                <ShareModal
+                  postId={post.id}
+                  userId={userId}
+                  postType={"photo"}
+                />
+              </div>
+            </ButtonGroup>
           </Card.Body>
         )}
       </Card>

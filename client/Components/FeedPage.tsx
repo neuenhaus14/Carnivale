@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { IoArrowUpCircle, IoArrowDownCircle } from "react-icons/io5";
-import { BsTrash } from "react-icons/bs";
+import { BiSolidHide } from "react-icons/bi";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Container } from "react-bootstrap";
+import { Button, Container, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 interface SharedPost {
   upvotes: number;
@@ -396,11 +396,17 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
       <ul style={{ padding: 0, listStyle: "none" }}>
         {Array.isArray(sharedPosts) && sharedPosts.length > 0 ? (
           sharedPosts.map((post) => (
-            <li key={post.id} style={{ marginBottom: "10px" }}>
+            <li key={post.id}>
               <div className="card">
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <p style={{ margin: 0, marginRight: "10px" }}>
-                    Shared by: {userNames[post.sender_userId]}
+                <div style={{ display: "flex", alignItems: "right" }}>
+                  <p
+                    style={{
+                      marginLeft: "auto",
+                      lineHeight: ".5",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    {userNames[post.sender_userId]} sent you
                   </p>
                 </div>
                 {post.shared_commentId && (
@@ -414,7 +420,23 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                               commentDetails[post.shared_commentId].ownerId
                             ]
                           }
-                          : {dayjs(post.createdAt.toString()).fromNow()}
+                          <div>
+                            :{" "}
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id={`tooltip-${post.id}`}>
+                                  {dayjs(post.createdAt.toString()).format(
+                                    "dddd [at] h:mm A"
+                                  )}
+                                </Tooltip>
+                              }
+                            >
+                              <span style={{ cursor: "pointer" }}>
+                                {dayjs(post.createdAt.toString()).fromNow()}
+                              </span>
+                            </OverlayTrigger>
+                          </div>
                         </p>
                         <div style={{ display: "flex", alignItems: "center" }}>
                           <button
@@ -474,7 +496,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                               }}
                             />
                           </button>
-                          <button
+                          <Button
                             style={{
                               border: "none",
                               cursor: "pointer",
@@ -485,17 +507,8 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                             }}
                             onClick={() => handleDelete(post.id)}
                           >
-                            <BsTrash
-                              style={{
-                                color: "gold",
-                                fontSize: "30px",
-                                border: "1px solid black",
-                                borderRadius: "50%",
-                                padding: "5px",
-                                background: "black",
-                              }}
-                            />
-                          </button>
+                            <BiSolidHide />
+                          </Button>
                         </div>
                       </div>
                     ) : (
@@ -517,7 +530,23 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                         <p style={{ margin: 0 }}>
                           {photoDetails[post.shared_photoId].description} -{" "}
                           {userNames[photoDetails[post.shared_photoId].ownerId]}
-                          : {dayjs(post.createdAt.toString()).fromNow()}
+                          <div>
+                            :{" "}
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id={`tooltip-${post.id}`}>
+                                  {dayjs(post.createdAt.toString()).format(
+                                    "dddd [at] h:mm A"
+                                  )}
+                                </Tooltip>
+                              }
+                            >
+                              <span style={{ cursor: "pointer" }}>
+                                {dayjs(post.createdAt.toString()).fromNow()}
+                              </span>
+                            </OverlayTrigger>
+                          </div>
                         </p>
                         <img
                           src={photoDetails[post.shared_photoId].url}
@@ -586,7 +615,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                               }}
                             />
                           </button>
-                          <button
+                          <Button
                             style={{
                               border: "none",
                               cursor: "pointer",
@@ -597,17 +626,8 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                             }}
                             onClick={() => handleDelete(post.id)}
                           >
-                            <BsTrash
-                              style={{
-                                color: "gold",
-                                fontSize: "30px",
-                                border: "1px solid black",
-                                borderRadius: "50%",
-                                padding: "5px",
-                                background: "black",
-                              }}
-                            />
-                          </button>
+                            <BiSolidHide />
+                          </Button>
                         </div>
                       </div>
                     ) : null}
