@@ -62,7 +62,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   //loads pins immediately on page render
   useEffect(() => {
     getPins();
-    getFriends();
+   // getFriends();
     getEvents();
   }, [setMarkers]);
 
@@ -80,11 +80,17 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     console.log('getLocation called in geoLocation')
   }, [geoControlRef.current]);
 
-  //gets pins from database
+  //gets pins from database then removes all personal pins that don't match userId
   const getPins = async () => {
     try {
       const response = await axios.get('/api/pins/get-pins')
-      setMarkers(response.data)
+
+      const pins = response.data.filter((pin: any) => {
+        return pin.isPersonal === true && pin.ownerId === userId
+      }).concat(response.data.filter((pin: any) => pin.isPersonal === false))
+     
+      setMarkers(pins);
+
     } catch (err)  {
       console.error(err)
     }
@@ -101,15 +107,15 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     }
   }
 
-  //gets friends from the database- commented out bc friend sockets
-  const getFriends = async () => {
-    try {
-      const friends = await axios.get(`/api/friends/getFriends/${userId}`)
-      setFriends(friends.data)
-    } catch (err)  {
-      console.error(err)
-    }
-  }
+  // //gets friends from the database- commented out bc friend sockets
+  // const getFriends = async () => {
+  //   try {
+  //     const friends = await axios.get(`/api/friends/getFriends/${userId}`)
+  //     setFriends(friends.data)
+  //   } catch (err)  {
+  //     console.error(err)
+  //   }
+  // }
 
   //this useEffect should update user or friend locations everytime they move
   useEffect(() => {
@@ -135,6 +141,22 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
     })
   });
+
+
+  useEffect (() => {
+    socket.emit("getFriends:read", {userId})
+    const handleGetFriends = (allFriendsUsers: any) => {
+      console.log('Got friends from socket', allFriendsUsers)
+      setFriends(allFriendsUsers)
+    };
+
+    socket.on("getFriends:send", handleGetFriends)
+
+    return () => {
+      socket.off("getFriends:send", handleGetFriends)
+    };
+
+}, [setUserLocation]);
 
   //this sets the map touch coordinates to the url as params and shows createPin modal
   const dropPin = (e: any) => {

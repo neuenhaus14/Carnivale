@@ -85,10 +85,9 @@ io.on('connection', (socket: any) => {
 
   socket.on('userLoc', (userLoc: any) => {
     console.log('userLoc', userLoc)
-       //io.emit('userLoc response', userLoc)
-       socket.broadcast.emit('userLoc response', userLoc)
-
-
+       io.emit('userLoc response', userLoc)
+       //socket.broadcast.emit('userLoc response', userLoc)
+     
     //   console.log('emitted userLoc')
     //console.log('userLoc', userLoc.longitude, userLoc.latitude, userLoc.id)
       // User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: userLoc.id}})

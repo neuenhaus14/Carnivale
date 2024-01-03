@@ -10,7 +10,9 @@ const Dotenv = require('dotenv-webpack');
 //import Dotenv from 'dotenv-webpack'
 const autoprefixer = require('autoprefixer');
 //import autoprefixer from 'autoprefixer'
-
+require("dotenv").config()
+const {NODE_ENV = "production"} = process.env
+const isDev = NODE_ENV.includes("dev")
 
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
@@ -28,8 +30,8 @@ module.exports = {
     path: DIST_DIR,
     filename: '[name].bundle.js',
   },
-  mode: "none",
-  devtool: 'inline-source-map',
+  mode: isDev ? "development" : "production", 
+  devtool: isDev ? "inline-source-map" : "source-map",  
 
   plugins: [
     // Creates a loading bar
