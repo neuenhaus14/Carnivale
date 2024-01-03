@@ -67,12 +67,24 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   }, [setMarkers]);
 
 
- useEffect(() => { 
+//  useEffect(() => { 
+//   getLocation()
+//   console.log('getLocation called in useEffect')
+//  }, [setUserLocation])
+  
+ setTimeout (() => {
   getLocation()
-  console.log('getLocation called in useEffect')
- }, [setUserLocation])
+  console.log('get location called')
+ }, 5000)
 
- 
+//  useEffect(() => {
+//   getLocation()
+//   console.log('get location called')
+//   const interval = setInterval(() => {
+//     getLocation()
+//   }, 5000)
+//   return () => clearInterval(interval)
+//  })
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
@@ -140,7 +152,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       }
 
     })
-  });
+  }, [setUserLocation]);
 
 
   useEffect (() => {
