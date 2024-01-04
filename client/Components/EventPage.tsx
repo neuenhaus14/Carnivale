@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import EventCreateModal from './EventCreateModal';
 import axios from 'axios';
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
 interface EventPageProps {
   getLocation: any,
@@ -27,6 +29,7 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [allGigs, setAllGigs] = useState([]);
   const [isNewEvent, setIsNewEvent] = useState(true);
+  const [date, setDate] = useState(new Date());
 
 
   // get array of public event ids that the user is attending
@@ -112,7 +115,8 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
   //scraping logic
 
   async function scrapeEventsActivate() {
-    const userDate = new Date().toISOString().slice(0, 10)
+    const userDate = dayjs(date).format('YYYY-MM-DD')
+    console.log('NEW USER SELECTED DATE', userDate, typeof userDate)
     const scrape = await axios.get(`/api/gigs/gigs-list/${userDate}`)
     setAllGigs(scrape.data.mainArr);
     console.log('SCRAPE IN EVENTPAGE', scrape.data.mainArr)
@@ -121,11 +125,12 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
   useEffect(() => {
     console.log('hey evan')
     scrapeEventsActivate()
-  }, [])
+  }, [date])
 
   // console.log('inside eventPage. isUserAttending', isUserAttending)
   return (
     <div className='body'>
+      <DatePicker selected={date} onChange={(date: Date) => setDate(date)} />
       {allGigItems}
       <EventCreateModal
         selectedEvent={selectedEvent}
