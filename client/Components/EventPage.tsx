@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import EventBasicModal from './EventBasicModal';
+import EventCreateModal from './EventCreateModal';
 import axios from 'axios';
 import dayjs from "dayjs";
 
@@ -24,7 +24,10 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
   const [eventsParticipating, setEventsParticipating] = useState([{ name: 'event1' }]);
   const [eventsInvited, setEventsInvited] = useState([{ name: 'event2' }])
 
-  const [showBasicModal, setShowBasicModal] = useState(false)
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [allGigs, setAllGigs] = useState([]);
+  const [isNewEvent, setIsNewEvent] = useState(true);
+
 
   // get array of public event ids that the user is attending
   const getEventsInvited = async () => {
@@ -82,21 +85,22 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
   }, [isUserAttending, selectedEvent, userId])
 
 
-  const allPublicEventItems = allPublicEvents.map((event: any, index: number) => {
+  const allGigItems = allGigs.map((event: any, index: number) => {
     return <ul
       key={index}
-      style={{
-        color: eventsParticipating.includes(event.id) ? 'green'
-          : eventsInvited.includes(event.id) ? 'orange' : 'black'
+      // style={{
+      //   color: eventsParticipating.includes(event.id) ? 'green'
+      //     : eventsInvited.includes(event.id) ? 'orange' : 'black'
 
-      }}
+      // }}
       onClick={() => {
-        setShowBasicModal(true);
+        setShowCreateModal(true);
         setSelectedEvent(event);
-        // enables invite ability if user is participating
-        if (eventsParticipating.includes(event.id)) {
-          setIsUserAttending(true);
-        }
+        // // enables invite ability if user is participating
+        // if (eventsParticipating.includes(event.id)) {
+        //   setIsUserAttending(true);
+        // }
+        console.log('CLICKED ON ITEM')
       }}
     >
      <h3>{event.name}</h3>
@@ -105,22 +109,41 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
 </h6>
     </ul>
   })
+  //scraping logic
+
+  async function scrapeEventsActivate() {
+    const userDate = new Date().toISOString().slice(0, 10)
+    const scrape = await axios.get(`/api/gigs/gigs-list/${userDate}`)
+    setAllGigs(scrape.data.mainArr);
+    console.log('SCRAPE IN EVENTPAGE', scrape.data.mainArr)
+  }
+  //use effect for scraping
+  useEffect(() => {
+    console.log('hey evan')
+    scrapeEventsActivate()
+  }, [])
 
   // console.log('inside eventPage. isUserAttending', isUserAttending)
   return (
     <div className='body'>
-      {allPublicEventItems}
-      <EventBasicModal
+      {allGigItems}
+      <EventCreateModal
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
-        setShowBasicModal={setShowBasicModal}
-        showBasicModal={showBasicModal}
+        setShowCreateModal={setShowCreateModal}
+        showCreateModal={showCreateModal}
         friends={friends}
         userId={userId}
-        isUserAttending={isUserAttending}
-        setIsUserAttending={setIsUserAttending}
-        getEventsInvited={getEventsInvited}
-        getEventsParticipating={getEventsParticipating}
+        isNewEvent={isNewEvent}
+        setIsNewEvent={setIsNewEvent}
+        lat={lat}
+        lng={lng}
+        eventType={"gig"}
+        getEventsOwned={null}
+        //isUserAttending={isUserAttending}
+        //setIsUserAttending={setIsUserAttending}
+        //getEventsInvited={getEventsInvited}
+        //getEventsParticipating={getEventsParticipating}
       />
     </div>
 

@@ -356,12 +356,6 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, userId, lng, lat }) =>
   }
 
 
-  async function scrapeEventsActivate(e: any) {
-    const userDate = new Date().toISOString().slice(0, 10)
-    const scrape = await axios.get(`/api/gigs/gigs-list/${userDate}`)
-    window.location.reload()
-  }
-
   // console.log('inside userpage. isNewEvent', isNewEvent)
   return (
     <Container className='body' style={{ justifyContent: 'space-between' }}>
@@ -516,7 +510,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, userId, lng, lat }) =>
           </Button>
 
         {/* Link below is styled like a bootstrap button */}
-        <Link className='btn btn-primary' role='button' to='/eventpage' onClick={scrapeEventsActivate}>
+        <Link className='btn btn-primary' role='button' to='/eventpage'>
           Gigs
         </Link>
         <Link className='btn btn-primary' role='button' to='/parades'>

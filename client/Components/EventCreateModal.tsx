@@ -105,6 +105,13 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventAddress(selectedEvent.location);
       setCoordinatesFromAddress(selectedEvent.location);
     }
+    //gig event create mode
+    else if (isNewEvent === true && eventType === 'gig') {
+      setEventName(selectedEvent.title);
+      console.log('GIG EVENT CREATE MODE', selectedEvent)
+      setEventAddress(selectedEvent.location);
+      setCoordinatesFromAddress(selectedEvent.location);
+    }
   }, [selectedEvent, isNewEvent]);
 
   // takes either selectedEvent.startTime or .endTime
