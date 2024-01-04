@@ -1,6 +1,5 @@
 import express, {Router, Request, Response } from 'express';
 import axios from 'axios'
-import puppeteer from 'puppeteer';
 import fs from 'fs/promises'
 import {Event} from '../db';
 import cheerio from "cheerio";
@@ -20,9 +19,9 @@ const Gigs = express.Router()
 //making an async function for cheerio scraping
 async function start(userDate: string) {
 //string interpolation for the UI date request (YYYY-MM-DD)
-  //const url = `https://www.wwoz.org/calendar/livewire-music?date=${userDate}`
-  const url = `https://www.wwoz.org/calendar/livewire-music?date=2024-01-02`
-  console.log(userDate)
+  const url = `https://www.wwoz.org/calendar/livewire-music?date=${userDate}`
+  //const url = `https://www.wwoz.org/calendar/livewire-music?date=2024-01-02`
+  //console.log(userDate)
   try {
     const response = await axios.get(url);
     const htmlString = response.data;
@@ -71,44 +70,45 @@ async function start(userDate: string) {
   }
   console.log('proper', proper[0])
   //finally, array to hold individual objects to be added to db
-  //console.log('date', date.length, 'act', act.length, 'location', location.length, 'proper', proper.length, 'day', day.length)
+  //console.log('date', date[0], 'act', act[0], 'location', location[0], 'proper', proper[0], 'day', day[0], 'dayjs', dayjs(`${date[0]} 2023 11:45`).format('YYYY-MM-DDTHH:mm'))
 //await for all the addresses in the location array, make an array of tuples [lat lng] for every address, send a reqquest for the coordis converter
 
   const mainArr = []
-  for (let i = 0; i < 15; i++) { //or day.length
+  for (let i = 0; i < day.length; i++) { //or day.length
     mainArr.push({
       name: act[i],
       startTime: proper[i],
       endTime: dayjs(`${date[i]} 2023 11:45`).format('YYYY-MM-DDTHH:mm'),
       description: act[i],
-      longitude: null,
-      latitude: null,
-      address: location[i],
+      // longitude: null,
+      // latitude: null,
+      address: `${location[i]} New Orleans`,
       link: url,
       system: true,
       //invitees: [], TODO:add invitees to schema
       invitedCount: 0,
       attendingCount: 0,
-      imageUrl: null,
+      // imageUrl: null,
       upvotes: 0,
-      ownerId: null
+      // ownerId: null
     })
   }
   //console.log(mainArr)
   //conditional logic to prevent duplicates. Find or Create
-  for (let i = 0; i < mainArr.length; i++) {
-    const rand = Math.floor(Math.random() * mainArr.length)
-    await Event.findOrCreate({where: mainArr[i]})
-    .then(() => {
-      console.log("Successfully written to Event Database")
-    })
-    .catch((err) => {
-      console.error("Failed to write to event db")
-    })
-  }
+  // for (let i = 0; i < mainArr.length; i++) {
+  //   //const rand = Math.floor(Math.random() * mainArr.length)
+  //   await Event.findOrCreate({where: mainArr[i]})
+  //   .then(() => {
+  //     console.log("Successfully written to Event Database")
+  //   })
+  //   .catch((err) => {
+  //     console.error("Failed to write to event db")
+  //   })
+  // }
   return {
-    venueTagContent,
-    info
+    // venueTagContent,
+    // info,
+    mainArr
   }
 } catch (error) {
   throw new Error(
