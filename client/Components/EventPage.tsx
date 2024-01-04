@@ -26,8 +26,8 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
 
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [allGigs, setAllGigs] = useState([]);
-  const [isNewEvent, setIsNewEvent] = useState(false);
-  
+  const [isNewEvent, setIsNewEvent] = useState(true);
+
 
   // get array of public event ids that the user is attending
   const getEventsInvited = async () => {
