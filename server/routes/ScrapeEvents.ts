@@ -2,7 +2,7 @@ import express, {Router, Request, Response } from 'express';
 import axios from 'axios'
 import fs from 'fs/promises'
 import {Event} from '../db';
-import cheerio from "cheerio";
+import cheerio from 'cheerio';
 import dayjs from 'dayjs';
 
 
@@ -48,18 +48,26 @@ async function start(userDate: string) {
   }
 
   for (let i = 0; i < day.length; i++) {
-    const test = day[i].split(' at ')
-    date.push(test[0])
-    //let timeNum = test[1].replace(/[amp]/g, '').trim()
-    //console.log(timeNum, typeof timeNum)
-    time.push(test[1].replace(/[amp]/g, '').trim())
+    const splitDayTime = day[i].split(' at ')
+    date.push(splitDayTime[0])
+    const timeNum = splitDayTime[1].replace(/[amp:]/g, '').trim()
+    //console.log('scraped time', test)
+    let parsed = parseInt(timeNum)
+    if (parsed < 1200) {
+      parsed += 1200
+    }
+    //console.log('parsed', parsed)
+    const a = parsed.toString()
+    const b = ':'
+    const output = [a.slice(0, 2), b, a.slice(2)].join('');
+    time.push(output)
   }
   //array for proper time numbers for next for loop
   const proper = []
   for (let i = 0; i < day.length; i++) {
     proper.push(dayjs(`${date[i]} 2023 ${time[i]}`).format('YYYY-MM-DDTHH:mm'))
   }
-  console.log('proper', typeof time[0])
+  //console.log('time', time, 'proper', proper)
   //finally, array to hold individual objects to be added to db
   //console.log('date', date[0], 'act', act[0], 'location', location[0], 'proper', proper[0], 'day', day[0], 'dayjs', dayjs(`${date[0]} 2023 11:45`).format('YYYY-MM-DDTHH:mm'))
 //await for all the addresses in the location array, make an array of tuples [lat lng] for every address, send a reqquest for the coordis converter

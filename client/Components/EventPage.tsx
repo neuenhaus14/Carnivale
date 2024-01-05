@@ -88,7 +88,7 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
   }, [isUserAttending, selectedEvent, userId])
 
 
-  const allGigItems = allGigs.map((event: any, index: number) => {
+  const allGigItems = allGigs.map((event, index: number) => {
     return <ul
       key={index}
       // style={{
@@ -130,7 +130,10 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
   // console.log('inside eventPage. isUserAttending', isUserAttending)
   return (
     <div className='body'>
-      <DatePicker selected={date} onChange={(date: Date) => setDate(date)} />
+      <h3>Select the Date</h3>
+      <DatePicker
+      selected={date}
+      onChange={(date: Date) => setDate(date)} />
       {allGigItems}
       <EventCreateModal
         selectedEvent={selectedEvent}
