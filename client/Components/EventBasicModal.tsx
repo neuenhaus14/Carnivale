@@ -131,9 +131,9 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
     .filter((friend: any) => participants.includes(friend.id))
     .map((friend: any, index: number) => {
       return (
-        <li key={index}>
+        <div key={index}>
           {friend.firstName} {friend.lastName}
-        </li>
+        </div>
       );
     });
 
@@ -141,9 +141,9 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
     .filter((friend: any) => invitees.includes(friend.id))
     .map((friend: any, index: number) => {
       return (
-        <li key={index}>
+        <div key={index}>
           {friend.firstName} {friend.lastName}
-        </li>
+        </div>
       );
     });
 
@@ -154,18 +154,18 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
     )
     .map((friend: any, index: number) => {
       return (
-        <li key={index}>
-          {friend.firstName} {friend.lastName}
+        <div className='d-flex flex-row justify-content-between' key={index}>
+          <div>{friend.firstName} {friend.lastName}</div>
           {isUserAttending && (
             <Form.Check
               style={{ float: 'right', paddingRight: '20px' }}
               type='checkbox'
-              id='invite-checkbox'
-              label='Add invite'
+              // id='invite-checkbox'
+              label={`Add Invite`}
               onChange={() => toggleFriendInvite(friend.id)}
             />
           )}
-        </li>
+        </div>
       );
     });
 

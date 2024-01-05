@@ -155,7 +155,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
+    // TODO: figure out why people from previous event
+    // still populate the invite tab
+    await setInvitees([]);
+    await setParticipants([]);
     setShowCreateModal(false); // goes up to user page and sets to false
     // set coordinates so map in modal doesn't throw error for invalid LngLat object
     setSelectedEvent({
@@ -173,7 +177,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     time: number,
     twelveHourClock: boolean = false
   ) => {
-    console.log('TIME', time)
+    // console.log('TIME', time)
     let hour: any;
     let minute: any;
     const timeString: string = time.toString();
@@ -393,9 +397,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     .filter((friend: any) => participants.includes(friend.id))
     .map((friend: any, index: number) => {
       return (
-        <p key={index}>
+        <div key={index}>
           {friend.firstName} {friend.lastName}
-        </p>
+        </div>
       );
     });
 
@@ -403,9 +407,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     .filter((friend: any) => invitees.includes(friend.id))
     .map((friend: any, index: number) => {
       return (
-        <li key={index}>
+        <div key={index}>
           {friend.firstName} {friend.lastName}
-        </li>
+        </div>
       );
     });
 
@@ -416,22 +420,13 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     )
     .map((friend: any, index: number) => {
       return (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'right',
-          }}
-          key={index}
-        >
-          <li className='mx-3'>
+        <div className='d-flex flex-row justify-content-between' key={index}>
             {friend.firstName} {friend.lastName}{' '}
-          </li>
           <Form.Check
             style={{ float: 'right', paddingRight: '20px' }}
             label='Add invite'
             type='checkbox'
-            id='invite-checkbox'
+            // id='invite-checkbox'
             onChange={async () => {
               await toggleFriendInvite(friend.id);
             }}
@@ -441,7 +436,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     });
 
   ///////////////////////////////////////////////
-  console.log('Bottom of ECM. selectedEvent', selectedEvent, 'isNewEvent', isNewEvent)
+  console.log('Bottom of ECM. selectedEvent', selectedEvent, 'isNewEvent', isNewEvent, 'invitees', invitees, 'participants', participants, 'isNewEvent', isNewEvent)
   return (
     <Modal className='event-modal' show={showCreateModal} onHide={handleClose}>
       <Modal.Header>

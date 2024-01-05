@@ -24,9 +24,9 @@ dayjs.extend(relativeTime);
 import { useAuth0 } from '@auth0/auth0-react';
 
 //                              add userId as prop to get it from App
-const UserPage: React.FC<UserPageProps> = ({ getLocation, userId, lng, lat }) => {
+const UserPage: React.FC<UserPageProps> = ({ getLocation, /*userId,*/ lng, lat }) => {
   const [searchParams] = useSearchParams();
- //const [userId] = useState(Number(searchParams.get('userid')) || 1);
+ const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
