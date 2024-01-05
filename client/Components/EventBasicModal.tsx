@@ -40,10 +40,12 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
   getEventsInvited,
   getEventsParticipating,
 }) => {
-  const handleClose = () => {
-    setShowBasicModal(false); // goes up to user page and sets to false
-    setIsUserAttending(false);
-    setSelectedEvent({
+  const handleClose = async () => {
+    await setInvitees([]);
+    await setParticipants([])
+    await setShowBasicModal(false); // goes up to user page and sets to false
+    await setIsUserAttending(false);
+    await setSelectedEvent({
       latitude: 0,
       longitude: 0,
       startTime: null,
@@ -170,7 +172,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
     });
 
   ////////////////////////////////////////
-
+  console.log('bottom of eventBasicModal. invitees', invitees, 'participants', participants)
   return (
     <Modal show={showBasicModal} onHide={handleClose}>
       <Modal.Header>

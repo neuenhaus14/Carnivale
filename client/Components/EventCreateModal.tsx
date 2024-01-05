@@ -160,17 +160,17 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     // still populate the invite tab
     await setInvitees([]);
     await setParticipants([]);
-    setShowCreateModal(false); // goes up to user page and sets to false
+    await setShowCreateModal(false); // goes up to user page and sets to false
     // set coordinates so map in modal doesn't throw error for invalid LngLat object
-    setSelectedEvent({
+    await setSelectedEvent({
       latitude: 0,
       longitude: 0,
       startTime: null,
       endTime: null,
     });
-    setIsNewEvent(false); // returns to default state
-    setIsEventUpdated(false); // also default state
-    getEventsOwned(); // retrieves updated or newly created events
+    await setIsNewEvent(false); // returns to default state
+    await setIsEventUpdated(false); // also default state
+    await getEventsOwned(); // retrieves updated or newly created events
   };
 
   const convertDecimalToTime = (
@@ -251,8 +251,15 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
   };
 
-  const getPeopleForEvent = async () => {
+  const getPeopleForEvent = async (isNewEvent: boolean) => {
     try {
+      // if the event is new, empty out any
+      // invitees or participants who were added
+      // in previous clicks
+      if (isNewEvent===true){
+        setInvitees([]);
+        setParticipants([]);
+      }
       const eventPeopleData = await axios.get(
         `/api/events/getPeopleForEvent/${userId}-${selectedEvent.id}`
       );
@@ -272,7 +279,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           invitees: friendsToInvite,
         },
       });
-      getPeopleForEvent();
+      getPeopleForEvent(true);
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST event invites', err);
     }
@@ -372,11 +379,16 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   //  Accordion functionality
   useEffect(() => {
+    // TODO: work on conditional logic that fetches
+    // people for the event. It's fetching when it shouldn't?
+
     // this conditions checks for an event that has a non-default
     // latitude value (defaults to 0 to make map happy)
     if (isNewEvent === false && selectedEvent.latitude !== 0) {
-      console.log('getting people for event. selectedEvent', selectedEvent)
-      getPeopleForEvent();
+      console.log('GETTING people for event. selectedEvent', selectedEvent)
+      getPeopleForEvent(true);
+    } else if (isNewEvent === true) {
+      getPeopleForEvent(false);
     }
   }, [selectedEvent]);
 
@@ -436,7 +448,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     });
 
   ///////////////////////////////////////////////
-  console.log('Bottom of ECM. selectedEvent', selectedEvent, 'isNewEvent', isNewEvent, 'invitees', invitees, 'participants', participants, 'isNewEvent', isNewEvent)
+  console.log('Bottom of eventCreateModal. selectedEvent', selectedEvent, 'isNewEvent', isNewEvent, 'invitees', invitees, 'participants', participants, 'isNewEvent', isNewEvent)
   return (
     <Modal className='event-modal' show={showCreateModal} onHide={handleClose}>
       <Modal.Header>
