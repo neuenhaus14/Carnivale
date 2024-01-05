@@ -62,20 +62,26 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   //loads pins immediately on page render
   useEffect(() => {
     getPins();
-   // getFriends();
+    getFriends();
     getEvents();
+
   }, [setMarkers]);
 
 
-//  useEffect(() => { 
-//   getLocation()
-//   console.log('getLocation called in useEffect')
-//  }, [setUserLocation])
-  
- setTimeout (() => {
+ useEffect(() => { 
   getLocation()
-  console.log('get location called')
- }, 5000)
+  console.log('getLocation called in userLocation useEffect')
+ }, [userLocation])
+
+ useEffect(() => { 
+  getLocation()
+  console.log('getLocation called in friends useEffect')
+ }, [friends])
+  
+//  setTimeout (() => {
+//   getLocation()
+//   console.log('get location called')
+//  }, 5000)
 
 //  useEffect(() => {
 //   getLocation()
@@ -119,15 +125,15 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     }
   }
 
-  // //gets friends from the database- commented out bc friend sockets
-  // const getFriends = async () => {
-  //   try {
-  //     const friends = await axios.get(`/api/friends/getFriends/${userId}`)
-  //     setFriends(friends.data)
-  //   } catch (err)  {
-  //     console.error(err)
-  //   }
-  // }
+  //gets friends from the database- commented out bc friend sockets
+  const getFriends = async () => {
+    try {
+      const friends = await axios.get(`/api/friends/getFriends/${userId}`)
+      setFriends(friends.data)
+    } catch (err)  {
+      console.error(err)
+    }
+  }
 
   //this useEffect should update user or friend locations everytime they move
   useEffect(() => {
@@ -148,27 +154,28 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
             console.log('friendID that matched', friend)
           }
         })
-        setFriends(prevFriends => [...prevFriends]); // assuming everytime state is set there is a new render with updated friend loc
+        setFriends(prevFriends => [...prevFriends]) // assuming everytime state is set there is a new render with updated friend loc
+        // setFriends(friends)
       }
 
     })
-  }, [setUserLocation]);
+  });
 
 
-  useEffect (() => {
-    socket.emit("getFriends:read", {userId})
-    const handleGetFriends = (allFriendsUsers: any) => {
-      console.log('Got friends from socket', allFriendsUsers)
-      setFriends(allFriendsUsers)
-    };
+//   useEffect (() => {
+//     socket.emit("getFriends:read", {userId})
+//     const handleGetFriends = (allFriendsUsers: any) => {
+//       console.log('Got friends from socket', allFriendsUsers)
+//       setFriends(allFriendsUsers)
+//     };
 
-    socket.on("getFriends:send", handleGetFriends)
+//     socket.on("getFriends:send", handleGetFriends)
 
-    return () => {
-      socket.off("getFriends:send", handleGetFriends)
-    };
+//     return () => {
+//       socket.off("getFriends:send", handleGetFriends)
+//     };
 
-}, [setUserLocation]);
+// });
 
   //this sets the map touch coordinates to the url as params and shows createPin modal
   const dropPin = (e: any) => {
