@@ -20,49 +20,49 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
   const [selectedEvent, setSelectedEvent] = useState({ latitude: 0, longitude: 0, startTime: null, endTime: null })
   const [isUserAttending, setIsUserAttending] = useState(false)
 
-  const [allPublicEvents, setAllPublicEvents] = useState([]);
-  const [eventsParticipating, setEventsParticipating] = useState([{ name: 'event1' }]);
-  const [eventsInvited, setEventsInvited] = useState([{ name: 'event2' }])
+  // const [allPublicEvents, setAllPublicEvents] = useState([]);
+  // const [eventsParticipating, setEventsParticipating] = useState([{ name: 'event1' }]);
+  // const [eventsInvited, setEventsInvited] = useState([{ name: 'event2' }])
 
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [allGigs, setAllGigs] = useState([]);
-  const [isNewEvent, setIsNewEvent] = useState(true);
+  const [isNewEvent, setIsNewEvent] = useState(false);
 
 
   // get array of public event ids that the user is attending
-  const getEventsInvited = async () => {
-    try {
-      const publicEventsInvited = await axios.get(`/api/events/getPublicEventsInvited/${userId}`)
-      setEventsInvited(publicEventsInvited.data)
-      console.log('pubEventsInvited', publicEventsInvited.data)
-    } catch (err) {
-      console.error('CLIENT ERROR: failed to GET user\'s public event invitations', err)
-    }
-  }
+  // const getEventsInvited = async () => {
+  //   try {
+  //     const publicEventsInvited = await axios.get(`/api/events/getPublicEventsInvited/${userId}`)
+  //     setEventsInvited(publicEventsInvited.data)
+  //     console.log('pubEventsInvited', publicEventsInvited.data)
+  //   } catch (err) {
+  //     console.error('CLIENT ERROR: failed to GET user\'s public event invitations', err)
+  //   }
+  // }
 
   // get array of public event ids that the user is invited to
-  const getEventsParticipating = async () => {
-    try {
-      const publicEventsParticipating = await axios.get(`/api/events/getPublicEventsParticipating/${userId}`);
-      setEventsParticipating(publicEventsParticipating.data);
-      console.log('pubEventsParticipating', publicEventsParticipating.data)
-    } catch (err) {
-      console.error('CLIENT ERROR: failed to GET user\'s public participating events', err);
-    }
-  }
+  // const getEventsParticipating = async () => {
+  //   try {
+  //     const publicEventsParticipating = await axios.get(`/api/events/getPublicEventsParticipating/${userId}`);
+  //     setEventsParticipating(publicEventsParticipating.data);
+  //     console.log('pubEventsParticipating', publicEventsParticipating.data)
+  //   } catch (err) {
+  //     console.error('CLIENT ERROR: failed to GET user\'s public participating events', err);
+  //   }
+  // }
 
   // get all public events
-  const getAllPublicEvents = async () => {
-    try {
-      const allPublicEventsResponse = await axios.get('/api/events/getAllPublicEvents');
+  // const getAllPublicEvents = async () => {
+  //   try {
+  //     const allPublicEventsResponse = await axios.get('/api/events/getAllPublicEvents');
 
-      // console.log('all public', allPublicEventsResponse)
+  //     // console.log('all public', allPublicEventsResponse)
 
-      setAllPublicEvents(allPublicEventsResponse.data);
-    } catch (err) {
-      console.error('CLIENT ERROR: failed to get all public events');
-    }
-  }
+  //     setAllPublicEvents(allPublicEventsResponse.data);
+  //   } catch (err) {
+  //     console.error('CLIENT ERROR: failed to get all public events');
+  //   }
+  // }
 
   const getFriends = async () => {
     try {
@@ -77,11 +77,13 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
 
   // location
   useEffect(() => {
-    getLocation();
-    getEventsInvited();
-    getEventsParticipating();
-    getAllPublicEvents();
-    getFriends();
+    // getLocation();
+    //getEventsInvited();
+    //getEventsParticipating();
+    //getAllPublicEvents();
+    if (userId){
+      getFriends();
+    }
   }, [isUserAttending, selectedEvent, userId])
 
 
@@ -93,14 +95,15 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
       //     : eventsInvited.includes(event.id) ? 'orange' : 'black'
 
       // }}
-      onClick={() => {
-        setShowCreateModal(true);
-        setSelectedEvent(event);
+      onClick={async () => {
+        console.log('CLICKED ON ITEM')
+        await setSelectedEvent(event);
+        await setIsNewEvent(true);
+        await setShowCreateModal(true);
         // // enables invite ability if user is participating
         // if (eventsParticipating.includes(event.id)) {
         //   setIsUserAttending(true);
         // }
-        console.log('CLICKED ON ITEM')
       }}
     >
      <h3>{event.name}</h3>
@@ -119,7 +122,7 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
   }
   //use effect for scraping
   useEffect(() => {
-    console.log('hey evan')
+    console.log('About to scrape in eventPage useEffect')
     scrapeEventsActivate()
   }, [])
 

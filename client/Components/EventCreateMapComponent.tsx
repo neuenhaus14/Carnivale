@@ -17,9 +17,10 @@ interface EventCreateMapComponentProps {
   setEventLatitude: any,
   setEventAddress: any,
   setIsEventUpdated: any,
+  eventType: string,
 }
 
-const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNewEvent, eventLatitude, eventLongitude, userLatitude, userLongitude, setEventLatitude, setEventLongitude, setEventAddress, setIsEventUpdated }) => {
+const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNewEvent, eventLatitude, eventLongitude, userLatitude, userLongitude, setEventLatitude, setEventLongitude, setEventAddress, setIsEventUpdated, eventType }) => {
 
   const markerClicked = () => {
     window.alert('the marker was clicked');
@@ -35,8 +36,8 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
     // this useEffect runs whenever
     // isNewEvent switches; isNewEvent defaults
     // to false whenever a modal closes
-    if (isNewEvent){
-      console.log('about to trigger')
+    if (isNewEvent && eventType === 'user'){
+      console.log('about to trigger. isNewEvent', isNewEvent)
       setTimeout(()=>{
         geoControlRef.current?.trigger();
       }, 200)
@@ -73,6 +74,7 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
     setEventAddress(eventAddress)
   }
 
+  console.log('bottom of eCMapComponent. eventType', eventType)
   return (
     <div>
       <Map

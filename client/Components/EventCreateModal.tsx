@@ -70,9 +70,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   // values from old events and sets
   // state for parades (start time, location)
   useEffect(() => {
+    console.log('Top of uE. eventType', eventType, 'selectedEvent', selectedEvent);
     // user event edit mode
-    if (isNewEvent === false) {
-      console.log('inNewEvent', isNewEvent);
+    if (isNewEvent === false && eventType === 'user') {
+      console.log('Inside edit mode block. isNewEvent:', isNewEvent);
       setEventName(selectedEvent.name);
       setEventAddress(selectedEvent.address);
       setEventDescription(selectedEvent.description);
@@ -92,7 +93,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
     // user event create mode
     else if (isNewEvent === true && eventType === 'user') {
-      console.log('eventType', eventType, 'selectedEvent', selectedEvent);
+      console.log('Inside user block')
       setEventName('');
       setEventAddress('');
       setEventDescription('');
@@ -101,24 +102,26 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
     // parade event create mode
     else if (isNewEvent === true && eventType === 'parade') {
+      console.log('Inside parade block')
       setEventName(selectedEvent.title);
       setEventAddress(selectedEvent.location);
       setCoordinatesFromAddress(selectedEvent.location);
     }
     //gig event create mode
     else if (isNewEvent === true && eventType === 'gig') {
-      setEventName(selectedEvent.title);
-      console.log('GIG EVENT CREATE MODE', selectedEvent)
-      setEventAddress(selectedEvent.location);
-      setCoordinatesFromAddress(selectedEvent.location);
+      // setStateForGig()
+      console.log('Inside gig block')
+      setEventName(`${selectedEvent.name} gig`);
+      setEventAddress(selectedEvent.address);
+      setCoordinatesFromAddress(selectedEvent.address);
+      parseDateIntoDateAndTime(selectedEvent.startTime, 'start');
+      parseDateIntoDateAndTime(selectedEvent.endTime, 'end');
     }
   }, [selectedEvent, isNewEvent]);
 
   // takes either selectedEvent.startTime or .endTime
   // to populate date input and time ranges
   const parseDateIntoDateAndTime = (fullDate: string, startOrEnd: string) => {
-    // 2023-12-11 20:40:35.222-05
-    console.log('parseDID&T', fullDate, startOrEnd);
     let date;
     let time;
     if (fullDate.indexOf('T')) {
@@ -126,9 +129,23 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     } else if (fullDate.indexOf(' ')) {
       [date, time] = fullDate.split(' ');
     }
+    const hour = time.slice(0,2);
+    let minute = time.slice(3, time.length);
 
-    const timeRangeValue = Number(time.slice(0, 5).replace(':', '.'));
-    console.log('tRV', timeRangeValue);
+    switch (minute) {
+      case '15':
+        minute = '25';
+        break;
+      case '30':
+        minute = '5';
+        break;
+      case '45':
+        minute = '75';
+        break;
+    }
+
+    const timeRangeValue = Number(`${hour}.${minute}`)
+
     if (startOrEnd === 'start') {
       setEventStartDate(date);
       setEventStartTime(timeRangeValue);
@@ -156,6 +173,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     time: number,
     twelveHourClock: boolean = false
   ) => {
+    console.log('TIME', time)
     let hour: any;
     let minute: any;
     const timeString: string = time.toString();
@@ -164,7 +182,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       minute = '00';
     } else {
       [hour, minute] = timeString.split('.');
-
       switch (minute) {
         case '25':
           minute = '15';
@@ -239,7 +256,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setInvitees(eventInvitees);
       setParticipants(eventParticipants);
     } catch (err) {
-      console.error('CLIENT ERROR: failed to GET people for event');
+      console.error('CLIENT ERROR: failed to GET people for event', err, 'eT', eventType);
     }
   };
 
@@ -329,7 +346,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   };
 
   const setCoordinatesFromAddress = async (address: any) => {
-    const coordinatesResponse = await axios.post(
+    console.log('sCFA. Address: ', address);
+    try{const coordinatesResponse = await axios.post(
       '/api/events/getCoordinatesFromAddress',
       { address }
     );
@@ -337,6 +355,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     const [evtLongitude, evtLatitude] = coordinatesResponse.data;
     setEventLongitude(evtLongitude);
     setEventLatitude(evtLatitude);
+    } catch (err) {
+      console.log('CLIENT ERROR: failed to GET coords from address', err);
+    }
   };
 
   // handles setting coordinates when address is changed and onBlurred
@@ -350,6 +371,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     // this conditions checks for an event that has a non-default
     // latitude value (defaults to 0 to make map happy)
     if (isNewEvent === false && selectedEvent.latitude !== 0) {
+      console.log('getting people for event. selectedEvent', selectedEvent)
       getPeopleForEvent();
     }
   }, [selectedEvent]);
@@ -419,7 +441,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     });
 
   ///////////////////////////////////////////////
-
+  console.log('Bottom of ECM. selectedEvent', selectedEvent, 'isNewEvent', isNewEvent)
   return (
     <Modal className='event-modal' show={showCreateModal} onHide={handleClose}>
       <Modal.Header>
@@ -452,6 +474,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                   setEventLongitude={setEventLongitude}
                   setEventAddress={setEventAddress}
                   setIsEventUpdated={setIsEventUpdated}
+                  eventType={eventType}
                 />
               </div>
               <div>
