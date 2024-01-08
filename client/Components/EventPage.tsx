@@ -132,9 +132,11 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
 
   // console.log('inside eventPage. isUserAttending', isUserAttending)
   return (
-    <div className='body'>
-      <h3>Select the Date</h3>
+    <div className='gig-body'>
+      <h3 className='date-picker'>Select the Date</h3>
       <DatePicker
+      className='date-picker'
+      popperPlacement="bottom"
       selected={date}
       onChange={(date: Date) => setDate(date)} />
       {allGigItems}
