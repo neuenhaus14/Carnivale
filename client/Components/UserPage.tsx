@@ -70,7 +70,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, /*userId,*/ lng, lat }
       const eventsOwned = await axios.get(
         `api/events/getEventsOwned/${userId}`
       );
-      console.log('eventsOwned', eventsOwned.data);
+      // console.log('eventsOwned', eventsOwned.data);
       setEventsOwned(eventsOwned.data);
     } catch (err) {
       console.error('CLIENT ERROR: failed to get events owned', err);
@@ -503,7 +503,7 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, /*userId,*/ lng, lat }
             onClick={async () => {
               await setIsNewEvent(true);
               await setIsUserAttending(true);
-              await setShowCreateModal(true);
+              setTimeout(() => setShowCreateModal(true), 200);
             }}
           >
             Make A Plan

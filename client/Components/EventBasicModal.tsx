@@ -78,7 +78,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
   const [friendsToInvite, setFriendsToInvite] = useState([]); // collects friends to invite as group to event
 
   useEffect(() => {
-    if (selectedEvent.latitude !== 0) {
+    if (selectedEvent.latitude !== 0 && selectedEvent.ownerId !== userId) {
       getPeopleForEvent();
     }
   }, [selectedEvent]);
@@ -172,7 +172,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
     });
 
   ////////////////////////////////////////
-  console.log('bottom of eventBasicModal. invitees', invitees, 'participants', participants)
+  // console.log('bottom of eventBasicModal. invitees', invitees, 'participants', participants)
   return (
     <Modal show={showBasicModal} onHide={handleClose}>
       <Modal.Header>

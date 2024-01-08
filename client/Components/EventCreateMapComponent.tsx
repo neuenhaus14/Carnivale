@@ -18,9 +18,11 @@ interface EventCreateMapComponentProps {
   setEventAddress: any,
   setIsEventUpdated: any,
   eventType: string,
+  selectedEvent: any,
+  userId: number,
 }
 
-const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNewEvent, eventLatitude, eventLongitude, userLatitude, userLongitude, setEventLatitude, setEventLongitude, setEventAddress, setIsEventUpdated, eventType }) => {
+const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNewEvent, eventLatitude, eventLongitude, userLatitude, userLongitude, setEventLatitude, setEventLongitude, setEventAddress, setIsEventUpdated, eventType, selectedEvent, userId }) => {
 
   const markerClicked = () => {
     window.alert('the marker was clicked');
@@ -28,26 +30,63 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
 
   const mapRef = useRef(null);
 
-
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
 
-  useEffect(() => {
-    // this useEffect runs whenever
-    // isNewEvent switches; isNewEvent defaults
-    // to false whenever a modal closes
-    if (isNewEvent && eventType === 'user'){
-      console.log('about to trigger. isNewEvent', isNewEvent)
-      setTimeout(()=>{
-        geoControlRef.current?.trigger();
-      }, 200)
-    }
-  }, [geoControlRef.current, isNewEvent]);
+  // these useEffects determines where/when the map zooms
 
-  useEffect(()=>{
-   console.log('eventLat or eventLong CHANGED')
-    mapRef.current?.flyTo({ center: [eventLongitude, eventLatitude] });
-  }, [eventLatitude, eventLongitude])
+  // center map over user on first load
+  // useEffect(() => {
+  //   setTimeout(()=>{
+  //            geoControlRef.current?.trigger();
+  //          }, 200)
+  // }, [geoControlRef.current])
+
+  const nolaLong = -90.06285;
+  const nolaLat = 29.95742;
+
+  const delayedFlyTo = (longitude: any, latitude: any) => {
+    setTimeout(() => {
+      mapRef.current?.flyTo({ center: [longitude, latitude] })
+    }, 200)
+  }
+
+  useEffect(() => {
+    // brand new event, zoom to user
+    if (isNewEvent === true && eventLatitude === 0) {
+      console.log('centering for new event', userLongitude, userLatitude)
+      delayedFlyTo(userLongitude, userLatitude);
+    }
+
+    // old event owned by user id (won't get triggered for events invited to)
+    else if (isNewEvent === false && selectedEvent.ownerId === userId) {
+      console.log('centering over event')
+      delayedFlyTo(eventLongitude, eventLatitude);
+    }
+
+    // else if (isNewEvent === true && eventLatitude !== 0){
+    //   delayedFlyTo(eventLongitude, eventLatitude);
+    // }
+  }, [eventLatitude, eventLongitude, userLongitude, userLatitude, isNewEvent])
+
+
+
+  // useEffect(() => {
+  //   // this useEffect runs whenever
+  //   // isNewEvent switches; isNewEvent defaults
+  //   // to false whenever a modal closes
+  //   if (isNewEvent && eventType === 'user'){
+  //     console.log('about to trigger. isNewEvent', isNewEvent)
+  //     setTimeout(()=>{
+  //       geoControlRef.current?.trigger();
+  //     }, 200)
+  //   }
+  // }, [geoControlRef.current, isNewEvent]);
+
+  // useEffect(()=>{
+  //  console.log('eventLat or eventLong CHANGED')
+  //   mapRef.current?.flyTo({ center: [eventLongitude, eventLatitude] });
+  // }, [eventLatitude, eventLongitude])
 
 
   const [viewState, setViewState] = useState({
@@ -56,6 +95,7 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
     longitude: eventLongitude > 0 ? eventLongitude : userLongitude,
     zoom: 12,
   });
+
 
   const dropPin = async (e: any) => {
     const { lat, lng } = e.lngLat
@@ -68,13 +108,13 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
         longitude: lng
       }
     });
-    console.log(eventAddressResponse);
+    // console.log(eventAddressResponse);
     const eventAddress = eventAddressResponse.data;
     setIsEventUpdated(true);
     setEventAddress(eventAddress)
   }
 
-  console.log('bottom of eCMapComponent. eventType', eventType)
+  console.log('bottom of eCMapComponent. eventLat', eventLatitude)
   return (
     <div>
       <Map
@@ -101,6 +141,8 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
           showAccuracyCircle={false}
           ref={geoControlRef}
           />
+
+        <NavigationControl/>
       </Map>
     </div>
   )

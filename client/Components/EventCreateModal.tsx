@@ -3,6 +3,7 @@ import { Modal, Button, Form, Tabs, Tab } from 'react-bootstrap';
 import EventCreateMapComponent from './EventCreateMapComponent';
 import axios from 'axios';
 import dayjs = require('dayjs');
+import { is } from 'cheerio/lib/api/traversing';
 
 interface EventCreateModalProps {
   selectedEvent: any;
@@ -60,6 +61,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   // button will be activated or deactivated
   const [isEventUpdated, setIsEventUpdated] = useState(false);
 
+  const nolaLong = -90.06285;
+  const nolaLat = 29.95742;
+
   // geo use effect
   useEffect(() => {
     setUserLatitude(lat);
@@ -71,8 +75,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   // state for parades (start time, location)
   useEffect(() => {
     console.log('Top of uE. eventType', eventType, 'selectedEvent', selectedEvent);
-    // user event edit mode
-    if (isNewEvent === false && eventType === 'user') {
+    // user event edit mode: old user event with ownerId of current user
+    if (isNewEvent === false && eventType === 'user' && selectedEvent.ownerId === userId) {
       console.log('Inside edit mode block. isNewEvent:', isNewEvent);
       setEventName(selectedEvent.name);
       setEventAddress(selectedEvent.address);
@@ -80,14 +84,14 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventLatitude(Number(selectedEvent.latitude));
       setEventLongitude(Number(selectedEvent.longitude));
       if (selectedEvent.startTime !== null && selectedEvent !== null) {
-        console.log(
-          'incoming selectedEvent startTime',
-          selectedEvent.startTime
-        );
+        // console.log(
+        //   'incoming selectedEvent startTime',
+        //   selectedEvent.startTime
+        // );
         parseDateIntoDateAndTime(selectedEvent.startTime, 'start');
       }
       if (selectedEvent.endTime !== null && selectedEvent !== null) {
-        console.log('incoming selectedEvent endTime', selectedEvent.endTime);
+        // console.log('incoming selectedEvent endTime', selectedEvent.endTime);
         parseDateIntoDateAndTime(selectedEvent.endTime, 'end');
       }
     }
@@ -99,10 +103,12 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventDescription('');
       setEventStartTime(12);
       setEventEndTime(14);
+      setEventLatitude(lat ? lat : nolaLat);
+      setEventLongitude(lng ? lng : nolaLong);
     }
     // parade event create mode
     else if (isNewEvent === true && eventType === 'parade') {
-      console.log('Inside parade block')
+      console.log('Inside new parade block')
       setEventName(selectedEvent.title);
       setEventAddress(selectedEvent.location);
       setCoordinatesFromAddress(selectedEvent.location);
@@ -110,7 +116,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     //gig event create mode
     else if (isNewEvent === true && eventType === 'gig') {
       // setStateForGig()
-      console.log('Inside gig block')
+      console.log('Inside new gig block')
       setEventName(`${selectedEvent.name} gig`);
       setEventAddress(selectedEvent.address);
       setCoordinatesFromAddress(selectedEvent.address);
@@ -251,25 +257,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
   };
 
-  const getPeopleForEvent = async (isNewEvent: boolean) => {
-    try {
-      // if the event is new, empty out any
-      // invitees or participants who were added
-      // in previous clicks
-      if (isNewEvent===true){
-        setInvitees([]);
-        setParticipants([]);
-      }
-      const eventPeopleData = await axios.get(
-        `/api/events/getPeopleForEvent/${userId}-${selectedEvent.id}`
-      );
-      const { eventParticipants, eventInvitees } = eventPeopleData.data;
-      setInvitees(eventInvitees);
-      setParticipants(eventParticipants);
-    } catch (err) {
-      console.error('CLIENT ERROR: failed to GET people for event', err, 'eT', eventType);
-    }
-  };
 
   const sendFriendInvites = () => {
     try {
@@ -310,86 +297,111 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setIsEventUpdated(false); // return to default state
       // console.log('updatedEvent response', updatedEvent.data);
       // if (friendsToInvite.length > 0) {
-      //   sendFriendInvites();
-      // }
-      handleClose();
-    } catch (err) {
-      console.error('CLIENT ERROR: failed to PUT event update', err);
-    }
-  };
+        //   sendFriendInvites();
+        // }
+        handleClose();
+      } catch (err) {
+        console.error('CLIENT ERROR: failed to PUT event update', err);
+      }
+    };
 
-  const handleRangeChange = (e: any) => {
-    const { value, name } = e.target;
+    const handleRangeChange = (e: any) => {
+      const { value, name } = e.target;
 
-    if (name === 'start') {
-      setEventStartTime(value);
-    } else if (name === 'end') {
-      setEventEndTime(value);
-    }
+      if (name === 'start') {
+        setEventStartTime(value);
+      } else if (name === 'end') {
+        setEventEndTime(value);
+      }
 
-    // enable Update button in update mode
-    setIsEventUpdated(true);
-  };
+      // enable Update button in update mode
+      setIsEventUpdated(true);
+    };
 
-  const handleDateChange = (e: any) => {
-    const { value, name } = e.target;
+    const handleDateChange = (e: any) => {
+      const { value, name } = e.target;
 
-    if (name === 'start') {
-      setEventStartDate(value);
-    } else if (name === 'end') {
-      setEventEndDate(value);
-    }
-    // enable Update button in update mode
-    setIsEventUpdated(true);
-  };
+      if (name === 'start') {
+        setEventStartDate(value);
+      } else if (name === 'end') {
+        setEventEndDate(value);
+      }
+      // enable Update button in update mode
+      setIsEventUpdated(true);
+    };
 
-  const handleInputChange = (e: any) => {
-    const { value, name } = e.target;
+    const handleInputChange = (e: any) => {
+      const { value, name } = e.target;
 
-    if (name === 'name') {
-      setEventName(value);
-    } else if (name === 'description') {
-      setEventDescription(value);
-    } else if (name === 'address') {
-      setEventAddress(value);
-    }
-    setIsEventUpdated(true); // enables Update Event button
-  };
+      if (name === 'name') {
+        setEventName(value);
+      } else if (name === 'description') {
+        setEventDescription(value);
+      } else if (name === 'address') {
+        setEventAddress(value);
+      }
+      setIsEventUpdated(true); // enables Update Event button
+    };
 
-  const setCoordinatesFromAddress = async (address: any) => {
-    console.log('sCFA. Address: ', address);
+    // handles setting coordinates when address is changed and onBlurred
+    const setCoordinatesFromAddress = async (address: any) => {
+      console.log('sCFA. Address: ', address);
     try{const coordinatesResponse = await axios.post(
       '/api/events/getCoordinatesFromAddress',
       { address }
-    );
+      );
 
-    const [evtLongitude, evtLatitude] = coordinatesResponse.data;
-    setEventLongitude(evtLongitude);
-    setEventLatitude(evtLatitude);
+      const [evtLongitude, evtLatitude] = coordinatesResponse.data;
+      setEventLongitude(evtLongitude);
+      setEventLatitude(evtLatitude);
     } catch (err) {
       console.log('CLIENT ERROR: failed to GET coords from address', err);
     }
   };
 
-  // handles setting coordinates when address is changed and onBlurred
   const handleAddressToCoordinates = (e: any) => {
     const { value } = e.target;
     setCoordinatesFromAddress(value);
   };
 
-  //  Accordion functionality
-  useEffect(() => {
-    // TODO: work on conditional logic that fetches
-    // people for the event. It's fetching when it shouldn't?
-
-    // this conditions checks for an event that has a non-default
-    // latitude value (defaults to 0 to make map happy)
-    if (isNewEvent === false && selectedEvent.latitude !== 0) {
-      console.log('GETTING people for event. selectedEvent', selectedEvent)
-      getPeopleForEvent(true);
-    } else if (isNewEvent === true) {
-      getPeopleForEvent(false);
+  const getPeopleForEvent = async (isNewEvent: boolean) => {
+    try {
+      // if the event is new, empty out any
+      // invitees or participants who were added
+      // in previous clicks
+      if (isNewEvent===true){
+        console.log('inside get people for Event, isNewEvent', isNewEvent)
+        await setInvitees([]);
+        await setParticipants([]);
+      } else if (isNewEvent === false) {
+        const eventPeopleData = await axios.get(
+          `/api/events/getPeopleForEvent/${userId}-${selectedEvent.id}`
+        );
+        const { eventParticipants, eventInvitees } = eventPeopleData.data;
+        setInvitees(eventInvitees);
+        setParticipants(eventParticipants);
+      }
+    } catch (err) {
+      console.error('CLIENT ERROR: failed to GET people for event', err, 'eT', eventType);
     }
+  };
+
+
+  //  Getting people for modal depends on
+  //  what's inside the selected event
+  useEffect(() => {
+    console.log('selectedEventChanged', selectedEvent)
+
+    // only default events have lat === 0
+
+      if (selectedEvent.ownerId === userId){ // old event
+        //console.log('first block');
+        getPeopleForEvent(false);
+      } else if (!selectedEvent.ownerId && isNewEvent===true){ // new event
+        //console.log('second block');
+        getPeopleForEvent(true);
+      }
+
   }, [selectedEvent]);
 
   const toggleFriendInvite = (invitee_userId: number) => {
@@ -448,7 +460,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     });
 
   ///////////////////////////////////////////////
-  console.log('Bottom of eventCreateModal. selectedEvent', selectedEvent, 'isNewEvent', isNewEvent, 'invitees', invitees, 'participants', participants, 'isNewEvent', isNewEvent)
+  // console.log('Bottom of eventCreateModal. selectedEvent', selectedEvent, 'isNewEvent', isNewEvent, 'invitees', invitees, 'participants', participants, 'isNewEvent', isNewEvent)
   return (
     <Modal className='event-modal' show={showCreateModal} onHide={handleClose}>
       <Modal.Header>
@@ -482,6 +494,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                   setEventAddress={setEventAddress}
                   setIsEventUpdated={setIsEventUpdated}
                   eventType={eventType}
+                  selectedEvent={selectedEvent}
+                  userId={userId}
                 />
               </div>
               <div>
