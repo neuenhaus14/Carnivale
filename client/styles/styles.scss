@@ -180,6 +180,22 @@ body{
   color: $dark;
   font-family: 'Fredoka', sans-serif;
 }
+.gig-body {
+  padding-top: 10vh;
+  padding-bottom: 14vh;
+  display: flex;
+  flex-direction: column;
+
+  background-color: $lightPinky;
+
+  min-height: 100vh;
+}
+.date-picker{
+  display: flex;
+  text-align: left;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 // purple border for tab
 .nav-tabs {
