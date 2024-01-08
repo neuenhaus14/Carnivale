@@ -168,7 +168,7 @@ const App = () => {
           path='/mappage'
           element={
             <div>
-              <TopNavBar title={'Map Page'}/>
+              <TopNavBar title={'Map'}/>
               <MapPage
                 userLat={lat}
                 userLng={lng}
