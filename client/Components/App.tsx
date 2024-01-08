@@ -71,7 +71,7 @@ const App = () => {
       latitude: position.coords.latitude,
       id: userId,
     });
-    
+
     // socket.emit("getFriends:read", {userId})
     // console.log('socket emitted from App')
   };
@@ -154,7 +154,7 @@ const App = () => {
           path='/homepage'
           element={
             <div>
-              <TopNavBar title={'Home Page'}/>
+              <TopNavBar title={`Welcome ${user.name}!`}/>
               <HomePage
                 userId={userId}
                 lat={lat}
