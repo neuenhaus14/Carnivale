@@ -35,6 +35,7 @@ interface User
   lastName: string;
   longitude: number;
   latitude: number;
+  shareLoc: boolean;
 }
 
 const User = db.define(
@@ -51,6 +52,7 @@ const User = db.define(
     lastName: DataTypes.STRING,
     longitude: DataTypes.DECIMAL,
     latitude: DataTypes.DECIMAL,
+    shareLoc: DataTypes.BOOLEAN,
   },
   { timestamps: true }
 );
