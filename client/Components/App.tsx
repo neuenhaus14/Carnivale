@@ -45,7 +45,7 @@ const App = () => {
   const getUser = async () => {
     try {
       const { data } = await axios.post(`api/home/user/`, { user });
-      // console.log('userId', data[0].id)
+      console.log('userId', data[0].id)
       setUserData(data[0]);
       setUserId(data[0].id);
     } catch (err) {
@@ -120,9 +120,8 @@ const App = () => {
   // 3rd: provided a non-null userId, the user's location
   // is looked up and emitted to socket.io server
   useEffect(() => {
-    if (user) {
-      getUser();
-    }
+    user && getUser();
+    
   }, [isAuthenticated]);
 
   useEffect(() => {
@@ -169,7 +168,7 @@ const App = () => {
           path='/mappage'
           element={
             <div>
-              <TopNavBar title={'Map Page'}/>
+              <TopNavBar title={'Map'}/>
               <MapPage
                 userLat={lat}
                 userLng={lng}
