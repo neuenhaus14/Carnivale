@@ -38,8 +38,9 @@ $tabUnselectedBorder: #e3e3e3;
   flex-direction: column;
   position: relative;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
-  margin-top: 10px;
+  // margin-bottom: 10px;
+  // margin-top: 10px;
+  margin: 4px 10px;
   border: 1px solid $secondaryColor;
   background-color: $cardBackground;
 }
@@ -246,7 +247,15 @@ body{
   border-bottom: solid 1px $tabSelected;
 }
 
+.card-detail {
+  font-size: smaller;
+  font-style: italic;
+  font-weight: 100;
+}
 
+.card-content {
+  font-weight: 500;
+}
 //HOMEPAGE
 
 .body-home {

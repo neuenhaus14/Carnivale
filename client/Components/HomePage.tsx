@@ -94,6 +94,8 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
     <Container className='body-home'>
       <Row>
         <DropdownButton
+          className="my-3 mx-auto"
+          style={{width: '200px'}}
           title='Sort'
           onSelect={setOrder}
         >

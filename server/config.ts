@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const  DATABASE_PASSWORD : string =  process.env.DATABASE_PASSWORD;
+const DATABASE_PASSWORD : string =  process.env.DATABASE_PASSWORD;
 const DATABASE_USERNAME : string = process.env.DATABASE_USERNAME;
 const CLOUDINARY_API_KEY : string = process.env.CLOUDINARY_API_KEY;
 const CLOUDINARY_API_SECRET : string = process.env.CLOUDINARY_API_SECRET;
@@ -11,6 +11,8 @@ const WEATHER_API_KEY : string = process.env.WEATHER_API_KEY;
 const AUTH0_CLIENT_ID : string = process.env.AUTH0_CLIENT_ID;
 const AUTH0_CLIENT_SECRET : string = process.env.AUTH0_CLIENT_SECRET;
 const ISSUER : string = process.env.ISSUER;
+const REDIRECT_URL : string = process.env.REDIRECT_URL;
+
 
 export {
   DATABASE_PASSWORD,
@@ -20,7 +22,8 @@ export {
   WEATHER_API_KEY,
   AUTH0_CLIENT_ID,
   AUTH0_CLIENT_SECRET,
-  ISSUER
+  ISSUER,
+  REDIRECT_URL,
 }
 
 // export default {

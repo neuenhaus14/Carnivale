@@ -74,9 +74,18 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   // values from old events and sets
   // state for parades (start time, location)
   useEffect(() => {
-    console.log('Top of uE. eventType', eventType, 'selectedEvent', selectedEvent);
+    console.log(
+      'Top of uE. eventType',
+      eventType,
+      'selectedEvent',
+      selectedEvent
+    );
     // user event edit mode: old user event with ownerId of current user
-    if (isNewEvent === false && eventType === 'user' && selectedEvent.ownerId === userId) {
+    if (
+      isNewEvent === false &&
+      eventType === 'user' &&
+      selectedEvent.ownerId === userId
+    ) {
       console.log('Inside edit mode block. isNewEvent:', isNewEvent);
       setEventName(selectedEvent.name);
       setEventAddress(selectedEvent.address);
@@ -92,10 +101,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
     // user event create mode
     else if (isNewEvent === true && eventType === 'user') {
-      console.log('Inside user block')
+      console.log('Inside user block');
       setEventName('');
       setEventAddress('');
-      setEventDescription('');
+      handleUserCoordinatesToAddress();
+      // setEventDescription('');
       setEventStartTime(12);
       setEventEndTime(14);
       setEventLatitude(lat ? lat : nolaLat);
@@ -103,9 +113,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
     // parade event create mode
     else if (isNewEvent === true && eventType === 'parade') {
-      console.log('Inside new parade block')
+      console.log('Inside new parade block');
       setEventName(selectedEvent.title);
-      if (selectedEvent.location){
+      if (selectedEvent.location) {
         setEventAddress(selectedEvent.location);
         setCoordinatesFromAddress(selectedEvent.location);
         parseDateIntoDateAndTime(selectedEvent.startDate, 'start', true);
@@ -113,11 +123,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
     //gig event create mode
     else if (isNewEvent === true && eventType === 'gig') {
-      console.log('Inside new gig block')
+      console.log('Inside new gig block');
       setEventName(`${selectedEvent.name} gig`);
-      setEventDescription('Live music')
+      setEventDescription('Live music');
       setEventAddress(selectedEvent.address);
-      if (selectedEvent.address){
+      if (selectedEvent.address) {
         setCoordinatesFromAddress(selectedEvent.address);
       }
       if (selectedEvent.startTime) {
@@ -128,18 +138,22 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   // takes either selectedEvent.startTime or .endTime
   // to populate date input and time ranges
-  const parseDateIntoDateAndTime = (fullDate: string, startOrEnd: string, addEndTime: boolean) => {
+  const parseDateIntoDateAndTime = (
+    fullDate: string,
+    startOrEnd: string,
+    addEndTime: boolean
+  ) => {
     let date;
     let time;
 
-    fullDate = fullDate.slice(0,16)
+    fullDate = fullDate.slice(0, 16);
 
     if (fullDate.indexOf('T') !== -1) {
       [date, time] = fullDate.split('T');
     } else if (fullDate.indexOf(' ')) {
       [date, time] = fullDate.split(' ');
     }
-    const hour = time.slice(0,2);
+    const hour = time.slice(0, 2);
     let minute = time.slice(3, time.length);
 
     switch (minute) {
@@ -154,16 +168,24 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         break;
     }
 
-    const timeRangeValue = Number(`${hour}.${minute}`)
+    const timeRangeValue = Number(`${hour}.${minute}`);
 
     if (startOrEnd === 'start') {
       setEventStartDate(date);
       setEventStartTime(timeRangeValue);
       if (addEndTime === true) {
         const startTime = dayjs(fullDate);
-        const endTime = startTime.add(2, 'hour').format('YYYY-MM-DDTHH:mm').toString();
-        console.log('adding end time. startTime', startTime, 'endTime', endTime);
-        parseDateIntoDateAndTime(endTime, 'end', false)
+        const endTime = startTime
+          .add(2, 'hour')
+          .format('YYYY-MM-DDTHH:mm')
+          .toString();
+        console.log(
+          'adding end time. startTime',
+          startTime,
+          'endTime',
+          endTime
+        );
+        parseDateIntoDateAndTime(endTime, 'end', false);
       }
     } else if (startOrEnd === 'end') {
       setEventEndDate(date);
@@ -265,7 +287,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
   };
 
-
   const sendFriendInvites = () => {
     try {
       const inviteResponse = axios.post('/api/events/inviteToEvent', {
@@ -305,68 +326,70 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setIsEventUpdated(false); // return to default state
       // console.log('updatedEvent response', updatedEvent.data);
       // if (friendsToInvite.length > 0) {
-        //   sendFriendInvites();
-        // }
-        handleClose();
-      } catch (err) {
-        console.error('CLIENT ERROR: failed to PUT event update', err);
-      }
-    };
+      //   sendFriendInvites();
+      // }
+      handleClose();
+    } catch (err) {
+      console.error('CLIENT ERROR: failed to PUT event update', err);
+    }
+  };
 
-const handleDeleteEvent = async () => {
-  try{
-    const deleteResponse = await axios.delete(`/api/events/deleteEvent/${selectedEvent.id}`)
-    handleClose();
-  } catch (err) {
-    console.log('CLIENT ERROR: failed to DELETE event record', err)
-  }
+  const handleDeleteEvent = async () => {
+    try {
+      const deleteResponse = await axios.delete(
+        `/api/events/deleteEvent/${selectedEvent.id}`
+      );
+      handleClose();
+    } catch (err) {
+      console.log('CLIENT ERROR: failed to DELETE event record', err);
+    }
+  };
 
-}
+  const handleRangeChange = (e: any) => {
+    const { value, name } = e.target;
 
-    const handleRangeChange = (e: any) => {
-      const { value, name } = e.target;
+    if (name === 'start') {
+      setEventStartTime(value);
+    } else if (name === 'end') {
+      setEventEndTime(value);
+    }
 
-      if (name === 'start') {
-        setEventStartTime(value);
-      } else if (name === 'end') {
-        setEventEndTime(value);
-      }
+    // enable Update button in update mode
+    setIsEventUpdated(true);
+  };
 
-      // enable Update button in update mode
-      setIsEventUpdated(true);
-    };
+  const handleDateChange = (e: any) => {
+    const { value, name } = e.target;
 
-    const handleDateChange = (e: any) => {
-      const { value, name } = e.target;
+    if (name === 'start') {
+      setEventStartDate(value);
+    } else if (name === 'end') {
+      setEventEndDate(value);
+    }
+    // enable Update button in update mode
+    setIsEventUpdated(true);
+  };
 
-      if (name === 'start') {
-        setEventStartDate(value);
-      } else if (name === 'end') {
-        setEventEndDate(value);
-      }
-      // enable Update button in update mode
-      setIsEventUpdated(true);
-    };
+  const handleInputChange = (e: any) => {
+    const { value, name } = e.target;
 
-    const handleInputChange = (e: any) => {
-      const { value, name } = e.target;
+    if (name === 'name') {
+      setEventName(value);
+    } else if (name === 'description') {
+      setEventDescription(value);
+    } else if (name === 'address') {
+      setEventAddress(value);
+    }
+    setIsEventUpdated(true); // enables Update Event button
+  };
 
-      if (name === 'name') {
-        setEventName(value);
-      } else if (name === 'description') {
-        setEventDescription(value);
-      } else if (name === 'address') {
-        setEventAddress(value);
-      }
-      setIsEventUpdated(true); // enables Update Event button
-    };
-
-    // handles setting coordinates when address is changed and onBlurred
-    const setCoordinatesFromAddress = async (address: any) => {
-      console.log('sCFA. Address: ', address);
-    try{const coordinatesResponse = await axios.post(
-      '/api/events/getCoordinatesFromAddress',
-      { address }
+  // handles setting coordinates when address is changed and onBlurred
+  const setCoordinatesFromAddress = async (address: any) => {
+    console.log('sCFA. Address: ', address);
+    try {
+      const coordinatesResponse = await axios.post(
+        '/api/events/getCoordinatesFromAddress',
+        { address }
       );
 
       const [evtLongitude, evtLatitude] = coordinatesResponse.data;
@@ -382,13 +405,29 @@ const handleDeleteEvent = async () => {
     setCoordinatesFromAddress(value);
   };
 
+  const handleUserCoordinatesToAddress = async () => {
+    try {
+    const eventAddressResponse = await axios.post('/api/events/getAddressFromCoordinates', {
+      coordinates : {
+        latitude: lat,
+        longitude: lng
+      }
+    });
+    const eventAddress = eventAddressResponse.data;
+    setEventAddress(eventAddress);
+  } catch (err) {
+    console.error('CLIENT ERROR: failed to GET address from coordinates')
+  }
+  }
+
+
   const getPeopleForEvent = async (isNewEvent: boolean) => {
     try {
       // if the event is new, empty out any
       // invitees or participants who were added
       // in previous clicks
-      if (isNewEvent===true){
-        console.log('inside get people for Event, isNewEvent', isNewEvent)
+      if (isNewEvent === true) {
+        console.log('inside get people for Event, isNewEvent', isNewEvent);
         await setInvitees([]);
         await setParticipants([]);
       } else if (isNewEvent === false) {
@@ -400,26 +439,31 @@ const handleDeleteEvent = async () => {
         setParticipants(eventParticipants);
       }
     } catch (err) {
-      console.error('CLIENT ERROR: failed to GET people for event', err, 'eT', eventType);
+      console.error(
+        'CLIENT ERROR: failed to GET people for event',
+        err,
+        'eT',
+        eventType
+      );
     }
   };
-
 
   //  Getting people for modal depends on
   //  what's inside the selected event
   useEffect(() => {
-    console.log('selectedEventChanged', selectedEvent)
+    console.log('selectedEventChanged', selectedEvent);
 
     // only default events have lat === 0
 
-      if (selectedEvent.ownerId === userId){ // old event
-        //console.log('first block');
-        getPeopleForEvent(false);
-      } else if (!selectedEvent.ownerId && isNewEvent===true){ // new event
-        //console.log('second block');
-        getPeopleForEvent(true);
-      }
-
+    if (selectedEvent.ownerId === userId) {
+      // old event
+      //console.log('first block');
+      getPeopleForEvent(false);
+    } else if (!selectedEvent.ownerId && isNewEvent === true) {
+      // new event
+      //console.log('second block');
+      getPeopleForEvent(true);
+    }
   }, [selectedEvent]);
 
   const toggleFriendInvite = (invitee_userId: number) => {
@@ -463,7 +507,7 @@ const handleDeleteEvent = async () => {
     .map((friend: any, index: number) => {
       return (
         <div className='d-flex flex-row justify-content-between' key={index}>
-            {friend.firstName} {friend.lastName}{' '}
+          {friend.firstName} {friend.lastName}{' '}
           <Form.Check
             style={{ float: 'right', paddingRight: '20px' }}
             label='Add invite'
@@ -639,16 +683,16 @@ const handleDeleteEvent = async () => {
           <Button onClick={handleEventCreation}>Create Event</Button>
         )}
         {!isNewEvent && (
-        <>
-          <Button
-            onClick={handleEventUpdate}
-            disabled={isEventUpdated === false}
-          >
-            Update
-          </Button>
-          <Button variant='danger' onClick={handleDeleteEvent}>
-            Delete
-          </Button>
+          <>
+            <Button
+              onClick={handleEventUpdate}
+              disabled={isEventUpdated === false}
+            >
+              Update
+            </Button>
+            <Button variant='danger' onClick={handleDeleteEvent}>
+              Delete
+            </Button>
           </>
         )}
         <Button variant='danger' onClick={handleClose}>
