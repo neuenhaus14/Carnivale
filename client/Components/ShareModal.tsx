@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Button, Form, Dropdown, DropdownButton } from "react-bootstrap";
-import { IoIosSend } from "react-icons/io";
-import axios from "axios";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useState, useEffect } from 'react';
+import { Modal, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap';
+import { FaShareFromSquare  } from "react-icons/fa6";
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ShareModal = (props: {
   postId: number;
@@ -60,9 +60,9 @@ const ShareModal = (props: {
   };
 
   return (
-    <div>
-      <Button onClick={handleShow} style={{ marginLeft: "auto" }}>
-        <IoIosSend />
+    <div >
+      <Button onClick={handleShow} style={{ marginLeft: '150px'}}>
+        <FaShareFromSquare  />
       </Button>
 
       <Modal show={show} onHide={handleClose}>
