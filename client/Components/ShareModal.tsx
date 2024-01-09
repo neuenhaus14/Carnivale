@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap';
-import { IoIosSend } from "react-icons/io";
+import { FaShareFromSquare  } from "react-icons/fa6";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -62,7 +62,7 @@ const ShareModal = (props: {
   return (
     <div >
       <Button onClick={handleShow} style={{ marginLeft: '150px'}}>
-        <IoIosSend />
+        <FaShareFromSquare  />
       </Button>
 
       <Modal

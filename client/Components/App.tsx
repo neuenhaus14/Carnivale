@@ -155,7 +155,7 @@ const App = () => {
           path='/homepage'
           element={
             <div>
-              <TopNavBar title={'Home'}/>
+              <TopNavBar title={user?`Welcome ${user.given_name}!`:''}/>
               <HomePage
                 userId={userId}
                 lat={lat}

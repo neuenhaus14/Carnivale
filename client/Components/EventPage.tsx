@@ -119,14 +119,11 @@ const EventPage: React.FC<EventPageProps> = ({ getLocation, lng, lat, userId }) 
 
   async function scrapeEventsActivate() {
     const userDate = dayjs(date).format('YYYY-MM-DD')
-    console.log('NEW USER SELECTED DATE', userDate, typeof userDate)
     const scrape = await axios.get(`/api/gigs/gigs-list/${userDate}`)
     setAllGigs(scrape.data.mainArr);
-    console.log('SCRAPE IN EVENTPAGE', scrape.data.mainArr)
   }
   //use effect for scraping
   useEffect(() => {
-    console.log('About to scrape in eventPage useEffect')
     scrapeEventsActivate()
   }, [date])
 

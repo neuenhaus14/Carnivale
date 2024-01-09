@@ -13,10 +13,9 @@ import {
   Navbar,
   ButtonGroup,
 } from 'react-bootstrap';
-import { FaCamera, FaEnvelope } from 'react-icons/fa';
+import { FaCamera, FaCommentDots } from 'react-icons/fa';
 import axios from 'axios';
 import HomeModal from './HomeModal';
-import WeatherCard from './WeatherCard';
 import PostCard from './PostCard';
 
 //PARENT OF HOMEMODAL
@@ -197,7 +196,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                   disabled={comment.length <= 0}
                   className='comment-btn'
                 >
-                  <FaEnvelope />
+                  <FaCommentDots />
                   </Button>
             </Form.Group>
           </Form>
