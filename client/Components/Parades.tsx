@@ -138,8 +138,10 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
 
   useEffect(() => {
     fetchParadeList();
-    getFriends();
-  }, []);
+
+    userId && getFriends();
+
+  }, [userId]);
 
   return (
     <Container className="body">

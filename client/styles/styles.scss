@@ -1,11 +1,7 @@
 @import "~bootstrap/scss/bootstrap";
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700&family=Inter:wght@600;700&family=Shrikhand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@100;200;400;500;700&family=Inter:wght@600;700&family=Shrikhand&family=Permanent+Marker&display=swap');
 
 
-$greeny: #169874;
-$lightGreeny: #53CA3C;
-$pinky: #e7abff;
-$dark: #301A4B;
 
 $isFree:#53CA3C;
 $isToilet: #169873;
@@ -15,14 +11,25 @@ $isPhoneCharger: #53e3d4;
 $isPoliceStation: #E7ABFF;
 $isEMTStation:#f27d52;
 
+
+$greeny: #169874;
+$lightGreeny: #53CA3C;
+$darkGreeny: #015d43;
+$pinky: #e7abff;
+$dark: #211234;
 $yeller: #fcc54e;
 $purpley: #8d3dad;
-
-
 $lightPinky: #fbf4fe;
-$tabSelected: $lightPinky;
-$tabSelectedBorder: $purpley;
-$tabUnselected: #c1c1c1;
+
+$primaryColor: #fffcf8;
+$secondaryColor: $yeller;
+$ternaryColor: $purpley;
+
+$cardBackground: #fdf4ea;
+
+$tabSelected: $primaryColor;
+$tabSelectedBorder: $secondaryColor;
+$tabUnselected: $cardBackground;
 $tabUnselectedBorder: #e3e3e3;
 
 .card {
@@ -33,7 +40,8 @@ $tabUnselectedBorder: #e3e3e3;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
   margin-top: 10px;
-  border: 2px solid #BA37DD;
+  border: 1px solid $secondaryColor;
+  background-color: $cardBackground;
 }
 
 #map-direction-card{
@@ -58,10 +66,10 @@ $tabUnselectedBorder: #e3e3e3;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
   margin-top: 10px;
-  border: 2px solid #BA37DD;
+  border: 1px solid #BA37DD;
 }
 
-// span { 
+// span {
 //   font-size: medium;
 //   display: flex;
 //   align-items: center;
@@ -127,7 +135,7 @@ $tabUnselectedBorder: #e3e3e3;
   height: 8vh;
   color: white;
   font-size: 30px;
-  font-weight: bold;
+  font-weight: 200;
 }
 
 .body {
@@ -136,7 +144,7 @@ $tabUnselectedBorder: #e3e3e3;
   display: flex;
   flex-direction: column;
 
-  background-color: $lightPinky;
+  background-color: $primaryColor;
 
   min-height: 100vh;
 }
@@ -159,16 +167,23 @@ $tabUnselectedBorder: #e3e3e3;
   padding-bottom: 20px;
 }
 
-// .modal-body {
-//   height: 76vh
-// }
+.modal-body {
+background-color: $primaryColor;}
+
+.modal-title {
+  font-family: 'Permanent Marker', serif;
+}
+
+.userpage-animated {
+  font-family: 'Permanent Marker', serif;
+}
+
 
 h5 {
 text-align: left;
 color: $greeny;
-margin: 10px;
-text-transform: uppercase;
-font-weight: bold;
+margin: 8px;
+font-weight: 400;
 }
 
 p {
@@ -204,6 +219,7 @@ body{
 
 .nav-tabs .nav-item.show {
   background-color: $tabSelected;
+  border-bottom: 1px solid $tabSelectedBorder;
 }
 
 .tab-content {
@@ -211,7 +227,8 @@ body{
 }
 
 .nav-tabs .nav-link {
-  color: white;
+  color: rgb(86, 86, 86);
+  font-family: 'Permanent Marker', serif;
   background-color: $tabUnselected;
   border-top: 1px solid $tabUnselectedBorder;
   border-left: 1px solid $tabUnselectedBorder;
@@ -220,8 +237,9 @@ body{
 }
 
 .nav-tabs .nav-link.active {
+  font-family: 'Permanent Marker', serif;
   background-color: $tabSelected;
-  color: black;
+  color: $dark;
   border-top: solid 1px $tabSelectedBorder;
   border-left: solid 1px $tabSelectedBorder;
   border-right: solid 1px $tabSelectedBorder;
@@ -236,7 +254,7 @@ body{
   padding-bottom: 25vh;
   display: flex;
   flex-direction: column;
-  background-color: $lightPinky;
+  background-color: $primaryColor;
   min-height: 100vh;
 }
 

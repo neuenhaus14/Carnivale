@@ -183,7 +183,7 @@ const App = () => {
           path='/feedpage'
           element={
             <div>
-              <TopNavBar title={'Feed Page'}/>
+              <TopNavBar title={user ? `${user.given_name}'s Feed` : 'Feed'}/>
               <FeedPage userId={userId} /> <NavBar />
             </div>
           }
@@ -192,7 +192,7 @@ const App = () => {
           path='/parades'
           element={
             <div>
-              <TopNavBar title={'Parades Page'}/>
+              <TopNavBar title={'Parades'}/>
               <Parades
               userId={userId}
               lng={lng}
@@ -206,7 +206,7 @@ const App = () => {
           path='/eventpage'
           element={
             <div>
-              <TopNavBar title={'Events Page'}/>
+              <TopNavBar title={'Gigs'}/>
               <EventPage
                 userId={userId}
                 getLocation={getLocation}
@@ -221,7 +221,7 @@ const App = () => {
           path='/userpage'
           element={
             <div>
-              <TopNavBar title={'User Page'}/>
+              <TopNavBar title={'User'}/>
               <UserPage
                 userId={userId}
                 getLocation={getLocation}

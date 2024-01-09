@@ -40,10 +40,12 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
   getEventsInvited,
   getEventsParticipating,
 }) => {
-  const handleClose = () => {
-    setShowBasicModal(false); // goes up to user page and sets to false
-    setIsUserAttending(false);
-    setSelectedEvent({
+  const handleClose = async () => {
+    await setInvitees([]);
+    await setParticipants([])
+    await setShowBasicModal(false); // goes up to user page and sets to false
+    await setIsUserAttending(false);
+    await setSelectedEvent({
       latitude: 0,
       longitude: 0,
       startTime: null,
@@ -76,7 +78,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
   const [friendsToInvite, setFriendsToInvite] = useState([]); // collects friends to invite as group to event
 
   useEffect(() => {
-    if (selectedEvent.latitude !== 0) {
+    if (selectedEvent.latitude !== 0 && selectedEvent.ownerId !== userId) {
       getPeopleForEvent();
     }
   }, [selectedEvent]);
@@ -131,9 +133,9 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
     .filter((friend: any) => participants.includes(friend.id))
     .map((friend: any, index: number) => {
       return (
-        <li key={index}>
+        <div key={index}>
           {friend.firstName} {friend.lastName}
-        </li>
+        </div>
       );
     });
 
@@ -141,9 +143,9 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
     .filter((friend: any) => invitees.includes(friend.id))
     .map((friend: any, index: number) => {
       return (
-        <li key={index}>
+        <div key={index}>
           {friend.firstName} {friend.lastName}
-        </li>
+        </div>
       );
     });
 
@@ -154,23 +156,23 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
     )
     .map((friend: any, index: number) => {
       return (
-        <li key={index}>
-          {friend.firstName} {friend.lastName}
+        <div className='d-flex flex-row justify-content-between' key={index}>
+          <div>{friend.firstName} {friend.lastName}</div>
           {isUserAttending && (
             <Form.Check
               style={{ float: 'right', paddingRight: '20px' }}
               type='checkbox'
-              id='invite-checkbox'
-              label='Add invite'
+              // id='invite-checkbox'
+              label={`Add Invite`}
               onChange={() => toggleFriendInvite(friend.id)}
             />
           )}
-        </li>
+        </div>
       );
     });
 
   ////////////////////////////////////////
-
+  // console.log('bottom of eventBasicModal. invitees', invitees, 'participants', participants)
   return (
     <Modal show={showBasicModal} onHide={handleClose}>
       <Modal.Header>
