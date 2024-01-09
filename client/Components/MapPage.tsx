@@ -19,9 +19,10 @@ interface MapProps {
   getLocation: any
 }
 
-const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) => {
+const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => {
 
   const mapRef = useRef(null);
+  const userId = 7;
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPinSelected, setIsPinSelected] = useState<boolean>(false)
@@ -119,9 +120,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   const getFriends = async () => {
     try {
       const {data} = await axios.get(`/api/friends/getFriends/${userId}`)
-      setFriends(data)
-      //const friends = data.filter((friend: any) => friend.shareLoc === true)
-      //setFriends(friends)
+      // setFriends(data)
+      const friends = data.filter((friend: any) => friend.shareLoc === true)
+      setFriends(friends)
     } catch (err)  {
       console.error(err)
     }
@@ -129,7 +130,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
   const toggleShareLoc = async () => {
     try {
-      await axios.post('/api/friends/updateShareLoc', {
+      await axios.patch('/api/friends/updateShareLoc', {
         options: {
           userId,
           shareLoc: !shareLoc,
