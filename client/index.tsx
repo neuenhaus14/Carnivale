@@ -1,7 +1,7 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import { Auth0Provider } from '@auth0/auth0-react';
-// import { AUTH0_CLIENT_ID, ISSUER } from '../server/config';
+// import { REDIRECT_URL } from '../server/config';
 // Import our custom CSS
 import './styles/styles.scss';
 
@@ -18,7 +18,7 @@ root.render(
   domain={'https://dev-5in7n2lpfqf5vb2v.us.auth0.com'}
   clientId={'PPONBY54kyOaNBUlFbs1geQzPVOayaH5'}
   authorizationParams={{
-    redirect_uri: 'http://localhost:4000/homepage',
+    redirect_uri: `http://localhost:4000/homepage`,
   }}
 >
   <App />

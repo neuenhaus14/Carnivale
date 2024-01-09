@@ -77,25 +77,6 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
   }, [eventLatitude, eventLongitude, userLongitude, userLatitude, isNewEvent])
 
 
-
-  // useEffect(() => {
-  //   // this useEffect runs whenever
-  //   // isNewEvent switches; isNewEvent defaults
-  //   // to false whenever a modal closes
-  //   if (isNewEvent && eventType === 'user'){
-  //     console.log('about to trigger. isNewEvent', isNewEvent)
-  //     setTimeout(()=>{
-  //       geoControlRef.current?.trigger();
-  //     }, 200)
-  //   }
-  // }, [geoControlRef.current, isNewEvent]);
-
-  // useEffect(()=>{
-  //  console.log('eventLat or eventLong CHANGED')
-  //   mapRef.current?.flyTo({ center: [eventLongitude, eventLatitude] });
-  // }, [eventLatitude, eventLongitude])
-
-
   const [viewState, setViewState] = useState({
     // lat and long default to zero, so new events will not have lat/long
     latitude: eventLatitude > 0 ? eventLatitude : userLatitude,

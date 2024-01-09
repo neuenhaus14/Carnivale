@@ -2,7 +2,7 @@ import express, { Request, Response, Router } from "express";
 import path from "path";
 import "./db"; //importing not using. so it does the same thing
 import { auth, requiresAuth } from "express-openid-connect";
-import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER } from "./config";
+import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER, REDIRECT_URL } from "./config";
 import { Server } from "socket.io";
 import { Op, Model } from "sequelize";
 import PinRoutes from "./routes/Pins";
@@ -61,7 +61,7 @@ const config = {
   authRequired: false,
   auth0Logout: true,
   secret: AUTH0_CLIENT_SECRET,
-  baseURL: "http://localhost:4000",
+  baseURL: REDIRECT_URL,
   clientID: AUTH0_CLIENT_ID,
   issuerBaseURL: ISSUER,
 };
@@ -89,7 +89,7 @@ io.on('connection', (socket: any) => {
     console.log('userLoc', userLoc)
        io.emit('userLoc response', userLoc)
        //socket.broadcast.emit('userLoc response', userLoc)
-    
+
     //   console.log('emitted userLoc')
     //console.log('userLoc', userLoc.longitude, userLoc.latitude, userLoc.id)
     // User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: userLoc.id}})

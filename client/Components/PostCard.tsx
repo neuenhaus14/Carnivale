@@ -111,8 +111,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
         {post.comment ? (
           <Card.Body>
             <Card.Text>
-              {post.comment} - {owner}:{" "}
-              {dayjs(post.createdAt.toString()).fromNow()}
+              <div className='card-content'>{post.comment}</div>
+              <div className='card-detail'>{owner} posted {dayjs(post.createdAt.toString()).fromNow()}</div>
             </Card.Text>
             <ButtonGroup style={{ display: 'flex', flexDirection: 'row'}}>
             <button
