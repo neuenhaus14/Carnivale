@@ -142,7 +142,6 @@ const App = () => {
     return <Loading />;
   }
 
-  console.log('user', user, 'userId', userId)
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
