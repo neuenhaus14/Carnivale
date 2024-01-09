@@ -77,7 +77,7 @@ async function start(userDate: string) {
     mainArr.push({
       name: act[i],
       startTime: proper[i],
-      endTime: dayjs(`${date[i]} 2023 11:45`).format('YYYY-MM-DDTHH:mm'),
+      endTime: dayjs(`${date[i]} 2023 23:45`).format('YYYY-MM-DDTHH:mm'),
       description: act[i],
       longitude: -90,
       latitude: 30,

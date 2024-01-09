@@ -48,25 +48,32 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
   const delayedFlyTo = (longitude: any, latitude: any) => {
     setTimeout(() => {
       mapRef.current?.flyTo({ center: [longitude, latitude] })
-    }, 200)
+    }, 400)
   }
 
   useEffect(() => {
     // brand new event, zoom to user
-    if (isNewEvent === true && eventLatitude === 0) {
+    if (isNewEvent === true && !selectedEvent.ownerId && eventType === 'user') {
       console.log('centering for new event', userLongitude, userLatitude)
       delayedFlyTo(userLongitude, userLatitude);
     }
 
     // old event owned by user id (won't get triggered for events invited to)
-    else if (isNewEvent === false && selectedEvent.ownerId === userId) {
+    else if (isNewEvent === false && selectedEvent.ownerId === userId && eventType === 'user') {
       console.log('centering over event')
       delayedFlyTo(eventLongitude, eventLatitude);
     }
+    // gig event
+    else if (isNewEvent === true && eventType === 'gig') {
+      delayedFlyTo(eventLongitude, eventLatitude)
+    }
 
-    // else if (isNewEvent === true && eventLatitude !== 0){
-    //   delayedFlyTo(eventLongitude, eventLatitude);
-    // }
+    // parade event
+    else if (isNewEvent === true && eventType === 'parade') {
+      delayedFlyTo(eventLongitude, eventLatitude)
+    }
+
+
   }, [eventLatitude, eventLongitude, userLongitude, userLatitude, isNewEvent])
 
 
@@ -114,7 +121,7 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
     setEventAddress(eventAddress)
   }
 
-  console.log('bottom of eCMapComponent. eventLat', eventLatitude)
+  console.log('bottom of eCMapComponent. eventLat', eventLatitude, 'eventType', eventType)
   return (
     <div>
       <Map

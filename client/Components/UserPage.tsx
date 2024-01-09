@@ -24,9 +24,13 @@ dayjs.extend(relativeTime);
 import { useAuth0 } from '@auth0/auth0-react';
 
 //                              add userId as prop to get it from App
-const UserPage: React.FC<UserPageProps> = ({ getLocation, /*userId,*/ lng, lat }) => {
+const UserPage: React.FC<UserPageProps> = ({
+  getLocation,
+  /*userId,*/ lng,
+  lat,
+}) => {
   const [searchParams] = useSearchParams();
- const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
@@ -355,7 +359,6 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, /*userId,*/ lng, lat }
     setNameOrPhoneForFriendRequest(e.target.value);
   }
 
-
   // console.log('inside userpage. isNewEvent', isNewEvent)
   return (
     <Container className='body' style={{ justifyContent: 'space-between' }}>
@@ -397,22 +400,22 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, /*userId,*/ lng, lat }
           <Tab eventKey='krewe' title='Krewe'>
             <h5> Krewe </h5>
             {friends.length > 0 ? (
-              <div className="m-2">{userFriendsItems}</div>
+              <div className='m-2'>{userFriendsItems}</div>
             ) : (
               'Assemble your krewe below'
             )}
 
             <div className='d-flex flex-column align-items-center p-2'>
               <input
-                style={{ width: '60vw' }}
+                style={{ width: '75vw' }}
                 placeholder='###-###-#### || First Last'
                 value={nameOrPhoneForFriendRequest}
                 onChange={handleNameOrPhoneInput}
               ></input>
               <div className='d-flex flew-row m-2'>
-                <small className="mx-1">Invite to Krewe</small>
+                <small className='mx-1'>Invite to Krewe</small>
                 <Button
-                  className="mx-1"
+                  className='mx-1'
                   style={{ width: '23px' }}
                   size='sm'
                   variant='success'
@@ -449,7 +452,9 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, /*userId,*/ lng, lat }
               // conditional check for events you own
               eventsOwned.length > 0 && (
                 <>
-                  <h5> Your Plans </h5>
+                  <div className='d-flex flex-dir-row align-items-baseline'>
+                    <h5>Your Plans</h5>
+                  </div>
                   <div>{eventsOwnedItems}</div>
                 </>
               )
@@ -459,8 +464,10 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, /*userId,*/ lng, lat }
               // conditional checks for events you've attending
               eventsParticipating.length > 0 && (
                 <>
-                  <h5> Your Schedule </h5>
-                  <div>{eventsParticipatingItems}</div>
+                  <div className='d-flex flex-dir-row align-items-baseline'>
+                    <h5>Schedule</h5>
+                  </div>
+                    <div>{eventsParticipatingItems}</div>
                 </>
               )
             }
@@ -469,7 +476,9 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, /*userId,*/ lng, lat }
               // conditional checks for events you've invited to
               eventsInvited.length > 0 && (
                 <>
-                  <h5> Archived & Invited </h5>
+                  <div className='d-flex flex-dir-row align-items-baseline'>
+                    <h5>Archived & Invited</h5>
+                  </div>
                   <div>{eventsInvitedItems}</div>
                 </>
               )
@@ -506,17 +515,17 @@ const UserPage: React.FC<UserPageProps> = ({ getLocation, /*userId,*/ lng, lat }
               setTimeout(() => setShowCreateModal(true), 200);
             }}
           >
-            Make A Plan
+            Make Plans
           </Button>
 
-        {/* Link below is styled like a bootstrap button */}
-        <Link className='btn btn-primary' role='button' to='/eventpage'>
-          Gigs
-        </Link>
-        <Link className='btn btn-primary' role='button' to='/parades'>
-          Parades
-        </Link>
-       </div>
+          {/* Link below is styled like a bootstrap button */}
+          <Link className='btn btn-primary' role='button' to='/eventpage'>
+            Gigs
+          </Link>
+          <Link className='btn btn-primary' role='button' to='/parades'>
+            Parades
+          </Link>
+        </div>
       </Row>
     </Container>
   );

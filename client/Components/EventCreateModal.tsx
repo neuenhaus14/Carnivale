@@ -84,15 +84,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventLatitude(Number(selectedEvent.latitude));
       setEventLongitude(Number(selectedEvent.longitude));
       if (selectedEvent.startTime !== null && selectedEvent !== null) {
-        // console.log(
-        //   'incoming selectedEvent startTime',
-        //   selectedEvent.startTime
-        // );
-        parseDateIntoDateAndTime(selectedEvent.startTime, 'start');
+        parseDateIntoDateAndTime(selectedEvent.startTime, 'start', false);
       }
       if (selectedEvent.endTime !== null && selectedEvent !== null) {
-        // console.log('incoming selectedEvent endTime', selectedEvent.endTime);
-        parseDateIntoDateAndTime(selectedEvent.endTime, 'end');
+        parseDateIntoDateAndTime(selectedEvent.endTime, 'end', false);
       }
     }
     // user event create mode
@@ -110,27 +105,36 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     else if (isNewEvent === true && eventType === 'parade') {
       console.log('Inside new parade block')
       setEventName(selectedEvent.title);
-      setEventAddress(selectedEvent.location);
-      setCoordinatesFromAddress(selectedEvent.location);
+      if (selectedEvent.location){
+        setEventAddress(selectedEvent.location);
+        setCoordinatesFromAddress(selectedEvent.location);
+        parseDateIntoDateAndTime(selectedEvent.startDate, 'start', true);
+      }
     }
     //gig event create mode
     else if (isNewEvent === true && eventType === 'gig') {
-      // setStateForGig()
       console.log('Inside new gig block')
       setEventName(`${selectedEvent.name} gig`);
+      setEventDescription('Live music')
       setEventAddress(selectedEvent.address);
-      setCoordinatesFromAddress(selectedEvent.address);
-      parseDateIntoDateAndTime(selectedEvent.startTime, 'start');
-      parseDateIntoDateAndTime(selectedEvent.endTime, 'end');
+      if (selectedEvent.address){
+        setCoordinatesFromAddress(selectedEvent.address);
+      }
+      if (selectedEvent.startTime) {
+        parseDateIntoDateAndTime(selectedEvent.startTime, 'start', true);
+      }
     }
   }, [selectedEvent, isNewEvent]);
 
   // takes either selectedEvent.startTime or .endTime
   // to populate date input and time ranges
-  const parseDateIntoDateAndTime = (fullDate: string, startOrEnd: string) => {
+  const parseDateIntoDateAndTime = (fullDate: string, startOrEnd: string, addEndTime: boolean) => {
     let date;
     let time;
-    if (fullDate.indexOf('T')) {
+
+    fullDate = fullDate.slice(0,16)
+
+    if (fullDate.indexOf('T') !== -1) {
       [date, time] = fullDate.split('T');
     } else if (fullDate.indexOf(' ')) {
       [date, time] = fullDate.split(' ');
@@ -155,6 +159,12 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     if (startOrEnd === 'start') {
       setEventStartDate(date);
       setEventStartTime(timeRangeValue);
+      if (addEndTime === true) {
+        const startTime = dayjs(fullDate);
+        const endTime = startTime.add(2, 'hour').format('YYYY-MM-DDTHH:mm').toString();
+        console.log('adding end time. startTime', startTime, 'endTime', endTime);
+        parseDateIntoDateAndTime(endTime, 'end', false)
+      }
     } else if (startOrEnd === 'end') {
       setEventEndDate(date);
       setEventEndTime(timeRangeValue);
@@ -162,18 +172,16 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   };
 
   const handleClose = async () => {
-    // TODO: figure out why people from previous event
-    // still populate the invite tab
-    await setInvitees([]);
-    await setParticipants([]);
     await setShowCreateModal(false); // goes up to user page and sets to false
-    // set coordinates so map in modal doesn't throw error for invalid LngLat object
+    // default values for setSelectedEvent
     await setSelectedEvent({
       latitude: 0,
       longitude: 0,
       startTime: null,
       endTime: null,
     });
+    await setInvitees([]);
+    await setParticipants([]);
     await setIsNewEvent(false); // returns to default state
     await setIsEventUpdated(false); // also default state
     await getEventsOwned(); // retrieves updated or newly created events
@@ -304,6 +312,16 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         console.error('CLIENT ERROR: failed to PUT event update', err);
       }
     };
+
+const handleDeleteEvent = async () => {
+  try{
+    const deleteResponse = await axios.delete(`/api/events/deleteEvent/${selectedEvent.id}`)
+    handleClose();
+  } catch (err) {
+    console.log('CLIENT ERROR: failed to DELETE event record', err)
+  }
+
+}
 
     const handleRangeChange = (e: any) => {
       const { value, name } = e.target;
@@ -542,8 +560,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                     />
 
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
-                      <div style={{ width: '85px' }}>
-                        <p>{convertDecimalToTime(eventStartTime, true)}</p>
+                      <div style={{ width: '100px' }}>
+                        <div>{convertDecimalToTime(eventStartTime, true)}</div>
                       </div>
                       <Form.Range
                         min={0}
@@ -566,7 +584,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                       <div style={{ width: '100px' }}>
-                        <p>{convertDecimalToTime(eventEndTime, true)}</p>
+                        <div>{convertDecimalToTime(eventEndTime, true)}</div>
                       </div>
                       <Form.Range
                         min={0}
@@ -621,15 +639,20 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           <Button onClick={handleEventCreation}>Create Event</Button>
         )}
         {!isNewEvent && (
+        <>
           <Button
             onClick={handleEventUpdate}
             disabled={isEventUpdated === false}
           >
-            Update Event
+            Update
           </Button>
+          <Button variant='danger' onClick={handleDeleteEvent}>
+            Delete
+          </Button>
+          </>
         )}
         <Button variant='danger' onClick={handleClose}>
-          Close Event
+          Close
         </Button>
       </Modal.Footer>
     </Modal>
