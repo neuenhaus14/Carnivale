@@ -175,7 +175,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     if (isPinSelected === false && isFriendSelected === false){
       setShowModal(true)
     }
-    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
+    //setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   }
 
   //finds clicked marker/pin from database
@@ -397,7 +397,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
         ref={mapRef}
         {...viewState}
         onMove={(e) => setViewState(e.viewState)}
-        onClick={(e) => {dropPin(e)}}
+        //onClick={(e) => {dropPin(e)}}
         mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
         style={{ position: 'relative', bottom: '0px', maxWidth: '100vw', height: "50vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
@@ -491,7 +491,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
             </div>
           </div> 
         ) : null}
-         <button><FaCirclePlus style={{color: "#4A89F3", width: "60px", height: "60px", border: "none", position: "absolute", right: "5%", bottom: "8%"}}/></button>
+         <button onClick={(e) => {dropPin(e)}}><FaCirclePlus style={{color: "#4A89F3", width: "60px", height: "60px", border: "none", position: "absolute", right: "5%", bottom: "8%"}}/></button>
       </Map>
       <div id="map-filter-container" className="container">
         <p style={{textAlign: "center",}}>FILTER PINS</p>

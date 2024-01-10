@@ -11,6 +11,7 @@ interface Props {
 
 const CreatePinMap: React.FC<Props> = ( {userLocation} ) => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [droppedPin, setDroppedPin] = useState<boolean>(false);
   // const [droppedPin, setDroppedPin] = useState<[number, number]>([0, 0]);
   const [viewState, setViewState] = useState({
     longitude: userLocation[0],
@@ -40,6 +41,7 @@ const CreatePinMap: React.FC<Props> = ( {userLocation} ) => {
   const dropPin = (e: any) => {
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
     // setDroppedPin([e.lngLat.lng.toString().slice(0,10), e.lngLat.lat.toString().slice(0,9)])
+    setDroppedPin(true)
   }
 
   return (
@@ -61,7 +63,7 @@ const CreatePinMap: React.FC<Props> = ( {userLocation} ) => {
           showAccuracyCircle={false}
           ref={geoControlRef}
         />
-        <Marker longitude={lng} latitude={lat} anchor="bottom"></Marker>        
+        { droppedPin ? <Marker longitude={lng} latitude={lat} anchor="bottom"></Marker> : null}      
         <NavigationControl/>
       </Map>  
     </div>
