@@ -299,7 +299,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           invitees: friendsToInvite,
         },
       });
-      getPeopleForEvent(true);
+      setFriendsToInvite([]);
+      getPeopleForEvent(false);
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST event invites', err);
     }
@@ -431,10 +432,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       // invitees or participants who were added
       // in previous clicks
       if (isNewEvent === true) {
-        console.log('inside get people for Event, isNewEvent', isNewEvent);
+        console.log('inside gPFEvent, isNewEvent', isNewEvent);
         await setInvitees([]);
         await setParticipants([]);
       } else if (isNewEvent === false) {
+        console.log('inside gPFE, isNewEvent', isNewEvent)
         const eventPeopleData = await axios.get(
           `/api/events/getPeopleForEvent/${userId}-${selectedEvent.id}`
         );
@@ -457,11 +459,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   useEffect(() => {
     if (selectedEvent.ownerId === userId) {
       // old event
-      //console.log('first block');
+      console.log('first block');
       getPeopleForEvent(false);
     } else if (!selectedEvent.ownerId && isNewEvent === true) {
       // new event
-      //console.log('second block');
+      console.log('second block');
       getPeopleForEvent(true);
     }
   }, [selectedEvent]);
