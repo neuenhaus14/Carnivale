@@ -99,8 +99,8 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     { isPinSelected
     ? (
       <Modal show={isShow} onHide={initModal}>
-          <Modal.Header id="modal-header">
-            <Modal.Title > {pinCategory(selectedPin[0].pinCategory)} Pins</Modal.Title>
+          <Modal.Header id="modal-header" closeButton onClick={initModal}>
+            <Modal.Title > {pinCategory(selectedPin[0].pinCategory)} Pins</Modal.Title>  
           </Modal.Header>
           { showPhoto ? (
           <div>
@@ -119,8 +119,8 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
           </Modal.Body>
           <Modal.Footer>
             {/* <ShareModal postId={selectedPin[0].id} userId={1} postType={"pin"}/> */}
-            <Button onClick={initModal}> Close </Button>
-            <Button className="btn-success" onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
+            {/* <Button onClick={initModal}> Close </Button> */}
+            <Button className="btn" onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
           </Modal.Footer>
           </div>
             ) : (
@@ -148,7 +148,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     :
     (
       <Modal show={isShow} onHide={initModal}>
-        <Modal.Header id="modal-header">
+        <Modal.Header id="modal-header" closeButton onClick={initModal}>
           <Modal.Title>Create a Pin</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -200,7 +200,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
           </Form>
         </Modal.Body>
         <Modal.Footer>
-        <Button onClick={initModal}> Close </Button>
+        {/* <Button onClick={initModal}> Close </Button> */}
         </Modal.Footer>
       </Modal>)
       }

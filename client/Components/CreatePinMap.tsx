@@ -8,11 +8,10 @@ interface Props {
   userLocation: [number, number]
 }
 
-
 const CreatePinMap: React.FC<Props> = ( {userLocation} ) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [droppedPin, setDroppedPin] = useState<boolean>(false);
-  // const [droppedPin, setDroppedPin] = useState<[number, number]>([0, 0]);
+  const [address, setAddress] = useState<string>('');
   const [viewState, setViewState] = useState({
     longitude: userLocation[0],
     latitude: userLocation[1],
@@ -29,18 +28,14 @@ const CreatePinMap: React.FC<Props> = ( {userLocation} ) => {
   }, [geoControlRef.current]);
 
 
-
   const urlSearchParams = new URLSearchParams(window.location.search);
   const params = Object.fromEntries(urlSearchParams.entries());
   const { lng, lat } = params; // string
-  const parseIntLng = parseInt(lng)
-  const parseIntLat = parseInt(lat)
 
 
   //this sets the map touch coordinates to the url as params
   const dropPin = (e: any) => {
     setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
-    // setDroppedPin([e.lngLat.lng.toString().slice(0,10), e.lngLat.lat.toString().slice(0,9)])
     setDroppedPin(true)
   }
 
@@ -63,7 +58,7 @@ const CreatePinMap: React.FC<Props> = ( {userLocation} ) => {
           showAccuracyCircle={false}
           ref={geoControlRef}
         />
-        { droppedPin ? <Marker longitude={lng} latitude={lat} anchor="bottom"></Marker> : null}      
+        { droppedPin ? <Marker longitude={parseFloat(lng)} latitude={parseFloat(lat)} anchor="bottom"></Marker> : null}      
         <NavigationControl/>
       </Map>  
     </div>
