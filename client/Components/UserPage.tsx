@@ -26,7 +26,8 @@ import { useAuth0 } from '@auth0/auth0-react';
 //                              add userId as prop to get it from App
 const UserPage: React.FC<UserPageProps> = ({
   getLocation,
-  userId, lng,
+  userId,
+  lng,
   lat,
 }) => {
   const [searchParams] = useSearchParams();
@@ -124,17 +125,12 @@ const UserPage: React.FC<UserPageProps> = ({
     }
   };
 
+  // POPULATES USERPAGE WITH CORRECT PEOPLE, EVENTS
+  // isNewEvent is switched to false
+  // whenever modal closes, so this
+  // uE runs whenever a modal closes,
+  // to refresh info
   useEffect(() => {
-    // getLocation() DON'T NEED THIS, IT'S GETTING PASSED IN
-
-    // for updating events on userpage when
-    // responding to invites or inviting other users
-
-    // TODO: I think isNewEvent gets flipped
-    // to false from the eventCreateModal,
-    // so isNewEvent should realistically
-    // always be false. This uE only
-    // runs on the first page load, right?
     if (isNewEvent === false) {
       getFriends();
       getEventsOwned();
@@ -182,7 +178,7 @@ const UserPage: React.FC<UserPageProps> = ({
               size='sm'
               onClick={() => cancelFriendRequest(requestee.id)}
             >
-              {/*'CANCEL '*/} <MdCancel style={{ verticalAlign: '-2px' }} />
+              <MdCancel style={{ verticalAlign: '-2px' }} />
             </Button>
           </div>
         </div>
@@ -205,7 +201,7 @@ const UserPage: React.FC<UserPageProps> = ({
               variant='success'
               onClick={() => answerFriendRequest(requester.id, true)}
             >
-              {/*'ACCEPT '*/} <FaThumbsUp style={{ verticalAlign: '-2px' }} />
+              <FaThumbsUp style={{ verticalAlign: '-2px' }} />
             </Button>
             <Button
               className='mx-1'
@@ -213,7 +209,7 @@ const UserPage: React.FC<UserPageProps> = ({
               variant='danger'
               onClick={() => answerFriendRequest(requester.id, false)}
             >
-              {/*'IGNORE '*/} <FaThumbsDown style={{ verticalAlign: '-2px' }} />
+              <FaThumbsDown style={{ verticalAlign: '-2px' }} />
             </Button>
           </div>
         </div>
@@ -402,7 +398,14 @@ const UserPage: React.FC<UserPageProps> = ({
             {friends.length > 0 ? (
               <div className='m-2'>{userFriendsItems}</div>
             ) : (
-              'Assemble your krewe below'
+              <>
+                <div className='card-content text-center'>
+                  You're flying solo!
+                </div>
+                <div className='card-detail text-center'>
+                  Assemble your krewe by searching for friends below
+                </div>
+              </>
             )}
 
             <div className='d-flex flex-column align-items-center p-2'>
@@ -449,6 +452,23 @@ const UserPage: React.FC<UserPageProps> = ({
 
           <Tab eventKey='calendar' title='Calendar'>
             {
+              // conditional check: if no events owned or invited or attending, show default message
+              eventsOwned.length === 0 &&
+                eventsInvited.length === 0 &&
+                eventsParticipating.length === 0 && (
+                  <>
+                    <div className='card-content text-center mt-3'>
+                      Nothing going on in here!
+                    </div>
+                    <div className='card-detail text-center'>
+                      Make plans or connect with your Krewe to beef up your
+                      calendar.
+                    </div>
+                  </>
+                )
+            }
+
+            {
               // conditional check for events you own
               eventsOwned.length > 0 && (
                 <>
@@ -467,7 +487,7 @@ const UserPage: React.FC<UserPageProps> = ({
                   <div className='d-flex flex-dir-row align-items-baseline'>
                     <h5>Schedule</h5>
                   </div>
-                    <div>{eventsParticipatingItems}</div>
+                  <div>{eventsParticipatingItems}</div>
                 </>
               )
             }

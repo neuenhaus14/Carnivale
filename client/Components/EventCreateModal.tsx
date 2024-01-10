@@ -41,6 +41,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   const [eventLatitude, setEventLatitude] = useState(0);
   const [eventLongitude, setEventLongitude] = useState(0);
 
+  const now = dayjs()
   // Event time data: will combine to make Date string
   const [eventStartDate, setEventStartDate] = useState('');
   const [eventEndDate, setEventEndDate] = useState('');
@@ -78,7 +79,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       'Top of uE. eventType',
       eventType,
       'selectedEvent',
-      selectedEvent
+      selectedEvent,
+      'dayJS now',
+      now
     );
     // user event edit mode: old user event with ownerId of current user
     if (
@@ -103,11 +106,19 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     else if (isNewEvent === true && eventType === 'user') {
       console.log('Inside user block');
       setEventName('');
+      setEventDescription('');
       setEventAddress('');
+
+      const oneHourLaterTime = Number(now.add(1, 'hour').format('HH'))
+      const oneHourLaterDate = now.add(1, 'hour').format('YYYY-MM-DD')
+      const twoHoursLaterTime = Number(now.add(2, 'hour').format('HH'))
+      const twoHoursLaterDate = now.add(2, 'hour').format('YYYY-MM-DD')
+
       handleUserCoordinatesToAddress();
-      // setEventDescription('');
-      setEventStartTime(12);
-      setEventEndTime(14);
+      setEventStartTime(oneHourLaterTime);
+      setEventStartDate(oneHourLaterDate);
+      setEventEndTime(twoHoursLaterTime);
+      setEventEndDate(twoHoursLaterDate);
       setEventLatitude(lat ? lat : nolaLat);
       setEventLongitude(lng ? lng : nolaLong);
     }
@@ -204,6 +215,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     });
     await setInvitees([]);
     await setParticipants([]);
+
     await setIsNewEvent(false); // returns to default state
     await setIsEventUpdated(false); // also default state
     await getEventsOwned(); // retrieves updated or newly created events
@@ -448,13 +460,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
   };
 
-  //  Getting people for modal depends on
-  //  what's inside the selected event
+  //  GETTING PEOPLE FOR THE MODAL
+  //  depends on what's inside the selected event
   useEffect(() => {
     console.log('selectedEventChanged', selectedEvent);
-
-    // only default events have lat === 0
-
     if (selectedEvent.ownerId === userId) {
       // old event
       //console.log('first block');
@@ -645,6 +654,13 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
             </Tab>
 
             <Tab eventKey='people' title='People'>
+              {friends.length === 0 && (
+                <div>
+                  <div className='card-content text-center mt-3'>You're flying solo!</div>
+                  <div className='card-detail text-center'>Add to your Krewe to send invitations.</div>
+                </div>
+              )}
+
               {attendingFriendsItems.length > 0 && (
                 <div>
                   <h5>Attending</h5>
