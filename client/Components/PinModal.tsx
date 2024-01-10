@@ -4,6 +4,7 @@ import { useParams} from 'react-router-dom'
 import axios from 'axios'
 import Photos from './Photos'
 import ShareModal from './ShareModal'
+import CreatePinMap from './CreatePinMap'
 
 interface Props {
   setShowModal: any
@@ -13,9 +14,10 @@ interface Props {
   setIsPinSelected: any
   selectedPin: any
   userId: number
+  userLocation: [number, number]
 }
 
-const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected} ) => {
+const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected, userLocation} ) => {
   const [isShow, setShow] = useState(true);
   const [isToilet, setIsToilet] =useState(false);
   const [isFood, setIsFood] =useState(false);
@@ -150,7 +152,8 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
           <Modal.Title>Create a Pin</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Select a category, add a picture, and save your pin.
+         Drop a pin, select a category, add a picture, and save your pin.
+        <CreatePinMap userLocation={userLocation}/>
           <Form>
             <Form.Group className ='mb-3' controlId="pinType">
               <Form.Check type="radio" id="freeToilet" name="pin-cat"

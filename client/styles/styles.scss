@@ -58,7 +58,7 @@ $tabUnselectedBorder: #e3e3e3;
 }
 
 #map-filter-container {
-  background-color: white;
+  background-color: $primaryColor;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -66,7 +66,7 @@ $tabUnselectedBorder: #e3e3e3;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
   margin-top: 10px;
-  border: 1px solid #BA37DD;
+  border: 1px solid $secondaryColor;
 }
 
 // span {
@@ -89,7 +89,7 @@ $tabUnselectedBorder: #e3e3e3;
   width: 80vw;
   max-width: 400px;
   margin: 10px auto;
-  border: $dark solid 2px;
+  border: $secondaryColor solid 2px;
 }
 
 .btn-primary {

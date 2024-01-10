@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
 import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer, Popup } from 'react-map-gl';
-import { Container, Form } from 'react-bootstrap'
+import { Container, Form, Button } from 'react-bootstrap'
 import { useSearchParams } from 'react-router-dom';
 import { FaPersonWalking } from "react-icons/fa6";
+import { FaCirclePlus } from "react-icons/fa6";
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -19,10 +20,10 @@ interface MapProps {
   getLocation: any
 }
 
-const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => {
+const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) => { // ADD userId BACK TO PROPS
 
   const mapRef = useRef(null);
-  const userId = 7;
+  //const userId = 7; // ADD THIS BACK TO PROPS AND DELETE THIS WHEN YOU'RE DONE TESTING
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPinSelected, setIsPinSelected] = useState<boolean>(false)
@@ -335,7 +336,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => {
     }
 
     const on = {
-      backgroundColor: "white",
+      backgroundColor: "#fffcf8",
       color: `${colorMapping[value]}`,
       borderColor: `${colorMapping[value]}`,
       borderWidth: "1px",
@@ -381,9 +382,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => {
           isPinSelected={isPinSelected}
           selectedPin={selectedPin}
           setIsPinSelected={setIsPinSelected}
+          userLocation={userLocation}
         />
         : null }
-        <Form.Switch
+       <Form.Switch
           type='switch'
           id='share-location-switch'
           label={shareLoc ? 'Sharing Location with Friends' : 'Not Sharing Location with Friends'}
@@ -457,7 +459,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => {
               id="routerLine01"
               type="line"
               paint={{
-                'line-color': '#BA37DD',
+                'line-color': '#4A89F3',
                 'line-width': 3,
               }}
             />
@@ -480,15 +482,16 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => {
           </>
         ) : null}
         { showDirections ? (
-          <div id="map-direction-card" className='card w-35'>
-            <div className= 'card-body'>
+          <div id="map-direction-card" className='card w-35'style={{backgroundColor: "#fffcf8"}}>
+            <div className= 'card-body'style={{backgroundColor: "#fffcf8"}}>
               <p style={{fontSize: "15px"}}><b>{humanizedDuration(duration)}</b> away</p>
               <p style={{fontSize: "15px"}}> <b>{distance}</b> miles</p>
               <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
-              <FaPersonWalking style={{color: "#169873", float: "right", width: "25px", height: "30px", paddingBottom: "6px"}} />
+              <FaPersonWalking style={{color: "#4A89F3", float: "right", width: "25px", height: "30px", paddingBottom: "6px"}} />
             </div>
           </div> 
         ) : null}
+         <button><FaCirclePlus style={{color: "#4A89F3", width: "60px", height: "60px", border: "none", position: "absolute", right: "5%", bottom: "8%"}}/></button>
       </Map>
       <div id="map-filter-container" className="container">
         <p style={{textAlign: "center",}}>FILTER PINS</p>
