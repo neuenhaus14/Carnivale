@@ -1,17 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Form,
   Button,
   Container,
   Row,
-  Col,
   Tab,
   Tabs,
   DropdownButton,
-  Dropdown,
-  Navbar,
-  ButtonGroup,
+  Dropdown
 } from 'react-bootstrap';
 import { FaCamera, FaCommentDots } from 'react-icons/fa';
 import axios from 'axios';

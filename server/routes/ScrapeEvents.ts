@@ -1,7 +1,5 @@
 import express, {Router, Request, Response } from 'express';
 import axios from 'axios'
-import fs from 'fs/promises'
-import {Event} from '../db';
 import cheerio from 'cheerio';
 import dayjs from 'dayjs';
 
@@ -9,7 +7,6 @@ import dayjs from 'dayjs';
 const Gigs = express.Router()
 
 async function start(userDate: string) {
-//string interpolation for the UI date request (YYYY-MM-DD)
   const url = `https://www.wwoz.org/calendar/livewire-music?date=${userDate}`
   try {
     const response = await axios.get(url);
@@ -108,7 +105,6 @@ async function start(userDate: string) {
       const scrape = await start(date);
       res.json(scrape);
     } catch (error) {
-      //console.error(error.message);
       res.status(500).json({ error: "Internal Server Error" });
     }
   });
