@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
 import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer, Popup } from 'react-map-gl';
-import { Container, Form } from 'react-bootstrap'
+import { Container, Form, Button } from 'react-bootstrap'
 import { useSearchParams } from 'react-router-dom';
 import { FaPersonWalking } from "react-icons/fa6";
+import { FaCirclePlus } from "react-icons/fa6";
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -19,9 +20,10 @@ interface MapProps {
   getLocation: any
 }
 
-const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) => {
+const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) => { // ADD userId BACK TO PROPS
 
   const mapRef = useRef(null);
+  //const userId = 7; // ADD THIS BACK TO PROPS AND DELETE THIS WHEN YOU'RE DONE TESTING
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPinSelected, setIsPinSelected] = useState<boolean>(false)
@@ -119,9 +121,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   const getFriends = async () => {
     try {
       const {data} = await axios.get(`/api/friends/getFriends/${userId}`)
-      setFriends(data)
-      //const friends = data.filter((friend: any) => friend.shareLoc === true)
-      //setFriends(friends)
+      // setFriends(data)
+      const friends = data.filter((friend: any) => friend.shareLoc === true)
+      setFriends(friends)
     } catch (err)  {
       console.error(err)
     }
@@ -129,7 +131,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
   const toggleShareLoc = async () => {
     try {
-      await axios.post('/api/friends/updateShareLoc', {
+      await axios.patch('/api/friends/updateShareLoc', {
         options: {
           userId,
           shareLoc: !shareLoc,
@@ -173,7 +175,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     if (isPinSelected === false && isFriendSelected === false){
       setShowModal(true)
     }
-    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
+    //setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   }
 
   //finds clicked marker/pin from database
@@ -334,7 +336,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     }
 
     const on = {
-      backgroundColor: "white",
+      backgroundColor: "#fffcf8",
       color: `${colorMapping[value]}`,
       borderColor: `${colorMapping[value]}`,
       borderWidth: "1px",
@@ -380,9 +382,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           isPinSelected={isPinSelected}
           selectedPin={selectedPin}
           setIsPinSelected={setIsPinSelected}
+          userLocation={userLocation}
         />
         : null }
-        <Form.Switch
+       <Form.Switch
           type='switch'
           id='share-location-switch'
           label={shareLoc ? 'Sharing Location with Friends' : 'Not Sharing Location with Friends'}
@@ -394,7 +397,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
         ref={mapRef}
         {...viewState}
         onMove={(e) => setViewState(e.viewState)}
-        onClick={(e) => {dropPin(e)}}
+        //onClick={(e) => {dropPin(e)}}
         mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
         style={{ position: 'relative', bottom: '0px', maxWidth: '100vw', height: "50vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
@@ -456,7 +459,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
               id="routerLine01"
               type="line"
               paint={{
-                'line-color': '#BA37DD',
+                'line-color': '#4A89F3',
                 'line-width': 3,
               }}
             />
@@ -479,15 +482,16 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           </>
         ) : null}
         { showDirections ? (
-          <div id="map-direction-card" className='card w-35'>
-            <div className= 'card-body'>
+          <div id="map-direction-card" className='card w-35'style={{backgroundColor: "#fffcf8"}}>
+            <div className= 'card-body'style={{backgroundColor: "#fffcf8"}}>
               <p style={{fontSize: "15px"}}><b>{humanizedDuration(duration)}</b> away</p>
               <p style={{fontSize: "15px"}}> <b>{distance}</b> miles</p>
               <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
-              <FaPersonWalking style={{color: "#169873", float: "right", width: "25px", height: "30px", paddingBottom: "6px"}} />
+              <FaPersonWalking style={{color: "#4A89F3", float: "right", width: "25px", height: "30px", paddingBottom: "6px"}} />
             </div>
           </div> 
         ) : null}
+         <button onClick={(e) => {dropPin(e)}}><FaCirclePlus style={{color: "#4A89F3", width: "60px", height: "60px", border: "none", position: "absolute", right: "5%", bottom: "8%"}}/></button>
       </Map>
       <div id="map-filter-container" className="container">
         <p style={{textAlign: "center",}}>FILTER PINS</p>

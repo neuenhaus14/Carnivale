@@ -240,12 +240,13 @@ Friends.delete('/unfriend/:userId-:friendId', async (req, res) => {
 })
 
 //updates user/friend to show location with friends or not
-Friends.post('/updateShareLoc', async (req: Request, res: Response) => {
+Friends.patch('/updateShareLoc', async (req: Request, res: Response) => {
 
   const { userId, shareLoc } = req.body.options;
-
+  
   try {
     await User.update({ shareLoc }, {where: {id: userId} })
+    // console.log(`user shareLoc Updated to ${shareLoc}`)
     res.sendStatus(200)
   } catch (err) {
     console.error('SERVER ERROR: could not PATCH friend sharing Loc', err);
