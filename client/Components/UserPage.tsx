@@ -27,12 +27,12 @@ import { useAuth0 } from '@auth0/auth0-react';
 //                              add userId as prop to get it from App
 const UserPage: React.FC<UserPageProps> = ({
   getLocation,
-  //userId,
+  userId,
   lng,
   lat,
 }) => {
   const [searchParams] = useSearchParams();
-  const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  // const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
@@ -160,7 +160,7 @@ const UserPage: React.FC<UserPageProps> = ({
               size='sm'
               variant='danger'
               onClick={async () => {
-                await setConfirmActionFunction(()=> console.log(friend.id))
+                await setConfirmActionFunction(()=> console.log('confirmActionFunc', friend.id))
                 await setConfirmActionText(`remove ${friend.firstName} from your krewe.`)
                 await setShowConfirmActionModal(true);
               }}
