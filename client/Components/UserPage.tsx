@@ -160,8 +160,10 @@ const UserPage: React.FC<UserPageProps> = ({
               size='sm'
               variant='danger'
               onClick={async () => {
-                await setConfirmActionFunction(()=> () => unfriend(friend.id))
-                await setConfirmActionText(`remove ${friend.firstName} from your krewe.`)
+                await setConfirmActionFunction(() => () => unfriend(friend.id));
+                await setConfirmActionText(
+                  `remove ${friend.firstName} from your krewe.`
+                );
                 await setShowConfirmActionModal(true);
               }}
             >
@@ -188,8 +190,12 @@ const UserPage: React.FC<UserPageProps> = ({
               size='sm'
               // onClick={() => cancelFriendRequest(requestee.id)}
               onClick={async () => {
-                await setConfirmActionFunction(()=> () => cancelFriendRequest(requestee.id))
-                await setConfirmActionText(`revoke your krewe invitation from ${requestee.firstName}.`)
+                await setConfirmActionFunction(
+                  () => () => cancelFriendRequest(requestee.id)
+                );
+                await setConfirmActionText(
+                  `revoke your krewe invitation from ${requestee.firstName}.`
+                );
                 await setShowConfirmActionModal(true);
               }}
             >
@@ -224,8 +230,12 @@ const UserPage: React.FC<UserPageProps> = ({
               variant='danger'
               // onClick={() => answerFriendRequest(requester.id, false)}
               onClick={async () => {
-                await setConfirmActionFunction(()=> () => answerFriendRequest(requester.id, false))
-                await setConfirmActionText(`reject ${requester.firstName}'s krewe invitation.`)
+                await setConfirmActionFunction(
+                  () => () => answerFriendRequest(requester.id, false)
+                );
+                await setConfirmActionText(
+                  `reject ${requester.firstName}'s krewe invitation.`
+                );
                 await setShowConfirmActionModal(true);
               }}
             >
@@ -368,16 +378,14 @@ const UserPage: React.FC<UserPageProps> = ({
     setNameOrPhoneForFriendRequest(e.target.value);
   }
 
-  console.log('inside userpage. confirmActionFunction', confirmActionFunction)
+  console.log('inside userpage. confirmActionFunction', confirmActionFunction);
   return (
     <Container className='body' style={{ justifyContent: 'space-between' }}>
       <ConfirmActionModal
         confirmActionFunction={confirmActionFunction}
         setConfirmActionFunction={setConfirmActionFunction}
-
         confirmActionText={confirmActionText}
         setConfirmActionText={setConfirmActionText}
-
         showConfirmActionModal={showConfirmActionModal}
         setShowConfirmActionModal={setShowConfirmActionModal}
       />
@@ -415,8 +423,8 @@ const UserPage: React.FC<UserPageProps> = ({
         getEventsOwned={getEventsOwned}
       />
 
-      <Row>
-        <Tabs className='mt-3 userPage-tabs' defaultActiveKey='krewe'>
+      <Row className="userPage-tabs">
+        <Tabs className='mt-3' defaultActiveKey='krewe'>
           <Tab eventKey='krewe' title='Krewe'>
             <h5> Krewe </h5>
             {friends.length > 0 ? (

@@ -175,10 +175,11 @@ background-color: $primaryColor;}
   font-family: 'Permanent Marker', serif;
 }
 
-.userpage-animated {
-  font-family: 'Permanent Marker', serif;
+.userPage-tabs .tab-content .tab-pane{
+  color: red;
+  max-height: 58vh;
+  overflow: scroll;
 }
-
 
 h5 {
 text-align: left;
