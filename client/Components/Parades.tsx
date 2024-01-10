@@ -3,6 +3,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import EventCreateModal from "./EventCreateModal";
 import { Button, Container } from "react-bootstrap";
+import { FaRoute } from "react-icons/fa6";
 
 interface ParadeInfo {
   title: string;
@@ -22,10 +23,34 @@ interface ParadeProps {
   userId: number;
 }
 
+interface WeatherCondition {
+  text: string;
+  icon: string;
+  code: number;
+}
+
+interface WeatherDay {
+  date: string;
+  day: {
+    maxtemp_f: number;
+    mintemp_f: number;
+    daily_chance_of_rain: number;
+    condition: WeatherCondition;
+  };
+}
+
+interface WeatherForecast {
+  forecast: {
+    forecastday: WeatherDay[];
+  };
+}
+
 const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   const [paradeInfo, setParadeInfo] = useState<ParadeInfo | null>(null);
   const [selectedParade, setSelectedParade] = useState<string | null>(null);
   const [paradeList, setParadeList] = useState<string[]>([]);
+  const [weatherForecast, setWeatherForecast] =
+    useState<WeatherForecast | null>(null);
 
   // state needed for create event modal
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -83,25 +108,45 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
     );
 
     try {
-      const response = await axios.get<ParadeInfo>(
+      // Fetch parade information
+      const paradeResponse = await axios.get<ParadeInfo>(
         `/api/parades/parade-info/${formattedParadeName}`
       );
-      console.log("parade response", response.data);
-      setParadeInfo(response.data);
+
+      setParadeInfo(paradeResponse.data);
+      setSelectedParade(selectedParadeName);
+
+      // Format the date to "YYYY-MM-DD"
+      const formattedDate = dayjs(paradeResponse.data.startDate).format(
+        "YYYY-MM-DD"
+      );
+      console.log("date", formattedDate);
+
+      // Fetch weather data for the selected date
+      const weatherResponse = await axios.get(
+        `/api/weather/forecast/${formattedDate}`
+      );
+      console.log("weather", weatherResponse);
+      setWeatherForecast(weatherResponse.data);
     } catch (error) {
-      console.error("Error fetching parade information:", error.message);
+      console.error(
+        "Error fetching parade or weather information:",
+        error.message
+      );
     }
   };
 
   useEffect(() => {
     fetchParadeList();
-    getFriends();
-  }, []);
+
+    userId && getFriends();
+
+  }, [userId]);
 
   return (
     <Container className="body">
       <div className="card">
-        <div>
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
           <label htmlFor="paradeSelect">Select a Parade: </label>
           <select
             id="paradeSelect"
@@ -117,11 +162,30 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
               </option>
             ))}
           </select>
+
+          {selectedParade && (
+            <Button
+              onClick={async () => {
+                await setIsNewEvent(true);
+                await setShowCreateModal(true);
+                await setSelectedEvent({
+                  ...paradeInfo,
+                  latitude: 0,
+                  longitude: 0,
+                  endTime: null,
+                  startTime: null,
+                });
+              }}
+              style={{ marginRight: "10px" }}
+            >
+              Create Event
+            </Button>
+          )}
         </div>
 
         {paradeInfo && (
-          <div>
-            <Button
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            {/* <Button
               onClick={async () => {
                 await setIsNewEvent(true);
                 await setShowCreateModal(true);
@@ -135,16 +199,35 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
               }}
             >
               Create Event
-            </Button>
+            </Button> */}
             <h2>{paradeInfo.title}</h2>
-            <p>
-              Start Time: {""}
-              {dayjs(paradeInfo.startDate).format("MMMM D YYYY, h:mm:ss A")}
-            </p>
-            <p>
-              Parade Location: {""}
-              {paradeInfo.location}
-            </p>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <img
+                src={`https://www.mardigrasneworleans.com${paradeInfo.imageParade}`}
+                alt="Parade Logo"
+                style={{
+                  height: "150px",
+                  width: "150px",
+                  marginRight: "10px",
+                }}
+              />
+              <div>
+                <p>
+                  Start Time:{" "}
+                  {dayjs(paradeInfo.startDate).format("MMMM D YYYY, h:mm:ss A")}
+                </p>
+                <p>Parade Location: {paradeInfo.location}</p>
+              </div>
+            </div>
+
             <img
               src={`https://www.mardigrasneworleans.com${paradeInfo.imageSrc}`}
               alt="Parade Map"
@@ -152,29 +235,86 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
                 maxWidth: "100%",
                 height: "auto",
                 marginTop: "10px",
+                display: "block",
+                marginLeft: "auto",
+                marginRight: "auto",
               }}
             />
-            <img
-              src={`https://www.mardigrasneworleans.com${paradeInfo.imageParade}`}
-              alt="Parade Logo"
-            />
 
+            {weatherForecast &&
+            weatherForecast.forecast &&
+            weatherForecast.forecast.forecastday.length > 0 ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  marginTop: "30px",
+                  marginBottom: "20px",
+                }}
+              >
+                <h3>Weather Forecast</h3>
+                {weatherForecast?.forecast?.forecastday.map(
+                  (forecastDay: WeatherDay) => (
+                    <div
+                      key={forecastDay.date}
+                      style={{ textAlign: "center", marginBottom: "5px" }}
+                    >
+                      <div
+                        style={{
+                          margin: "3px 0",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <img
+                          src={`https:${forecastDay.day.condition.icon}`}
+                          alt={`Weather Icon for ${forecastDay.date}`}
+                          style={{ marginRight: "5px" }}
+                        />
+                        {forecastDay.day.condition.text}
+                      </div>
+                      <div
+                        style={{
+                          margin: "1px 0",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <span style={{ marginRight: "5px" }}>
+                          High: {forecastDay.day.maxtemp_f} °F
+                        </span>
+                        <span>Low: {forecastDay.day.mintemp_f} °F</span>
+                      </div>
+                      <p style={{ margin: "1px 0", fontSize: "1rem" }}>
+                        Chance of Rain: {forecastDay.day.daily_chance_of_rain}%
+                      </p>
+                    </div>
+                  )
+                )}
+              </div>
+            ) : (
+              <div>
+                <h3>Weather Forecast</h3>
+                <p>No Weather Data Available</p>
+              </div>
+            )}
+
+            <h3>Parade History</h3>
             <p>
-              Parade History: <br />
               {paradeInfo.paradeInfo
                 .replace(/(Year founded:)/g, ", $1")
                 .replace(/(Membership:)/g, ", $1")
                 .replace(/(Number of floats:)/g, ", $1")
                 .replace(/(Floats by Kern Studios »)/g, ", $1")}
             </p>
-            <p>
-              Parade Directions: {""}
-              {paradeInfo.directionsText}
-            </p>
-            <p>
+            <h3>Parade Directions</h3>
+            <p>{paradeInfo.directionsText}</p>
+            <h3>
               Other Parades on{" "}
               {dayjs(paradeInfo.startDate).format("MMMM D YYYY")}
-              : <br />
+            </h3>
+            <div style={{ display: "flex", flexWrap: "wrap" }}>
               {paradeInfo.otherParades
                 .split("\n")
                 .filter(
@@ -186,24 +326,29 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
                     )
                 )
                 .map((parade) => (
-                  <button
+                  <Button
                     key={parade}
                     onClick={() =>
                       fetchParadeInfo(parade.replace(/\s+/g, "-").toLowerCase())
                     }
+                    style={{ marginRight: "10px", marginBottom: "10px" }}
                   >
                     {parade}
-                  </button>
+                  </Button>
                 ))}
-            </p>
+            </div>
+
             <p>
+              <FaRoute />
               <a
                 href={paradeInfo.mapLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                style={{ marginLeft: "5px", marginRight: "5px" }}
               >
-                View Parade Route on Google Maps
+                View Parade Route
               </a>
+              <FaRoute style={{ transform: "scaleX(-1)" }} />
             </p>
           </div>
         )}

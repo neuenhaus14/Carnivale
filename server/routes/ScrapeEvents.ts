@@ -19,84 +19,79 @@ async function start(userDate: string) {
     const venueTagContent = $('h3 a').text().replace(/\n /g, '').trim().split('             ')
     const info = $('.col-xs-10.calendar-info p').text().replace(/\n /g, '').trim().split('                ')
     //arrays to hold first wave of refinement
-    const day = []
-    const infos = []
+    const infos = []; //holds array of  name of gig and date => ['Dave Hammer Duo', 'Tuesday,  January 9     at\n     8:00pm']
+    const location = []; //holds gig location name
+
     //arrays to hold second wave of refinement
-    const location = []
-    const act = []
-    const date = []
-    const time = []
+    const day = []; //holds
+    const act = [];
+    const date = [];
+
+    const time = [];
 
   //looping logic to separate data since the raw is such a mess
   //first wave of refinement
   for (let i = 0; i < info.length; i++) {
-    const iso = info[i].split('              ')
-    infos.push(iso)
+    const iso = info[i].split('              ');
+    infos.push(iso);
+  }
+  for (let i = 0; i < venueTagContent.length; i++) {
+    location.push(venueTagContent[i]);
   }
 
-  for (let i = 0; i < venueTagContent.length; i++) {
-    location.push(venueTagContent[i])
-  }
   //second wave of refinement
   for (let i = 0; i < infos.length; i++) {
-  const iso = infos[i]
-  if (i % 2 === 0) {
-  act.push(iso[0])
-  } else {
-  day.push(iso[1].replace(/\s\s+/g, ' ').trim())
-    }
+  const iso = infos[i];
+  act.push(iso[0]);
+  day.push(iso[1].replace(/\s\s+/g, ' ').trim());
   }
-
   for (let i = 0; i < day.length; i++) {
-    const splitDayTime = day[i].split(' at ')
-    date.push(splitDayTime[0])
-    const timeNum = splitDayTime[1].replace(/[amp:]/g, '').trim()
-    //console.log('scraped time', test)
-    let parsed = parseInt(timeNum)
+    const splitDayTime = day[i].split(' at ');
+    date.push(splitDayTime[0]);
+    const timeNum = splitDayTime[1].replace(/[amp:]/g, '').trim();
+    //convert to military time
+    let parsed = parseInt(timeNum);
     if (parsed < 1200) {
-      parsed += 1200
+      parsed += 1200;
     }
-    //console.log('parsed', parsed)
-    const a = parsed.toString()
-    const b = ':'
-    const output = [a.slice(0, 2), b, a.slice(2)].join('');
-    time.push(output)
-  }
-  //array for proper time numbers for next for loop
-  const proper = []
-  for (let i = 0; i < day.length; i++) {
-    proper.push(dayjs(`${date[i]} 2023 ${time[i]}`).format('YYYY-MM-DDTHH:mm'))
-  }
-  //console.log('time', time, 'proper', proper)
-  //finally, array to hold individual objects to be added to db
-  //console.log('date', date[0], 'act', act[0], 'location', location[0], 'proper', proper[0], 'day', day[0], 'dayjs', dayjs(`${date[0]} 2023 11:45`).format('YYYY-MM-DDTHH:mm'))
-//await for all the addresses in the location array, make an array of tuples [lat lng] for every address, send a reqquest for the coordis converter
 
-  const mainArr = []
-  for (let i = 0; i < day.length; i++) { //or day.length
+    const a = parsed.toString();
+    const b = ':';
+    const output = [a.slice(0, 2), b, a.slice(2)].join('');
+    time.push(output);
+  }
+  console.log('TIME parsed',time[0])
+  //array for proper time numbers for next for loop
+  const proper = [];
+  for (let i = 0; i < day.length; i++) {
+    proper.push(dayjs(`${date[i]} 2024 ${time[i]}`).format('YYYY-MM-DDTHH:mm'));
+  }
+//console.log('day', day.length, 'act', act.length, 'date', date.length, 'time', time.length, 'location', location.length, 'infos', infos.length, 'venueTagContent', venueTagContent[0], 'info', info[0])
+  //finally, array to hold individual objects to be added to db
+  const mainArr = [];
+  for (let i = 0; i < location.length; i++) { //or day.length
     mainArr.push({
       name: act[i],
       startTime: proper[i],
-      endTime: dayjs(`${date[i]} 2023 11:45`).format('YYYY-MM-DDTHH:mm'),
+      endTime: dayjs(`${date[i]} 2024 11:45`).format('YYYY-MM-DDTHH:mm'),
       description: act[i],
       longitude: -90,
       latitude: 30,
       address: `${location[i]} New Orleans`,
       link: url,
       system: true,
-      //invitees: [], TODO:add invitees to schema
+      //invitees: [],
       invitedCount: 0,
       attendingCount: 0,
       // imageUrl: null,
       upvotes: 0,
       // ownerId: null
-    })
+    });
   }
-  //console.log(mainArr)
 
   return {
-    // venueTagContent,
-    // info,
+    //venueTagContent,
+    //info,
     mainArr
   }
 } catch (error) {
@@ -106,7 +101,7 @@ async function start(userDate: string) {
  }
 }
 
-
+//logic to handle scrape request
   Gigs.get("/gigs-list/:date", async (req: Request, res: Response) => {
     const {date} = req.params;
     try {

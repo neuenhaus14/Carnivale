@@ -22,6 +22,7 @@ const HomeModal: React.FC<Props> = ( {
   const resetBooleanState = () => {
     setIsThrow(false)
     setIsCostume(false)
+    console.log('Bool state updated')
   }
 
   //function for init modal
@@ -46,23 +47,42 @@ const HomeModal: React.FC<Props> = ( {
           <Modal.Title>Create a Post</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Is this a costume? Mardi Gras Throw? Or Hot Goss?
+          Is this Gossip? Costumes? Or a Mardi Gras Throw?
           <Form>
             <Form.Group className ='mb-3' controlId="pinType">
-              <Form.Check type="radio" id="costume" name="pin-cat"
-                label="Costume"  inline isValid
-                onClick={() => {resetBooleanState(); setIsCostume(!isCostume)} }
+              <Form.Check
+              type="radio"
+              id="goss"
+              name="pin-cat"
+              label="Gossip"
+              value="goss"
+              inline
+              isValid
+              defaultChecked
+              onClick={() => {resetBooleanState()} }
+                  />
+              <Form.Check
+              type="radio"
+              id="costume"
+              name="pin-cat"
+              label="Costume"
+              inline
+              isValid
+              onClick={() => {resetBooleanState(); setIsCostume(!isCostume)} }
                 />
-               <Form.Check type="radio" id="throw" name="pin-cat"
-                label="Throw"  inline isValid
-                onClick={() => {resetBooleanState(); setIsThrow(!isThrow)} }
-                />
-                <Form.Check type="radio" id="goss" name="pin-cat"
-                label="Goss" value="goss" inline isValid 
-                onClick={() => {resetBooleanState()} }
+              <Form.Check
+              type="radio"
+              id="throw"
+              name="pin-cat"
+              label="Throw"
+              inline
+              isValid
+              onClick={() => {resetBooleanState(); setIsThrow(!isThrow)} }
                 />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="picture spot" >
+            <Form.Group
+            className="mb-3"
+            controlId="picture spot">
               <Photos
               latPost={lat}
               lngPost={lng}

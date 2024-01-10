@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { ButtonGroup, Card } from "react-bootstrap";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useState, useEffect } from 'react';
+import { ButtonGroup, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-import ShareModal from "./ShareModal";
-import { IoArrowUpCircle, IoArrowDownCircle } from "react-icons/io5";
+import ShareModal from './ShareModal';
+import { IoArrowUpCircle, IoArrowDownCircle } from 'react-icons/io5';
 
 dayjs.extend(relativeTime);
 
@@ -27,15 +27,15 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
-  const [owner, setOwner] = useState("");
+  const [owner, setOwner] = useState('');
   const [commentVotingStatus, setCommentVotingStatus] = useState<
-    "upvoted" | "downvoted" | "none"
-  >("none");
+    'upvoted' | 'downvoted' | 'none'
+  >('none');
 
   const getOwner = async () => {
     try {
       const { data } = await axios.get(`api/home/post/${post.ownerId}`);
-      setOwner(data.firstName + " " + data.lastName);
+      setOwner(data.firstName + ' ' + data.lastName);
     } catch (err) {
       console.error(err);
     }
@@ -45,14 +45,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
     try {
       await axios.post(
         `/api/feed/${
-          type === "comment"
+          type === 'comment'
             ? `upvote-comment/${userId}/${post.id}`
             : `upvote-photo/${userId}/${post.id}`
         }`
       );
 
-      if (commentVotingStatus !== "upvoted") {
-        setCommentVotingStatus("upvoted");
+      if (commentVotingStatus !== 'upvoted') {
+        setCommentVotingStatus('upvoted');
         // toast("🎭Upvoted successfully!🎭", {
         //   position: "top-right",
         //   autoClose: 5000,
@@ -73,14 +73,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
     try {
       await axios.post(
         `/api/feed/${
-          type === "comment"
+          type === 'comment'
             ? `downvote-comment/${userId}/${post.id}`
             : `downvote-photo/${userId}/${post.id}`
         }`
       );
 
-      if (commentVotingStatus !== "downvoted") {
-        setCommentVotingStatus("downvoted");
+      if (commentVotingStatus !== 'downvoted') {
+        setCommentVotingStatus('downvoted');
         // toast.error("Downvoted!", {
         //   position: "top-right",
         //   autoClose: 5000,
@@ -93,7 +93,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
         // });
 
         if (post.upvotes - 1 <= -5) {
-          toast.error("Post deleted due to too many downvotes!");
+          toast.error('Post deleted due to too many downvotes!');
         }
       }
     } catch (err) {
@@ -111,105 +111,140 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
         {post.comment ? (
           <Card.Body>
             <Card.Text>
-              {post.comment} - {owner}:{" "}
-              {dayjs(post.createdAt.toString()).fromNow()}
+              <div className='card-content'>{post.comment}</div>
+              <div className='card-detail'>
+                {owner} posted
+                <div>
+                  {/* {' '} */}
+                  <OverlayTrigger
+                    placement='top'
+                    overlay={
+                      <Tooltip id={`tooltip-${post.id}`}>
+                        {dayjs(post.createdAt.toString()).format(
+                          'dddd [at] h:mm A'
+                        )}
+                      </Tooltip>
+                    }
+                  >
+                    <span style={{ cursor: 'pointer' }}>
+                      {dayjs(post.createdAt.toString()).fromNow()}
+                    </span>
+                  </OverlayTrigger>
+                </div>
+                {/* {dayjs(post.createdAt.toString()).fromNow()} */}
+              </div>
             </Card.Text>
-            <ButtonGroup style={{ display: 'flex', flexDirection: 'row'}}>
-            <button
-              style={{
-                border: "none",
-                cursor: "pointer",
-                outline: "none",
-                boxShadow: "none",
-                background: "transparent",
-              }}
-              onClick={() => handleUpvote("comment")}
-              disabled={commentVotingStatus === "upvoted"}
-            >
-              <IoArrowUpCircle
+            <ButtonGroup style={{ display: 'flex', alignItems: 'center' }}>
+              <button
                 style={{
-                  color: commentVotingStatus === "upvoted" ? "green" : "black",
-                  fontSize: "30px",
+                  border: 'none',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  background: 'transparent',
                 }}
-              />
-            </button>
-            <span style={{ margin: "0 5px" }}>{post.upvotes}</span>
-            <button
-              style={{
-                border: "none",
-                cursor: "pointer",
-                outline: "none",
-                boxShadow: "none",
-                background: "transparent",
-              }}
-              onClick={() => handleDownvote("comment")}
-              disabled={commentVotingStatus === "downvoted"}
-            >
-              <IoArrowDownCircle
+                onClick={() => handleUpvote('comment')}
+                disabled={commentVotingStatus === 'upvoted'}
+              >
+                <IoArrowUpCircle
+                  style={{
+                    color:
+                      commentVotingStatus === 'upvoted' ? 'green' : 'black',
+                    fontSize: '30px',
+                  }}
+                />
+              </button>
+              <span style={{ margin: '0 5px' }}>{post.upvotes}</span>
+              <button
                 style={{
-                  color: commentVotingStatus === "downvoted" ? "red" : "black",
-                  fontSize: "30px",
+                  border: 'none',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  background: 'transparent',
                 }}
-              />
-            </button>
-            <ShareModal postId={post.id} userId={userId} postType={"comment"}/>
+                onClick={() => handleDownvote('comment')}
+                disabled={commentVotingStatus === 'downvoted'}
+              >
+                <IoArrowDownCircle
+                  style={{
+                    color:
+                      commentVotingStatus === 'downvoted' ? 'red' : 'black',
+                    fontSize: '30px',
+                  }}
+                />
+              </button>
+              <div style={{ marginLeft: 'auto' }}>
+                <ShareModal
+                  postId={post.id}
+                  userId={userId}
+                  postType={'comment'}
+                />
+              </div>
             </ButtonGroup>
           </Card.Body>
         ) : (
           <Card.Body>
-            <Card.Img variant="top" src={post.photoURL} />
+            <Card.Img variant='top' src={post.photoURL} />
             <Card.Text>
-              {post.description} - {owner}:{" "}
+              {post.description} - {owner}:{' '}
               {dayjs(post.createdAt.toString()).fromNow()}
             </Card.Text>
-            <ButtonGroup style={{ display: 'flex', flexDirection: 'row'}}>
-
-            <button
-              style={{
-                border: "none",
-                cursor: "pointer",
-                outline: "none",
-                boxShadow: "none",
-                background: "transparent",
-              }}
-              onClick={() => handleUpvote("photo")}
-              disabled={commentVotingStatus === "upvoted"}
-            >
-              <IoArrowUpCircle
+            <ButtonGroup style={{ display: 'flex', flexDirection: 'row' }}>
+              <button
                 style={{
-                  color: commentVotingStatus === "upvoted" ? "green" : "black",
-                  fontSize: "30px",
+                  border: 'none',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  background: 'transparent',
                 }}
-              />
-            </button>
-            <span style={{ margin: "0 5px" }}>{post.upvotes}</span>
-            <button
-              style={{
-                border: "none",
-                cursor: "pointer",
-                outline: "none",
-                boxShadow: "none",
-                background: "transparent",
-              }}
-              onClick={() => handleDownvote("photo")}
-              disabled={commentVotingStatus === "downvoted"}
-            >
-              <IoArrowDownCircle
+                onClick={() => handleUpvote('photo')}
+                disabled={commentVotingStatus === 'upvoted'}
+              >
+                <IoArrowUpCircle
+                  style={{
+                    color:
+                      commentVotingStatus === 'upvoted' ? 'green' : 'black',
+                    fontSize: '30px',
+                  }}
+                />
+              </button>
+              <span style={{ margin: '0 5px' }}>{post.upvotes}</span>
+              <button
                 style={{
-                  color: commentVotingStatus === "downvoted" ? "red" : "black",
-                  fontSize: "30px",
+                  border: 'none',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  background: 'transparent',
                 }}
-              />
-            </button>
-            <ShareModal postId={post.id} userId={userId} postType={"photo"} />
-          </ButtonGroup>
+                onClick={() => handleDownvote('photo')}
+                disabled={commentVotingStatus === 'downvoted'}
+              >
+                <IoArrowDownCircle
+                  style={{
+                    color:
+                      commentVotingStatus === 'downvoted' ? 'red' : 'black',
+                    fontSize: '30px',
+                  }}
+                />
+              </button>
+              <div style={{ marginLeft: 'auto' }}>
+                <ShareModal
+                  postId={post.id}
+                  userId={userId}
+                  postType={'photo'}
+                />
+              </div>
+            </ButtonGroup>
           </Card.Body>
         )}
       </Card>
 
       {/* Toast containers */}
       <ToastContainer
-        position="top-right"
+        position='top-right'
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
@@ -218,7 +253,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light"
+        theme='light'
       />
     </>
   );

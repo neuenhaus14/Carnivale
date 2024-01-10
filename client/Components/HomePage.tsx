@@ -13,10 +13,9 @@ import {
   Navbar,
   ButtonGroup,
 } from 'react-bootstrap';
-import { FaCamera, FaEnvelope } from 'react-icons/fa';
+import { FaCamera, FaCommentDots } from 'react-icons/fa';
 import axios from 'axios';
 import HomeModal from './HomeModal';
-import WeatherCard from './WeatherCard';
 import PostCard from './PostCard';
 
 //PARENT OF HOMEMODAL
@@ -94,8 +93,9 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   return (
     <Container className='body-home'>
       <Row>
-        <WeatherCard />
         <DropdownButton
+          className="my-3 mx-auto"
+          style={{width: '200px'}}
           title='Sort'
           onSelect={setOrder}
         >
@@ -112,7 +112,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
         >
           <Tab
             eventKey='posts'
-            title='All'
+            title='Gossip'
           >
             {posts
               ? posts.map((item: any, index: number) => (
@@ -197,7 +197,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                   disabled={comment.length <= 0}
                   className='comment-btn'
                 >
-                  <FaEnvelope />
+                  <FaCommentDots />
                   </Button>
             </Form.Group>
           </Form>

@@ -71,7 +71,7 @@ const App = () => {
       latitude: position.coords.latitude,
       id: userId,
     });
-    
+
     // socket.emit("getFriends:read", {userId})
     // console.log('socket emitted from App')
   };
@@ -121,7 +121,7 @@ const App = () => {
   // is looked up and emitted to socket.io server
   useEffect(() => {
     user && getUser();
-    
+
   }, [isAuthenticated]);
 
   useEffect(() => {
@@ -154,7 +154,7 @@ const App = () => {
           path='/homepage'
           element={
             <div>
-              <TopNavBar title={'Home Page'}/>
+              <TopNavBar title={user?`Welcome ${user.given_name}!`:''}/>
               <HomePage
                 userId={userId}
                 lat={lat}
@@ -168,7 +168,7 @@ const App = () => {
           path='/mappage'
           element={
             <div>
-              <TopNavBar title={'Map Page'}/>
+              <TopNavBar title={'Map'}/>
               <MapPage
                 userLat={lat}
                 userLng={lng}
@@ -183,7 +183,7 @@ const App = () => {
           path='/feedpage'
           element={
             <div>
-              <TopNavBar title={'Feed Page'}/>
+              <TopNavBar title={user ? `${user.given_name}'s Feed` : 'Feed'}/>
               <FeedPage userId={userId} /> <NavBar />
             </div>
           }
@@ -192,7 +192,7 @@ const App = () => {
           path='/parades'
           element={
             <div>
-              <TopNavBar title={'Parades Page'}/>
+              <TopNavBar title={'Parades'}/>
               <Parades
               userId={userId}
               lng={lng}
@@ -206,7 +206,7 @@ const App = () => {
           path='/eventpage'
           element={
             <div>
-              <TopNavBar title={'Events Page'}/>
+              <TopNavBar title={'Gigs'}/>
               <EventPage
                 userId={userId}
                 getLocation={getLocation}
@@ -221,7 +221,7 @@ const App = () => {
           path='/userpage'
           element={
             <div>
-              <TopNavBar title={'User Page'}/>
+              <TopNavBar title={'User'}/>
               <UserPage
                 userId={userId}
                 getLocation={getLocation}

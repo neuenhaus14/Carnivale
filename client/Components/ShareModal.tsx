@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap';
-import { IoIosSend } from "react-icons/io";
+import { FaShareFromSquare  } from "react-icons/fa6";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -42,15 +42,15 @@ const ShareModal = (props: {
         sender_userId: userId,
         id: postId,
       });
-      toast('🎭Post shared successfully!🎭', {
-        position: 'top-right',
+      toast("🎭Post shared successfully!🎭", {
+        position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: 'light',
+        theme: "light",
       });
     } catch (err) {
       console.error(err);
@@ -62,19 +62,16 @@ const ShareModal = (props: {
   return (
     <div >
       <Button onClick={handleShow} style={{ marginLeft: '150px'}}>
-        <IoIosSend />
+        <FaShareFromSquare  />
       </Button>
 
-      <Modal
-        show={show}
-        onHide={handleClose}
-      >
+      <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Share Post</Modal.Title>
         </Modal.Header>
 
         <Form>
-          <DropdownButton title={friendName || 'Krewe'}>
+          <DropdownButton title={friendName || "Krewe"}>
             {friends.map((friend, index) => {
               const name = `${friend.firstName} ${friend.lastName}`;
               return (
@@ -94,7 +91,7 @@ const ShareModal = (props: {
 
         <Modal.Footer>
           <Button
-            variant='primary'
+            variant="primary"
             onClick={() => sharePost(postType)}
             disabled={!shareId}
           >

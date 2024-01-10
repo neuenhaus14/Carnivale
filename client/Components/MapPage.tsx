@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
 import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer, Popup } from 'react-map-gl';
-import { Container } from 'react-bootstrap'
+import { Container, Form, Button } from 'react-bootstrap'
 import { useSearchParams } from 'react-router-dom';
+import { FaPersonWalking } from "react-icons/fa6";
+import { FaCirclePlus } from "react-icons/fa6";
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -18,9 +20,10 @@ interface MapProps {
   getLocation: any
 }
 
-const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) => {
+const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) => { // ADD userId BACK TO PROPS
 
   const mapRef = useRef(null);
+  //const userId = 7; // ADD THIS BACK TO PROPS AND DELETE THIS WHEN YOU'RE DONE TESTING
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPinSelected, setIsPinSelected] = useState<boolean>(false)
@@ -42,6 +45,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   const [events, setEvents] = useState([])
   const [showDirections, setShowDirections]= useState<boolean>(false);
   const [showFriendPopup, setShowFriendPopup] = useState<boolean>(true);
+  const [shareLoc, setShareLoc] = useState<boolean>(false);
   const [viewState, setViewState] = useState({
     latitude: 29.964735,
     longitude: -90.054261,
@@ -62,17 +66,23 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
   //loads pins immediately on page render
   useEffect(() => {
     getPins();
-   // getFriends();
+    getFriends();
     getEvents();
+
   }, [setMarkers]);
 
 
- useEffect(() => { 
-  getLocation()
-  console.log('getLocation called in useEffect')
- }, [setUserLocation])
+//  useEffect(() => { 
+//   getLocation()
+//   console.log('getLocation called in userLocation useEffect')
+//  }, [userLocation])
 
- 
+//  useEffect(() => { 
+//   getLocation()
+//   console.log('getLocation called in friends useEffect')
+//  }, [friends])
+  
+
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
@@ -107,15 +117,32 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     }
   }
 
-  // //gets friends from the database- commented out bc friend sockets
-  // const getFriends = async () => {
-  //   try {
-  //     const friends = await axios.get(`/api/friends/getFriends/${userId}`)
-  //     setFriends(friends.data)
-  //   } catch (err)  {
-  //     console.error(err)
-  //   }
-  // }
+  //gets friends from the database- commented out bc friend sockets
+  const getFriends = async () => {
+    try {
+      const {data} = await axios.get(`/api/friends/getFriends/${userId}`)
+      // setFriends(data)
+      const friends = data.filter((friend: any) => friend.shareLoc === true)
+      setFriends(friends)
+    } catch (err)  {
+      console.error(err)
+    }
+  }
+
+  const toggleShareLoc = async () => {
+    try {
+      await axios.patch('/api/friends/updateShareLoc', {
+        options: {
+          userId,
+          shareLoc: !shareLoc,
+        }
+      })
+    } catch (err)  {
+      console.error(err)
+    }
+    setShareLoc(!shareLoc)
+    getFriends()
+  }
 
   //this useEffect should update user or friend locations everytime they move
   useEffect(() => {
@@ -136,34 +163,19 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
             console.log('friendID that matched', friend)
           }
         })
-        setFriends(prevFriends => [...prevFriends]); // assuming everytime state is set there is a new render with updated friend loc
+        setFriends(prevFriends => [...prevFriends]) // assuming everytime state is set there is a new render with updated friend loc
+        // setFriends(friends)
       }
 
     })
   });
-
-
-  useEffect (() => {
-    socket.emit("getFriends:read", {userId})
-    const handleGetFriends = (allFriendsUsers: any) => {
-      console.log('Got friends from socket', allFriendsUsers)
-      setFriends(allFriendsUsers)
-    };
-
-    socket.on("getFriends:send", handleGetFriends)
-
-    return () => {
-      socket.off("getFriends:send", handleGetFriends)
-    };
-
-}, [setUserLocation]);
 
   //this sets the map touch coordinates to the url as params and shows createPin modal
   const dropPin = (e: any) => {
     if (isPinSelected === false && isFriendSelected === false){
       setShowModal(true)
     }
-    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
+    //setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   }
 
   //finds clicked marker/pin from database
@@ -271,6 +283,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
     }
   }
 
+
   // converts meters to miles and seconds to hours and minutes
   const humanizedDuration = (duration: number) => {
     duration = Number(duration);
@@ -308,7 +321,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
       isFree:"#53CA3C",
       isToilet: "#169873",
       isFood: "#FCC54E",
-      isPersonal: "#BA37DD",
+      isPersonal: "#cf40f5",
       isPhoneCharger: '#53e3d4',
       isPoliceStation: "#E7ABFF",
       isEMTStation:"#f27d52"
@@ -316,16 +329,21 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
     const off = {
       backgroundColor: `${colorMapping[value]}`,
-      color: "black"
+      color: "black",
+      lineHeight: 1,
+      width: "25%",
+      height: "44px"
     }
 
     const on = {
-      backgroundColor: "white",
+      backgroundColor: "#fffcf8",
       color: `${colorMapping[value]}`,
       borderColor: `${colorMapping[value]}`,
-      borderWidth: "3px",
+      borderWidth: "1px",
       borderStyle: "solid",
-      fontWeight: "bold"
+      lineHeight: 1,
+      width: "25%",
+      height: "44px",
     }
 
     if (value === filterChoice && filterOn === true){
@@ -355,7 +373,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
 
   return (
     <Container className="body">
-      <span>Click on the Map to add a Pin or on a Pin to see the details</span>
       { showModal ?
         <PinModal
           userId={userId}
@@ -365,13 +382,22 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
           isPinSelected={isPinSelected}
           selectedPin={selectedPin}
           setIsPinSelected={setIsPinSelected}
+          userLocation={userLocation}
         />
         : null }
+       <Form.Switch
+          type='switch'
+          id='share-location-switch'
+          label={shareLoc ? 'Sharing Location with Friends' : 'Not Sharing Location with Friends'}
+          onChange={() => toggleShareLoc()}
+          defaultChecked={shareLoc}
+          style={{marginRight: "auto", paddingBottom: "1em"}}
+        />
       <Map
         ref={mapRef}
         {...viewState}
         onMove={(e) => setViewState(e.viewState)}
-        onClick={(e) => {dropPin(e)}}
+        //onClick={(e) => {dropPin(e)}}
         mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
         style={{ position: 'relative', bottom: '0px', maxWidth: '100vw', height: "50vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
@@ -406,7 +432,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
             longitude={friend.longitude} latitude={friend.latitude}
             anchor="center"
             >
+            <div style={{textAlign: "center",}}>
+              <b>{friend.firstName[0]}{friend.lastName[0]}</b><br/>
               <img src="img/friend_dot.png" width="30px" height="30px"/>
+            </div>
             </Marker>
           ))
         }
@@ -430,7 +459,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
               id="routerLine01"
               type="line"
               paint={{
-                'line-color': '#BA37DD',
+                'line-color': '#4A89F3',
                 'line-width': 3,
               }}
             />
@@ -447,37 +476,35 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, userId, getLocation}) =>
                 closeOnMove={true}
                 onClose={() => setShowFriendPopup(false)}
               >
-                <b>{friend.firstName[0]}{friend.lastName[0]}</b>
+                <b>{friend.firstName} {friend.lastName}</b>
               </Popup>
             ))}
           </>
         ) : null}
         { showDirections ? (
-          <div id="map-direction-card" className='card w-35'>
-            <div className= 'card-body'>
+          <div id="map-direction-card" className='card w-35'style={{backgroundColor: "#fffcf8"}}>
+            <div className= 'card-body'style={{backgroundColor: "#fffcf8"}}>
               <p style={{fontSize: "15px"}}><b>{humanizedDuration(duration)}</b> away</p>
               <p style={{fontSize: "15px"}}> <b>{distance}</b> miles</p>
               <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
+              <FaPersonWalking style={{color: "#4A89F3", float: "right", width: "25px", height: "30px", paddingBottom: "6px"}} />
             </div>
           </div> 
         ) : null}
+         <button onClick={(e) => {dropPin(e)}}><FaCirclePlus style={{color: "#4A89F3", width: "60px", height: "60px", border: "none", position: "absolute", right: "5%", bottom: "8%"}}/></button>
       </Map>
       <div id="map-filter-container" className="container">
-        <span>FILTER PINS</span>
-          <center id='map-filter-buttons'>
-            <div className="btn-group" role="group" aria-label="Basic example"> 
-              <button type="button" style={filterStyling("isFree")} value="isFree"  className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
-              <button type="button" style={filterStyling("isToilet")} value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
-              <button type="button" style={filterStyling("isFood")} value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
-              <button type="button" style={filterStyling("isPersonal")} value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button>
-            </div>
-            <div className="btn-group" role="group" aria-label="Basic example"> 
-              <button type="button" style={filterStyling("isPhoneCharger")} value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
-              <button type="button" style={filterStyling("isPoliceStation")} value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
-              <button type="button" style={filterStyling("isEMTStation")} value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button><br />
-            </div><br /> 
-            <button type="button" value="clearFilters" className="btn btn-wide" onClick={()=> {setFilterOn(false); filterStyling(filterChoice)}}>Clear Filter</button>
-          </center><br />
+        <p style={{textAlign: "center",}}>FILTER PINS</p>
+          <div className="filter-buttons" style={{flexWrap: "wrap", textAlign: "center",}}>
+            <button type="button" style={filterStyling("isFree")} value="isFree"  className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Free Toilets</button>
+            <button type="button" style={filterStyling("isToilet")} value="isToilet" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Pay for Toilet</button>
+            <button type="button" style={filterStyling("isFood")} value="isFood" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Food</button>
+            <button type="button" style={filterStyling("isPersonal")} value="isPersonal" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Personal</button>
+            <button type="button" style={filterStyling("isPhoneCharger")} value="isPhoneCharger" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Phone Charger</button>
+            <button type="button" style={filterStyling("isPoliceStation")} value="isPoliceStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>Police Station</button>
+            <button type="button" style={filterStyling("isEMTStation")} value="isEMTStation" className="btn" onClick={(e) => {filterResults(e.currentTarget.value)}}>EMT Station</button>
+          </div>
+          <button type="button" value="clearFilters" className="btn btn-wide" onClick={()=> {setFilterOn(false); filterStyling(filterChoice)}}>Clear Filter</button>
       </div>
    </Container>
   )

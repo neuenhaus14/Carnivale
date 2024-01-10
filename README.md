@@ -70,6 +70,7 @@ Change your directory and run npm install to pull in the dependencies:
 
 To install postgres locally, using instructions gleaned from these posts:
 https://medium.com/ruralscript/install-and-setuppostgresql-on-ubuntu-amazon-ec2-5d1af79b4fca
+
 https://ubuntu.com/server/docs/databases-postgresql
 
 > sudo apt-get update // runs pre-installation updates on instance
@@ -100,6 +101,32 @@ Next you're going to configure the app's access to the carnivale database via th
 
 Then change the username, password and database of the development server configuration to 'postgres', 'password' and 'carnivale', respectively. To save your changes by clicking the Escape key, then typing ':wq" and Enter. It stands for 'write-quit'.
 
+The config file looks like this:
+
+{
+  "development": {
+    "username": "postgres",
+    "password": "password",
+    "database": "carnivale",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": " ",
+    "database": "carnivale",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": " ",
+    "database": "carnivale",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}
+
 Next you'll set some environment variables, some of which are database-oriented.
 
 ### 5. Set environment variables
@@ -122,7 +149,9 @@ Run that command on all items in the list below, or place the following in the i
 | AUTH0_CLIENT_SECRET   |  << string of alphanumerics >> |  |
 | ISSUER | << web site>>| For Auth0|
 
+### 5.5 Adding redirect links
 
+Change the redirect links in server/index.ts and client/index.tsx to the appropriate url.
 
 ### 6. Building & Running
 
@@ -144,3 +173,36 @@ Next, navigate to the instance's public IPv4 address in your browser. From the i
 > http://some.AWS.address.numbers:4000
 
 Should be good.
+
+### NGINX & CertBot
+
+Nginx
+https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04
+
+CertBot
+https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
+
+You may have to create the certificate and install them separately. Run the commands from the root of the instance just to be sure (probably not necessary).
+
+After installing certificates, reconnect to the instance.
+
+Install NGINX with
+
+FROM CAITY (validity not verified)
+
+this is a recap of the base config we just added to help y’all get started, but you may need to add additional things to work with all parts of your project (ex: adding websockets may require additional configuration with nginx)
+it’s best practice to separate the reverse proxy config to a project-specific file (naming it clearly will remind you in the future that this file was not included in the original nginx install)
+example: /etc/nginx/conf.d/revprox-yourdomainname.conf
+there should already be a catchall include statement in the main config that will include any additional .conf files in that dir
+as always, every project is different but your bare necessities in that file will include:
+server {
+    listen 80;
+    server_name yourdomainname.com www.yourdomainname.com;
+    location / {
+        proxy_pass http://localhost:<YOUR_APP_PORT_HERE>;
+    }
+}
+80 is the nginx port, but you should replace the proxy_pass port with the port your project is running on. after nginx is set up, your traffic will be routed through nginx’s default port and you will no longer need to use a port to visit your app in the browser
+:caution-neon: note: any time you change the config, you will need to restart the service
+then we added certbot to get SSL after setting up nginx. if you peek back inside of the conf file you created, you should see some additional lines that were injected by certbot
+and y’all had already opened the necessary ports to traffic (80, 443) in your security rules :complete-checkbox-lg:
