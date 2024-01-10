@@ -112,7 +112,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
         >
           <Tab
             eventKey='posts'
-            title='All'
+            title='Gossip'
           >
             {posts
               ? posts.map((item: any, index: number) => (
