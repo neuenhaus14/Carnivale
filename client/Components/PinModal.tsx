@@ -4,6 +4,7 @@ import { useParams} from 'react-router-dom'
 import axios from 'axios'
 import Photos from './Photos'
 import ShareModal from './ShareModal'
+import CreatePinMap from './CreatePinMap'
 
 interface Props {
   setShowModal: any
@@ -13,9 +14,10 @@ interface Props {
   setIsPinSelected: any
   selectedPin: any
   userId: number
+  userLocation: [number, number]
 }
 
-const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected} ) => {
+const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected, userLocation} ) => {
   const [isShow, setShow] = useState(true);
   const [isToilet, setIsToilet] =useState(false);
   const [isFood, setIsFood] =useState(false);
@@ -97,8 +99,8 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     { isPinSelected
     ? (
       <Modal show={isShow} onHide={initModal}>
-          <Modal.Header id="modal-header">
-            <Modal.Title > {pinCategory(selectedPin[0].pinCategory)} Pins</Modal.Title>
+          <Modal.Header id="modal-header" closeButton onClick={initModal}>
+            <Modal.Title > {pinCategory(selectedPin[0].pinCategory)} Pins</Modal.Title>  
           </Modal.Header>
           { showPhoto ? (
           <div>
@@ -117,8 +119,8 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
           </Modal.Body>
           <Modal.Footer>
             {/* <ShareModal postId={selectedPin[0].id} userId={1} postType={"pin"}/> */}
-            <Button onClick={initModal}> Close </Button>
-            <Button className="btn-success" onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
+            {/* <Button onClick={initModal}> Close </Button> */}
+            <Button className="btn" onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
           </Modal.Footer>
           </div>
             ) : (
@@ -146,11 +148,12 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     :
     (
       <Modal show={isShow} onHide={initModal}>
-        <Modal.Header id="modal-header">
+        <Modal.Header id="modal-header" closeButton onClick={initModal}>
           <Modal.Title>Create a Pin</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Select a category, add a picture, and save your pin.
+         Drop a pin, select a category, add a picture, and save your pin.
+        <CreatePinMap userLocation={userLocation}/>
           <Form>
             <Form.Group className ='mb-3' controlId="pinType">
               <Form.Check type="radio" id="freeToilet" name="pin-cat"
@@ -197,7 +200,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
           </Form>
         </Modal.Body>
         <Modal.Footer>
-        <Button onClick={initModal}> Close </Button>
+        {/* <Button onClick={initModal}> Close </Button> */}
         </Modal.Footer>
       </Modal>)
       }
