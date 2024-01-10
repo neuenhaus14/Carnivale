@@ -115,10 +115,10 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
   return (
     <div className="App">
 
-      <Form.Label><b>Add a picture below!</b></Form.Label><br />
+      <Form.Label><b>Take or Add a picture below!</b></Form.Label><br />
           {previewSource && (
           <img src={previewSource} alt="chosen"
-          style={{width: '100%', height: '50vh'}}/>)}
+          style={{width: '100%', height: '100%'}}/>)}
           <input
           id="file"
           type="file"
@@ -127,11 +127,11 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
           multiple={false}
           />
           <br /><br /><br />
-          <Form.Label><b>Description is Mandatory</b></Form.Label>
-          <Form.Control as="textarea" rows={1} placeholder="Please add a description"
+          <Form.Label><b></b></Form.Label>
+          <Form.Control as="textarea" rows={1} placeholder="Please add a description to save"
             name="descinput" onChange={handleDescInput}/> <br />
 
-          <Button className="btn-success" onClick={uploadFile}> {loading ? "Saving..." : "Save"} </Button>
+          <Button className="btn-success" disabled={description === ''} onClick={uploadFile}> {loading ? "Saving..." : "Save"} </Button>
 
     </div>
   );
