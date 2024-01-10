@@ -51,9 +51,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   const [userLatitude, setUserLatitude] = useState(lat); // lat is user location from getLocation
   const [userLongitude, setUserLongitude] = useState(lng); // lng is user location from getLocation
 
-  // all three get passed to accordion
+  // INVITATION STATE
   const [friendsToInvite, setFriendsToInvite] = useState([]);
-
   const [invitees, setInvitees] = useState([]);
   const [participants, setParticipants] = useState([]);
 
@@ -207,7 +206,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     });
     await setInvitees([]);
     await setParticipants([]);
-
+    await setFriendsToInvite([])
     await setIsNewEvent(false); // returns to default state
     await setIsEventUpdated(false); // also default state
     await getEventsOwned(); // retrieves updated or newly created events
@@ -300,7 +299,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         },
       });
       setFriendsToInvite([]);
-      getPeopleForEvent(false);
+      getPeopleForEvent(false); // sendFriendInvites only used with old events
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST event invites', err);
     }
@@ -425,7 +424,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   }
   }
 
-
   const getPeopleForEvent = async (isNewEvent: boolean) => {
     try {
       // if the event is new, empty out any
@@ -518,7 +516,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
             onChange={async () => {
               await toggleFriendInvite(friend.id);
             }}
-          />
+            checked={friendsToInvite.includes(friend.id)}
+          ></Form.Check>
         </div>
       );
     });
