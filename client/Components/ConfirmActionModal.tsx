@@ -31,14 +31,19 @@ const ConfirmActionModal: React.FC<ConfirmActionModalProps> = ({
         <Modal.Title>Are you sure?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className='card-content'>{`Confirm that you want to ${confirmActionText}`}</div>
-        <Button onClick={() => confirmActionFunction()}>
+        <div className='card-content'>{`Click 'Confirm' to ${confirmActionText}`}</div>
+      </Modal.Body>
+      <Modal.Footer className="justify-content-between">
+        <Button variant='danger' onClick={() => {
+          confirmActionFunction()
+          handleClose()
+        }}>
           Confirm
         </Button>
         <Button onClick={handleClose}>
           Just Kidding
         </Button>
-      </Modal.Body>
+      </Modal.Footer>
     </Modal>
   );
 };

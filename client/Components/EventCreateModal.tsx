@@ -75,14 +75,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   // values from old events and sets
   // state for parades (start time, location)
   useEffect(() => {
-    console.log(
-      'Top of uE. eventType',
-      eventType,
-      'selectedEvent',
-      selectedEvent,
-      'dayJS now',
-      now
-    );
     // user event edit mode: old user event with ownerId of current user
     if (
       isNewEvent === false &&
@@ -463,7 +455,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   //  GETTING PEOPLE FOR THE MODAL
   //  depends on what's inside the selected event
   useEffect(() => {
-    console.log('selectedEventChanged', selectedEvent);
     if (selectedEvent.ownerId === userId) {
       // old event
       //console.log('first block');

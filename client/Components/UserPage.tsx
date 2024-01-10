@@ -27,12 +27,12 @@ import { useAuth0 } from '@auth0/auth0-react';
 //                              add userId as prop to get it from App
 const UserPage: React.FC<UserPageProps> = ({
   getLocation,
-  userId,
+  //userId,
   lng,
   lat,
 }) => {
   const [searchParams] = useSearchParams();
-  // const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
@@ -160,7 +160,7 @@ const UserPage: React.FC<UserPageProps> = ({
               size='sm'
               variant='danger'
               onClick={async () => {
-                await setConfirmActionFunction(()=> console.log('confirmActionFunc', friend.id))
+                await setConfirmActionFunction(()=> () => unfriend(friend.id))
                 await setConfirmActionText(`remove ${friend.firstName} from your krewe.`)
                 await setShowConfirmActionModal(true);
               }}
@@ -186,7 +186,12 @@ const UserPage: React.FC<UserPageProps> = ({
             <Button
               variant='danger'
               size='sm'
-              onClick={() => cancelFriendRequest(requestee.id)}
+              // onClick={() => cancelFriendRequest(requestee.id)}
+              onClick={async () => {
+                await setConfirmActionFunction(()=> () => cancelFriendRequest(requestee.id))
+                await setConfirmActionText(`revoke your krewe invitation from ${requestee.firstName}.`)
+                await setShowConfirmActionModal(true);
+              }}
             >
               <MdCancel style={{ verticalAlign: '-2px' }} />
             </Button>
@@ -217,7 +222,12 @@ const UserPage: React.FC<UserPageProps> = ({
               className='mx-1'
               size='sm'
               variant='danger'
-              onClick={() => answerFriendRequest(requester.id, false)}
+              // onClick={() => answerFriendRequest(requester.id, false)}
+              onClick={async () => {
+                await setConfirmActionFunction(()=> () => answerFriendRequest(requester.id, false))
+                await setConfirmActionText(`reject ${requester.firstName}'s krewe invitation.`)
+                await setShowConfirmActionModal(true);
+              }}
             >
               <FaThumbsDown style={{ verticalAlign: '-2px' }} />
             </Button>
@@ -346,6 +356,7 @@ const UserPage: React.FC<UserPageProps> = ({
   }
 
   async function unfriend(friendId: number) {
+    //console.log('inside unfriend', friendId);
     const deleteResponse = await axios.delete(
       `/api/friends/unfriend/${userId}-${friendId}`
     );
@@ -357,7 +368,7 @@ const UserPage: React.FC<UserPageProps> = ({
     setNameOrPhoneForFriendRequest(e.target.value);
   }
 
-  // console.log('inside userpage. isNewEvent', isNewEvent)
+  console.log('inside userpage. confirmActionFunction', confirmActionFunction)
   return (
     <Container className='body' style={{ justifyContent: 'space-between' }}>
       <ConfirmActionModal
