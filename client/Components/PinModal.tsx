@@ -1,9 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
-import { useParams} from 'react-router-dom'
 import axios from 'axios'
 import Photos from './Photos'
-import ShareModal from './ShareModal'
 import CreatePinMap from './CreatePinMap'
 
 interface Props {
@@ -32,7 +30,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
 
   const urlSearchParams = new URLSearchParams(window.location.search);
   const params = Object.fromEntries(urlSearchParams.entries());
-  
+
   const { lng, lat } = params;
 
   const initModal = () => {
@@ -77,9 +75,9 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
       }
     }
   }
-  
+
   const pinCategory = (category: string) => {
-    
+
     const categoryMapping: PinCategoryMapping = {
       isFree:"Free Toilet",
       isToilet: "Pay for Toilet",
@@ -100,7 +98,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     ? (
       <Modal show={isShow} onHide={initModal}>
           <Modal.Header id="modal-header" closeButton onClick={initModal}>
-            <Modal.Title > {pinCategory(selectedPin[0].pinCategory)} Pins</Modal.Title>  
+            <Modal.Title > {pinCategory(selectedPin[0].pinCategory)} Pins</Modal.Title>
           </Modal.Header>
           { showPhoto ? (
           <div>
@@ -133,7 +131,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
             lat={pin.latitude}
             lng={pin.longitude}
             saveCreatedPin={saveCreatedPin}
-            latPost={null} lngPost={null} isThrow={null} isCostume={null} createPhoto={null} userId={userId}/> 
+            latPost={null} lngPost={null} isThrow={null} isCostume={null} createPhoto={null} userId={userId}/>
             ))}
             </Form.Group>
           </Modal.Body>
