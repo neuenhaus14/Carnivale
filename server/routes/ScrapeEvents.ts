@@ -26,6 +26,7 @@ async function start(userDate: string) {
     const day = []; //holds
     const act = [];
     const date = [];
+
     const time = [];
 
   //looping logic to separate data since the raw is such a mess
@@ -65,10 +66,10 @@ async function start(userDate: string) {
   for (let i = 0; i < day.length; i++) {
     proper.push(dayjs(`${date[i]} 2024 ${time[i]}`).format('YYYY-MM-DDTHH:mm'));
   }
-
+//console.log('day', day.length, 'act', act.length, 'date', date.length, 'time', time.length, 'location', location.length, 'infos', infos.length, 'venueTagContent', venueTagContent[0], 'info', info[0])
   //finally, array to hold individual objects to be added to db
   const mainArr = [];
-  for (let i = 0; i < day.length; i++) { //or day.length
+  for (let i = 0; i < location.length; i++) { //or day.length
     mainArr.push({
       name: act[i],
       startTime: proper[i],
@@ -89,8 +90,8 @@ async function start(userDate: string) {
   }
 
   return {
-    // venueTagContent,
-    // info,
+    //venueTagContent,
+    //info,
     mainArr
   }
 } catch (error) {
