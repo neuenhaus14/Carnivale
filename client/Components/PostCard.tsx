@@ -210,7 +210,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                 {/* {dayjs(post.createdAt.toString()).fromNow()} */}
               </div>
             </Card.Text>
-            <ButtonGroup style={{ display: 'flex', flexDirection: 'row' }}>
+            <ButtonGroup style={{ display: 'flex', alignItems: 'center' }}>
               <button
                 style={{
                   border: 'none',
@@ -219,7 +219,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                   boxShadow: 'none',
                   background: 'transparent',
                 }}
-                onClick={() => handleUpvote('photo')}
+                onClick={() => handleUpvote('comment')}
                 disabled={commentVotingStatus === 'upvoted'}
               >
                 <IoArrowUpCircle
@@ -239,7 +239,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                   boxShadow: 'none',
                   background: 'transparent',
                 }}
-                onClick={() => handleDownvote('photo')}
+                onClick={() => handleDownvote('comment')}
                 disabled={commentVotingStatus === 'downvoted'}
               >
                 <IoArrowDownCircle
@@ -254,7 +254,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                 <ShareModal
                   postId={post.id}
                   userId={userId}
-                  postType={'photo'}
+                  postType={'comment'}
                 />
               </div>
             </ButtonGroup>
