@@ -187,8 +187,28 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
           <Card.Body>
             <Card.Img variant='top' src={post.photoURL} />
             <Card.Text>
-              {post.description} - {owner}:{' '}
-              {dayjs(post.createdAt.toString()).fromNow()}
+            <div className='card-content'>{post.description}</div>
+            <div className='card-detail'>
+                {owner} posted
+                <div>
+                  {/* {' '} */}
+                  <OverlayTrigger
+                    placement='top'
+                    overlay={
+                      <Tooltip id={`tooltip-${post.id}`}>
+                        {dayjs(post.createdAt.toString()).format(
+                          'dddd [at] h:mm A'
+                        )}
+                      </Tooltip>
+                    }
+                  >
+                    <span style={{ cursor: 'pointer' }}>
+                      {dayjs(post.createdAt.toString()).fromNow()}
+                    </span>
+                  </OverlayTrigger>
+                </div>
+                {/* {dayjs(post.createdAt.toString()).fromNow()} */}
+              </div>
             </Card.Text>
             <ButtonGroup style={{ display: 'flex', flexDirection: 'row' }}>
               <button
