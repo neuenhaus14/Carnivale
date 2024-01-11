@@ -45,6 +45,10 @@ $tabUnselectedBorder: #e3e3e3;
   background-color: $cardBackground;
 }
 
+.card-body{
+  padding: 0px;
+}
+
 #map-direction-card{
   max-width: 7rem;
   max-height: 10rem;
