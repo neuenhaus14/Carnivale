@@ -326,7 +326,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
       color: "black",
       lineHeight: 1,
       width: "25%",
-      height: "44px"
+      height: "44px",
+      marginBottom: "3px",
     }
 
     const on = {
@@ -338,6 +339,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
       lineHeight: 1,
       width: "25%",
       height: "44px",
+      marginBottom: "3px",
     }
 
     if (value === filterChoice && filterOn === true){
@@ -385,7 +387,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
           label={shareLoc ? 'Sharing Location with Friends' : 'Not Sharing Location with Friends'}
           onChange={() => toggleShareLoc()}
           defaultChecked={shareLoc}
-          style={{marginRight: "auto", paddingBottom: "1em"}}
+          style={{paddingBottom: "1em"}}
         />
       <Map
         ref={mapRef}
@@ -454,7 +456,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
               id="routerLine01"
               type="line"
               paint={{
-                'line-color': '#4A89F3',
+                'line-color': '#cf40f5',
                 'line-width': 3,
               }}
             />
@@ -493,11 +495,11 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
               <p style={{fontSize: "15px"}}><b>{humanizedDuration(duration)}</b> away</p>
               <p style={{fontSize: "15px"}}> <b>{distance}</b> miles</p>
               <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
-              <FaPersonWalking style={{color: "#4A89F3", float: "right", width: "25px", height: "30px", paddingBottom: "6px"}} />
+              <FaPersonWalking style={{color: "#cf40f5", float: "right", width: "25px", height: "30px", paddingBottom: "6px"}} />
             </div>
           </div> 
         ) : null}
-         <button onClick={(e) => {dropPin(e)}}><FaCirclePlus style={{color: "#4A89F3", width: "60px", height: "60px", border: "none", position: "absolute", right: "5%", bottom: "8%"}}/></button>
+         <button onClick={(e) => {dropPin(e)}}><FaCirclePlus style={{color: "#cf40f5", width: "60px", height: "60px", border: "5px solid #E7ABFF", borderRadius: "50%", position: "absolute", right: "5%", bottom: "8%"}}/></button>
       </Map>
       <div id="map-filter-container" className="container">
         <p style={{textAlign: "center",}}>FILTER PINS</p>
