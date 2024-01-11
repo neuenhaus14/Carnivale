@@ -26,12 +26,12 @@ const ConfirmActionModal: React.FC<ConfirmActionModalProps> = ({
   }
 
   return (
-    <Modal show={showConfirmActionModal}>
+    <Modal className='confirm-action-modal' show={showConfirmActionModal}>
       <Modal.Header>
         <Modal.Title>Are you sure?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className='card-content'>{`Click 'Confirm' to ${confirmActionText}`}</div>
+        <div className='card-content'>{`Click Confirm to ${confirmActionText}`}</div>
       </Modal.Body>
       <Modal.Footer className="justify-content-between">
         <Button variant='danger' onClick={() => {

@@ -424,7 +424,7 @@ const UserPage: React.FC<UserPageProps> = ({
       />
 
       <Row className="userPage-tabs">
-        <Tabs className='mt-3' defaultActiveKey='krewe'>
+        <Tabs defaultActiveKey='krewe'>
           <Tab eventKey='krewe' title='Krewe'>
             <h5> Krewe </h5>
             {friends.length > 0 ? (
@@ -541,20 +541,27 @@ const UserPage: React.FC<UserPageProps> = ({
 
       {/* Buttons for logout, other events */}
 
-      <Row>
+      <Row className='userPage-buttons'>
         <div
-          className='mb-3'
           style={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-evenly',
+            margin: 'auto',
           }}
         >
           <Button
             variant='danger'
-            onClick={() =>
-              logout({ logoutParams: { returnTo: window.location.origin } })
-            }
+            // onClick={() =>
+            //   logout({ logoutParams: { returnTo: window.location.origin } })
+            // }
+            onClick={async () => {
+              await setConfirmActionFunction(() => () => logout({ logoutParams: { returnTo: window.location.origin } }));
+              await setConfirmActionText(
+                `log your ass out.`
+              );
+              await setShowConfirmActionModal(true);
+            }}
           >
             Log Out
           </Button>

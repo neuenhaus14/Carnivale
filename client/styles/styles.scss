@@ -127,7 +127,7 @@ $tabUnselectedBorder: #e3e3e3;
   justify-content: space-evenly;
   background-color: white;
   height: 12vh;
-  border-top: $dark solid 2px;
+  border-top: $yeller solid 1px;
 }
 
 .top-nav {
@@ -141,7 +141,7 @@ $tabUnselectedBorder: #e3e3e3;
 
 .body {
   padding-top: 10vh;
-  padding-bottom: 14vh;
+  padding-bottom: 15vh;
   display: flex;
   flex-direction: column;
 
@@ -175,17 +175,21 @@ background-color: $primaryColor;}
   font-family: 'Permanent Marker', serif;
 }
 
-.userPage-tabs .tab-content .tab-pane{
-  color: red;
-  max-height: 58vh;
-  overflow: scroll;
+.confirm-action-modal {
+  display: flex !important;
+}
+
+.confirm-action-modal .modal-dialog {
+  margin: auto;
+  max-height: 100vh;
+  min-width: 90vw;
 }
 
 h5 {
-text-align: left;
-color: $greeny;
-margin: 8px;
-font-weight: 400;
+  text-align: left;
+  color: $greeny;
+  margin: 8px;
+  font-weight: 400;
 }
 
 p {
@@ -226,6 +230,15 @@ body{
 
 .tab-content {
   background-color: $tabSelected;
+}
+
+.userPage-tabs .tab-content .tab-pane{
+  max-height: 60vh;
+  overflow: scroll;
+}
+
+.userPage-buttons {
+  height: 10vh;
 }
 
 .nav-tabs .nav-link {
