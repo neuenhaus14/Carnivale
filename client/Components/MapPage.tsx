@@ -20,10 +20,10 @@ interface MapProps {
   getLocation: any
 }
 
-const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // ADD userId BACK TO PROPS
+const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) => { // ADD userId BACK TO PROPS
 
   const mapRef = useRef(null);
-  const userId = 7; // ADD THIS BACK TO PROPS AND DELETE THIS WHEN YOU'RE DONE TESTING
+  // const userId = 7; // ADD THIS BACK TO PROPS AND DELETE THIS WHEN YOU'RE DONE TESTING
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPinSelected, setIsPinSelected] = useState<boolean>(false)
@@ -60,7 +60,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
   ];
   const [selectedRouteProfile, setselectedRouteProfile] = useState<string>('walking');
 
-  //determines which pins to show- filter or not filter 
+  //determines which pins to show- filter or not filter
   const renderMarkers = filterOn ? filteredMarkers : markers
 
   //loads pins immediately on page render
@@ -72,16 +72,16 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
   }, [setMarkers]);
 
 
-//  useEffect(() => { 
+//  useEffect(() => {
 //   getLocation()
 //   console.log('getLocation called in userLocation useEffect')
 //  }, [userLocation])
 
-//  useEffect(() => { 
+//  useEffect(() => {
 //   getLocation()
 //   console.log('getLocation called in friends useEffect')
 //  }, [friends])
-  
+
 
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
@@ -98,7 +98,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
       const pins = response.data.filter((pin: any) => {
         return pin.isPersonal === true && pin.ownerId === userId
       }).concat(response.data.filter((pin: any) => pin.isPersonal === false))
-     
+
       setMarkers(pins);
 
     } catch (err)  {
@@ -151,7 +151,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
         setUserLocation([userLoc.longitude, userLoc.latitude]) // assuming everytime state is set there is a new render with updated loc
         console.log('userLoc set')
 
-      } else { 
+      } else {
         console.log('made it to else statement in socket')
         friends.forEach((friend) => {
           console.log('friend inside socket', friend)
@@ -178,7 +178,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
 
   //finds clicked marker/pin from database
   const clickedMarker = async (e: any) => {
-    const currMarkerLng = e._lngLat.lng || e.lngLat.lng 
+    const currMarkerLng = e._lngLat.lng || e.lngLat.lng
     const currMarkerLat = e._lngLat.lat || e.lngLat.lat;
 
     const  lngRounded = currMarkerLng.toString().slice(0,10)
@@ -347,14 +347,14 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
       return on
     } else {
       return off
-    }    
+    }
   }
 
   // manages the rendering for the filter element
   const filterResults = (e: string) => {
     setFilterOn(false)
     const choice = e;
-    
+
     const filteredPins = markers.filter((marker) => {
       for(const key in marker){
        if (marker[choice] === true){
@@ -498,7 +498,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
               <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
               <FaPersonWalking style={{color: "#cf40f5", float: "right", width: "25px", height: "30px", paddingBottom: "6px"}} />
             </div>
-          </div> 
+          </div>
         ) : null}
          <button onClick={(e) => {dropPin(e)}}><FaCirclePlus style={{color: "#cf40f5", width: "60px", height: "60px", border: "5px solid #E7ABFF", borderRadius: "50%", position: "absolute", right: "5%", bottom: "8%"}}/></button>
       </Map>

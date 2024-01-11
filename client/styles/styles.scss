@@ -45,6 +45,10 @@ $tabUnselectedBorder: #e3e3e3;
   background-color: $cardBackground;
 }
 
+.card-body{
+  padding: 0px;
+}
+
 #map-direction-card{
   max-width: 7rem;
   max-height: 10rem;
@@ -100,7 +104,12 @@ $tabUnselectedBorder: #e3e3e3;
 
 .btn-success { // keep this
   background-color: $greeny !important;
-  color: white
+  color: white;
+}
+
+.btn-secondary {
+  background-color: $ternaryColor !important;
+  color: white;
 }
 
 // buttons to put icons inside for
@@ -127,7 +136,7 @@ $tabUnselectedBorder: #e3e3e3;
   justify-content: space-evenly;
   background-color: white;
   height: 12vh;
-  border-top: $dark solid 2px;
+  border-top: $yeller solid 1px;
 }
 
 .top-nav {
@@ -141,7 +150,7 @@ $tabUnselectedBorder: #e3e3e3;
 
 .body {
   padding-top: 10vh;
-  padding-bottom: 14vh;
+  padding-bottom: 15vh;
   display: flex;
   flex-direction: column;
 
@@ -175,16 +184,21 @@ background-color: $primaryColor;}
   font-family: 'Permanent Marker', serif;
 }
 
-.userpage-animated {
-  font-family: 'Permanent Marker', serif;
+.confirm-action-modal {
+  display: flex !important;
 }
 
+.confirm-action-modal .modal-dialog {
+  margin: auto;
+  max-height: 100vh;
+  min-width: 90vw;
+}
 
 h5 {
-text-align: left;
-color: $greeny;
-margin: 8px;
-font-weight: 400;
+  text-align: left;
+  color: $greeny;
+  margin: 8px;
+  font-weight: 400;
 }
 
 p {
@@ -226,6 +240,27 @@ body{
 
 .tab-content {
   background-color: $tabSelected;
+}
+
+.userPage-tabs .tab-content .tab-pane{
+  max-height: 55vh;
+  overflow: scroll;
+}
+
+.userPage-buttons-container {
+  height: 15vh;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-evenly;
+}
+
+.userPage-buttons-container .btn{
+  margin: auto;
+}
+
+.userPage-buttons-container .dropup{
+  margin: auto;
+
 }
 
 .nav-tabs .nav-link {

@@ -214,9 +214,9 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
                 </div>
 
                 {selectedEvent.address && (
-                  <p>
+                  <div>
                     <b>Where:</b> {selectedEvent.address}
-                  </p>
+                  </div>
                 )}
               </div>
             </div>
