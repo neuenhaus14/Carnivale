@@ -219,7 +219,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                   boxShadow: 'none',
                   background: 'transparent',
                 }}
-                onClick={() => handleUpvote('comment')}
+                onClick={() => handleUpvote('photo')}
                 disabled={commentVotingStatus === 'upvoted'}
               >
                 <IoArrowUpCircle
@@ -239,7 +239,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                   boxShadow: 'none',
                   background: 'transparent',
                 }}
-                onClick={() => handleDownvote('comment')}
+                onClick={() => handleDownvote('photo')}
                 disabled={commentVotingStatus === 'downvoted'}
               >
                 <IoArrowDownCircle
