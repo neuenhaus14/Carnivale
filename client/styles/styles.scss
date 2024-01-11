@@ -100,7 +100,12 @@ $tabUnselectedBorder: #e3e3e3;
 
 .btn-success { // keep this
   background-color: $greeny !important;
-  color: white
+  color: white;
+}
+
+.btn-secondary {
+  background-color: $ternaryColor !important;
+  color: white;
 }
 
 // buttons to put icons inside for
@@ -233,12 +238,24 @@ body{
 }
 
 .userPage-tabs .tab-content .tab-pane{
-  max-height: 60vh;
+  max-height: 55vh;
   overflow: scroll;
 }
 
-.userPage-buttons {
-  height: 10vh;
+.userPage-buttons-container {
+  height: 15vh;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-evenly;
+}
+
+.userPage-buttons-container .btn{
+  margin: auto;
+}
+
+.userPage-buttons-container .dropup{
+  margin: auto;
+
 }
 
 .nav-tabs .nav-link {

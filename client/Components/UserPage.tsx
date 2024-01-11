@@ -1,20 +1,11 @@
-import React, { ReactPropTypes, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
 import ConfirmActionModal from './ConfirmActionModal';
-import {
-  Button,
-  Container,
-  Accordion,
-  Row,
-  Col,
-  Tab,
-  Tabs,
-} from 'react-bootstrap';
-import { LuThumbsUp, LuThumbsDown } from 'react-icons/lu';
-import { MdCancel, MdOutlineRemoveCircle } from 'react-icons/md';
+import { Button, Container, Row, Tab, Tabs, Dropdown, DropdownButton } from 'react-bootstrap';
+import { MdCancel } from 'react-icons/md';
 import { IoPersonRemoveSharp } from 'react-icons/io5';
 import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import { FaEnvelope } from 'react-icons/fa';
@@ -30,6 +21,8 @@ const UserPage: React.FC<UserPageProps> = ({
   //userId,
   lng,
   lat,
+  setTheme,
+
 }) => {
   const [searchParams] = useSearchParams();
   const [userId] = useState(Number(searchParams.get('userid')) || 1);
@@ -42,8 +35,6 @@ const UserPage: React.FC<UserPageProps> = ({
   const [eventsInvited, setEventsInvited] = useState([{ name: 'event2' }]);
   const [eventsOwned, setEventsOwned] = useState([{ name: 'event3' }]);
 
-  // const [phoneForFriendRequest, setPhoneForFriendRequest] = useState('');
-  // const [nameForFriendRequest, setNameForFriendRequest] = useState('');
   const [nameOrPhoneForFriendRequest, setNameOrPhoneForFriendRequest] =
     useState('');
 
@@ -338,7 +329,7 @@ const UserPage: React.FC<UserPageProps> = ({
     }
   }
 
-  async function cancelFriendRequest(recipient_userId: number) {
+  async function cancelFriendRequest (recipient_userId: number) {
     const deleteResponse = await axios.delete(
       `/api/friends/cancelFriendRequest/${userId}-${recipient_userId}`
     );
@@ -346,7 +337,7 @@ const UserPage: React.FC<UserPageProps> = ({
     getFriendRequests();
   }
 
-  async function answerFriendRequest(
+  async function answerFriendRequest (
     requester_userId: number,
     isConfirmed: boolean
   ) {
@@ -378,7 +369,11 @@ const UserPage: React.FC<UserPageProps> = ({
     setNameOrPhoneForFriendRequest(e.target.value);
   }
 
-  console.log('inside userpage. confirmActionFunction', confirmActionFunction);
+  // const setThemeContext = (theme: string) => {
+  //   console.log('theme from inside userPage', theme)
+  //   setTheme(theme)
+  // }
+
   return (
     <Container className='body' style={{ justifyContent: 'space-between' }}>
       <ConfirmActionModal
@@ -423,7 +418,7 @@ const UserPage: React.FC<UserPageProps> = ({
         getEventsOwned={getEventsOwned}
       />
 
-      <Row className="userPage-tabs">
+      <Row className='userPage-tabs'>
         <Tabs defaultActiveKey='krewe'>
           <Tab eventKey='krewe' title='Krewe'>
             <h5> Krewe </h5>
@@ -541,31 +536,8 @@ const UserPage: React.FC<UserPageProps> = ({
 
       {/* Buttons for logout, other events */}
 
-      <Row className='userPage-buttons'>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-evenly',
-            margin: 'auto',
-          }}
-        >
-          <Button
-            variant='danger'
-            // onClick={() =>
-            //   logout({ logoutParams: { returnTo: window.location.origin } })
-            // }
-            onClick={async () => {
-              await setConfirmActionFunction(() => () => logout({ logoutParams: { returnTo: window.location.origin } }));
-              await setConfirmActionText(
-                `log your ass out.`
-              );
-              await setShowConfirmActionModal(true);
-            }}
-          >
-            Log Out
-          </Button>
-
+      <Row>
+        <div className='userPage-buttons-container'>
           <Button
             variant='primary'
             onClick={async () => {
@@ -579,11 +551,35 @@ const UserPage: React.FC<UserPageProps> = ({
 
           {/* Link below is styled like a bootstrap button */}
           <Link className='btn btn-primary' role='button' to='/eventpage'>
-            Gigs
+            Live Music
           </Link>
           <Link className='btn btn-primary' role='button' to='/parades'>
             Parades
           </Link>
+
+          <Button
+            variant='danger'
+            onClick={async () => {
+              await setConfirmActionFunction(
+                () => () =>
+                  logout({ logoutParams: { returnTo: window.location.origin } })
+              );
+              await setConfirmActionText(`log your butt out.`);
+              await setShowConfirmActionModal(true);
+            }}
+          >
+            Log Out
+          </Button>
+
+          <DropdownButton
+          title='Select Theme'
+          drop='up'
+          id='theme-dropup'
+          variant='secondary'>
+              <Dropdown.Item onClick={()=>setTheme("light")}>Light</Dropdown.Item>
+              <Dropdown.Item onClick={()=>setTheme("hi-vis")}>High Contrast</Dropdown.Item>
+              <Dropdown.Item onClick={()=>setTheme("deep-gras")}>Deep Gras</Dropdown.Item>
+          </DropdownButton>
         </div>
       </Row>
     </Container>
@@ -595,6 +591,7 @@ interface UserPageProps {
   lng: number;
   lat: number;
   userId: number;
+  setTheme: any;
 }
 
 export default UserPage;
