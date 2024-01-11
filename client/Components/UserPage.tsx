@@ -553,7 +553,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
           {/* Link below is styled like a bootstrap button */}
           <Link className='btn btn-primary' role='button' to='/eventpage'>
-            Gigs
+            Live Music
           </Link>
           <Link className='btn btn-primary' role='button' to='/parades'>
             Parades

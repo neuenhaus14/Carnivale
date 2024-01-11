@@ -57,7 +57,7 @@ async function start(userDate: string) {
     const output = [a.slice(0, 2), b, a.slice(2)].join('');
     time.push(output);
   }
-  console.log('TIME parsed',time[0])
+
   //array for proper time numbers for next for loop
   const proper = [];
   for (let i = 0; i < day.length; i++) {
