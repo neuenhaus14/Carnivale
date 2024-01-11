@@ -1,17 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Form,
   Button,
   Container,
   Row,
-  Col,
   Tab,
   Tabs,
   DropdownButton,
-  Dropdown,
-  Navbar,
-  ButtonGroup,
+  Dropdown
 } from 'react-bootstrap';
 import { FaCamera, FaCommentDots } from 'react-icons/fa';
 import axios from 'axios';
@@ -94,8 +91,8 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
     <Container className='body-home'>
       <Row>
         <DropdownButton
-          className="my-3 mx-auto"
-          style={{width: '200px'}}
+          className='my-3 mx-auto'
+          style={{ width: '200px' }}
           title='Sort'
           onSelect={setOrder}
         >
@@ -154,21 +151,15 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
           </Tab>
         </Tabs>
       </Row>
-
       {key === 'posts' ? (
+        <Row>
         <Card
-          style={{
-            position: 'fixed',
-            bottom: '12vh',
-            display: 'flex',
-            flexDirection: 'column',
-            maxHeight: '12vh',
-            width: '90vw',
-            margin: '10px auto',
-            border: '2px solid black',
-          }}
+          className='comment-form'
+          style={{ position: 'fixed', bottom: '12vh' }}
         >
-          <Form>
+          <Form
+          style={{width: '100%'}}
+          >
             <Form.Group>
               <Form.Control
                 onChange={handleInput}
@@ -177,31 +168,32 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                   handleKeyDown(e);
                 }}
               />
-                <Button
-                  onClick={modalTrigger}
-                  className='comment-btn'
-                >
-                  <FaCamera />
-                </Button>
-                {showModal ? (
-                  <HomeModal
-                    setShowModal={setShowModal}
-                    lat={lat}
-                    lng={lng}
-                    userId={userId}
-                  />
-                ) : null}
-                <Button
-                  variant='primary'
-                  onClick={handleSubmit}
-                  disabled={comment.length <= 0}
-                  className='comment-btn'
-                >
-                  <FaCommentDots />
-                  </Button>
+              <Button
+                onClick={modalTrigger}
+                className='photo-btn'
+              >
+                <FaCamera />
+              </Button>
+              {showModal ? (
+                <HomeModal
+                  setShowModal={setShowModal}
+                  lat={lat}
+                  lng={lng}
+                  userId={userId}
+                />
+              ) : null}
+              <Button
+                variant='primary'
+                onClick={handleSubmit}
+                disabled={comment.length <= 0}
+                className='comment-btn'
+              >
+                <FaCommentDots />
+              </Button>
             </Form.Group>
           </Form>
         </Card>
+        </Row>
       ) : (
         ''
       )}

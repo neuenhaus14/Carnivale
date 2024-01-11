@@ -270,4 +270,22 @@ body{
 .comment-btn {
   border-radius: 17px;
   padding: 3px 6px;
+  float: right;
+}
+
+.photo-btn {
+  border-radius: 17px;
+  padding: 3px 6px;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: row;
+  max-height: 12vh;
+  width: 100%;
+  margin: 3px auto;
+}
+
+.footer {
+  text-align: center;
 }

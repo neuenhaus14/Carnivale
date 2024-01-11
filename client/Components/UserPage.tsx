@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
+import ConfirmActionModal from './ConfirmActionModal';
 import {
   Button,
   Container,
@@ -26,11 +27,12 @@ import { useAuth0 } from '@auth0/auth0-react';
 //                              add userId as prop to get it from App
 const UserPage: React.FC<UserPageProps> = ({
   getLocation,
-  userId, lng,
+  userId,
+  lng,
   lat,
 }) => {
   const [searchParams] = useSearchParams();
-  //const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  // const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
@@ -54,6 +56,11 @@ const UserPage: React.FC<UserPageProps> = ({
   const [isUserAttending, setIsUserAttending] = useState(false); // this gets passed to basic modal to expose invite functionality
   const [showBasicModal, setShowBasicModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const [showConfirmActionModal, setShowConfirmActionModal] = useState(false);
+  const [confirmActionFunction, setConfirmActionFunction] = useState(null);
+  const [confirmActionText, setConfirmActionText] = useState('');
+
   const [isNewEvent, setIsNewEvent] = useState(false);
 
   // logout functionality via auth0
@@ -124,17 +131,12 @@ const UserPage: React.FC<UserPageProps> = ({
     }
   };
 
+  // POPULATES USERPAGE WITH CORRECT PEOPLE, EVENTS
+  // isNewEvent is switched to false
+  // whenever modal closes, so this
+  // uE runs whenever a modal closes,
+  // to refresh info
   useEffect(() => {
-    // getLocation() DON'T NEED THIS, IT'S GETTING PASSED IN
-
-    // for updating events on userpage when
-    // responding to invites or inviting other users
-
-    // TODO: I think isNewEvent gets flipped
-    // to false from the eventCreateModal,
-    // so isNewEvent should realistically
-    // always be false. This uE only
-    // runs on the first page load, right?
     if (isNewEvent === false) {
       getFriends();
       getEventsOwned();
@@ -157,7 +159,11 @@ const UserPage: React.FC<UserPageProps> = ({
             <Button
               size='sm'
               variant='danger'
-              onClick={() => unfriend(friend.id)}
+              onClick={async () => {
+                await setConfirmActionFunction(()=> console.log('confirmActionFunc', friend.id))
+                await setConfirmActionText(`remove ${friend.firstName} from your krewe.`)
+                await setShowConfirmActionModal(true);
+              }}
             >
               {/*'REMOVE '*/}{' '}
               <IoPersonRemoveSharp style={{ verticalAlign: '-2px' }} />
@@ -182,7 +188,7 @@ const UserPage: React.FC<UserPageProps> = ({
               size='sm'
               onClick={() => cancelFriendRequest(requestee.id)}
             >
-              {/*'CANCEL '*/} <MdCancel style={{ verticalAlign: '-2px' }} />
+              <MdCancel style={{ verticalAlign: '-2px' }} />
             </Button>
           </div>
         </div>
@@ -205,7 +211,7 @@ const UserPage: React.FC<UserPageProps> = ({
               variant='success'
               onClick={() => answerFriendRequest(requester.id, true)}
             >
-              {/*'ACCEPT '*/} <FaThumbsUp style={{ verticalAlign: '-2px' }} />
+              <FaThumbsUp style={{ verticalAlign: '-2px' }} />
             </Button>
             <Button
               className='mx-1'
@@ -213,7 +219,7 @@ const UserPage: React.FC<UserPageProps> = ({
               variant='danger'
               onClick={() => answerFriendRequest(requester.id, false)}
             >
-              {/*'IGNORE '*/} <FaThumbsDown style={{ verticalAlign: '-2px' }} />
+              <FaThumbsDown style={{ verticalAlign: '-2px' }} />
             </Button>
           </div>
         </div>
@@ -347,14 +353,6 @@ const UserPage: React.FC<UserPageProps> = ({
     getFriends();
   }
 
-  // function handlePhoneInput(e: any) {
-  //   setPhoneForFriendRequest(e.target.value);
-  // }
-
-  // function handleFriendNameInput(e: any) {
-  //   setNameForFriendRequest(e.target.value);
-  // }
-
   function handleNameOrPhoneInput(e: any) {
     setNameOrPhoneForFriendRequest(e.target.value);
   }
@@ -362,6 +360,17 @@ const UserPage: React.FC<UserPageProps> = ({
   // console.log('inside userpage. isNewEvent', isNewEvent)
   return (
     <Container className='body' style={{ justifyContent: 'space-between' }}>
+      <ConfirmActionModal
+        confirmActionFunction={confirmActionFunction}
+        setConfirmActionFunction={setConfirmActionFunction}
+
+        confirmActionText={confirmActionText}
+        setConfirmActionText={setConfirmActionText}
+
+        showConfirmActionModal={showConfirmActionModal}
+        setShowConfirmActionModal={setShowConfirmActionModal}
+      />
+
       <EventBasicModal
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
@@ -402,7 +411,14 @@ const UserPage: React.FC<UserPageProps> = ({
             {friends.length > 0 ? (
               <div className='m-2'>{userFriendsItems}</div>
             ) : (
-              'Assemble your krewe below'
+              <>
+                <div className='card-content text-center'>
+                  You're flying solo!
+                </div>
+                <div className='card-detail text-center'>
+                  Assemble your krewe by searching for friends below
+                </div>
+              </>
             )}
 
             <div className='d-flex flex-column align-items-center p-2'>
@@ -449,6 +465,23 @@ const UserPage: React.FC<UserPageProps> = ({
 
           <Tab eventKey='calendar' title='Calendar'>
             {
+              // conditional check: if no events owned or invited or attending, show default message
+              eventsOwned.length === 0 &&
+                eventsInvited.length === 0 &&
+                eventsParticipating.length === 0 && (
+                  <>
+                    <div className='card-content text-center mt-3'>
+                      Nothing going on in here!
+                    </div>
+                    <div className='card-detail text-center'>
+                      Make plans or connect with your Krewe to beef up your
+                      calendar.
+                    </div>
+                  </>
+                )
+            }
+
+            {
               // conditional check for events you own
               eventsOwned.length > 0 && (
                 <>
@@ -467,7 +500,7 @@ const UserPage: React.FC<UserPageProps> = ({
                   <div className='d-flex flex-dir-row align-items-baseline'>
                     <h5>Schedule</h5>
                   </div>
-                    <div>{eventsParticipatingItems}</div>
+                  <div>{eventsParticipatingItems}</div>
                 </>
               )
             }
@@ -520,7 +553,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
           {/* Link below is styled like a bootstrap button */}
           <Link className='btn btn-primary' role='button' to='/eventpage'>
-            Gigs
+            Live Music
           </Link>
           <Link className='btn btn-primary' role='button' to='/parades'>
             Parades
