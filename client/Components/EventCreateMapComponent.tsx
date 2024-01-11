@@ -51,11 +51,21 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
     }, 400)
   }
 
+  // MAP FLY TO FUNCTIONALITY, DEPENDS ON EVENT TYPE AND OTHER PROPS
   useEffect(() => {
-    // brand new event, zoom to user
-    if (isNewEvent === true && !selectedEvent.ownerId && eventType === 'user') {
+    // brand new event, zooms to user location.
+    // For new user event, eventLat gets set to userLat and is passed into map
+    // so w
+    if (isNewEvent === true && !selectedEvent.ownerId && eventType === 'user' && eventLatitude === userLatitude) {
       console.log('centering for new event', userLongitude, userLatitude)
       delayedFlyTo(userLongitude, userLatitude);
+    }
+
+    // updated pin for new event creation. user and event latitudes differ
+    // moving the pin resets eventLatitude and eventLongitude on user page
+    else if (isNewEvent === true && !selectedEvent.ownerId && eventType === 'user' && eventLatitude !== userLatitude) {
+      console.log('centering for pin drop', eventLongitude, eventLatitude)
+      delayedFlyTo(eventLongitude, eventLatitude);
     }
 
     // old event owned by user id (won't get triggered for events invited to)
@@ -72,8 +82,6 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
     else if (isNewEvent === true && eventType === 'parade') {
       delayedFlyTo(eventLongitude, eventLatitude)
     }
-
-
   }, [eventLatitude, eventLongitude, userLongitude, userLatitude, isNewEvent])
 
 

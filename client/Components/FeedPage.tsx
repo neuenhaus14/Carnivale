@@ -98,10 +98,10 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     const fetchData = async () => {
       try {
         const [postsResponse, userResponse] = await Promise.all([
-          // axios.get(`/api/feed/shared-posts/${userId}`),
-          // axios.get(`/api/feed/user/${userId}`),
-          axios.get(`/api/feed/shared-posts/1`),
-          axios.get(`/api/feed/user/1`),
+          axios.get(`/api/feed/shared-posts/${userId}`),
+          axios.get(`/api/feed/user/${userId}`),
+          //axios.get(`/api/feed/shared-posts/1`),
+          //axios.get(`/api/feed/user/1`),
         ]);
 
         setSharedPosts(postsResponse.data);

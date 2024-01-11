@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
-import axios from 'axios'
 import Photos from './Photos'
 
 //CHILD OF HOMEPAGE

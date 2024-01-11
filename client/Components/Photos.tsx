@@ -1,8 +1,6 @@
-import React, {useState, useEffect, Dispatch, SetStateAction} from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
-import Photo from './Photo'
-import { Modal, Button, Form } from 'react-bootstrap'
-import { arrayBuffer } from 'stream/consumers';
+import { Button, Form } from 'react-bootstrap'
 //capturing an image and sending via axios to my backend. on backend making another call to cloudinary to post or retrieve image. So if I need that photo on the front end
 //CHILD OF PINMODAL
 interface Props {
@@ -18,24 +16,19 @@ interface Props {
 }
 
 const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, createPhoto, isThrow, isCostume, userId}) => {
-  const [fileInputState, setFileInputState] = useState('');
-  const [selectedFile, setSelectedFile] = useState('');
   const [previewSource, setPreviewSource] = useState();
   const [loading, setLoading] = useState<boolean>(false)
-  const [res, setRes] = useState({});
   const [file, setFile] = useState(null);
   const [description, setDescription] = useState<string>('');
 
-  //console.log('Photos', latPost, lngPost)
   const handleDescInput = (e:any) => {
     const desc = e.target.value;
     setDescription(desc);
-    //console.log('description', desc, description)
   }
 
   const handleSelectFile = (e: any) => {
-    //console.log('handleSelect', e)
     const file = e.target.files[0];
+    e.preventDefault();
     setFile(file);
     previewFile(file);
   };
@@ -54,12 +47,9 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
     setLoading(true);
     e.preventDefault();
     const data = new FormData();
-    //console.log('file', file);
     data.set("sample_file", file);
-    //console.log('data', data)
     try {
       const res = await axios.post("/api/images/upload", data);
-      //console.log('front end data', data)
       //setRes(res.data);
       saveToDb()
     } catch (error) {
@@ -69,11 +59,8 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
     }
   };
 
-
-
   //considering this put request as part of our post request due to the multer middleware
   const saveToDb = async () => {
-    //console.log('inside save', lat, lng)
     if (saveCreatedPin) {
       saveCreatedPin()
     try{
@@ -111,14 +98,17 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
   }
 }
 
-
   return (
     <div className="App">
-
       <Form.Label><b>Take or Add a picture below!</b></Form.Label><br />
           {previewSource && (
-          <img src={previewSource} alt="chosen"
-          style={{width: '100%', height: '100%'}}/>)}
+          <img
+          src={previewSource}
+          alt="chosen"
+          style={{
+            width: '100%',
+            height: '100%'
+            }}/>)}
           <input
           id="file"
           type="file"
@@ -126,13 +116,24 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
           onChange={handleSelectFile}
           multiple={false}
           />
-          <br /><br /><br />
+          <br />
           <Form.Label><b></b></Form.Label>
-          <Form.Control as="textarea" rows={1} placeholder="Please add a description to save"
-            name="descinput" onChange={handleDescInput}/> <br />
-
-          <Button className="btn-success" disabled={description === ''} onClick={uploadFile}> {loading ? "Saving..." : "Save"} </Button>
-
+          <Form.Control
+          as="textarea"
+          rows={1}
+          placeholder="Please add a description to save"
+          name="descinput"
+          onChange={handleDescInput}/>
+          <br />
+          <div className="text-center">
+          <Button
+          className="btn-success"
+          size="lg"
+          disabled={description === ''}
+          onClick={uploadFile}>
+             {loading ? "Saving..." : "Save"}
+          </Button>
+          </div>
     </div>
   );
 }
