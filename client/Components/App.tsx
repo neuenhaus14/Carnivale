@@ -206,7 +206,7 @@ const App = () => {
           path='/eventpage'
           element={
             <div>
-              <TopNavBar title={'Gigs'}/>
+              <TopNavBar title={'Live Music'}/>
               <EventPage
                 userId={userId}
                 getLocation={getLocation}

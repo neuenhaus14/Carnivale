@@ -45,6 +45,10 @@ $tabUnselectedBorder: #e3e3e3;
   background-color: $cardBackground;
 }
 
+.card-body{
+  padding: 0px;
+}
+
 #map-direction-card{
   max-width: 7rem;
   max-height: 10rem;
@@ -200,6 +204,7 @@ h5 {
 p {
   font-size: 20px;
   color: $dark;
+  margin: 0px 6px 6px;
 }
 
 body{
@@ -315,4 +320,27 @@ body{
   max-height: 12vh;
   width: 100%;
   margin: 3px auto;
+}
+
+
+.form-check-input:checked {
+  background-color: $pinky;
+  border-color: $ternaryColor;
+}
+
+.form-check.form-switch{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+}
+
+.form-check-input:focus {
+    border-color: #cc86fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(149, 13, 253, 0.25);
+}
+
+.footer {
+  text-align: center;
 }

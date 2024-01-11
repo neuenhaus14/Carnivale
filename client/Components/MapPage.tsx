@@ -20,14 +20,14 @@ interface MapProps {
   getLocation: any
 }
 
-const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) => { // ADD userId BACK TO PROPS
+const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // ADD userId BACK TO PROPS
 
   const mapRef = useRef(null);
-  //const userId = 7; // ADD THIS BACK TO PROPS AND DELETE THIS WHEN YOU'RE DONE TESTING
+  const userId = 7; // ADD THIS BACK TO PROPS AND DELETE THIS WHEN YOU'RE DONE TESTING
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPinSelected, setIsPinSelected] = useState<boolean>(false)
-  const [selectedPin, setSelectedPin] = useState({})
+  const [selectedPin, setSelectedPin] = useState(null)
   const [showModal, setShowModal] = useState<boolean>(false)
   const [markers, setMarkers] = useState([]);
   const [filteredMarkers, setFilteredMarkers] = useState([])
@@ -42,10 +42,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
   const [showRouteDirections, setShowRouteDirections] = useState<boolean>(false)
   const [isFriendSelected, setIsFriendSelected] = useState<boolean>(false)
   const [friends, setFriends] = useState([])
-  const [events, setEvents] = useState([])
+  // const [events, setEvents] = useState([])
   const [showDirections, setShowDirections]= useState<boolean>(false);
-  const [showFriendPopup, setShowFriendPopup] = useState<boolean>(true);
-  const [shareLoc, setShareLoc] = useState<boolean>(false);
+  const [showFriendPopup, setShowFriendPopup] = useState<boolean>(false);
+  const [shareLoc, setShareLoc] = useState<boolean>();
   const [viewState, setViewState] = useState({
     latitude: 29.964735,
     longitude: -90.054261,
@@ -67,8 +67,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
   useEffect(() => {
     getPins();
     getFriends();
-    getEvents();
-
+    // getEvents();
+    isSharingLoc();
   }, [setMarkers]);
 
 
@@ -106,17 +106,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     }
   }
 
-  //gets owned and participating events from database
-  const getEvents = async () => {
-    const endpoints = [`/api/events/getEventsOwned/${userId}`, `/api/events/getEventsParticipating/${userId}`]
-    try {
-      await axios.all(endpoints.map((endpoint) => axios.get(endpoint))).then(
-        (events) => {events.map((responseEvent) => setEvents(responseEvent.data))} );
-    } catch (err)  {
-        console.error(err)
-    }
-  }
-
   //gets friends from the database- commented out bc friend sockets
   const getFriends = async () => {
     try {
@@ -124,6 +113,15 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
       // setFriends(data)
       const friends = data.filter((friend: any) => friend.shareLoc === true)
       setFriends(friends)
+    } catch (err)  {
+      console.error(err)
+    }
+  }
+
+  const isSharingLoc = async () => {
+    try {
+      const isUserSharingLoc = await axios.get(`/api/friends/updateShareLoc/${userId}`)
+      isUserSharingLoc.data ? setShareLoc(true) : setShareLoc(false)
     } catch (err)  {
       console.error(err)
     }
@@ -175,7 +173,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     if (isPinSelected === false && isFriendSelected === false){
       setShowModal(true)
     }
-    //setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
+    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   }
 
   //finds clicked marker/pin from database
@@ -189,7 +187,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
 
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`)
-          setSelectedPin(data);
           setIsPinSelected(true);
           setShowDirections(true);
           setIsFriendSelected(false)
@@ -244,8 +241,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
  // handles the route line creation by making the response from the directions API into a geoJSON
  // which is the only way to use it in the <Source> tag (displays the "route/line")
   const createRouterLine = async (routeProfile: string,): Promise<void> => {
-    //console.log(isPinSelected, isFriendSelected)
-    // if (isPinSelected === true || isFriendSelected === true){
       const startCoords = `${userLocation[0]},${userLocation[1]}`
       const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`
       const geometries = 'geojson'
@@ -271,7 +266,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
       } catch (err) {
         console.error(err);
       }
-    // }
   }
 
   //prompts the modal to open/close on pin vs map(empty) click
@@ -332,7 +326,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
       color: "black",
       lineHeight: 1,
       width: "25%",
-      height: "44px"
+      height: "44px",
+      marginBottom: "3px",
     }
 
     const on = {
@@ -344,6 +339,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
       lineHeight: 1,
       width: "25%",
       height: "44px",
+      marginBottom: "3px",
     }
 
     if (value === filterChoice && filterOn === true){
@@ -391,7 +387,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
           label={shareLoc ? 'Sharing Location with Friends' : 'Not Sharing Location with Friends'}
           onChange={() => toggleShareLoc()}
           defaultChecked={shareLoc}
-          style={{marginRight: "auto", paddingBottom: "1em"}}
+          style={{paddingBottom: "1em"}}
         />
       <Map
         ref={mapRef}
@@ -430,17 +426,18 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
             key={friend.id}
             onClick={(e) => {clickedMarker(e.target)}}
             longitude={friend.longitude} latitude={friend.latitude}
-            anchor="center"
+            anchor="bottom"
             >
             <div style={{textAlign: "center",}}>
               <b>{friend.firstName[0]}{friend.lastName[0]}</b><br/>
-              <img src="img/friend_dot.png" width="30px" height="30px"/>
+              <img src="img/pgLogo.png" width="45px" height="55px"/>
+              {/* <img src="img/friend_dot.png" width="30px" height="30px"/> */}
             </div>
             </Marker>
           ))
         }
       </div>
-      <div id='event-markers'>
+      {/* <div id='event-markers'>
         {
           events.map((event) => (
             <Marker
@@ -452,27 +449,27 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
             </Marker>
           ))
         }
-      </div>
+      </div> */}
       {showRouteDirections ? (
           <Source id="line1" type="geojson" data={routeDirections}>
             <Layer
               id="routerLine01"
               type="line"
               paint={{
-                'line-color': '#4A89F3',
+                'line-color': '#cf40f5',
                 'line-width': 3,
               }}
             />
           </Source>
         ): null}
       <NavigationControl />
-      {showFriendPopup ? (
+      {/* {showFriendPopup ? (
           <>
             {friends.map((friend) => (
               <Popup
                 key={friend.id}
                 longitude={friend.longitude} latitude={friend.latitude}
-                anchor="bottom"
+                anchor="top"
                 closeOnMove={true}
                 onClose={() => setShowFriendPopup(false)}
               >
@@ -480,6 +477,17 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
               </Popup>
             ))}
           </>
+        ) : null} */}
+        {showFriendPopup ? (
+              <Popup
+                longitude={selectedPin.longitude} latitude={selectedPin.latitude}
+                anchor="top"
+                closeOnMove={true}
+                onClose={() => setShowFriendPopup(false)}
+              >
+                <b>{selectedPin.firstName} {selectedPin.lastName}</b>
+              </Popup>
+
         ) : null}
         { showDirections ? (
           <div id="map-direction-card" className='card w-35'style={{backgroundColor: "#fffcf8"}}>
@@ -487,11 +495,11 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
               <p style={{fontSize: "15px"}}><b>{humanizedDuration(duration)}</b> away</p>
               <p style={{fontSize: "15px"}}> <b>{distance}</b> miles</p>
               <button type="button" className="btn btn-primary btn-sm" onClick={() => {setShowDirections(false); setShowRouteDirections(false)}}>Close</button>
-              <FaPersonWalking style={{color: "#4A89F3", float: "right", width: "25px", height: "30px", paddingBottom: "6px"}} />
+              <FaPersonWalking style={{color: "#cf40f5", float: "right", width: "25px", height: "30px", paddingBottom: "6px"}} />
             </div>
           </div> 
         ) : null}
-         <button onClick={(e) => {dropPin(e)}}><FaCirclePlus style={{color: "#4A89F3", width: "60px", height: "60px", border: "none", position: "absolute", right: "5%", bottom: "8%"}}/></button>
+         <button onClick={(e) => {dropPin(e)}}><FaCirclePlus style={{color: "#cf40f5", width: "60px", height: "60px", border: "5px solid #E7ABFF", borderRadius: "50%", position: "absolute", right: "5%", bottom: "8%"}}/></button>
       </Map>
       <div id="map-filter-container" className="container">
         <p style={{textAlign: "center",}}>FILTER PINS</p>
@@ -538,3 +546,14 @@ export default MapPage;
 //     };
 
 // }, [setUserLocation]);
+
+// //gets owned and participating events from database
+  // const getEvents = async () => {
+  //   const endpoints = [`/api/events/getEventsOwned/${userId}`, `/api/events/getEventsParticipating/${userId}`]
+  //   try {
+  //     await axios.all(endpoints.map((endpoint) => axios.get(endpoint))).then(
+  //       (events) => {events.map((responseEvent) => setEvents(responseEvent.data))} );
+  //   } catch (err)  {
+  //       console.error(err)
+  //   }
+  // }

@@ -1,17 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Form,
   Button,
   Container,
   Row,
-  Col,
   Tab,
   Tabs,
   DropdownButton,
   Dropdown,
-  Navbar,
-  ButtonGroup,
 } from 'react-bootstrap';
 import { FaCamera, FaCommentDots } from 'react-icons/fa';
 import axios from 'axios';
@@ -31,7 +28,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   const [posts, setPosts] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [key, setKey] = useState('posts');
-  const [order, setOrder] = useState('updatedAt');
+  const [order, setOrder] = useState('upvotes');
 
   const modalTrigger = () => {
     setShowModal(true);
@@ -72,8 +69,12 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   const getPosts = async (e: string) => {
     try {
       const { data } = await axios.get(`/api/home/${e}`);
-
-      setPosts(data.sort((a: any, b: any) => b[order] - a[order]));
+      console.log(data);
+      if(order === 'upvotes'){
+        setPosts(data.sort((a: any, b: any) => b[order] - a[order]));
+      } else {
+        setPosts(data.sort((a: any, b: any) => new Date(b[order]) - new Date(a[order])));
+      }
     } catch (err) {
       console.error(err);
     }
@@ -97,9 +98,11 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
           className='my-3 mx-auto'
           style={{ width: '200px' }}
           title='Sort'
-          onSelect={setOrder}
+          onSelect={(e)=>{
+            setOrder(e);
+            console.log(e);
+          }}
         >
-          <Dropdown.Item eventKey={'updatedAt'}>Updated</Dropdown.Item>
           <Dropdown.Item eventKey={'createdAt'}>Created</Dropdown.Item>
           <Dropdown.Item eventKey={'upvotes'}>Upvotes</Dropdown.Item>
         </DropdownButton>
