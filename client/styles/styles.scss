@@ -190,6 +190,7 @@ font-weight: 400;
 p {
   font-size: 20px;
   color: $dark;
+  margin: 0px 6px 6px;
 }
 
 body{
@@ -284,6 +285,25 @@ body{
   max-height: 12vh;
   width: 100%;
   margin: 3px auto;
+}
+
+
+.form-check-input:checked {
+  background-color: $pinky;
+  border-color: $ternaryColor;
+}
+
+.form-check.form-switch{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+}
+
+.form-check-input:focus {
+    border-color: #cc86fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(149, 13, 253, 0.25);
 }
 
 .footer {

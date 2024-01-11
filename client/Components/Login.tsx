@@ -20,7 +20,7 @@ const LoginButton = () => {
         textAlign: "center",
         paddingBottom: "2rem",
       }}>
-      <img id="login-img" src="img/mask.png" alt="mask logo" width= "300px" height="340px" />
+      <img id="login-img" src="img/mask.png" alt="mask logo" width= "100%" height="auto" />
       <h3>One stop shop for managing the chaos of Mardi Gras.</h3>
       <h4>Share gossip, costumes, throws, drop pins with hot commodities, create events with your friends, checkout local music, and lookup parade schedules!</h4><br />
       <Button className="btn-login" style={{backgroundColor: "#e7abff" }} onClick={() => loginWithRedirect()}>Log In</Button>

@@ -254,6 +254,19 @@ Friends.patch('/updateShareLoc', async (req: Request, res: Response) => {
   }
 })
 
+//updates user/friend to show location with friends or not
+Friends.get('/updateShareLoc/:userId', async (req: Request, res: Response) => {
+
+  const { userId } = req.params;
+  
+  try {
+    const isUserSharingLoc = await User.findOne({where: {id: userId} })
+    res.status(200).send(isUserSharingLoc.dataValues.shareLoc)
+  } catch (err) {
+    console.error('SERVER ERROR: could not PATCH friend sharing Loc', err);
+    res.status(500).send(err);
+  }
+})
 
 
 export default Friends;
