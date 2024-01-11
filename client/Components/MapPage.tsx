@@ -187,6 +187,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation}) => { // AD
 
     try {
       const { data } = await axios.get(`/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`)
+          setSelectedPin(data);
           setIsPinSelected(true);
           setShowDirections(true);
           setIsFriendSelected(false)
