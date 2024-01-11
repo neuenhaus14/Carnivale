@@ -158,7 +158,7 @@ const EventPage: React.FC<EventPageProps> = ({
         //getEventsInvited={getEventsInvited}
         //getEventsParticipating={getEventsParticipating}
       />
-      <footer className='footer'>Gig info courtesy of <a href='https://www.wwoz.org/calendar/livewire-music'>WWOZ</a></footer>
+      <footer className='footer'>Live music info courtesy of <a href='https://www.wwoz.org/calendar/livewire-music'>WWOZ</a></footer>
     </div>
   );
 };

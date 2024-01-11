@@ -125,12 +125,15 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
           name="descinput"
           onChange={handleDescInput}/>
           <br />
+          <div className="text-center">
           <Button
           className="btn-success"
+          size="lg"
           disabled={description === ''}
           onClick={uploadFile}>
              {loading ? "Saving..." : "Save"}
           </Button>
+          </div>
     </div>
   );
 }
