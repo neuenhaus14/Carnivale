@@ -35,7 +35,7 @@ const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
-  const theme = 'light'
+  const [theme, setTheme] = useState('light')
 
   const [lng, setLng] = useState(0);
   const [lat, setLat] = useState(0);
@@ -227,6 +227,7 @@ const App = () => {
                 getLocation={getLocation}
                 lng={lng}
                 lat={lat}
+                setTheme={setTheme}
               />{' '}
               <NavBar />
             </div>
@@ -237,7 +238,7 @@ const App = () => {
     )
   );
 
-  console.log('bottom of app', userId, lng, lat);
+  console.log('bottom of app', userId, lng, lat, 'theme', theme);
   return (
     <ThemeContext.Provider value={theme}>
         <RouterProvider router={router} />

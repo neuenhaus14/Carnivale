@@ -51,9 +51,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   const [userLatitude, setUserLatitude] = useState(lat); // lat is user location from getLocation
   const [userLongitude, setUserLongitude] = useState(lng); // lng is user location from getLocation
 
-  // all three get passed to accordion
+  // INVITATION STATE
   const [friendsToInvite, setFriendsToInvite] = useState([]);
-
   const [invitees, setInvitees] = useState([]);
   const [participants, setParticipants] = useState([]);
 
@@ -75,14 +74,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   // values from old events and sets
   // state for parades (start time, location)
   useEffect(() => {
-    console.log(
-      'Top of uE. eventType',
-      eventType,
-      'selectedEvent',
-      selectedEvent,
-      'dayJS now',
-      now
-    );
     // user event edit mode: old user event with ownerId of current user
     if (
       isNewEvent === false &&
@@ -215,7 +206,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     });
     await setInvitees([]);
     await setParticipants([]);
-
+    await setFriendsToInvite([])
     await setIsNewEvent(false); // returns to default state
     await setIsEventUpdated(false); // also default state
     await getEventsOwned(); // retrieves updated or newly created events
@@ -307,7 +298,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           invitees: friendsToInvite,
         },
       });
-      getPeopleForEvent(true);
+      setFriendsToInvite([]);
+      getPeopleForEvent(false); // sendFriendInvites only used with old events
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST event invites', err);
     }
@@ -432,17 +424,17 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   }
   }
 
-
   const getPeopleForEvent = async (isNewEvent: boolean) => {
     try {
       // if the event is new, empty out any
       // invitees or participants who were added
       // in previous clicks
       if (isNewEvent === true) {
-        console.log('inside get people for Event, isNewEvent', isNewEvent);
+        console.log('inside gPFEvent, isNewEvent', isNewEvent);
         await setInvitees([]);
         await setParticipants([]);
       } else if (isNewEvent === false) {
+        console.log('inside gPFE, isNewEvent', isNewEvent)
         const eventPeopleData = await axios.get(
           `/api/events/getPeopleForEvent/${userId}-${selectedEvent.id}`
         );
@@ -463,14 +455,13 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   //  GETTING PEOPLE FOR THE MODAL
   //  depends on what's inside the selected event
   useEffect(() => {
-    console.log('selectedEventChanged', selectedEvent);
     if (selectedEvent.ownerId === userId) {
       // old event
-      //console.log('first block');
+      console.log('first block');
       getPeopleForEvent(false);
     } else if (!selectedEvent.ownerId && isNewEvent === true) {
       // new event
-      //console.log('second block');
+      console.log('second block');
       getPeopleForEvent(true);
     }
   }, [selectedEvent]);
@@ -525,7 +516,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
             onChange={async () => {
               await toggleFriendInvite(friend.id);
             }}
-          />
+            checked={friendsToInvite.includes(friend.id)}
+          ></Form.Check>
         </div>
       );
     });
