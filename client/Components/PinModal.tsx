@@ -135,9 +135,6 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
             ))}
             </Form.Group>
           </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={initModal} > Close </Button>
-          </Modal.Footer>
           </div>
               )
             }
@@ -197,7 +194,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
             </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer id="modal-footer">
         {/* <Button onClick={initModal}> Close </Button> */}
         </Modal.Footer>
       </Modal>)
