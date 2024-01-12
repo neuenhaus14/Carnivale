@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Card,
   Form,
@@ -14,6 +14,8 @@ import { FaCamera, FaCommentDots } from 'react-icons/fa';
 import axios from 'axios';
 import HomeModal from './HomeModal';
 import PostCard from './PostCard';
+import { ThemeContext } from './Context';
+
 
 //PARENT OF HOMEMODAL
 
@@ -29,6 +31,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   const [showModal, setShowModal] = useState(false);
   const [key, setKey] = useState('posts');
   const [order, setOrder] = useState('upvotes');
+  const theme = useContext(ThemeContext)
 
   const modalTrigger = () => {
     setShowModal(true);
@@ -92,7 +95,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   }, [key, order]);
 
   return (
-    <Container className='body-home'>
+    <Container className={`body-home ${theme}`}>
       <Row>
         <DropdownButton
           className='my-3 mx-auto'

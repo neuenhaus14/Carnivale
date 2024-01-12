@@ -30,7 +30,6 @@ import { ThemeContext } from './Context';
 import TopNavBar from './TopNavBar';
 
 
-
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
   const [userData, setUserData] = useState(null);

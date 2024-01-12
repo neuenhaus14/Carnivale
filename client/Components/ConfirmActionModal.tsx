@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import { ThemeContext } from './Context';
 
 interface ConfirmActionModalProps {
   confirmActionFunction: any;
@@ -18,6 +19,7 @@ const ConfirmActionModal: React.FC<ConfirmActionModalProps> = ({
   showConfirmActionModal,
   setShowConfirmActionModal,
 }) => {
+  const theme = useContext(ThemeContext);
 
   const handleClose = () => {
     setShowConfirmActionModal(false);
@@ -26,7 +28,7 @@ const ConfirmActionModal: React.FC<ConfirmActionModalProps> = ({
   }
 
   return (
-    <Modal className='confirm-action-modal' show={showConfirmActionModal}>
+    <Modal className={`confirm-action-modal ${theme}`} show={showConfirmActionModal}>
       <Modal.Header>
         <Modal.Title>Are you sure?</Modal.Title>
       </Modal.Header>

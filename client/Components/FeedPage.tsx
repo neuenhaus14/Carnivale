@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { IoArrowUpCircle, IoArrowDownCircle } from "react-icons/io5";
@@ -13,6 +13,7 @@ import {
   Card,
   ButtonGroup,
 } from "react-bootstrap";
+import { ThemeContext } from './Context';
 
 interface SharedPost {
   upvotes: number;
@@ -71,6 +72,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     {}
   );
   const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
+  const theme = useContext(ThemeContext)
 
   const fetchSenderName = async (userId: number) => {
     try {
@@ -392,7 +394,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   };
 
   return (
-    <Container className="body">
+    <Container className={`body ${theme}`}>
       <h1>
         Welcome,{" "}
         {currentUser
