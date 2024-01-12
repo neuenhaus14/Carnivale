@@ -97,10 +97,6 @@ $tabUnselectedBorder: #e3e3e3;
   border: $secondaryColor solid 2px;
 }
 
-.btn-primary {
-  background-color: $yeller !important;
-  color: $dark;
-}
 
 .btn-success { // keep this
   background-color: $yeller !important;
@@ -349,13 +345,25 @@ body{
 }
 
 .pg-theme-light{
+  .btn-primary {
+    background-color: $yeller !important;
+    color: $dark;
+  }
 }
 
 .pg-theme-vis {
-  text-transform: uppercase !important;
-  color: green !important;
+  .btn-primary {
+    background-color: black !important;
+    color: white;
+    text-transform: uppercase;
+  }
+
+  text-transform: uppercase;
 }
 
 .pg-theme-deep {
-font-family: serif !important;
+  .btn-primary {
+    background-color: $pinky !important;
+    color: $dark;
+  }
 }
