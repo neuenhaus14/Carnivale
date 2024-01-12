@@ -198,7 +198,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
               }}
               style={{
                 position: "fixed",
-                right: "20px",
+                right: "18px",
                 bottom: "82px",
                 backgroundColor: "transparent",
                 border: "none",
