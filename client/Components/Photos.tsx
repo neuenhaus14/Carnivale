@@ -129,7 +129,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
           <Button
           className="btn-success"
           size="lg"
-          disabled={description === ''}
+          disabled={file === null || description === ''}
           onClick={uploadFile}>
              {loading ? "Saving..." : "Save"}
           </Button>

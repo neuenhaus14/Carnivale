@@ -42,7 +42,7 @@ const HomeModal: React.FC<Props> = ( {
 
   return (
     <Modal show={isShow} onHide={initModal}>
-        <Modal.Header closeButton >
+        <Modal.Header id="modal-header" closeButton >
           <Modal.Title>Create a Post</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -96,8 +96,7 @@ const HomeModal: React.FC<Props> = ( {
             </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer>
-        <Button variant="danger" onClick={initModal}> Close </Button>
+        <Modal.Footer id="modal-footer">
         </Modal.Footer>
       </Modal>
   )
