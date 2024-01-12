@@ -13,7 +13,8 @@ import {
   Card,
   ButtonGroup,
 } from "react-bootstrap";
-import { ThemeContext } from './Context';
+import { ThemeContext } from "./Context";
+import ConfirmActionModal from "./ConfirmActionModal";
 
 interface SharedPost {
   upvotes: number;
@@ -72,7 +73,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     {}
   );
   const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
 
   const fetchSenderName = async (userId: number) => {
     try {
@@ -95,6 +96,8 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   const [pinVotingStatus, setPinVotingStatus] = useState<{
     [pinId: number]: "upvoted" | "downvoted" | "none";
   }>({});
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePostId, setDeletePostId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -393,6 +396,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     }
   };
 
+  const handleShowDeleteModal = (postId: number) => {
+    setDeletePostId(postId);
+    setShowDeleteModal(true);
+  };
+
   return (
     <Container className={`body ${theme}`}>
       <h1>
@@ -453,7 +461,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                           </div>
 
                           <div
-                            style={{ display: "flex", alignItems: "center" }}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              marginLeft: "-10px",
+                            }}
                           >
                             <button
                               style={{
@@ -526,7 +538,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                                 background: "transparent",
                                 marginLeft: "auto",
                               }}
-                              onClick={() => handleDelete(post.id)}
+                              onClick={() => handleShowDeleteModal(post.id)}
                             >
                               <BiSolidHide />
                             </Button>
@@ -588,7 +600,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                               }}
                             />
                             <div
-                              style={{ display: "flex", alignItems: "center" }}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                marginLeft: "-10px",
+                              }}
                             >
                               <button
                                 style={{
@@ -658,7 +674,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                                   background: "transparent",
                                   marginLeft: "auto",
                                 }}
-                                onClick={() => handleDelete(post.id)}
+                                onClick={() => handleShowDeleteModal(post.id)}
                               >
                                 <BiSolidHide />
                               </Button>
@@ -688,6 +704,14 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         draggable
         pauseOnHover
         theme="light"
+      />
+      <ConfirmActionModal
+        confirmActionFunction={() => handleDelete(deletePostId)}
+        setConfirmActionFunction={setDeletePostId}
+        confirmActionText="remove from your feed"
+        setConfirmActionText={setShowDeleteModal}
+        showConfirmActionModal={showDeleteModal}
+        setShowConfirmActionModal={setShowDeleteModal}
       />
     </Container>
   );
