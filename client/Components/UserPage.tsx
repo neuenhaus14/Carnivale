@@ -1,10 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import React, { useEffect, useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
 import ConfirmActionModal from './ConfirmActionModal';
-import { Button, Container, Row, Tab, Tabs, Dropdown, DropdownButton } from 'react-bootstrap';
+import {
+  Button,
+  Container,
+  Row,
+  Tab,
+  Tabs,
+  Dropdown,
+  DropdownButton,
+} from 'react-bootstrap';
 import { MdCancel } from 'react-icons/md';
 import { IoPersonRemoveSharp } from 'react-icons/io5';
 import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
@@ -15,18 +23,10 @@ dayjs.extend(relativeTime);
 
 import { useAuth0 } from '@auth0/auth0-react';
 import { ThemeContext } from './Context';
-import { useContext } from 'react';
 
 //                              add userId as prop to get it from App
-const UserPage: React.FC<UserPageProps> = ({
-  getLocation,
-  userId,
-  lng,
-  lat,
-  setTheme,
-
-}) => {
-  const [searchParams] = useSearchParams();
+const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
+  // const [searchParams] = useSearchParams();
   //const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
@@ -56,7 +56,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
   const [isNewEvent, setIsNewEvent] = useState(false);
 
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
 
   // logout functionality via auth0
   const { logout } = useAuth0();
@@ -64,7 +64,6 @@ const UserPage: React.FC<UserPageProps> = ({
   const getFriends = async () => {
     try {
       const friends = await axios.get(`/api/friends/getFriends/${userId}`);
-      // console.log('here', friends.data);
       setFriends(friends.data);
     } catch (err) {
       console.error('CLIENT ERROR: failed to GET user friends', err);
@@ -76,7 +75,6 @@ const UserPage: React.FC<UserPageProps> = ({
       const eventsOwned = await axios.get(
         `api/events/getEventsOwned/${userId}`
       );
-      // console.log('eventsOwned', eventsOwned.data);
       setEventsOwned(eventsOwned.data);
     } catch (err) {
       console.error('CLIENT ERROR: failed to get events owned', err);
@@ -118,7 +116,6 @@ const UserPage: React.FC<UserPageProps> = ({
       );
       const { requestsMadeUsers, requestsReceivedUsers } =
         friendRequestsData.data;
-      // console.log(requestsMadeUsers, requestsReceivedUsers)
       setFriendRequestsReceived(requestsReceivedUsers);
       setFriendRequestsMade(requestsMadeUsers);
     } catch (err) {
@@ -333,15 +330,14 @@ const UserPage: React.FC<UserPageProps> = ({
     }
   }
 
-  async function cancelFriendRequest (recipient_userId: number) {
+  async function cancelFriendRequest(recipient_userId: number) {
     const deleteResponse = await axios.delete(
       `/api/friends/cancelFriendRequest/${userId}-${recipient_userId}`
     );
-    //console.log(deleteResponse);
     getFriendRequests();
   }
 
-  async function answerFriendRequest (
+  async function answerFriendRequest(
     requester_userId: number,
     isConfirmed: boolean
   ) {
@@ -355,17 +351,14 @@ const UserPage: React.FC<UserPageProps> = ({
         },
       }
     );
-    //console.log('updated Relationship', updatedRelationship);
     getFriends();
     getFriendRequests();
   }
 
   async function unfriend(friendId: number) {
-    //console.log('inside unfriend', friendId);
     const deleteResponse = await axios.delete(
       `/api/friends/unfriend/${userId}-${friendId}`
     );
-    //console.log(deleteResponse)
     getFriends();
   }
 
@@ -373,13 +366,8 @@ const UserPage: React.FC<UserPageProps> = ({
     setNameOrPhoneForFriendRequest(e.target.value);
   }
 
-  // const setThemeContext = (theme: string) => {
-  //   console.log('theme from inside userPage', theme)
-  //   setTheme(theme)
-  // }
-
   return (
-    <Container className={`body ${theme}`} style={{ justifyContent: 'space-between' }}>
+    <Container className={`body ${theme}`}>
       <ConfirmActionModal
         confirmActionFunction={confirmActionFunction}
         setConfirmActionFunction={setConfirmActionFunction}
@@ -409,139 +397,136 @@ const UserPage: React.FC<UserPageProps> = ({
         showCreateModal={showCreateModal}
         friends={friends}
         userId={userId}
-        // isUserAttending={isUserAttending}
-        // setIsUserAttending={setIsUserAttending}
-        // getEventsInvited={getEventsInvited}
-        // getEventsParticipating={getEventsParticipating}
         isNewEvent={isNewEvent}
         setIsNewEvent={setIsNewEvent}
         lat={lat}
         lng={lng}
-        //getLocation={getLocation}
         eventType={'user'}
         getEventsOwned={getEventsOwned}
       />
 
-      <Row className='userPage-tabs'>
-        <Tabs defaultActiveKey='krewe'>
-          <Tab eventKey='krewe' title='Krewe'>
-            <h5> Krewe </h5>
-            {friends.length > 0 ? (
-              <div className='m-2'>{userFriendsItems}</div>
-            ) : (
-              <>
-                <div className='card-content text-center'>
-                  You're flying solo!
-                </div>
-                <div className='card-detail text-center'>
-                  Assemble your krewe by searching for friends below
-                </div>
-              </>
-            )}
+      <Row>
+        <div className='userPage-tabs' style={{position: 'absolute', top: '10vh'}}>
+          <Tabs defaultActiveKey='krewe'>
+            <Tab eventKey='krewe' title='Krewe'>
+              <h5> Krewe </h5>
+              {friends.length > 0 ? (
+                <div className='m-2'>{userFriendsItems}</div>
+              ) : (
+                <>
+                  <div className='card-content text-center'>
+                    You're flying solo!
+                  </div>
+                  <div className='card-detail text-center'>
+                    Assemble your krewe by searching for friends below
+                  </div>
+                </>
+              )}
 
-            <div className='d-flex flex-column align-items-center p-2'>
-              <input
-                style={{ width: '75vw' }}
-                placeholder='###-###-#### || First Last'
-                value={nameOrPhoneForFriendRequest}
-                onChange={handleNameOrPhoneInput}
-              ></input>
-              <div className='d-flex flew-row m-2'>
-                <small className='mx-1'>Invite to Krewe</small>
-                <Button
-                  className='mx-1'
-                  style={{ width: '23px' }}
-                  size='sm'
-                  variant='success'
-                  onClick={requestFriend}
-                >
-                  <FaEnvelope style={{ verticalAlign: '-2px' }} />
-                </Button>
+              <div className='d-flex flex-column align-items-center p-2'>
+                <input
+                  style={{ width: '75vw' }}
+                  placeholder='###-###-#### || First Last'
+                  value={nameOrPhoneForFriendRequest}
+                  onChange={handleNameOrPhoneInput}
+                ></input>
+                <div className='d-flex flew-row m-2'>
+                  <small className='mx-1'>Invite to Krewe</small>
+                  <Button
+                    className='mx-1'
+                    style={{ width: '23px' }}
+                    size='sm'
+                    variant='success'
+                    onClick={requestFriend}
+                  >
+                    <FaEnvelope style={{ verticalAlign: '-2px' }} />
+                  </Button>
+                </div>
               </div>
-            </div>
 
-            {
-              // conditional checks for outgoing requests
-              friendRequestsMade.length > 0 && (
-                <>
-                  <h5> Waiting on... </h5>
-                  <div>{requestsMadeItems}</div>
-                </>
-              )
-            }
-
-            {
-              // conditional checks for incoming requests
-              friendRequestsReceived.length > 0 && (
-                <>
-                  <h5> Respond to... </h5>
-                  <div>{requestsReceivedItems}</div>
-                </>
-              )
-            }
-          </Tab>
-
-          <Tab eventKey='calendar' title='Calendar'>
-            {
-              // conditional check: if no events owned or invited or attending, show default message
-              eventsOwned.length === 0 &&
-                eventsInvited.length === 0 &&
-                eventsParticipating.length === 0 && (
+              {
+                // conditional checks for outgoing requests
+                friendRequestsMade.length > 0 && (
                   <>
-                    <div className='card-content text-center mt-3'>
-                      Nothing going on in here!
-                    </div>
-                    <div className='card-detail text-center'>
-                      Make plans or connect with your Krewe to beef up your
-                      calendar.
-                    </div>
+                    <h5> Waiting on... </h5>
+                    <div>{requestsMadeItems}</div>
                   </>
                 )
-            }
+              }
 
-            {
-              // conditional check for events you own
-              eventsOwned.length > 0 && (
-                <>
-                  <div className='d-flex flex-dir-row align-items-baseline'>
-                    <h5>Your Plans</h5>
-                  </div>
-                  <div>{eventsOwnedItems}</div>
-                </>
-              )
-            }
+              {
+                // conditional checks for incoming requests
+                friendRequestsReceived.length > 0 && (
+                  <>
+                    <h5> Respond to... </h5>
+                    <div>{requestsReceivedItems}</div>
+                  </>
+                )
+              }
+            </Tab>
 
-            {
-              // conditional checks for events you've attending
-              eventsParticipating.length > 0 && (
-                <>
-                  <div className='d-flex flex-dir-row align-items-baseline'>
-                    <h5>Schedule</h5>
-                  </div>
-                  <div>{eventsParticipatingItems}</div>
-                </>
-              )
-            }
+            <Tab eventKey='calendar' title='Calendar'>
+              {
+                // conditional check: if no events owned or invited or attending, show default message
+                eventsOwned.length === 0 &&
+                  eventsInvited.length === 0 &&
+                  eventsParticipating.length === 0 && (
+                    <>
+                      <div className='card-content text-center mt-3'>
+                        Nothing going on in here!
+                      </div>
+                      <div className='card-detail text-center'>
+                        Make plans or connect with your Krewe to beef up your
+                        calendar.
+                      </div>
+                    </>
+                  )
+              }
 
-            {
-              // conditional checks for events you've invited to
-              eventsInvited.length > 0 && (
-                <>
-                  <div className='d-flex flex-dir-row align-items-baseline'>
-                    <h5>Archived & Invited</h5>
-                  </div>
-                  <div>{eventsInvitedItems}</div>
-                </>
-              )
-            }
-          </Tab>
-        </Tabs>
+              {
+                // conditional check for events you own
+                eventsOwned.length > 0 && (
+                  <>
+                    <div className='d-flex flex-dir-row align-items-baseline'>
+                      <h5>Your Plans</h5>
+                    </div>
+                    <div>{eventsOwnedItems}</div>
+                  </>
+                )
+              }
+
+              {
+                // conditional checks for events you've attending
+                eventsParticipating.length > 0 && (
+                  <>
+                    <div className='d-flex flex-dir-row align-items-baseline'>
+                      <h5>Schedule</h5>
+                    </div>
+                    <div>{eventsParticipatingItems}</div>
+                  </>
+                )
+              }
+
+              {
+                // conditional checks for events you've invited to
+                eventsInvited.length > 0 && (
+                  <>
+                    <div className='d-flex flex-dir-row align-items-baseline'>
+                      <h5>Archived & Invited</h5>
+                    </div>
+                    <div>{eventsInvitedItems}</div>
+                  </>
+                )
+              }
+            </Tab>
+          </Tabs>
+        </div>
       </Row>
 
       {/* Buttons for logout, other events */}
 
       <Row>
-        <div className='userPage-buttons-container'>
+        <div className='userPage-buttons-container' style={{position: 'absolute', bottom: '13vh'}}>
           <Button
             variant='primary'
             onClick={async () => {
@@ -576,13 +561,20 @@ const UserPage: React.FC<UserPageProps> = ({
           </Button>
 
           <DropdownButton
-          title='Select Theme'
-          drop='up'
-          id='theme-dropup'
-          variant='secondary'>
-              <Dropdown.Item onClick={()=>setTheme("pg-theme-light")}>Light</Dropdown.Item>
-              <Dropdown.Item onClick={()=>setTheme("pg-theme-vis")}>High Contrast</Dropdown.Item>
-              <Dropdown.Item onClick={()=>setTheme("pg-theme-deep")}>Deep Gras</Dropdown.Item>
+            title='Select Theme'
+            drop='up'
+            id='theme-dropup'
+            variant='secondary'
+          >
+            <Dropdown.Item onClick={() => setTheme('pg-theme-light')}>
+              Light
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setTheme('pg-theme-vis')}>
+              High Contrast
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setTheme('pg-theme-deep')}>
+              Deep Gras
+            </Dropdown.Item>
           </DropdownButton>
         </div>
       </Row>
@@ -591,7 +583,6 @@ const UserPage: React.FC<UserPageProps> = ({
 };
 
 interface UserPageProps {
-  getLocation: any;
   lng: number;
   lat: number;
   userId: number;

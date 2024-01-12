@@ -65,8 +65,6 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
         },
       }
     );
-
-    // console.log('eventCount', eventUpdateCount.data);
     getEventsInvited();
     getEventsParticipating();
     setIsUserAttending(!isUserAttending);
@@ -92,13 +90,6 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
       `/api/events/getPeopleForEvent/${userId}-${selectedEvent.id}`
     );
     const { eventParticipants, eventInvitees } = eventPeopleData.data;
-    console.log(
-      'inside getPeopleForEvent',
-      'eP',
-      eventParticipants,
-      'eI',
-      eventInvitees
-    );
     setInvitees(eventInvitees);
     setParticipants(eventParticipants);
   };
@@ -124,7 +115,6 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
           invitees: friendsToInvite,
         },
       });
-      // console.log('iR', inviteResponse)
       getPeopleForEvent();
       setFriendsToInvite([]);
     } catch (err) {
@@ -174,8 +164,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
       );
     });
 
-  ////////////////////////////////////////
-  // console.log('bottom of eventBasicModal. invitees', invitees, 'participants', participants)
+
   return (
     <Modal className={theme} show={showBasicModal} onHide={handleClose}>
       <Modal.Header>
