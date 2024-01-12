@@ -14,6 +14,8 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
 import { useAuth0 } from '@auth0/auth0-react';
+import { ThemeContext } from './Context';
+import { useContext } from 'react';
 
 //                              add userId as prop to get it from App
 const UserPage: React.FC<UserPageProps> = ({
@@ -53,6 +55,8 @@ const UserPage: React.FC<UserPageProps> = ({
   const [confirmActionText, setConfirmActionText] = useState('');
 
   const [isNewEvent, setIsNewEvent] = useState(false);
+
+  const theme = useContext(ThemeContext)
 
   // logout functionality via auth0
   const { logout } = useAuth0();
@@ -375,7 +379,7 @@ const UserPage: React.FC<UserPageProps> = ({
   // }
 
   return (
-    <Container className='body' style={{ justifyContent: 'space-between' }}>
+    <Container className={`body ${theme}`} style={{ justifyContent: 'space-between' }}>
       <ConfirmActionModal
         confirmActionFunction={confirmActionFunction}
         setConfirmActionFunction={setConfirmActionFunction}
@@ -576,9 +580,9 @@ const UserPage: React.FC<UserPageProps> = ({
           drop='up'
           id='theme-dropup'
           variant='secondary'>
-              <Dropdown.Item onClick={()=>setTheme("light")}>Light</Dropdown.Item>
-              <Dropdown.Item onClick={()=>setTheme("hi-vis")}>High Contrast</Dropdown.Item>
-              <Dropdown.Item onClick={()=>setTheme("deep-gras")}>Deep Gras</Dropdown.Item>
+              <Dropdown.Item onClick={()=>setTheme("pg-theme-light")}>Light</Dropdown.Item>
+              <Dropdown.Item onClick={()=>setTheme("pg-theme-vis")}>High Contrast</Dropdown.Item>
+              <Dropdown.Item onClick={()=>setTheme("pg-theme-deep")}>Deep Gras</Dropdown.Item>
           </DropdownButton>
         </div>
       </Row>

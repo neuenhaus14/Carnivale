@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import EventCreateModal from './EventCreateModal';
 import axios from 'axios';
@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Card } from 'react-bootstrap';
-
+import { ThemeContext } from './Context';
 interface EventPageProps {
   getLocation: any;
   lng: number;
@@ -20,6 +20,7 @@ const EventPage: React.FC<EventPageProps> = ({
   lat,
   userId,
 }) => {
+  const theme = useContext(ThemeContext)
   const [searchParams] = useSearchParams();
   // const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // will be passed to modal to manage invites
@@ -131,7 +132,7 @@ const EventPage: React.FC<EventPageProps> = ({
 
   // console.log('inside eventPage. isUserAttending', isUserAttending)
   return (
-    <div className='body'>
+    <div className={`body ${theme}`}>
       <h3 className='date-picker'>Select the Date</h3>
       <DatePicker
         className='date-picker'
