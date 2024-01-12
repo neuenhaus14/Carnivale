@@ -103,7 +103,7 @@ $tabUnselectedBorder: #e3e3e3;
 }
 
 .btn-success { // keep this
-  background-color: $greeny !important;
+  background-color: $yeller !important;
   color: white;
 }
 
@@ -182,6 +182,9 @@ background-color: $primaryColor;}
 
 .modal-title {
   font-family: 'Permanent Marker', serif;
+}
+#modal-footer{
+  background-color: $greeny;
 }
 
 .confirm-action-modal {
