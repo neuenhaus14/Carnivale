@@ -449,7 +449,7 @@ const UserPage: React.FC<UserPageProps> = ({
               <div className='d-flex flew-row m-2'>
                 <small className='mx-1'>Invite to Krewe</small>
                 <Button
-                  className='mx-1'
+                  className='mx-11'
                   style={{ width: '23px' }}
                   size='sm'
                   variant='success'
@@ -563,6 +563,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
           <Button
             variant='danger'
+            className='btn-danger'
             onClick={async () => {
               await setConfirmActionFunction(
                 () => () =>
@@ -580,9 +581,9 @@ const UserPage: React.FC<UserPageProps> = ({
           drop='up'
           id='theme-dropup'
           variant='secondary'>
-              <Dropdown.Item onClick={()=>setTheme("pg-theme-light")}>Light</Dropdown.Item>
-              <Dropdown.Item onClick={()=>setTheme("pg-theme-vis")}>High Contrast</Dropdown.Item>
-              <Dropdown.Item onClick={()=>setTheme("pg-theme-deep")}>Deep Gras</Dropdown.Item>
+              <Dropdown.Item onClick={()=>setTheme("pg-theme-light")}>Regular Mode</Dropdown.Item>
+              <Dropdown.Item onClick={()=>setTheme("pg-theme-vis")}>Colorblind Mode</Dropdown.Item>
+              <Dropdown.Item onClick={()=>setTheme("pg-theme-deep")}>Deep Gras Mode</Dropdown.Item>
           </DropdownButton>
         </div>
       </Row>
