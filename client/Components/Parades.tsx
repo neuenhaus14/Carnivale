@@ -3,7 +3,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import EventCreateModal from "./EventCreateModal";
 import { Button, Container } from "react-bootstrap";
-import { FaRoute } from "react-icons/fa6";
+import { FaRoute, FaCirclePlus } from "react-icons/fa6";
 
 interface ParadeInfo {
   title: string;
@@ -63,6 +63,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
     startTime: null,
     endTime: null,
   });
+  const [hideParadeSelector, setHideParadeSelector] = useState(false);
 
   // need to get friends in order to know
   // who we can invite to the event being created
@@ -140,32 +141,51 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
     fetchParadeList();
 
     userId && getFriends();
-
   }, [userId]);
+
+  const handleModalClose = () => {
+    setHideParadeSelector(false);
+  };
 
   return (
     <Container className="body">
       <div className="card">
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <label htmlFor="paradeSelect">Select a Parade: </label>
-          <select
-            id="paradeSelect"
-            onChange={handleParadeChange}
-            value={selectedParade || ""}
-          >
-            <option value="" disabled>
-              Select a parade
-            </option>
-            {paradeList.map((paradeName) => (
-              <option key={paradeName} value={paradeName}>
-                {paradeName}
-              </option>
-            ))}
-          </select>
+        <label style={{ textAlign: "center" }} htmlFor="paradeSelect">
+          Select a Parade:{" "}
+        </label>
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: "10px",
+            position: "sticky",
+            top: "54px",
+            backgroundColor: "none",
+            zIndex: 2000,
+          }}
+        >
+          {!hideParadeSelector && (
+            <>
+              <select
+                id="paradeSelect"
+                onChange={handleParadeChange}
+                value={selectedParade || ""}
+              >
+                <option value="" disabled>
+                  Select a parade
+                </option>
+                {paradeList.map((paradeName) => (
+                  <option key={paradeName} value={paradeName}>
+                    {paradeName}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
 
-          {selectedParade && (
-            <Button
+          {selectedParade && !hideParadeSelector && (
+            <button
               onClick={async () => {
+                setHideParadeSelector(true);
                 await setIsNewEvent(true);
                 await setShowCreateModal(true);
                 await setSelectedEvent({
@@ -176,10 +196,26 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
                   startTime: null,
                 });
               }}
-              style={{ marginRight: "10px" }}
+              style={{
+                position: "fixed",
+                right: "20px",
+                bottom: "82px",
+                backgroundColor: "transparent",
+                border: "none",
+                outline: "none",
+                cursor: "pointer",
+              }}
             >
-              Create Event
-            </Button>
+              <FaCirclePlus
+                style={{
+                  color: "#cf40f5",
+                  width: "60px",
+                  height: "60px",
+                  border: "5px solid #E7ABFF",
+                  borderRadius: "50%",
+                }}
+              />
+            </button>
           )}
         </div>
 
@@ -219,12 +255,28 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
                   marginRight: "10px",
                 }}
               />
-              <div>
-                <p>
-                  Start Time:{" "}
-                  {dayjs(paradeInfo.startDate).format("MMMM D YYYY, h:mm:ss A")}
+              <div style={{ textAlign: "left" }}>
+                <h4>Start Time: </h4>
+                <p
+                  style={{
+                    margin: "-2px",
+                    marginTop: "-10px",
+                    marginBottom: "5px",
+                  }}
+                >
+                  {dayjs(paradeInfo.startDate).format("MMMM D YYYY, h:mm A")}
                 </p>
-                <p>Parade Location: {paradeInfo.location}</p>
+                <h4>Parade Location:</h4>
+                <p
+                  style={{
+                    margin: "-2px",
+                    marginTop: "-10px",
+                    marginBottom: "5px",
+                  }}
+                >
+                  {" "}
+                  {paradeInfo.location}
+                </p>
               </div>
             </div>
 
@@ -356,7 +408,12 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
         <EventCreateModal
           selectedEvent={selectedEvent}
           setSelectedEvent={setSelectedEvent}
-          setShowCreateModal={setShowCreateModal}
+          setShowCreateModal={(value: boolean) => {
+            setShowCreateModal(value);
+            if (!value) {
+              handleModalClose();
+            }
+          }}
           showCreateModal={showCreateModal}
           friends={friends}
           userId={userId}
