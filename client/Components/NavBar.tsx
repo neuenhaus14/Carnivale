@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from "react";
 import { useAuth0 } from "@auth0/auth0-react"; //TODO: temporary
 import { Link, To, useNavigate } from "react-router-dom";
 import { Navbar, Button} from 'react-bootstrap/';
@@ -6,6 +6,7 @@ import { MdDynamicFeed } from "react-icons/md";
 import { VscFeedback } from "react-icons/vsc"
 import { FaMapMarkedAlt } from "react-icons/fa"
 import { IoHomeOutline, IoPeople } from "react-icons/io5";
+import { ThemeContext } from "./Context";
 
 
 const NavBar = () => {
@@ -13,11 +14,11 @@ const NavBar = () => {
   const handleNavigation = (path: To) => {
     navigate(path);
   };
-
+  const theme = useContext(ThemeContext)
   const { logout } = useAuth0();
 
   return (
-      <Navbar fixed="bottom" className="bottom-nav">
+      <Navbar fixed="bottom" className={`${theme} bottom-nav`}>
 
           <div className="d-flex flex-column">
           <Button

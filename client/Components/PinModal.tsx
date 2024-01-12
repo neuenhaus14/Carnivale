@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import axios from 'axios'
 import Photos from './Photos'
 import CreatePinMap from './CreatePinMap'
-
+import { ThemeContext } from './Context'
 interface Props {
   setShowModal: any
   markers: any
@@ -16,6 +16,7 @@ interface Props {
 }
 
 const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected, userLocation} ) => {
+  const theme = useContext(ThemeContext)
   const [isShow, setShow] = useState(true);
   const [isToilet, setIsToilet] =useState(false);
   const [isFood, setIsFood] =useState(false);
@@ -96,7 +97,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     <>
     { isPinSelected
     ? (
-      <Modal show={isShow} onHide={initModal}>
+      <Modal className={theme} show={isShow} onHide={initModal}>
           <Modal.Header id="modal-header" closeButton onClick={initModal}>
             <Modal.Title > {pinCategory(selectedPin[0].pinCategory)} Pins</Modal.Title>
           </Modal.Header>
@@ -135,9 +136,6 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
             ))}
             </Form.Group>
           </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={initModal} > Close </Button>
-          </Modal.Footer>
           </div>
               )
             }
@@ -197,7 +195,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
             </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer id="modal-footer">
         {/* <Button onClick={initModal}> Close </Button> */}
         </Modal.Footer>
       </Modal>)

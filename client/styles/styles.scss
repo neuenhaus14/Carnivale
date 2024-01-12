@@ -97,13 +97,9 @@ $tabUnselectedBorder: #e3e3e3;
   border: $secondaryColor solid 2px;
 }
 
-.btn-primary {
-  background-color: $yeller !important;
-  color: $dark;
-}
 
 .btn-success { // keep this
-  background-color: $greeny !important;
+  background-color: $yeller !important;
   color: white;
 }
 
@@ -182,6 +178,9 @@ background-color: $primaryColor;}
 
 .modal-title {
   font-family: 'Permanent Marker', serif;
+}
+#modal-footer{
+  background-color: $greeny;
 }
 
 .confirm-action-modal {
@@ -343,4 +342,28 @@ body{
 
 .footer {
   text-align: center;
+}
+
+.pg-theme-light{
+  .btn-primary {
+    background-color: $yeller !important;
+    color: $dark;
+  }
+}
+
+.pg-theme-vis {
+  .btn-primary {
+    background-color: black !important;
+    color: white;
+    text-transform: uppercase;
+  }
+
+  text-transform: uppercase;
+}
+
+.pg-theme-deep {
+  .btn-primary {
+    background-color: $pinky !important;
+    color: $dark;
+  }
 }

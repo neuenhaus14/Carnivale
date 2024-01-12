@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {Navbar, Image} from 'react-bootstrap/';
 import axios from "axios";
-
+import { ThemeContext } from "./Context";
 
 interface TopNavBarProps {
   title: string;
@@ -12,7 +12,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({title}) => {
   const [location, setLocation] = useState('');
   const [currWeather, setCurrWeather] = useState("");
   const [currTemp, setCurrTemp] = useState("");
-
+  const theme = useContext(ThemeContext)
 
   const getWeather = async (pos: any) => {
     const crd = pos.coords;
@@ -42,7 +42,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({title}) => {
 
 
 return (
-  <Navbar fixed="top" className="top-nav">
+  <Navbar fixed="top" className={`top-nav ${theme}`}>
     <Image src="img/pgLogo.png" style={{height: '6vh', width: 'auto'}}/>
     {title}
     <div style={{display: "inline-block"}}>

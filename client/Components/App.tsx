@@ -30,12 +30,11 @@ import { ThemeContext } from './Context';
 import TopNavBar from './TopNavBar';
 
 
-
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [theme, setTheme] = useState('light')
+  const [theme, setTheme] = useState('pg-theme-light')
 
   const [lng, setLng] = useState(0);
   const [lat, setLat] = useState(0);

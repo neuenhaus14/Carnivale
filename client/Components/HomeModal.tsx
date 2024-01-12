@@ -1,6 +1,8 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import Photos from './Photos'
+import { ThemeContext } from './Context'
+
 
 //CHILD OF HOMEPAGE
 interface Props {
@@ -13,6 +15,7 @@ interface Props {
 const HomeModal: React.FC<Props> = ( {
   setShowModal, lat, lng, userId
 } ) => {
+  const theme = useContext(ThemeContext)
   const [isShow, setIsShow] = useState(true);
   const [isThrow, setIsThrow] = useState(false);
   const [isCostume, setIsCostume] = useState(false);
@@ -41,8 +44,8 @@ const HomeModal: React.FC<Props> = ( {
 
 
   return (
-    <Modal show={isShow} onHide={initModal}>
-        <Modal.Header closeButton >
+    <Modal className={theme} show={isShow} onHide={initModal}>
+        <Modal.Header id="modal-header" closeButton >
           <Modal.Title>Create a Post</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -96,8 +99,7 @@ const HomeModal: React.FC<Props> = ( {
             </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer>
-        <Button variant="danger" onClick={initModal}> Close </Button>
+        <Modal.Footer id="modal-footer">
         </Modal.Footer>
       </Modal>
   )

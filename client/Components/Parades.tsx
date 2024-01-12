@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import EventCreateModal from "./EventCreateModal";
 import { Button, Container } from "react-bootstrap";
+
 import { FaRoute, FaCirclePlus } from "react-icons/fa6";
+
+
+import { ThemeContext } from "./Context";
 
 interface ParadeInfo {
   title: string;
@@ -65,6 +69,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   });
   const [hideParadeSelector, setHideParadeSelector] = useState(false);
 
+  const theme = useContext(ThemeContext)
   // need to get friends in order to know
   // who we can invite to the event being created
   const getFriends = async () => {
@@ -148,7 +153,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   };
 
   return (
-    <Container className="body">
+    <Container className={`body ${theme}`}>
       <div className="card">
         <label style={{ textAlign: "center" }} htmlFor="paradeSelect">
           Select a Parade:{" "}
