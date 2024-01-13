@@ -237,6 +237,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
 
     if (!twelveHourClock) {
+      if (hour.length===1){
+        hour = `0${hour}`
+      }
       return `${hour}:${minute}`;
     }
 

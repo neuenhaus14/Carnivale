@@ -425,7 +425,7 @@ const UserPage: React.FC<UserPageProps> = ({
   function handleNameOrPhoneInput(e: any) {
     setNameOrPhoneForFriendRequest(e.target.value);
   }
-
+  console.log('bottom of uP, eventsOwned', eventsOwned)
   return (
     <Container className={`body ${theme}`}>
       <ToastContainer
