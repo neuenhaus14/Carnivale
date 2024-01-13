@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import EventBasicModal from './EventBasicModal';
-import EventCreateModal from './EventCreateModal';
-import ConfirmActionModal from './ConfirmActionModal';
+import React, { useEffect, useState, useContext } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import EventBasicModal from "./EventBasicModal";
+import EventCreateModal from "./EventCreateModal";
+import ConfirmActionModal from "./ConfirmActionModal";
 import {
   Button,
   Container,
@@ -13,44 +13,39 @@ import {
   Tabs,
   Dropdown,
   DropdownButton,
-} from 'react-bootstrap';
-import { MdCancel } from 'react-icons/md';
-import { IoPersonRemoveSharp } from 'react-icons/io5';
-import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
-import { FaEnvelope } from 'react-icons/fa';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import isBetween from 'dayjs/plugin/isBetween';
+} from "react-bootstrap";
+import { MdCancel } from "react-icons/md";
+import { IoPersonRemoveSharp } from "react-icons/io5";
+import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
+import { FaEnvelope } from "react-icons/fa";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import isBetween from "dayjs/plugin/isBetween";
 dayjs.extend(relativeTime);
 dayjs.extend(isBetween);
-import { useAuth0 } from '@auth0/auth0-react';
-import { ThemeContext } from './Context';
-import { ToastContainer, toast } from 'react-toastify';
+import { useAuth0 } from "@auth0/auth0-react";
+import { ThemeContext } from "./Context";
+import { ToastContainer, toast } from "react-toastify";
 //                              add userId as prop to get it from App
-const UserPage: React.FC<UserPageProps> = ({
-  userId,
-  lng,
-  lat,
-  setTheme,
-}) => {
+const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
   // const [searchParams] = useSearchParams();
   // const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
   const [eventsParticipating, setEventsParticipating] = useState([
-    { name: 'event1' },
+    { name: "event1" },
   ]);
   const [eventsInvited, setEventsInvited] = useState([
     {
-      event: { name: 'event2' },
-      sender: 'Evan Perry',
+      event: { name: "event2" },
+      sender: "Evan Perry",
     },
   ]);
-  const [eventsOwned, setEventsOwned] = useState([{ name: 'event3' }]);
+  const [eventsOwned, setEventsOwned] = useState([{ name: "event3" }]);
 
   const [nameOrPhoneForFriendRequest, setNameOrPhoneForFriendRequest] =
-    useState('');
+    useState("");
 
   const [selectedEvent, setSelectedEvent] = useState({
     latitude: 0,
@@ -64,9 +59,11 @@ const UserPage: React.FC<UserPageProps> = ({
 
   const [showConfirmActionModal, setShowConfirmActionModal] = useState(false);
   const [confirmActionFunction, setConfirmActionFunction] = useState(null);
-  const [confirmActionText, setConfirmActionText] = useState('');
+  const [confirmActionText, setConfirmActionText] = useState("");
 
   const [isNewEvent, setIsNewEvent] = useState(false);
+
+  const [showGif, setShowGif] = useState(false);
 
   const theme = useContext(ThemeContext);
 
@@ -78,7 +75,7 @@ const UserPage: React.FC<UserPageProps> = ({
       const friends = await axios.get(`/api/friends/getFriends/${userId}`);
       setFriends(friends.data);
     } catch (err) {
-      console.error('CLIENT ERROR: failed to GET user friends', err);
+      console.error("CLIENT ERROR: failed to GET user friends", err);
     }
   };
 
@@ -89,7 +86,7 @@ const UserPage: React.FC<UserPageProps> = ({
       );
       setEventsOwned(eventsOwned.data);
     } catch (err) {
-      console.error('CLIENT ERROR: failed to get events owned', err);
+      console.error("CLIENT ERROR: failed to get events owned", err);
     }
   };
 
@@ -112,7 +109,7 @@ const UserPage: React.FC<UserPageProps> = ({
       const eventsInvited = await axios.get(
         `api/events/getEventsInvited/${userId}`
       );
-      console.log('eventsInvited', eventsInvited.data);
+      console.log("eventsInvited", eventsInvited.data);
       setEventsInvited(eventsInvited.data);
     } catch (err) {
       console.error(
@@ -132,7 +129,7 @@ const UserPage: React.FC<UserPageProps> = ({
       setFriendRequestsReceived(requestsReceivedUsers);
       setFriendRequestsMade(requestsMadeUsers);
     } catch (err) {
-      console.error('CLIENT ERROR: could not GET friend requests ', err);
+      console.error("CLIENT ERROR: could not GET friend requests ", err);
     }
   };
 
@@ -156,14 +153,14 @@ const UserPage: React.FC<UserPageProps> = ({
   if (friends.length > 0) {
     userFriendsItems = friends.map((friend: any, index: number) => {
       return (
-        <div className='d-flex' key={index}>
-          <div className='flex-grow-1  mx-5'>
+        <div className="d-flex" key={index}>
+          <div className="flex-grow-1  mx-5">
             {friend.firstName} {`${friend.lastName.slice(0, 1)}.`}
           </div>
-          <div className='mx-5'>
+          <div className="mx-5">
             <Button
-              size='sm'
-              variant='danger'
+              size="sm"
+              variant="danger"
               onClick={async () => {
                 await setConfirmActionFunction(() => () => unfriend(friend.id));
                 await setConfirmActionText(
@@ -172,8 +169,8 @@ const UserPage: React.FC<UserPageProps> = ({
                 await setShowConfirmActionModal(true);
               }}
             >
-              {/*'REMOVE '*/}{' '}
-              <IoPersonRemoveSharp style={{ verticalAlign: '-2px' }} />
+              {/*'REMOVE '*/}{" "}
+              <IoPersonRemoveSharp style={{ verticalAlign: "-2px" }} />
             </Button>
           </div>
         </div>
@@ -185,14 +182,14 @@ const UserPage: React.FC<UserPageProps> = ({
   if (friendRequestsMade.length > 0) {
     requestsMadeItems = friendRequestsMade.map((requestee, index: number) => {
       return (
-        <div className='d-flex' key={index}>
-          <div className='flex-grow-1  mx-5'>
+        <div className="d-flex" key={index}>
+          <div className="flex-grow-1  mx-5">
             {requestee.firstName} {`${requestee.lastName.slice(0, 1)}.`}
           </div>
-          <div className='mx-5'>
+          <div className="mx-5">
             <Button
-              variant='danger'
-              size='sm'
+              variant="danger"
+              size="sm"
               // onClick={() => cancelFriendRequest(requestee.id)}
               onClick={async () => {
                 await setConfirmActionFunction(
@@ -204,7 +201,7 @@ const UserPage: React.FC<UserPageProps> = ({
                 await setShowConfirmActionModal(true);
               }}
             >
-              <MdCancel style={{ verticalAlign: '-2px' }} />
+              <MdCancel style={{ verticalAlign: "-2px" }} />
             </Button>
           </div>
         </div>
@@ -216,23 +213,23 @@ const UserPage: React.FC<UserPageProps> = ({
   if (friendRequestsReceived.length > 0) {
     requestsReceivedItems = friendRequestsReceived.map((requester, index) => {
       return (
-        <div className='d-flex' key={index}>
-          <div className='flex-grow-1  mx-5'>
+        <div className="d-flex" key={index}>
+          <div className="flex-grow-1  mx-5">
             {requester.firstName} {`${requester.lastName.slice(0, 1)}.`}
           </div>
-          <div className='mx-5'>
+          <div className="mx-5">
             <Button
-              className='mx-1'
-              size='sm'
-              variant='success'
+              className="mx-1"
+              size="sm"
+              variant="success"
               onClick={() => answerFriendRequest(requester.id, true)}
             >
-              <FaThumbsUp style={{ verticalAlign: '-2px' }} />
+              <FaThumbsUp style={{ verticalAlign: "-2px" }} />
             </Button>
             <Button
-              className='mx-1'
-              size='sm'
-              variant='danger'
+              className="mx-1"
+              size="sm"
+              variant="danger"
               // onClick={() => answerFriendRequest(requester.id, false)}
               onClick={async () => {
                 await setConfirmActionFunction(
@@ -244,7 +241,7 @@ const UserPage: React.FC<UserPageProps> = ({
                 await setShowConfirmActionModal(true);
               }}
             >
-              <FaThumbsDown style={{ verticalAlign: '-2px' }} />
+              <FaThumbsDown style={{ verticalAlign: "-2px" }} />
             </Button>
           </div>
         </div>
@@ -269,8 +266,8 @@ const UserPage: React.FC<UserPageProps> = ({
           }}
           style={{
             textDecoration: now.isAfter(event.endTime)
-              ? 'line-through'
-              : 'none',
+              ? "line-through"
+              : "none",
           }}
         >
           <b>{event.name} </b>
@@ -301,8 +298,8 @@ const UserPage: React.FC<UserPageProps> = ({
             }}
             style={{
               textDecoration: now.isAfter(event.endTime)
-                ? 'line-through'
-                : 'none',
+                ? "line-through"
+                : "none",
             }}
           >
             <b>{event.name} </b>
@@ -333,8 +330,8 @@ const UserPage: React.FC<UserPageProps> = ({
           }}
           style={{
             textDecoration: now.isAfter(invitation.event.endTime)
-              ? 'line-through'
-              : 'none',
+              ? "line-through"
+              : "none",
           }}
         >
           <b>{invitation.event.name} </b>
@@ -371,17 +368,17 @@ const UserPage: React.FC<UserPageProps> = ({
   async function requestFriend() {
     try {
       // checking for phoneNumber
-      let phoneForFriendRequest = '';
-      let nameForFriendRequest = '';
+      let phoneForFriendRequest = "";
+      let nameForFriendRequest = "";
 
-      if (nameOrPhoneForFriendRequest.indexOf('-') !== -1) {
+      if (nameOrPhoneForFriendRequest.indexOf("-") !== -1) {
         phoneForFriendRequest = nameOrPhoneForFriendRequest;
-      } else if (nameOrPhoneForFriendRequest.indexOf(' ') !== -1) {
+      } else if (nameOrPhoneForFriendRequest.indexOf(" ") !== -1) {
         nameForFriendRequest = nameOrPhoneForFriendRequest;
       }
 
       const friendRequestResponse = await axios.post(
-        '/api/friends/requestFriend',
+        "/api/friends/requestFriend",
         {
           friendRequest: {
             requester_userId: userId,
@@ -391,20 +388,20 @@ const UserPage: React.FC<UserPageProps> = ({
         }
       );
 
-      setNameOrPhoneForFriendRequest('');
+      setNameOrPhoneForFriendRequest("");
       getFriendRequests();
-      toast('🎭 Krewe invite sent! 🎭', {
-        position: 'top-right',
+      toast("🎭 Krewe invite sent! 🎭", {
+        position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: 'light',
+        theme: "light",
       });
     } catch (err) {
-      console.error('CLIENT ERROR: failed to POST friend request', err);
+      console.error("CLIENT ERROR: failed to POST friend request", err);
     }
   }
 
@@ -421,7 +418,7 @@ const UserPage: React.FC<UserPageProps> = ({
   ) {
     try {
       const updatedRelationship = await axios.patch(
-        '/api/friends/answerFriendRequest',
+        "/api/friends/answerFriendRequest",
         {
           answer: {
             requester_userId,
@@ -433,19 +430,19 @@ const UserPage: React.FC<UserPageProps> = ({
       getFriends();
       getFriendRequests();
       if (isConfirmed === true) {
-        toast('🎭 Krewe invite accepted! 🎭', {
-          position: 'top-right',
+        toast("🎭 Krewe invite accepted! 🎭", {
+          position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: 'light',
+          theme: "light",
         });
       }
     } catch (err) {
-      console.log('CLIENT ERROR: failed to answer friend request', err);
+      console.log("CLIENT ERROR: failed to answer friend request", err);
     }
   }
 
@@ -459,11 +456,18 @@ const UserPage: React.FC<UserPageProps> = ({
   function handleNameOrPhoneInput(e: any) {
     setNameOrPhoneForFriendRequest(e.target.value);
   }
+  const handleDeepGrasMode = () => {
+    setTheme("pg-theme-deep");
+
+    setShowGif(true);
+
+    setTimeout(() => setShowGif(false), 5000);
+  };
 
   return (
     <Container className={`body ${theme}`}>
       <ToastContainer
-        position='top-right'
+        position="top-right"
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
@@ -472,7 +476,7 @@ const UserPage: React.FC<UserPageProps> = ({
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme='light'
+        theme="light"
       />
 
       <ConfirmActionModal
@@ -508,48 +512,48 @@ const UserPage: React.FC<UserPageProps> = ({
         setIsNewEvent={setIsNewEvent}
         lat={lat}
         lng={lng}
-        eventType={'user'}
+        eventType={"user"}
         getEventsOwned={getEventsOwned}
       />
 
       <Row>
         <div
-          className='userPage-tabs'
-          style={{ position: 'absolute', top: '10vh' }}
+          className="userPage-tabs"
+          style={{ position: "absolute", top: "10vh" }}
         >
-          <Tabs defaultActiveKey='krewe'>
-            <Tab eventKey='krewe' title='Krewe'>
+          <Tabs defaultActiveKey="krewe">
+            <Tab eventKey="krewe" title="Krewe">
               <h5> Krewe </h5>
               {friends.length > 0 ? (
-                <div className='m-2'>{userFriendsItems}</div>
+                <div className="m-2">{userFriendsItems}</div>
               ) : (
                 <>
-                  <div className='card-content text-center'>
+                  <div className="card-content text-center">
                     You're flying solo!
                   </div>
-                  <div className='card-detail text-center'>
+                  <div className="card-detail text-center">
                     Assemble your krewe by searching for friends below
                   </div>
                 </>
               )}
 
-              <div className='d-flex flex-column align-items-center p-2'>
+              <div className="d-flex flex-column align-items-center p-2">
                 <input
-                  style={{ width: '75vw' }}
-                  placeholder='###-###-#### || First Last'
+                  style={{ width: "75vw" }}
+                  placeholder="###-###-#### || First Last"
                   value={nameOrPhoneForFriendRequest}
                   onChange={handleNameOrPhoneInput}
                 ></input>
-                <div className='d-flex flew-row m-2'>
-                  <small className='mx-1'>Invite to Krewe</small>
+                <div className="d-flex flew-row m-2">
+                  <small className="mx-1">Invite to Krewe</small>
                   <Button
-                    className='mx-1'
-                    style={{ width: '23px' }}
-                    size='sm'
-                    variant='success'
+                    className="mx-1"
+                    style={{ width: "23px" }}
+                    size="sm"
+                    variant="success"
                     onClick={requestFriend}
                   >
-                    <FaEnvelope style={{ verticalAlign: '-2px' }} />
+                    <FaEnvelope style={{ verticalAlign: "-2px" }} />
                   </Button>
                 </div>
               </div>
@@ -575,17 +579,17 @@ const UserPage: React.FC<UserPageProps> = ({
               }
             </Tab>
 
-            <Tab eventKey='calendar' title='Calendar'>
+            <Tab eventKey="calendar" title="Calendar">
               {
                 // conditional check: if no events owned or invited or attending, show default message
                 eventsOwned.length === 0 &&
                   eventsInvited.length === 0 &&
                   eventsParticipating.length === 0 && (
                     <>
-                      <div className='card-content text-center mt-3'>
+                      <div className="card-content text-center mt-3">
                         Nothing going on in here!
                       </div>
-                      <div className='card-detail text-center'>
+                      <div className="card-detail text-center">
                         Make plans or connect with your Krewe to beef up your
                         calendar.
                       </div>
@@ -597,7 +601,7 @@ const UserPage: React.FC<UserPageProps> = ({
                 // conditional check for events you own
                 eventsOwned.length > 0 && (
                   <>
-                    <div className='d-flex flex-dir-row align-items-baseline'>
+                    <div className="d-flex flex-dir-row align-items-baseline">
                       <h5>Your Plans</h5>
                     </div>
                     <div>{eventsOwnedItems}</div>
@@ -609,7 +613,7 @@ const UserPage: React.FC<UserPageProps> = ({
                 // conditional checks for events you've attending
                 eventsParticipating.length > 0 && (
                   <>
-                    <div className='d-flex flex-dir-row align-items-baseline'>
+                    <div className="d-flex flex-dir-row align-items-baseline">
                       <h5>Calendar</h5>
                     </div>
                     <div>{eventsParticipatingItems}</div>
@@ -621,7 +625,7 @@ const UserPage: React.FC<UserPageProps> = ({
                 // conditional checks for events you've invited to
                 eventsInvited.length > 0 && (
                   <>
-                    <div className='d-flex flex-dir-row align-items-baseline'>
+                    <div className="d-flex flex-dir-row align-items-baseline">
                       <h5>Invited</h5>
                     </div>
                     <div>{eventsInvitedItems}</div>
@@ -637,11 +641,11 @@ const UserPage: React.FC<UserPageProps> = ({
 
       <Row>
         <div
-          className='userPage-buttons-container'
-          style={{ position: 'absolute', bottom: '13vh' }}
+          className="userPage-buttons-container"
+          style={{ position: "absolute", bottom: "13vh" }}
         >
           <Button
-            variant='primary'
+            variant="primary"
             onClick={async () => {
               await setIsNewEvent(true);
               await setIsUserAttending(true);
@@ -652,16 +656,16 @@ const UserPage: React.FC<UserPageProps> = ({
           </Button>
 
           {/* Link below is styled like a bootstrap button */}
-          <Link className='btn btn-primary' role='button' to='/eventpage'>
+          <Link className="btn btn-primary" role="button" to="/eventpage">
             Live Music
           </Link>
-          <Link className='btn btn-primary' role='button' to='/parades'>
+          <Link className="btn btn-primary" role="button" to="/parades">
             Parades
           </Link>
 
           <Button
-            variant='danger'
-            className='btn-danger'
+            variant="danger"
+            className="btn-danger"
             onClick={async () => {
               await setConfirmActionFunction(
                 () => () =>
@@ -675,15 +679,29 @@ const UserPage: React.FC<UserPageProps> = ({
           </Button>
 
           <DropdownButton
-          title='Select Theme'
-          drop='up'
-          id='theme-dropup'
-          variant='secondary'>
-              <Dropdown.Item onClick={()=>setTheme("pg-theme-light")}>Regular Mode</Dropdown.Item>
-              <Dropdown.Item onClick={()=>setTheme("pg-theme-vis")}>Colorblind Mode</Dropdown.Item>
-              <Dropdown.Item onClick={()=>setTheme("pg-theme-deep")}>Deep Gras Mode</Dropdown.Item>
+            title="Select Theme"
+            drop="up"
+            id="theme-dropup"
+            variant="secondary"
+          >
+            <Dropdown.Item onClick={() => setTheme("pg-theme-light")}>
+              Regular Mode
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setTheme("pg-theme-vis")}>
+              Colorblind Mode
+            </Dropdown.Item>
+            <Dropdown.Item onClick={handleDeepGrasMode}>
+              Deep Gras Mode
+            </Dropdown.Item>
           </DropdownButton>
         </div>
+        {showGif && (
+          <img
+            src="/img/mardi-gras.gif"
+            alt="Mardi Gras GIF"
+            style={{ width: "100%", height: "auto", marginTop: "175px" }}
+          />
+        )}
       </Row>
     </Container>
   );
