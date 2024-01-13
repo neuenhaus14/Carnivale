@@ -267,6 +267,7 @@ const UserPage: React.FC<UserPageProps> = ({
             setShowCreateModal(true);
             setSelectedEvent(event);
           }}
+          style={{textDecoration: now.isAfter(event.endTime) ? 'line-through': 'none'}}
         >
           {event.name}{' '}
           {now.isBetween(event.startTime, event.endTime) ? (
@@ -292,6 +293,7 @@ const UserPage: React.FC<UserPageProps> = ({
               setShowBasicModal(true);
               setSelectedEvent(event);
             }}
+            style={{textDecoration: now.isAfter(event.endTime) ? 'line-through': 'none'}}
           >
             {event.name}
             {now.isBetween(event.startTime, event.endTime) ? (
@@ -317,6 +319,7 @@ const UserPage: React.FC<UserPageProps> = ({
             setShowBasicModal(true);
             setSelectedEvent(invitation.event);
           }}
+          style={{textDecoration: now.isAfter(invitation.event.endTime) ? 'line-through': 'none'}}
         >
           {invitation.sender}: {invitation.event.name}
           {now.isBetween(invitation.event.startTime, invitation.event.endTime) ? (
@@ -585,7 +588,7 @@ const UserPage: React.FC<UserPageProps> = ({
                 eventsInvited.length > 0 && (
                   <>
                     <div className='d-flex flex-dir-row align-items-baseline'>
-                      <h5>Archived & Invited</h5>
+                      <h5>Invited</h5>
                     </div>
                     <div>{eventsInvitedItems}</div>
                   </>

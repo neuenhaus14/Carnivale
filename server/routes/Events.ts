@@ -156,10 +156,10 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
         return dayjs(invite.event.endTime).isAfter(oneDayAgo);
       }).sort((a:any,b:any) => {
         if (dayjs(a.event.startTime).isBefore(b.event.startTime)) {
-          return 1;
+          return -1;
         }
         else if (dayjs(a.event.startTime).isAfter(b.event.startTime)) {
-          return -1;
+          return 1;
         }
         else if (dayjs(a.event.startTime).isSame(b.event.startTime)){
           return 0;
