@@ -20,8 +20,9 @@ import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import { FaEnvelope } from 'react-icons/fa';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(relativeTime);
-
+dayjs.extend(isBetween);
 import { useAuth0 } from '@auth0/auth0-react';
 import { ThemeContext } from './Context';
 import { ToastContainer, toast } from 'react-toastify';
@@ -30,7 +31,8 @@ const UserPage: React.FC<UserPageProps> = ({
   //userId,
   lng,
   lat,
-  setTheme }) => {
+  setTheme,
+}) => {
   const [searchParams] = useSearchParams();
   const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
@@ -39,7 +41,12 @@ const UserPage: React.FC<UserPageProps> = ({
   const [eventsParticipating, setEventsParticipating] = useState([
     { name: 'event1' },
   ]);
-  const [eventsInvited, setEventsInvited] = useState([{ name: 'event2' }]);
+  const [eventsInvited, setEventsInvited] = useState([
+    {
+      event: { name: 'event2' },
+      sender: 'Evan Perry',
+    },
+  ]);
   const [eventsOwned, setEventsOwned] = useState([{ name: 'event3' }]);
 
   const [nameOrPhoneForFriendRequest, setNameOrPhoneForFriendRequest] =
@@ -105,7 +112,7 @@ const UserPage: React.FC<UserPageProps> = ({
       const eventsInvited = await axios.get(
         `api/events/getEventsInvited/${userId}`
       );
-      console.log('eventsInvited', eventsInvited.data)
+      console.log('eventsInvited', eventsInvited.data);
       setEventsInvited(eventsInvited.data);
     } catch (err) {
       console.error(
@@ -245,6 +252,9 @@ const UserPage: React.FC<UserPageProps> = ({
     });
   }
 
+  // for displaying and styling time info
+  const now = dayjs();
+
   let eventsOwnedItems = null;
   if (eventsOwned.length > 0) {
     eventsOwnedItems = eventsOwned.map((event: any, index: number) => {
@@ -258,7 +268,12 @@ const UserPage: React.FC<UserPageProps> = ({
             setSelectedEvent(event);
           }}
         >
-          {event.name} <em>{dayjs().to(dayjs(event.startTime))}</em>
+          {event.name}{' '}
+          {now.isBetween(event.startTime, event.endTime) ? (
+            <em> happening now</em>
+          ) : (
+            <em> {now.to(dayjs(event.startTime))}</em>
+          )}
         </div>
       );
     });
@@ -278,7 +293,12 @@ const UserPage: React.FC<UserPageProps> = ({
               setSelectedEvent(event);
             }}
           >
-            {event.name} <em>{dayjs().to(dayjs(event.startTime))}</em>
+            {event.name}
+            {now.isBetween(event.startTime, event.endTime) ? (
+              <em> happening now</em>
+            ) : (
+              <em> {now.to(dayjs(event.startTime))}</em>
+            )}
           </div>
         );
       }
@@ -287,7 +307,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
   let eventsInvitedItems = null;
   if (eventsInvited.length > 0) {
-    eventsInvitedItems = eventsInvited.map((event: any, index: number) => {
+    eventsInvitedItems = eventsInvited.map((invitation: any, index: number) => {
       return (
         <div
           key={index}
@@ -295,10 +315,15 @@ const UserPage: React.FC<UserPageProps> = ({
             setIsNewEvent(false);
             setIsUserAttending(false);
             setShowBasicModal(true);
-            setSelectedEvent(event);
+            setSelectedEvent(invitation.event);
           }}
         >
-          {event.name} <em>{dayjs().to(dayjs(event.startTime))}</em>
+          {invitation.sender}: {invitation.event.name}
+          {now.isBetween(invitation.event.startTime, invitation.event.endTime) ? (
+            <em> happening now</em>
+          ) : (
+            <em> {now.to(dayjs(invitation.event.startTime))}</em>
+          )}
         </div>
       );
     });
@@ -357,35 +382,34 @@ const UserPage: React.FC<UserPageProps> = ({
     requester_userId: number,
     isConfirmed: boolean
   ) {
-
     try {
-    const updatedRelationship = await axios.patch(
-      '/api/friends/answerFriendRequest',
-      {
-        answer: {
-          requester_userId,
-          recipient_userId: userId,
-          isConfirmed,
-        },
+      const updatedRelationship = await axios.patch(
+        '/api/friends/answerFriendRequest',
+        {
+          answer: {
+            requester_userId,
+            recipient_userId: userId,
+            isConfirmed,
+          },
+        }
+      );
+      getFriends();
+      getFriendRequests();
+      if (isConfirmed === true) {
+        toast('🎭 Krewe invite accepted! 🎭', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'light',
+        });
       }
-    );
-    getFriends();
-    getFriendRequests();
-    if (isConfirmed === true) {
-      toast('🎭 Krewe invite accepted! 🎭', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'light',
-      });
+    } catch (err) {
+      console.log('CLIENT ERROR: failed to answer friend request', err);
     }
-  } catch (err) {
-    console.log('CLIENT ERROR: failed to answer friend request', err);
-  }
   }
 
   async function unfriend(friendId: number) {
@@ -401,7 +425,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
   return (
     <Container className={`body ${theme}`}>
-        <ToastContainer
+      <ToastContainer
         position='top-right'
         autoClose={5000}
         hideProgressBar={false}
@@ -452,7 +476,10 @@ const UserPage: React.FC<UserPageProps> = ({
       />
 
       <Row>
-        <div className='userPage-tabs' style={{position: 'absolute', top: '10vh'}}>
+        <div
+          className='userPage-tabs'
+          style={{ position: 'absolute', top: '10vh' }}
+        >
           <Tabs defaultActiveKey='krewe'>
             <Tab eventKey='krewe' title='Krewe'>
               <h5> Krewe </h5>
@@ -572,7 +599,10 @@ const UserPage: React.FC<UserPageProps> = ({
       {/* Buttons for logout, other events */}
 
       <Row>
-        <div className='userPage-buttons-container' style={{position: 'absolute', bottom: '13vh'}}>
+        <div
+          className='userPage-buttons-container'
+          style={{ position: 'absolute', bottom: '13vh' }}
+        >
           <Button
             variant='primary'
             onClick={async () => {
