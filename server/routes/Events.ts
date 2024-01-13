@@ -112,6 +112,7 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
       res.status(200).send([])
     } else {
 
+      // TODO: send back object that has event with invite sender attached to it
       const userEventsInvitedIds = userEventsInvitedRecords.map((record: any) => record.eventId)
 
       const userEventsInvited: any = await Event.findAll({
@@ -338,10 +339,11 @@ Events.post('/createEvent', async (req: Request, res: Response) => {
       attendingCount
     })
 
-    // add owner of event to participants
+    // add owner of event to participants; invite sender is self
     const newParticipantRecord: any = await Join_user_event.create({
       eventId: newEvent.id,
       userId: newEvent.ownerId,
+      senderId: newEvent.ownerId,
       isAttending: true,
     })
 
@@ -470,11 +472,11 @@ Events.delete('/deleteEvent/:eventId', async (req: Request, res: Response) => {
 
 Events.post('/inviteToEvent', async (req: Request, res: Response) => {
   // invitees is array of userIds
-  const { eventId, invitees } = req.body.invitations;
+  const { eventId, invitees, senderId } = req.body.invitations;
 
   try {
     const invitations: any = invitees.map((userId: number) => {
-      return { eventId, userId, isAttending: false }
+      return { eventId, userId, senderId, isAttending: false }
     })
     const invitationsResponse = await Join_user_event.bulkCreate(invitations);
     res.status(201).send(invitationsResponse)

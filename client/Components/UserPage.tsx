@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
@@ -23,11 +24,15 @@ dayjs.extend(relativeTime);
 
 import { useAuth0 } from '@auth0/auth0-react';
 import { ThemeContext } from './Context';
-
+import { ToastContainer, toast } from 'react-toastify';
 //                              add userId as prop to get it from App
-const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
-  // const [searchParams] = useSearchParams();
-  //const [userId] = useState(Number(searchParams.get('userid')) || 1);
+const UserPage: React.FC<UserPageProps> = ({
+  //userId,
+  lng,
+  lat,
+  setTheme }) => {
+  const [searchParams] = useSearchParams();
+  const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
@@ -100,6 +105,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
       const eventsInvited = await axios.get(
         `api/events/getEventsInvited/${userId}`
       );
+      console.log('eventsInvited', eventsInvited.data)
       setEventsInvited(eventsInvited.data);
     } catch (err) {
       console.error(
@@ -325,6 +331,16 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
 
       setNameOrPhoneForFriendRequest('');
       getFriendRequests();
+      toast('🎭 Krewe invite sent! 🎭', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST friend request', err);
     }
@@ -341,6 +357,8 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
     requester_userId: number,
     isConfirmed: boolean
   ) {
+
+    try {
     const updatedRelationship = await axios.patch(
       '/api/friends/answerFriendRequest',
       {
@@ -353,6 +371,21 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
     );
     getFriends();
     getFriendRequests();
+    if (isConfirmed === true) {
+      toast('🎭 Krewe invite accepted! 🎭', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+    }
+  } catch (err) {
+    console.log('CLIENT ERROR: failed to answer friend request', err);
+  }
   }
 
   async function unfriend(friendId: number) {
@@ -368,6 +401,19 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
 
   return (
     <Container className={`body ${theme}`}>
+        <ToastContainer
+        position='top-right'
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='light'
+      />
+
       <ConfirmActionModal
         confirmActionFunction={confirmActionFunction}
         setConfirmActionFunction={setConfirmActionFunction}

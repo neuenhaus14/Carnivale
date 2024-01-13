@@ -303,6 +303,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         invitations: {
           eventId: selectedEvent.id,
           invitees: friendsToInvite,
+          senderId: userId,
         },
       });
       setFriendsToInvite([]);

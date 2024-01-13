@@ -125,6 +125,7 @@ module.exports = {
       {
         eventId: 1,
         userId: 1,
+        senderId: 1,
         isAttending: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -132,6 +133,7 @@ module.exports = {
       {
         eventId: 2,
         userId: 1,
+        senderId: 2,
         isAttending: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -139,6 +141,7 @@ module.exports = {
       {
         eventId: 2,
         userId: 2,
+        senderId: 2,
         isAttending: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -146,6 +149,7 @@ module.exports = {
       {
         eventId: 2,
         userId: 1,
+        senderId: 2,
         isAttending: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -153,6 +157,7 @@ module.exports = {
       {
         eventId: 2,
         userId: 3,
+        senderId: 2,
         isAttending: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -160,6 +165,7 @@ module.exports = {
       {
         eventId: 3,
         userId: 1,
+        senderId: 3,
         isAttending: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -167,6 +173,7 @@ module.exports = {
       {
         eventId: 3,
         userId: 2,
+        senderId: 3,
         isAttending: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -174,6 +181,7 @@ module.exports = {
       {
         eventId: 3,
         userId: 3,
+        senderId: 3,
         isAttending: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -181,6 +189,7 @@ module.exports = {
       {
         eventId: 1,
         userId: 3,
+        senderId: 1,
         isAttending: false,
         createdAt: new Date(),
         updatedAt: new Date(),
