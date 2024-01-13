@@ -254,6 +254,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
           label={isUserAttending ? 'Attending' : 'Not attending'}
           onChange={() => toggleAttendance()}
           defaultChecked={isUserAttending}
+          disabled = {dayjs().isAfter(selectedEvent.endTime)}
         />
         <Button variant='danger' onClick={handleClose}>
           Close Event
