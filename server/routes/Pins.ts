@@ -80,6 +80,7 @@ Pins.get('/get-clicked-friend-marker/:lng/:lat', async (req: Request, res: Respo
    
   try {
     const clickedFriend = await User.findOne({where: {longitude: lng, latitude: lat}});
+    console.log(clickedFriend)
     res.status(200).send(clickedFriend)
     
   } catch (err) {

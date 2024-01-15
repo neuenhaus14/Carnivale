@@ -28,6 +28,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPinSelected, setIsPinSelected] = useState<boolean>(false)
   const [selectedPin, setSelectedPin] = useState(null)
+  const [selectedFriend, setSelectedFriend] =useState(null)
   const [showModal, setShowModal] = useState<boolean>(false)
   const [markers, setMarkers] = useState([]);
   const [filteredMarkers, setFilteredMarkers] = useState([])
@@ -69,7 +70,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     getFriends();
     // getEvents();
     isSharingLoc();
-  }, [setMarkers]);
+  }, []);
 
 
  useEffect(() => {
@@ -173,6 +174,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     if (isPinSelected === false && isFriendSelected === false){
       setShowModal(true)
     }
+    //setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   }
 
   //finds clicked marker/pin from database
@@ -180,8 +182,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     const currMarkerLng = e._lngLat.lng || e.lngLat.lng
     const currMarkerLat = e._lngLat.lat || e.lngLat.lat;
 
-    const  lngRounded = currMarkerLng.toString().slice(0,10)
-    const  latRounded = currMarkerLat.toString().slice(0,9)
+    const  lngRounded = currMarkerLng.toString().slice(0,11)
+    const  latRounded = currMarkerLat.toString().slice(0,10)
     setClickedPinCoords([lngRounded, latRounded])
 
     try {
@@ -194,7 +196,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
       } catch (err)  {
         try {
           const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
+          console.log('selectedFriend', data)
           setSelectedPin(data);
+          setSelectedFriend(data);
           setShowFriendPopup(true)
           setShowDirections(true)
           setIsFriendSelected(true)
@@ -431,7 +435,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
             <div style={{textAlign: "center",}}>
               <b>{friend.firstName[0]}{friend.lastName[0]}</b><br/>
               <img src="img/pgLogo.png" width="45px" height="55px"/>
-              {/* <img src="img/friend_dot.png" width="30px" height="30px"/> */}
             </div>
             </Marker>
           ))
@@ -463,29 +466,14 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
           </Source>
         ): null}
       <NavigationControl />
-      {/* {showFriendPopup ? (
-          <>
-            {friends.map((friend) => (
-              <Popup
-                key={friend.id}
-                longitude={friend.longitude} latitude={friend.latitude}
-                anchor="top"
-                closeOnMove={true}
-                onClose={() => setShowFriendPopup(false)}
-              >
-                <b>{friend.firstName} {friend.lastName}</b>
-              </Popup>
-            ))}
-          </>
-        ) : null} */}
         {showFriendPopup ? (
               <Popup
-                longitude={selectedPin.longitude} latitude={selectedPin.latitude}
+                longitude={selectedFriend.longitude} latitude={selectedFriend.latitude}
                 anchor="top"
                 closeOnMove={true}
                 onClose={() => setShowFriendPopup(false)}
               >
-                <b>{selectedPin.firstName} {selectedPin.lastName}</b>
+                <b>{selectedFriend.firstName} {selectedFriend.lastName}</b>
               </Popup>
 
         ) : null}
