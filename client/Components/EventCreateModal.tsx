@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Button, Form, Tabs, Tab } from 'react-bootstrap';
 import EventCreateMapComponent from './EventCreateMapComponent';
 import axios from 'axios';
 import dayjs = require('dayjs');
-import { is } from 'cheerio/lib/api/traversing';
+import { ThemeContext } from './Context';
+// import { is } from 'cheerio/lib/api/traversing';
 
 interface EventCreateModalProps {
   selectedEvent: any;
@@ -34,6 +35,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   eventType,
   getEventsOwned,
 }) => {
+  const theme = useContext(ThemeContext)
   const [eventAddress, setEventAddress] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [eventName, setEventName] = useState('');
@@ -525,7 +527,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   ///////////////////////////////////////////////
   // console.log('Bottom of eventCreateModal. selectedEvent', selectedEvent, 'isNewEvent', isNewEvent, 'invitees', invitees, 'participants', participants, 'isNewEvent', isNewEvent)
   return (
-    <Modal className='event-modal' show={showCreateModal} onHide={handleClose}>
+    <Modal className={`event-modal ${theme}`} show={showCreateModal} onHide={handleClose}>
       <Modal.Header>
         <Modal.Title>
           {isNewEvent === false

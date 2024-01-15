@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { Map, Marker, NavigationControl, GeolocateControl, Source, Layer, Popup } from 'react-map-gl';
 import { Container, Form, Button } from 'react-bootstrap'
 import { useSearchParams } from 'react-router-dom';
@@ -9,6 +9,7 @@ import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
+import { ThemeContext } from './Context';
 
 import { io } from 'socket.io-client';
 const socket = io();
@@ -43,7 +44,9 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
   const [showRouteDirections, setShowRouteDirections] = useState<boolean>(false)
   const [isFriendSelected, setIsFriendSelected] = useState<boolean>(false)
   const [friends, setFriends] = useState([])
-  // const [events, setEvents] = useState([])
+
+  const theme = useContext(ThemeContext)
+
   const [showDirections, setShowDirections]= useState<boolean>(false);
   const [showFriendPopup, setShowFriendPopup] = useState<boolean>(false);
   const [shareLoc, setShareLoc] = useState<boolean>();
@@ -374,7 +377,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
   }
 
   return (
-    <Container className="body">
+    <Container className={`body ${theme}`}>
       { showModal ?
         <PinModal
           userId={userId}
