@@ -159,7 +159,7 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
         })
         userEventsInvited.push({
           event,
-          sender: `${sender.firstName} ${sender.lastName}`
+          sender: `${sender.firstName} ${sender.lastName.slice(0,1)}.`
         })
       }
       ))
