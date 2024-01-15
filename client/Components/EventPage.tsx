@@ -134,12 +134,21 @@ const EventPage: React.FC<EventPageProps> = ({
   return (
     <div className={`body ${theme}`}>
       <h3 className='date-picker'>Select the Date</h3>
+      <div
+      style={{
+        textAlign: "center",
+        marginTop: "10px",
+        position: "sticky",
+        top: "73px",
+        zIndex: 2000,
+      }}>
       <DatePicker
         className='date-picker'
         popperPlacement='bottom'
         selected={date}
         onChange={(date: Date) => setDate(date)}
       />
+      </div>
       {allGigItems}
       <EventCreateModal
         selectedEvent={selectedEvent}

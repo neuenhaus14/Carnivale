@@ -163,7 +163,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
             textAlign: "center",
             marginTop: "10px",
             position: "sticky",
-            top: "54px",
+            top: "73px",
             backgroundColor: "none",
             zIndex: 2000,
           }}
