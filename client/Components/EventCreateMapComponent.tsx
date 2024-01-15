@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Map, Marker, NavigationControl, GeolocateControl, Layer, Source } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
@@ -57,20 +57,17 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
     // For new user event, eventLat gets set to userLat and is passed into map
     // so w
     if (isNewEvent === true && !selectedEvent.ownerId && eventType === 'user' && eventLatitude === userLatitude) {
-      console.log('centering for new event', userLongitude, userLatitude)
       delayedFlyTo(userLongitude, userLatitude);
     }
 
     // updated pin for new event creation. user and event latitudes differ
     // moving the pin resets eventLatitude and eventLongitude on user page
     else if (isNewEvent === true && !selectedEvent.ownerId && eventType === 'user' && eventLatitude !== userLatitude) {
-      console.log('centering for pin drop', eventLongitude, eventLatitude)
       delayedFlyTo(eventLongitude, eventLatitude);
     }
 
     // old event owned by user id (won't get triggered for events invited to)
     else if (isNewEvent === false && selectedEvent.ownerId === userId && eventType === 'user') {
-      console.log('centering over event')
       delayedFlyTo(eventLongitude, eventLatitude);
     }
     // gig event
@@ -104,13 +101,11 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
         longitude: lng
       }
     });
-    // console.log(eventAddressResponse);
     const eventAddress = eventAddressResponse.data;
     setIsEventUpdated(true);
     setEventAddress(eventAddress)
   }
 
-  console.log('bottom of eCMapComponent. eventLat', eventLatitude, 'eventType', eventType)
   return (
     <div>
       <Map

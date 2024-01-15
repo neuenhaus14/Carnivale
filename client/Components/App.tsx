@@ -223,7 +223,6 @@ const App = () => {
               <TopNavBar title={'User'}/>
               <UserPage
                 userId={userId}
-                getLocation={getLocation}
                 lng={lng}
                 lat={lat}
                 setTheme={setTheme}
