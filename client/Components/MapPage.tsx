@@ -72,15 +72,15 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
   }, [setMarkers]);
 
 
-//  useEffect(() => {
-//   getLocation()
-//   console.log('getLocation called in userLocation useEffect')
-//  }, [userLocation])
+ useEffect(() => {
+  getLocation()
+  console.log('getLocation called in userLocation useEffect')
+ }, [userLocation])
 
-//  useEffect(() => {
-//   getLocation()
-//   console.log('getLocation called in friends useEffect')
-//  }, [friends])
+ useEffect(() => {
+  getLocation()
+  console.log('getLocation called in friends useEffect')
+ }, [friends])
 
 
   // in tandem, these load the userLoc marker immediately
@@ -106,12 +106,13 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     }
   }
 
-  //gets friends from the database- commented out bc friend sockets
+  //gets friends from the database
   const getFriends = async () => {
     try {
       const {data} = await axios.get(`/api/friends/getFriends/${userId}`)
       // setFriends(data)
       const friends = data.filter((friend: any) => friend.shareLoc === true)
+      console.log('getFriends where shareLoc is true', friends)
       setFriends(friends)
     } catch (err)  {
       console.error(err)
@@ -121,7 +122,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
   const isSharingLoc = async () => {
     try {
       const isUserSharingLoc = await axios.get(`/api/friends/updateShareLoc/${userId}`)
-      isUserSharingLoc.data ? setShareLoc(true) : setShareLoc(false)
+      isUserSharingLoc.data ? setShareLoc(true) : setShareLoc(false);
     } catch (err)  {
       console.error(err)
     }
@@ -138,27 +139,26 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     } catch (err)  {
       console.error(err)
     }
-    setShareLoc(!shareLoc)
-    getFriends()
+    //setShareLoc(!shareLoc)
+    //getFriends();
+    isSharingLoc();
   }
 
   //this useEffect should update user or friend locations everytime they move
   useEffect(() => {
     socket.on('userLoc response', (userLoc) => {
-      console.log('userLoc response in map', userLoc)
+      //console.log('userLoc response in map', userLoc)
 
       if (userLoc.id === userId){
         setUserLocation([userLoc.longitude, userLoc.latitude]) // assuming everytime state is set there is a new render with updated loc
-        console.log('userLoc set')
 
       } else {
-        console.log('made it to else statement in socket')
         friends.forEach((friend) => {
-          console.log('friend inside socket', friend)
+          //console.log('friend inside socket', friend)
           if (friend.id === userLoc.id){
             friend.longitude = userLoc.longitude
             friend.latitude = userLoc.latitude
-            console.log('friendID that matched', friend)
+            //console.log('friendID that matched', friend)
           }
         })
         setFriends(prevFriends => [...prevFriends]) // assuming everytime state is set there is a new render with updated friend loc
@@ -173,7 +173,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     if (isPinSelected === false && isFriendSelected === false){
       setShowModal(true)
     }
-    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   }
 
   //finds clicked marker/pin from database
@@ -386,7 +385,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
           type='switch'
           id='share-location-switch'
           label={shareLoc ? 'Sharing Location with Friends' : 'Not Sharing Location with Friends'}
-          onChange={() => toggleShareLoc()}
+          onClick={() => toggleShareLoc()}
           defaultChecked={shareLoc}
           style={{paddingBottom: "1em"}}
         />
