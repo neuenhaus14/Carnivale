@@ -32,6 +32,10 @@ $tabSelectedBorder: $secondaryColor;
 $tabUnselected: $cardBackground;
 $tabUnselectedBorder: #e3e3e3;
 
+//colorblind friendly hues
+$tan: #D2B48C;
+$turq: #30D5C8;
+
 .card {
   padding: 10px;
   display: flex;
@@ -140,7 +144,7 @@ $tabUnselectedBorder: #e3e3e3;
   background-color: $greeny;
   height: 8vh;
   color: white;
-  font-size: 30px;
+  font-size: 1em;
   font-weight: 200;
 }
 
@@ -296,7 +300,7 @@ body{
 
 .body-home {
   padding-top: 10vh;
-  padding-bottom: 25vh;
+  padding-bottom: 26vh;
   display: flex;
   flex-direction: column;
   background-color: $primaryColor;
@@ -304,20 +308,25 @@ body{
 }
 
 .comment-btn {
+  background-color: $purpley;
   border-radius: 17px;
-  padding: 3px 6px;
+  // padding: 3px 6px;
+  margin-top: 5px;
   float: right;
 }
 
 .photo-btn {
   border-radius: 17px;
-  padding: 3px 6px;
+  // padding: 3px 6px;
+  margin-top: 5px;
 }
 
 .comment-form {
+  border-top: 1px solid $secondaryColor;
+  border-radius: 0px;
   display: flex;
   flex-direction: row;
-  max-height: 12vh;
+  max-height: 14vh;
   width: 100%;
   margin: 3px auto;
 }
@@ -345,18 +354,27 @@ body{
   text-align: center;
 }
 
+
+//regular mode
 .pg-theme-light{
   .btn-primary {
     background-color: $yeller !important;
     color: $dark;
   }
 }
-
+//colorblind mode
 .pg-theme-vis {
   .btn-primary {
     background-color: black !important;
     color: white;
     text-transform: uppercase;
+  }
+  .btn-danger{
+    background-color: black !important;
+    text-transform: uppercase;
+  }
+  .mx-11 {
+    background-color: black !important;
   }
 
   text-transform: uppercase;

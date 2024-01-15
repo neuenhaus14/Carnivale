@@ -661,6 +661,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
           <Button
             variant='danger'
+            className='btn-danger'
             onClick={async () => {
               await setConfirmActionFunction(
                 () => () =>
@@ -674,20 +675,13 @@ const UserPage: React.FC<UserPageProps> = ({
           </Button>
 
           <DropdownButton
-            title='Select Theme'
-            drop='up'
-            id='theme-dropup'
-            variant='secondary'
-          >
-            <Dropdown.Item onClick={() => setTheme('pg-theme-light')}>
-              Light
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setTheme('pg-theme-vis')}>
-              High Contrast
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setTheme('pg-theme-deep')}>
-              Deep Gras
-            </Dropdown.Item>
+          title='Select Theme'
+          drop='up'
+          id='theme-dropup'
+          variant='secondary'>
+              <Dropdown.Item onClick={()=>setTheme("pg-theme-light")}>Regular Mode</Dropdown.Item>
+              <Dropdown.Item onClick={()=>setTheme("pg-theme-vis")}>Colorblind Mode</Dropdown.Item>
+              <Dropdown.Item onClick={()=>setTheme("pg-theme-deep")}>Deep Gras Mode</Dropdown.Item>
           </DropdownButton>
         </div>
       </Row>
