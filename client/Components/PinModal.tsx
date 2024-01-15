@@ -69,7 +69,6 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
             isEMTStation
           }
         })
-        console.log('whish! pin sent to database')
         setMarkers(markers.concat([data]))
       } catch (err)  {
         console.error(err)

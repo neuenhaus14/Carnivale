@@ -29,6 +29,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPinSelected, setIsPinSelected] = useState<boolean>(false)
   const [selectedPin, setSelectedPin] = useState(null)
+  const [selectedFriend, setSelectedFriend] =useState(null)
   const [showModal, setShowModal] = useState<boolean>(false)
   const [markers, setMarkers] = useState([]);
   const [filteredMarkers, setFilteredMarkers] = useState([])
@@ -72,25 +73,25 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     getFriends();
     // getEvents();
     isSharingLoc();
-  }, [setMarkers]);
+  }, []);
 
 
-//  useEffect(() => {
-//   getLocation()
-//   console.log('getLocation called in userLocation useEffect')
-//  }, [userLocation])
+ useEffect(() => {
+  getLocation()
+  //console.log('getLocation called in userLocation useEffect')
+ }, [userLocation])
 
-//  useEffect(() => {
-//   getLocation()
-//   console.log('getLocation called in friends useEffect')
-//  }, [friends])
+ useEffect(() => {
+  getLocation()
+  //console.log('getLocation called in friends useEffect')
+ }, [friends])
 
 
   // in tandem, these load the userLoc marker immediately
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
     geoControlRef.current?.trigger();
-    console.log('getLocation called in geoLocation')
+    //console.log('getLocation called in geoLocation')
   }, [geoControlRef.current]);
 
   //gets pins from database then removes all personal pins that don't match userId
@@ -109,27 +110,30 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     }
   }
 
-  //gets friends from the database- commented out bc friend sockets
+  //gets friends from the database
   const getFriends = async () => {
     try {
       const {data} = await axios.get(`/api/friends/getFriends/${userId}`)
       // setFriends(data)
       const friends = data.filter((friend: any) => friend.shareLoc === true)
+      console.log('getFriends where shareLoc is true', friends)
       setFriends(friends)
     } catch (err)  {
       console.error(err)
     }
   }
 
+  //sets share Location toggle immediately to respective state on page render
   const isSharingLoc = async () => {
     try {
       const isUserSharingLoc = await axios.get(`/api/friends/updateShareLoc/${userId}`)
-      isUserSharingLoc.data ? setShareLoc(true) : setShareLoc(false)
+      isUserSharingLoc.data ? setShareLoc(true) : setShareLoc(false);
     } catch (err)  {
       console.error(err)
     }
   }
 
+  //handles the share location toggle change and updates the db
   const toggleShareLoc = async () => {
     try {
       await axios.patch('/api/friends/updateShareLoc', {
@@ -141,27 +145,26 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     } catch (err)  {
       console.error(err)
     }
-    setShareLoc(!shareLoc)
-    getFriends()
+    //setShareLoc(!shareLoc)
+    //getFriends();
+    isSharingLoc();
   }
 
   //this useEffect should update user or friend locations everytime they move
   useEffect(() => {
     socket.on('userLoc response', (userLoc) => {
-      console.log('userLoc response in map', userLoc)
+      //console.log('userLoc response in map', userLoc)
 
       if (userLoc.id === userId){
         setUserLocation([userLoc.longitude, userLoc.latitude]) // assuming everytime state is set there is a new render with updated loc
-        console.log('userLoc set')
 
       } else {
-        console.log('made it to else statement in socket')
         friends.forEach((friend) => {
-          console.log('friend inside socket', friend)
+          //console.log('friend inside socket', friend)
           if (friend.id === userLoc.id){
             friend.longitude = userLoc.longitude
             friend.latitude = userLoc.latitude
-            console.log('friendID that matched', friend)
+            //console.log('friendID that matched', friend)
           }
         })
         setFriends(prevFriends => [...prevFriends]) // assuming everytime state is set there is a new render with updated friend loc
@@ -171,33 +174,36 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     })
   });
 
-  //this sets the map touch coordinates to the url as params and shows createPin modal
+  //handles plus sign button to show createPin modal 
   const dropPin = (e: any) => {
     if (isPinSelected === false && isFriendSelected === false){
       setShowModal(true)
     }
-    setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
+    //I really don't think I need this (below)
+    //setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   }
 
-  //finds clicked marker/pin from database
+  //finds clicked marker/pin and friend pin from database
   const clickedMarker = async (e: any) => {
     const currMarkerLng = e._lngLat.lng || e.lngLat.lng
     const currMarkerLat = e._lngLat.lat || e.lngLat.lat;
 
-    const  lngRounded = currMarkerLng.toString().slice(0,10)
-    const  latRounded = currMarkerLat.toString().slice(0,9)
+    const  lngRounded = currMarkerLng.toString().slice(0,11)
+    const  latRounded = currMarkerLat.toString().slice(0,10)
     setClickedPinCoords([lngRounded, latRounded])
 
-    try {
+    try { //this handles the POI pins
       const { data } = await axios.get(`/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`)
+          setSelectedPin(data);
           setIsPinSelected(true);
           setShowDirections(true);
           setIsFriendSelected(false)
 
       } catch (err)  {
-        try {
+        try { // this handles the friend pin (if not POI... it's friend)
           const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
           setSelectedPin(data);
+          setSelectedFriend(data);
           setShowFriendPopup(true)
           setShowDirections(true)
           setIsFriendSelected(true)
@@ -271,7 +277,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
       }
   }
 
-  //prompts the modal to open/close on pin vs map(empty) click
+  //prompts the modal to open/close on pin
   const modalTrigger = () => {
     if (isPinSelected === false){
       setShowModal(false)
@@ -280,8 +286,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     }
   }
 
-
-  // converts meters to miles and seconds to hours and minutes
+  //converts meters to miles and seconds to hours and minutes
   const humanizedDuration = (duration: number) => {
     duration = Number(duration);
     const h = Math.floor(duration / 3600);
@@ -293,7 +298,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     return `${hDisplay + mDisplay}`;
 }
 
- // sets pin category color when the pins load on the map
+ //sets pin category color when the pins load on the map
   const pinCategoryColor = (marker: any) => {
     const colorMapping: PinColorMapping = {
       isFree:"#53CA3C",
@@ -388,7 +393,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
           type='switch'
           id='share-location-switch'
           label={shareLoc ? 'Sharing Location with Friends' : 'Not Sharing Location with Friends'}
-          onChange={() => toggleShareLoc()}
+          onClick={() => toggleShareLoc()}
           defaultChecked={shareLoc}
           style={{paddingBottom: "1em"}}
         />
@@ -434,7 +439,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
             <div style={{textAlign: "center",}}>
               <b>{friend.firstName[0]}{friend.lastName[0]}</b><br/>
               <img src="img/pgLogo.png" width="45px" height="55px"/>
-              {/* <img src="img/friend_dot.png" width="30px" height="30px"/> */}
             </div>
             </Marker>
           ))
@@ -466,29 +470,14 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
           </Source>
         ): null}
       <NavigationControl />
-      {/* {showFriendPopup ? (
-          <>
-            {friends.map((friend) => (
-              <Popup
-                key={friend.id}
-                longitude={friend.longitude} latitude={friend.latitude}
-                anchor="top"
-                closeOnMove={true}
-                onClose={() => setShowFriendPopup(false)}
-              >
-                <b>{friend.firstName} {friend.lastName}</b>
-              </Popup>
-            ))}
-          </>
-        ) : null} */}
         {showFriendPopup ? (
               <Popup
-                longitude={selectedPin.longitude} latitude={selectedPin.latitude}
+                longitude={selectedFriend.longitude} latitude={selectedFriend.latitude}
                 anchor="top"
                 closeOnMove={true}
                 onClose={() => setShowFriendPopup(false)}
               >
-                <b>{selectedPin.firstName} {selectedPin.lastName}</b>
+                <b>{selectedFriend.firstName} {selectedFriend.lastName}</b>
               </Popup>
 
         ) : null}

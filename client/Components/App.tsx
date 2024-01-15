@@ -54,17 +54,10 @@ const App = () => {
 
   // this sends coordinates to socket
   const showPosition = (position: any) => {
-    //console.log(position)
     setLng(position.coords.longitude);
     setLat(position.coords.latitude);
 
-    // axios.post('/userLoc', {
-    //   longitude: position.coords.longitude,
-    //   latitude: position.coords.latitude,
-    //   id: userId,
-    // }).then(res => console.log('done', res)).catch(err => console.log(err))
-
-    socket.emit("userLoc", {
+    socket.emit('userLoc', {
       longitude: position.coords.longitude,
       latitude: position.coords.latitude,
       id: userId,
@@ -73,6 +66,18 @@ const App = () => {
     // socket.emit("getFriends:read", {userId})
     // console.log('socket emitted from App')
   };
+
+
+  useEffect(() => {
+    // if (userId !== null) {
+      axios.patch('/userLoc', {
+        longitude: lng,
+        latitude: lat,
+        id: userId,
+      }).then().catch(err => console.log(err))
+    //}
+  }, [lng]) // the other option here is [setLng] to save to DB at the rate of the sockets, but once should be fine to fix the friend bug
+
 
   // this get coordinates from the browser
   const getLocation = () => {
@@ -88,26 +93,7 @@ const App = () => {
     }
   };
 
-  // let watchId: number;
-  // const watchLocation = (): void => {
-  //   if (navigator.geolocation) {
-  //     watchId = navigator.geolocation.watchPosition(showPosition, error => console.log(error), { enableHighAccuracy: true })
-  //     console.log(`GeoLoc is watching ${userId} Location`)
-  //   } else {
-  //     console.log("Geolocation is not supported by this browser")
-  //     return null
-  //   }
-  // }
-
-  // watchLocation();
-
-  // const stopWatchingLocation = (): void => {
-  //   if (watchId !== undefined) {
-  //     navigator.geolocation.clearWatch(watchId)
-  //     console.log('Stopped watching location')
-  //   }
-  // };
-
+  
   // The two useEffects below both run on the first load,
   // but have conditions to check if the next operation
   // should execute.
@@ -126,12 +112,14 @@ const App = () => {
     }
   }, [userId]);
 
+  // this could be irrelevant -gn 1/15/24
   useEffect(() => {
     // this coords is data.dataValues from the database as a response to the emit
-    socket.on("userLoc response", (userLoc: any) => {
-      console.log("userLoc response in App", userLoc);
-    });
-  }, []);
+    socket.on('userLoc response', (userLoc: any) => {
+      // console.log('userLoc response in App', userLoc)
+    })
+  }, [])
+
 
   if (isLoading) {
     return <Loading />;

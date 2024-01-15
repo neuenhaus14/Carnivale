@@ -75,18 +75,24 @@ app.get("/auth", (req, res) => {
   res.render("index", { isAuthenticated: req.oidc.isAuthenticated() });
 });
 
-// app.post('/userLoc', (req, res) => {
-//   const {userLoc} = req.body
-//   io.emit('userLoc response', userLoc)
-//   res.sendStatus(200)
-// })
+app.patch('/userLoc', (req, res) => {
+  const {longitude, latitude, id} = req.body
+  // console.log('app.patch', longitude, latitude, id)
+
+  User.update({longitude, latitude}, {where: {id}})
+  .then(() => {
+    // console.log('successfully updated location', data)
+    res.sendStatus(200)
+  })
+  .catch((err) => console.error(err))  
+})
 
 
 io.on('connection', (socket: any) => {
-  console.log('a user connected');
+   console.log('a user connected');
 
   socket.on('userLoc', (userLoc: any) => {
-    console.log('userLoc', userLoc)
+    // console.log('userLoc', userLoc)
        io.emit('userLoc response', userLoc)
        //socket.broadcast.emit('userLoc response', userLoc)
 
@@ -103,44 +109,44 @@ io.on('connection', (socket: any) => {
     // .catch((err) => console.error(err))
   });
 
-  socket.on("getFriends:read", (user: any) => {
-    const userId = user.userId;
+  // socket.on("getFriends:read", (user: any) => {
+  //   const userId = user.userId;
 
-    Join_friend.findAll({
-      where: {
-        [Op.or]: [{ requester_userId: userId }, { recipient_userId: userId }],
-        isConfirmed: true,
-      },
-    })
-      .then((allFriendships: Array<Model>) => {
-        if (allFriendships.length > 0) {
-          const allFriendsIds = allFriendships.map(
-            (friendship: RelationshipModel) => {
-              return friendship.requester_userId === Number(userId)
-                ? friendship.recipient_userId
-                : friendship.requester_userId;
-            }
-          );
-          return User.findAll({
-            where: { id: { [Op.or]: [...allFriendsIds] } },
-          });
-        } else {
-          return [];
-        }
-      })
-      .then((allFriendsUsers: Array<Model>) => {
-        if (allFriendsUsers.length > 0) {
-          console.log("sending back friends from server");
-          socket.emit("getFriends:send", allFriendsUsers);
-        }
-      })
-      .catch((err) => {
-        console.error("SERVER ERROR: could not DELETE friendship", err);
-      });
-  });
+  //   Join_friend.findAll({
+  //     where: {
+  //       [Op.or]: [{ requester_userId: userId }, { recipient_userId: userId }],
+  //       isConfirmed: true,
+  //     },
+  //   })
+  //     .then((allFriendships: Array<Model>) => {
+  //       if (allFriendships.length > 0) {
+  //         const allFriendsIds = allFriendships.map(
+  //           (friendship: RelationshipModel) => {
+  //             return friendship.requester_userId === Number(userId)
+  //               ? friendship.recipient_userId
+  //               : friendship.requester_userId;
+  //           }
+  //         );
+  //         return User.findAll({
+  //           where: { id: { [Op.or]: [...allFriendsIds] } },
+  //         });
+  //       } else {
+  //         return [];
+  //       }
+  //     })
+  //     .then((allFriendsUsers: Array<Model>) => {
+  //       if (allFriendsUsers.length > 0) {
+  //         console.log("sending back friends from server");
+  //         socket.emit("getFriends:send", allFriendsUsers);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.error("SERVER ERROR: could not DELETE friendship", err);
+  //     });
+  // });
 
   socket.on("disconnect", () => {
-    console.log("a user disconnected");
+     console.log("a user disconnected");
   });
 });
 

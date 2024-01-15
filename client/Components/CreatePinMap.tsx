@@ -24,7 +24,6 @@ const CreatePinMap: React.FC<Props> = ( {userLocation} ) => {
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
     geoControlRef.current?.trigger();
-    console.log('getLocation called in createPinMap')
   }, [geoControlRef.current]);
 
 
