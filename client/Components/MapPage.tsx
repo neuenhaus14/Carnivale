@@ -120,6 +120,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     }
   }
 
+  //sets share Location toggle immediately to respective state on page render
   const isSharingLoc = async () => {
     try {
       const isUserSharingLoc = await axios.get(`/api/friends/updateShareLoc/${userId}`)
@@ -129,6 +130,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     }
   }
 
+  //handles the share location toggle change and updates the db
   const toggleShareLoc = async () => {
     try {
       await axios.patch('/api/friends/updateShareLoc', {
@@ -169,15 +171,16 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     })
   });
 
-  //this sets the map touch coordinates to the url as params and shows createPin modal
+  //handles plus sign button to show createPin modal 
   const dropPin = (e: any) => {
     if (isPinSelected === false && isFriendSelected === false){
       setShowModal(true)
     }
+    //I really don't think I need this (below)
     //setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   }
 
-  //finds clicked marker/pin from database
+  //finds clicked marker/pin and friend pin from database
   const clickedMarker = async (e: any) => {
     const currMarkerLng = e._lngLat.lng || e.lngLat.lng
     const currMarkerLat = e._lngLat.lat || e.lngLat.lat;
@@ -186,7 +189,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     const  latRounded = currMarkerLat.toString().slice(0,10)
     setClickedPinCoords([lngRounded, latRounded])
 
-    try {
+    try { //this handles the POI pins
       const { data } = await axios.get(`/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`)
           setSelectedPin(data);
           setIsPinSelected(true);
@@ -194,7 +197,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
           setIsFriendSelected(false)
 
       } catch (err)  {
-        try {
+        try { // this handles the friend pin (if not POI... it's friend)
           const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
           console.log('selectedFriend', data)
           setSelectedPin(data);
@@ -272,7 +275,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
       }
   }
 
-  //prompts the modal to open/close on pin vs map(empty) click
+  //prompts the modal to open/close on pin
   const modalTrigger = () => {
     if (isPinSelected === false){
       setShowModal(false)
@@ -281,8 +284,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     }
   }
 
-
-  // converts meters to miles and seconds to hours and minutes
+  //converts meters to miles and seconds to hours and minutes
   const humanizedDuration = (duration: number) => {
     duration = Number(duration);
     const h = Math.floor(duration / 3600);
@@ -294,7 +296,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     return `${hDisplay + mDisplay}`;
 }
 
- // sets pin category color when the pins load on the map
+ //sets pin category color when the pins load on the map
   const pinCategoryColor = (marker: any) => {
     const colorMapping: PinColorMapping = {
       isFree:"#53CA3C",

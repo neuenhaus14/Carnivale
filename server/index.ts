@@ -80,7 +80,7 @@ app.patch('/userLoc', (req, res) => {
   // console.log('app.patch', longitude, latitude, id)
 
   User.update({longitude, latitude}, {where: {id}})
-  .then((data) => {
+  .then(() => {
     // console.log('successfully updated location', data)
     res.sendStatus(200)
   })
