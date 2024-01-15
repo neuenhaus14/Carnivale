@@ -4,37 +4,37 @@ import React, {
   useContext,
   createContext,
   useRef,
-} from 'react';
+} from "react";
 import {
+  Link,
   Route,
   RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
   useLoaderData,
-} from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
-import ProtectedRoute from './ProtectedRoutes';
-import axios from 'axios';
-import { io } from 'socket.io-client';
+} from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+import ProtectedRoute from "./ProtectedRoutes";
+import axios from "axios";
+import { io } from "socket.io-client";
 const socket = io();
-import FeedPage from './FeedPage';
-import HomePage from './HomePage';
-import MapPage from './MapPage';
-import UserPage from './UserPage';
-import Login from './Login';
-import EventPage from './EventPage';
-import NavBar from './NavBar';
-import Loading from './Loading';
-import Parades from './Parades';
-import { ThemeContext } from './Context';
-import TopNavBar from './TopNavBar';
-
+import FeedPage from "./FeedPage";
+import HomePage from "./HomePage";
+import MapPage from "./MapPage";
+import UserPage from "./UserPage";
+import Login from "./Login";
+import EventPage from "./EventPage";
+import NavBar from "./NavBar";
+import Loading from "./Loading";
+import Parades from "./Parades";
+import { ThemeContext } from "./Context";
+import TopNavBar from "./TopNavBar";
 
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [theme, setTheme] = useState('pg-theme-light')
+  const [theme, setTheme] = useState("pg-theme-light");
 
   const [lng, setLng] = useState(0);
   const [lat, setLat] = useState(0);
@@ -44,14 +44,13 @@ const App = () => {
   const getUser = async () => {
     try {
       const { data } = await axios.post(`api/home/user/`, { user });
-      console.log('userId', data[0].id)
+      console.log("userId", data[0].id);
       setUserData(data[0]);
       setUserId(data[0].id);
     } catch (err) {
       console.error(err);
     }
   };
-
 
   // this sends coordinates to socket
   const showPosition = (position: any) => {
@@ -65,7 +64,7 @@ const App = () => {
     //   id: userId,
     // }).then(res => console.log('done', res)).catch(err => console.log(err))
 
-    socket.emit('userLoc', {
+    socket.emit("userLoc", {
       longitude: position.coords.longitude,
       latitude: position.coords.latitude,
       id: userId,
@@ -84,7 +83,7 @@ const App = () => {
         { enableHighAccuracy: true }
       );
     } else {
-      console.log('Geolocation is not supported by this browser');
+      console.log("Geolocation is not supported by this browser");
       return null;
     }
   };
@@ -109,7 +108,6 @@ const App = () => {
   //   }
   // };
 
-
   // The two useEffects below both run on the first load,
   // but have conditions to check if the next operation
   // should execute.
@@ -120,7 +118,6 @@ const App = () => {
   // is looked up and emitted to socket.io server
   useEffect(() => {
     user && getUser();
-
   }, [isAuthenticated]);
 
   useEffect(() => {
@@ -129,13 +126,12 @@ const App = () => {
     }
   }, [userId]);
 
-
   useEffect(() => {
     // this coords is data.dataValues from the database as a response to the emit
-    socket.on('userLoc response', (userLoc: any) => {
-      console.log('userLoc response in App', userLoc)
-    })
-  }, [])
+    socket.on("userLoc response", (userLoc: any) => {
+      console.log("userLoc response in App", userLoc);
+    });
+  }, []);
 
   if (isLoading) {
     return <Loading />;
@@ -144,89 +140,88 @@ const App = () => {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
-        <Route
-          path='/'
-          element={<Login />}
-        />
+        <Route path="/" element={<Login />} />
         {/* <Route element={<ProtectedRoute />}>  */}
         <Route
-          path='/homepage'
+          path="/homepage"
           element={
             <div>
-              <TopNavBar title={user?`Welcome ${user.given_name}!`:''}/>
-              <HomePage
-                userId={userId}
-                lat={lat}
-                lng={lng}
-              />{' '}
-              <NavBar />
+              <TopNavBar title={user ? `Welcome ${user.given_name}!` : ""} />
+              <HomePage userId={userId} lat={lat} lng={lng} /> <NavBar />
             </div>
           }
         />
         <Route
-          path='/mappage'
+          path="/mappage"
           element={
             <div>
-              <TopNavBar title={'Map'}/>
+              <Link to="/homepage">
+                <TopNavBar title={"Map"} />
+              </Link>
               <MapPage
                 userLat={lat}
                 userLng={lng}
                 userId={userId}
                 getLocation={getLocation}
-              />{' '}
+              />{" "}
               <NavBar />
             </div>
           }
         />
         <Route
-          path='/feedpage'
+          path="/feedpage"
           element={
             <div>
-              <TopNavBar title={user ? `${user.given_name}'s Feed` : 'Feed'}/>
+              <Link to="/homepage">
+                <TopNavBar
+                  title={user ? `${user.given_name}'s Feed` : "Feed"}
+                />
+              </Link>
               <FeedPage userId={userId} /> <NavBar />
             </div>
           }
         />
         <Route
-          path='/parades'
+          path="/parades"
           element={
             <div>
-              <TopNavBar title={'Parades'}/>
-              <Parades
-              userId={userId}
-              lng={lng}
-              lat={lat}
-
-              /> <NavBar />
+              <Link to="/homepage">
+                <TopNavBar title={"Parades"} />
+              </Link>
+              <Parades userId={userId} lng={lng} lat={lat} /> <NavBar />
             </div>
           }
         />
         <Route
-          path='/eventpage'
+          path="/eventpage"
           element={
             <div>
-              <TopNavBar title={'Live Music'}/>
+              <Link to="/homepage">
+                <TopNavBar title={"Live Music"} />
+              </Link>
               <EventPage
                 userId={userId}
                 getLocation={getLocation}
                 lng={lng}
                 lat={lat}
-              />{' '}
+              />{" "}
               <NavBar />
             </div>
           }
         />
         <Route
-          path='/userpage'
+          path="/userpage"
           element={
             <div>
-              <TopNavBar title={'User'}/>
+              <Link to="/homepage">
+                <TopNavBar title={"User"} />
+              </Link>
               <UserPage
                 userId={userId}
                 lng={lng}
                 lat={lat}
                 setTheme={setTheme}
-              />{' '}
+              />{" "}
               <NavBar />
             </div>
           }
@@ -236,10 +231,10 @@ const App = () => {
     )
   );
 
-  console.log('bottom of app', userId, lng, lat, 'theme', theme);
+  console.log("bottom of app", userId, lng, lat, "theme", theme);
   return (
     <ThemeContext.Provider value={theme}>
-        <RouterProvider router={router} />
+      <RouterProvider router={router} />
     </ThemeContext.Provider>
   );
 };
