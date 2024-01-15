@@ -4,8 +4,7 @@ import {
   Marker,
   NavigationControl,
   GeolocateControl,
-  Layer,
-  Source,
+
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -64,6 +63,7 @@ const EventBasicMapComponent: React.FC<EventBasicMapComponentProps> = ({
           showAccuracyCircle={false}
           ref={geoControlRef}
         />
+        <NavigationControl/>
       </Map>
     </div>
   );

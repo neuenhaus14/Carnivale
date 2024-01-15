@@ -1,40 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import React, { useEffect, useState, useContext } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
 import EventCreateModal from './EventCreateModal';
 import ConfirmActionModal from './ConfirmActionModal';
-import { Button, Container, Row, Tab, Tabs, Dropdown, DropdownButton } from 'react-bootstrap';
+import {
+  Button,
+  Container,
+  Row,
+  Tab,
+  Tabs,
+  Dropdown,
+  DropdownButton,
+} from 'react-bootstrap';
 import { MdCancel } from 'react-icons/md';
 import { IoPersonRemoveSharp } from 'react-icons/io5';
 import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import { FaEnvelope } from 'react-icons/fa';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(relativeTime);
-
+dayjs.extend(isBetween);
 import { useAuth0 } from '@auth0/auth0-react';
 import { ThemeContext } from './Context';
-import { useContext } from 'react';
-
+import { ToastContainer, toast } from 'react-toastify';
 //                              add userId as prop to get it from App
 const UserPage: React.FC<UserPageProps> = ({
-  getLocation,
-  userId,
+  //userId,
   lng,
   lat,
   setTheme,
-
 }) => {
   const [searchParams] = useSearchParams();
-  //const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
   const [eventsParticipating, setEventsParticipating] = useState([
     { name: 'event1' },
   ]);
-  const [eventsInvited, setEventsInvited] = useState([{ name: 'event2' }]);
+  const [eventsInvited, setEventsInvited] = useState([
+    {
+      event: { name: 'event2' },
+      sender: 'Evan Perry',
+    },
+  ]);
   const [eventsOwned, setEventsOwned] = useState([{ name: 'event3' }]);
 
   const [nameOrPhoneForFriendRequest, setNameOrPhoneForFriendRequest] =
@@ -56,7 +68,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
   const [isNewEvent, setIsNewEvent] = useState(false);
 
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
 
   // logout functionality via auth0
   const { logout } = useAuth0();
@@ -64,7 +76,6 @@ const UserPage: React.FC<UserPageProps> = ({
   const getFriends = async () => {
     try {
       const friends = await axios.get(`/api/friends/getFriends/${userId}`);
-      // console.log('here', friends.data);
       setFriends(friends.data);
     } catch (err) {
       console.error('CLIENT ERROR: failed to GET user friends', err);
@@ -76,7 +87,6 @@ const UserPage: React.FC<UserPageProps> = ({
       const eventsOwned = await axios.get(
         `api/events/getEventsOwned/${userId}`
       );
-      // console.log('eventsOwned', eventsOwned.data);
       setEventsOwned(eventsOwned.data);
     } catch (err) {
       console.error('CLIENT ERROR: failed to get events owned', err);
@@ -102,6 +112,7 @@ const UserPage: React.FC<UserPageProps> = ({
       const eventsInvited = await axios.get(
         `api/events/getEventsInvited/${userId}`
       );
+      console.log('eventsInvited', eventsInvited.data);
       setEventsInvited(eventsInvited.data);
     } catch (err) {
       console.error(
@@ -118,7 +129,6 @@ const UserPage: React.FC<UserPageProps> = ({
       );
       const { requestsMadeUsers, requestsReceivedUsers } =
         friendRequestsData.data;
-      // console.log(requestsMadeUsers, requestsReceivedUsers)
       setFriendRequestsReceived(requestsReceivedUsers);
       setFriendRequestsMade(requestsMadeUsers);
     } catch (err) {
@@ -242,6 +252,9 @@ const UserPage: React.FC<UserPageProps> = ({
     });
   }
 
+  // for displaying and styling time info
+  const now = dayjs();
+
   let eventsOwnedItems = null;
   if (eventsOwned.length > 0) {
     eventsOwnedItems = eventsOwned.map((event: any, index: number) => {
@@ -254,8 +267,20 @@ const UserPage: React.FC<UserPageProps> = ({
             setShowCreateModal(true);
             setSelectedEvent(event);
           }}
+          style={{
+            textDecoration: now.isAfter(event.endTime)
+              ? 'line-through'
+              : 'none',
+          }}
         >
-          {event.name} <em>{dayjs().to(dayjs(event.startTime))}</em>
+          <b>{event.name} </b>
+          {now.isBetween(event.startTime, event.endTime) ? (
+            <em> happening now</em>
+          ) : now.isBefore(event.startTime) ? (
+            <em> starts {now.to(dayjs(event.startTime))}</em>
+          ) : (
+            <em> ended {now.to(dayjs(event.endTime))}</em>
+          )}
         </div>
       );
     });
@@ -274,8 +299,20 @@ const UserPage: React.FC<UserPageProps> = ({
               setShowBasicModal(true);
               setSelectedEvent(event);
             }}
+            style={{
+              textDecoration: now.isAfter(event.endTime)
+                ? 'line-through'
+                : 'none',
+            }}
           >
-            {event.name} <em>{dayjs().to(dayjs(event.startTime))}</em>
+            <b>{event.name} </b>
+            {now.isBetween(event.startTime, event.endTime) ? (
+              <em> happening now</em>
+            ) : now.isBefore(event.startTime) ? (
+              <em> starts {now.to(dayjs(event.startTime))}</em>
+            ) : (
+              <em> ended {now.to(dayjs(event.endTime))}</em>
+            )}
           </div>
         );
       }
@@ -284,7 +321,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
   let eventsInvitedItems = null;
   if (eventsInvited.length > 0) {
-    eventsInvitedItems = eventsInvited.map((event: any, index: number) => {
+    eventsInvitedItems = eventsInvited.map((invitation: any, index: number) => {
       return (
         <div
           key={index}
@@ -292,10 +329,38 @@ const UserPage: React.FC<UserPageProps> = ({
             setIsNewEvent(false);
             setIsUserAttending(false);
             setShowBasicModal(true);
-            setSelectedEvent(event);
+            setSelectedEvent(invitation.event);
+          }}
+          style={{
+            textDecoration: now.isAfter(invitation.event.endTime)
+              ? 'line-through'
+              : 'none',
           }}
         >
-          {event.name} <em>{dayjs().to(dayjs(event.startTime))}</em>
+          <b>{invitation.event.name} </b>
+
+          {now.isBetween(
+            invitation.event.startTime,
+            invitation.event.endTime
+          ) ? (
+            <em> happening now</em>
+          ) : now.isBefore(invitation.event.startTime) ? (
+            <em> starts {now.to(dayjs(invitation.event.startTime))}</em>
+          ) : (
+            <em> ended {now.to(dayjs(invitation.event.endTime))}</em>
+          )}
+
+          {` from ${invitation.sender}`}
+
+          {/* {invitation.sender}: {invitation.event.name}
+          {now.isBetween(
+            invitation.event.startTime,
+            invitation.event.endTime
+          ) ? (
+            <em> happening now</em>
+          ) : (
+            <em> {now.to(dayjs(invitation.event.startTime))}</em>
+          )} */}
         </div>
       );
     });
@@ -328,44 +393,66 @@ const UserPage: React.FC<UserPageProps> = ({
 
       setNameOrPhoneForFriendRequest('');
       getFriendRequests();
+      toast('🎭 Krewe invite sent! 🎭', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST friend request', err);
     }
   }
 
-  async function cancelFriendRequest (recipient_userId: number) {
+  async function cancelFriendRequest(recipient_userId: number) {
     const deleteResponse = await axios.delete(
       `/api/friends/cancelFriendRequest/${userId}-${recipient_userId}`
     );
-    //console.log(deleteResponse);
     getFriendRequests();
   }
 
-  async function answerFriendRequest (
+  async function answerFriendRequest(
     requester_userId: number,
     isConfirmed: boolean
   ) {
-    const updatedRelationship = await axios.patch(
-      '/api/friends/answerFriendRequest',
-      {
-        answer: {
-          requester_userId,
-          recipient_userId: userId,
-          isConfirmed,
-        },
+    try {
+      const updatedRelationship = await axios.patch(
+        '/api/friends/answerFriendRequest',
+        {
+          answer: {
+            requester_userId,
+            recipient_userId: userId,
+            isConfirmed,
+          },
+        }
+      );
+      getFriends();
+      getFriendRequests();
+      if (isConfirmed === true) {
+        toast('🎭 Krewe invite accepted! 🎭', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'light',
+        });
       }
-    );
-    //console.log('updated Relationship', updatedRelationship);
-    getFriends();
-    getFriendRequests();
+    } catch (err) {
+      console.log('CLIENT ERROR: failed to answer friend request', err);
+    }
   }
 
   async function unfriend(friendId: number) {
-    //console.log('inside unfriend', friendId);
     const deleteResponse = await axios.delete(
       `/api/friends/unfriend/${userId}-${friendId}`
     );
-    //console.log(deleteResponse)
     getFriends();
   }
 
@@ -373,13 +460,21 @@ const UserPage: React.FC<UserPageProps> = ({
     setNameOrPhoneForFriendRequest(e.target.value);
   }
 
-  // const setThemeContext = (theme: string) => {
-  //   console.log('theme from inside userPage', theme)
-  //   setTheme(theme)
-  // }
-
   return (
-    <Container className={`body ${theme}`} style={{ justifyContent: 'space-between' }}>
+    <Container className={`body ${theme}`}>
+      <ToastContainer
+        position='top-right'
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='light'
+      />
+
       <ConfirmActionModal
         confirmActionFunction={confirmActionFunction}
         setConfirmActionFunction={setConfirmActionFunction}
@@ -409,139 +504,142 @@ const UserPage: React.FC<UserPageProps> = ({
         showCreateModal={showCreateModal}
         friends={friends}
         userId={userId}
-        // isUserAttending={isUserAttending}
-        // setIsUserAttending={setIsUserAttending}
-        // getEventsInvited={getEventsInvited}
-        // getEventsParticipating={getEventsParticipating}
         isNewEvent={isNewEvent}
         setIsNewEvent={setIsNewEvent}
         lat={lat}
         lng={lng}
-        //getLocation={getLocation}
         eventType={'user'}
         getEventsOwned={getEventsOwned}
       />
 
-      <Row className='userPage-tabs'>
-        <Tabs defaultActiveKey='krewe'>
-          <Tab eventKey='krewe' title='Krewe'>
-            <h5> Krewe </h5>
-            {friends.length > 0 ? (
-              <div className='m-2'>{userFriendsItems}</div>
-            ) : (
-              <>
-                <div className='card-content text-center'>
-                  You're flying solo!
-                </div>
-                <div className='card-detail text-center'>
-                  Assemble your krewe by searching for friends below
-                </div>
-              </>
-            )}
+      <Row>
+        <div
+          className='userPage-tabs'
+          style={{ position: 'absolute', top: '10vh' }}
+        >
+          <Tabs defaultActiveKey='krewe'>
+            <Tab eventKey='krewe' title='Krewe'>
+              <h5> Krewe </h5>
+              {friends.length > 0 ? (
+                <div className='m-2'>{userFriendsItems}</div>
+              ) : (
+                <>
+                  <div className='card-content text-center'>
+                    You're flying solo!
+                  </div>
+                  <div className='card-detail text-center'>
+                    Assemble your krewe by searching for friends below
+                  </div>
+                </>
+              )}
 
-            <div className='d-flex flex-column align-items-center p-2'>
-              <input
-                style={{ width: '75vw' }}
-                placeholder='###-###-#### || First Last'
-                value={nameOrPhoneForFriendRequest}
-                onChange={handleNameOrPhoneInput}
-              ></input>
-              <div className='d-flex flew-row m-2'>
-                <small className='mx-1'>Invite to Krewe</small>
-                <Button
-                  className='mx-11'
-                  style={{ width: '23px' }}
-                  size='sm'
-                  variant='success'
-                  onClick={requestFriend}
-                >
-                  <FaEnvelope style={{ verticalAlign: '-2px' }} />
-                </Button>
+              <div className='d-flex flex-column align-items-center p-2'>
+                <input
+                  style={{ width: '75vw' }}
+                  placeholder='###-###-#### || First Last'
+                  value={nameOrPhoneForFriendRequest}
+                  onChange={handleNameOrPhoneInput}
+                ></input>
+                <div className='d-flex flew-row m-2'>
+                  <small className='mx-1'>Invite to Krewe</small>
+                  <Button
+                    className='mx-1'
+                    style={{ width: '23px' }}
+                    size='sm'
+                    variant='success'
+                    onClick={requestFriend}
+                  >
+                    <FaEnvelope style={{ verticalAlign: '-2px' }} />
+                  </Button>
+                </div>
               </div>
-            </div>
 
-            {
-              // conditional checks for outgoing requests
-              friendRequestsMade.length > 0 && (
-                <>
-                  <h5> Waiting on... </h5>
-                  <div>{requestsMadeItems}</div>
-                </>
-              )
-            }
-
-            {
-              // conditional checks for incoming requests
-              friendRequestsReceived.length > 0 && (
-                <>
-                  <h5> Respond to... </h5>
-                  <div>{requestsReceivedItems}</div>
-                </>
-              )
-            }
-          </Tab>
-
-          <Tab eventKey='calendar' title='Calendar'>
-            {
-              // conditional check: if no events owned or invited or attending, show default message
-              eventsOwned.length === 0 &&
-                eventsInvited.length === 0 &&
-                eventsParticipating.length === 0 && (
+              {
+                // conditional checks for outgoing requests
+                friendRequestsMade.length > 0 && (
                   <>
-                    <div className='card-content text-center mt-3'>
-                      Nothing going on in here!
-                    </div>
-                    <div className='card-detail text-center'>
-                      Make plans or connect with your Krewe to beef up your
-                      calendar.
-                    </div>
+                    <h5> Waiting on... </h5>
+                    <div>{requestsMadeItems}</div>
                   </>
                 )
-            }
+              }
 
-            {
-              // conditional check for events you own
-              eventsOwned.length > 0 && (
-                <>
-                  <div className='d-flex flex-dir-row align-items-baseline'>
-                    <h5>Your Plans</h5>
-                  </div>
-                  <div>{eventsOwnedItems}</div>
-                </>
-              )
-            }
+              {
+                // conditional checks for incoming requests
+                friendRequestsReceived.length > 0 && (
+                  <>
+                    <h5> Respond to... </h5>
+                    <div>{requestsReceivedItems}</div>
+                  </>
+                )
+              }
+            </Tab>
 
-            {
-              // conditional checks for events you've attending
-              eventsParticipating.length > 0 && (
-                <>
-                  <div className='d-flex flex-dir-row align-items-baseline'>
-                    <h5>Schedule</h5>
-                  </div>
-                  <div>{eventsParticipatingItems}</div>
-                </>
-              )
-            }
+            <Tab eventKey='calendar' title='Calendar'>
+              {
+                // conditional check: if no events owned or invited or attending, show default message
+                eventsOwned.length === 0 &&
+                  eventsInvited.length === 0 &&
+                  eventsParticipating.length === 0 && (
+                    <>
+                      <div className='card-content text-center mt-3'>
+                        Nothing going on in here!
+                      </div>
+                      <div className='card-detail text-center'>
+                        Make plans or connect with your Krewe to beef up your
+                        calendar.
+                      </div>
+                    </>
+                  )
+              }
 
-            {
-              // conditional checks for events you've invited to
-              eventsInvited.length > 0 && (
-                <>
-                  <div className='d-flex flex-dir-row align-items-baseline'>
-                    <h5>Archived & Invited</h5>
-                  </div>
-                  <div>{eventsInvitedItems}</div>
-                </>
-              )
-            }
-          </Tab>
-        </Tabs>
+              {
+                // conditional check for events you own
+                eventsOwned.length > 0 && (
+                  <>
+                    <div className='d-flex flex-dir-row align-items-baseline'>
+                      <h5>Your Plans</h5>
+                    </div>
+                    <div>{eventsOwnedItems}</div>
+                  </>
+                )
+              }
+
+              {
+                // conditional checks for events you've attending
+                eventsParticipating.length > 0 && (
+                  <>
+                    <div className='d-flex flex-dir-row align-items-baseline'>
+                      <h5>Calendar</h5>
+                    </div>
+                    <div>{eventsParticipatingItems}</div>
+                  </>
+                )
+              }
+
+              {
+                // conditional checks for events you've invited to
+                eventsInvited.length > 0 && (
+                  <>
+                    <div className='d-flex flex-dir-row align-items-baseline'>
+                      <h5>Invited</h5>
+                    </div>
+                    <div>{eventsInvitedItems}</div>
+                  </>
+                )
+              }
+            </Tab>
+          </Tabs>
+        </div>
       </Row>
 
       {/* Buttons for logout, other events */}
 
       <Row>
-        <div className='userPage-buttons-container'>
+        <div
+          className='userPage-buttons-container'
+          style={{ position: 'absolute', bottom: '13vh' }}
+        >
           <Button
             variant='primary'
             onClick={async () => {
@@ -592,7 +690,6 @@ const UserPage: React.FC<UserPageProps> = ({
 };
 
 interface UserPageProps {
-  getLocation: any;
   lng: number;
   lat: number;
   userId: number;

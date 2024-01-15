@@ -1,7 +1,8 @@
 import { Router, Request, Response } from "express";
-import { Event, Join_friend, Join_user_event } from "../db";
-import { Model, InferCreationAttributes, InferAttributes, CreationOptional, Op } from 'sequelize';
+import { Event, Join_friend, Join_user_event, User } from "../db";
+import { Op } from 'sequelize';
 import axios from "axios";
+import dayjs from "dayjs";
 
 // interface EventModel extends Model {
 //   id: number,
@@ -22,6 +23,9 @@ import axios from "axios";
 // }
 
 const Events = Router();
+const now = dayjs();
+const oneDayAgo = now.subtract(1, 'day');
+
 
 // NEXT THREE ROUTES SEARCH FOR PRIVATE!!! EVENTS BY USERNAME
 Events.get('/getEventsOwned/:userId', async (req: Request, res: Response) => {
@@ -36,8 +40,21 @@ Events.get('/getEventsOwned/:userId', async (req: Request, res: Response) => {
         ['startTime', 'ASC']
       ]
     })
-    console.log('userEventsOwned', userEventsOwned)
-    res.status(200).send(userEventsOwned);
+
+    // events that haven't ended yet
+    const userEventsOwnedFuture = userEventsOwned.filter((event: any) => {
+      return dayjs(event.endTime).isAfter(now);
+    });
+
+    // events that have ended; reversing array brings
+    // most recently ended events to the top
+    const userEventsOwnedPast = userEventsOwned.filter((event: any) => {
+      return dayjs(event.endTime).isAfter(oneDayAgo) && dayjs(event.endTime).isBefore(now);
+    }).reverse();
+
+    const userEventsOwnedOrdered = userEventsOwnedFuture.concat(userEventsOwnedPast);
+
+    res.status(200).send(userEventsOwnedOrdered);
 
   } catch (err) {
     console.error('SERVER ERROR: failed to GET events owned by user', err);
@@ -86,7 +103,18 @@ Events.get('/getEventsParticipating/:userId', async (req: Request, res: Response
           ['startTime', 'ASC']
         ]
       });
-      res.status(200).send(userEventsParticipating);
+
+      const userEventsParticipatingFuture = userEventsParticipating.filter((event: any) => {
+        return dayjs(event.endTime).isAfter(now)
+      })
+
+      const userEventsParticipatingPast = userEventsParticipating.filter((event: any) => {
+        return dayjs(event.endTime).isAfter(oneDayAgo) && dayjs(event.endTime).isBefore(now);
+      }).reverse();
+
+      const userEventsParticipatingOrdered = userEventsParticipatingFuture.concat(userEventsParticipatingPast)
+
+      res.status(200).send(userEventsParticipatingOrdered);
     }
   } catch (err) {
     console.error('SERVER ERROR: failed to GET events you are going to', err);
@@ -111,20 +139,57 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
       // console.log('No event invitations')
       res.status(200).send([])
     } else {
+      const userEventsInvitedObjs = userEventsInvitedRecords.map((record: any) => { return {
+        eventId: record.eventId,
+        senderId: record.senderId,
+      }})
 
-      const userEventsInvitedIds = userEventsInvitedRecords.map((record: any) => record.eventId)
+      const userEventsInvited: any = []
 
-      const userEventsInvited: any = await Event.findAll({
-        where: {
-          id: {
-            [Op.or]: [...userEventsInvitedIds]
+      await Promise.all(userEventsInvitedObjs.map(async(object: any) => {
+        const event: any = await Event.findOne({
+          where: {
+            id: object.eventId
           }
-        },
-        order: [
-          ['startTime', 'ASC']
-        ]
+        })
+        const sender: any = await User.findOne({
+          where: {
+            id: object.senderId
+          }
+        })
+        userEventsInvited.push({
+          event,
+          sender: `${sender.firstName} ${sender.lastName.slice(0,1)}.`
+        })
+      }
+      ))
+
+      const userEventsInvitedRecentAndSorted = userEventsInvited.filter((invite: any) => {
+        // console.log(dayjs(invite.event.endTime).isAfter(oneDayAgo));
+        return dayjs(invite.event.endTime).isAfter(oneDayAgo);
+      }).sort((a:any,b:any) => {
+        if (dayjs(a.event.startTime).isBefore(b.event.startTime)) {
+          return -1;
+        }
+        else if (dayjs(a.event.startTime).isAfter(b.event.startTime)) {
+          return 1;
+        }
+        else if (dayjs(a.event.startTime).isSame(b.event.startTime)){
+          return 0;
+        }
       })
-      res.status(200).send(userEventsInvited);
+
+      const userEventsInvitedFuture = userEventsInvitedRecentAndSorted.filter((invite: any) => {
+        return dayjs(invite.event.endTime).isAfter(now);
+      });
+
+      const userEventsInvitedPast = userEventsInvitedRecentAndSorted.filter((invite: any) => {
+        return dayjs(invite.event.endTime).isBefore(now)
+      }).reverse();
+
+      const userEventsInvitedOrdered = userEventsInvitedFuture.concat(userEventsInvitedPast);
+
+      res.status(200).send(userEventsInvitedOrdered);
     }
   } catch (err) {
     console.error('SERVER ERROR: failed to GET events you are invited to', err);
@@ -299,8 +364,6 @@ Events.get('/getPeopleForEvent/:userId-:eventId', async (req: Request, res: Resp
 // are friends).
 Events.post('/createEvent', async (req: Request, res: Response) => {
   const {
-
-
     name,
     startTime,
     endTime,
@@ -319,10 +382,6 @@ Events.post('/createEvent', async (req: Request, res: Response) => {
 
 
   try {
-    // figure out how to type this properly
-    // how do interfaces get passed from
-    // db's index.js? Event interface is created,
-    // but not working
     const newEvent: any = await Event.create({
       ownerId,
       name,
@@ -338,10 +397,11 @@ Events.post('/createEvent', async (req: Request, res: Response) => {
       attendingCount
     })
 
-    // add owner of event to participants
+    // add owner of event to participants; invite sender is self
     const newParticipantRecord: any = await Join_user_event.create({
       eventId: newEvent.id,
       userId: newEvent.ownerId,
+      senderId: newEvent.ownerId,
       isAttending: true,
     })
 
@@ -351,6 +411,7 @@ Events.post('/createEvent', async (req: Request, res: Response) => {
       return {
         userId: invitee,
         eventId: newEvent.id,
+        senderId: newEvent.ownerId,
         isAttending: false,
       }
     })
@@ -405,9 +466,6 @@ Events.patch('/updateEvent', async (req: Request, res: Response) => {
       res.status(500).send(err);
     }
 })
-
-
-
 
 // request will have instructions whether to attend or not, invitee_userId and eventId
 // The record inside JOIN_EVENT_INVITEES gets deleted every time--will need to refactor
@@ -470,11 +528,11 @@ Events.delete('/deleteEvent/:eventId', async (req: Request, res: Response) => {
 
 Events.post('/inviteToEvent', async (req: Request, res: Response) => {
   // invitees is array of userIds
-  const { eventId, invitees } = req.body.invitations;
+  const { eventId, invitees, senderId } = req.body.invitations;
 
   try {
     const invitations: any = invitees.map((userId: number) => {
-      return { eventId, userId, isAttending: false }
+      return { eventId, userId, senderId, isAttending: false }
     })
     const invitationsResponse = await Join_user_event.bulkCreate(invitations);
     res.status(201).send(invitationsResponse)
