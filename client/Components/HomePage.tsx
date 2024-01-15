@@ -164,7 +164,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
         <Row>
         <Card
           className='comment-form'
-          style={{ position: 'fixed', bottom: '12vh' }}
+          style={{ position: 'fixed', bottom: '11.4vh' }}
         >
           <Form
           style={{width: '100%'}}

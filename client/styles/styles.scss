@@ -307,20 +307,25 @@ body{
 }
 
 .comment-btn {
+  background-color: $purpley;
   border-radius: 17px;
-  padding: 3px 6px;
+  // padding: 3px 6px;
+  margin-top: 5px;
   float: right;
 }
 
 .photo-btn {
   border-radius: 17px;
-  padding: 3px 6px;
+  // padding: 3px 6px;
+  margin-top: 5px;
 }
 
 .comment-form {
+  border-top: 1px solid $secondaryColor;
+  border-radius: 0px;
   display: flex;
   flex-direction: row;
-  max-height: 12vh;
+  max-height: 15vh;
   width: 100%;
   margin: 3px auto;
 }
