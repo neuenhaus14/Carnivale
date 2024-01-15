@@ -267,13 +267,19 @@ const UserPage: React.FC<UserPageProps> = ({
             setShowCreateModal(true);
             setSelectedEvent(event);
           }}
-          style={{textDecoration: now.isAfter(event.endTime) ? 'line-through': 'none'}}
+          style={{
+            textDecoration: now.isAfter(event.endTime)
+              ? 'line-through'
+              : 'none',
+          }}
         >
-          {event.name}{' '}
+          <b>{event.name} </b>
           {now.isBetween(event.startTime, event.endTime) ? (
             <em> happening now</em>
+          ) : now.isBefore(event.startTime) ? (
+            <em> starts {now.to(dayjs(event.startTime))}</em>
           ) : (
-            <em> {now.to(dayjs(event.startTime))}</em>
+            <em> ended {now.to(dayjs(event.endTime))}</em>
           )}
         </div>
       );
@@ -293,13 +299,19 @@ const UserPage: React.FC<UserPageProps> = ({
               setShowBasicModal(true);
               setSelectedEvent(event);
             }}
-            style={{textDecoration: now.isAfter(event.endTime) ? 'line-through': 'none'}}
+            style={{
+              textDecoration: now.isAfter(event.endTime)
+                ? 'line-through'
+                : 'none',
+            }}
           >
-            {event.name}
+            <b>{event.name} </b>
             {now.isBetween(event.startTime, event.endTime) ? (
               <em> happening now</em>
+            ) : now.isBefore(event.startTime) ? (
+              <em> starts {now.to(dayjs(event.startTime))}</em>
             ) : (
-              <em> {now.to(dayjs(event.startTime))}</em>
+              <em> ended {now.to(dayjs(event.endTime))}</em>
             )}
           </div>
         );
@@ -319,14 +331,36 @@ const UserPage: React.FC<UserPageProps> = ({
             setShowBasicModal(true);
             setSelectedEvent(invitation.event);
           }}
-          style={{textDecoration: now.isAfter(invitation.event.endTime) ? 'line-through': 'none'}}
+          style={{
+            textDecoration: now.isAfter(invitation.event.endTime)
+              ? 'line-through'
+              : 'none',
+          }}
         >
-          {invitation.sender}: {invitation.event.name}
-          {now.isBetween(invitation.event.startTime, invitation.event.endTime) ? (
+          <b>{invitation.event.name} </b>
+
+          {now.isBetween(
+            invitation.event.startTime,
+            invitation.event.endTime
+          ) ? (
+            <em> happening now</em>
+          ) : now.isBefore(invitation.event.startTime) ? (
+            <em> starts {now.to(dayjs(invitation.event.startTime))}</em>
+          ) : (
+            <em> ended {now.to(dayjs(invitation.event.endTime))}</em>
+          )}
+
+          {` from ${invitation.sender}`}
+
+          {/* {invitation.sender}: {invitation.event.name}
+          {now.isBetween(
+            invitation.event.startTime,
+            invitation.event.endTime
+          ) ? (
             <em> happening now</em>
           ) : (
             <em> {now.to(dayjs(invitation.event.startTime))}</em>
-          )}
+          )} */}
         </div>
       );
     });
@@ -425,7 +459,7 @@ const UserPage: React.FC<UserPageProps> = ({
   function handleNameOrPhoneInput(e: any) {
     setNameOrPhoneForFriendRequest(e.target.value);
   }
-  console.log('bottom of uP, eventsOwned', eventsOwned)
+
   return (
     <Container className={`body ${theme}`}>
       <ToastContainer
@@ -576,7 +610,7 @@ const UserPage: React.FC<UserPageProps> = ({
                 eventsParticipating.length > 0 && (
                   <>
                     <div className='d-flex flex-dir-row align-items-baseline'>
-                      <h5>Schedule</h5>
+                      <h5>Calendar</h5>
                     </div>
                     <div>{eventsParticipatingItems}</div>
                   </>

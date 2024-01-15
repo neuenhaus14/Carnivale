@@ -248,7 +248,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         return 'Midnight';
       } else if (hour === '12' && minute === '00') {
         return 'Noon';
-      } else if (Number(hour) > 12) {
+      } else if (Number(hour) >= 12) {
+        if (Number(hour) === 12){
+          return `${hour.toString()}:${minute} pm`;
+        }
         hour = Number(hour) - 12;
         return `${hour.toString()}:${minute} pm`;
       } else {

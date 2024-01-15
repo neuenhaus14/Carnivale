@@ -41,11 +41,20 @@ Events.get('/getEventsOwned/:userId', async (req: Request, res: Response) => {
       ]
     })
 
-    const userEventsOwnedRecent = userEventsOwned.filter((event: any) => {
-      return dayjs(event.endTime).isAfter(oneDayAgo);
-    })
+    // events that haven't ended yet
+    const userEventsOwnedFuture = userEventsOwned.filter((event: any) => {
+      return dayjs(event.endTime).isAfter(now);
+    });
 
-    res.status(200).send(userEventsOwnedRecent);
+    // events that have ended; reversing array brings
+    // most recently ended events to the top
+    const userEventsOwnedPast = userEventsOwned.filter((event: any) => {
+      return dayjs(event.endTime).isAfter(oneDayAgo) && dayjs(event.endTime).isBefore(now);
+    }).reverse();
+
+    const userEventsOwnedOrdered = userEventsOwnedFuture.concat(userEventsOwnedPast);
+
+    res.status(200).send(userEventsOwnedOrdered);
 
   } catch (err) {
     console.error('SERVER ERROR: failed to GET events owned by user', err);
@@ -95,11 +104,17 @@ Events.get('/getEventsParticipating/:userId', async (req: Request, res: Response
         ]
       });
 
-      const userEventsParticipatingRecent = userEventsParticipating.filter((event: any) => {
-        return dayjs(event.endTime).isAfter(oneDayAgo);
+      const userEventsParticipatingFuture = userEventsParticipating.filter((event: any) => {
+        return dayjs(event.endTime).isAfter(now)
       })
 
-      res.status(200).send(userEventsParticipatingRecent);
+      const userEventsParticipatingPast = userEventsParticipating.filter((event: any) => {
+        return dayjs(event.endTime).isAfter(oneDayAgo) && dayjs(event.endTime).isBefore(now);
+      }).reverse();
+
+      const userEventsParticipatingOrdered = userEventsParticipatingFuture.concat(userEventsParticipatingPast)
+
+      res.status(200).send(userEventsParticipatingOrdered);
     }
   } catch (err) {
     console.error('SERVER ERROR: failed to GET events you are going to', err);
@@ -124,8 +139,6 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
       // console.log('No event invitations')
       res.status(200).send([])
     } else {
-
-      // TODO: send back object that has event with invite sender attached to it
       const userEventsInvitedObjs = userEventsInvitedRecords.map((record: any) => { return {
         eventId: record.eventId,
         senderId: record.senderId,
@@ -156,17 +169,27 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
         return dayjs(invite.event.endTime).isAfter(oneDayAgo);
       }).sort((a:any,b:any) => {
         if (dayjs(a.event.startTime).isBefore(b.event.startTime)) {
-          return 1;
+          return -1;
         }
         else if (dayjs(a.event.startTime).isAfter(b.event.startTime)) {
-          return -1;
+          return 1;
         }
         else if (dayjs(a.event.startTime).isSame(b.event.startTime)){
           return 0;
         }
       })
 
-      res.status(200).send(userEventsInvitedRecentAndSorted);
+      const userEventsInvitedFuture = userEventsInvitedRecentAndSorted.filter((invite: any) => {
+        return dayjs(invite.event.endTime).isAfter(now);
+      });
+
+      const userEventsInvitedPast = userEventsInvitedRecentAndSorted.filter((invite: any) => {
+        return dayjs(invite.event.endTime).isBefore(now)
+      }).reverse();
+
+      const userEventsInvitedOrdered = userEventsInvitedFuture.concat(userEventsInvitedPast);
+
+      res.status(200).send(userEventsInvitedOrdered);
     }
   } catch (err) {
     console.error('SERVER ERROR: failed to GET events you are invited to', err);
