@@ -32,6 +32,10 @@ $tabSelectedBorder: $secondaryColor;
 $tabUnselected: $cardBackground;
 $tabUnselectedBorder: #e3e3e3;
 
+//colorblind friendly hues
+$tan: #D2B48C;
+$turq: #30D5C8;
+
 .card {
   padding: 10px;
   display: flex;
@@ -344,18 +348,27 @@ body{
   text-align: center;
 }
 
+
+//regular mode
 .pg-theme-light{
   .btn-primary {
     background-color: $yeller !important;
     color: $dark;
   }
 }
-
+//colorblind mode
 .pg-theme-vis {
   .btn-primary {
     background-color: black !important;
     color: white;
     text-transform: uppercase;
+  }
+  .btn-danger{
+    background-color: black !important;
+    text-transform: uppercase;
+  }
+  .mx-11 {
+    background-color: black !important;
   }
 
   text-transform: uppercase;
