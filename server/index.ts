@@ -89,10 +89,10 @@ app.patch('/userLoc', (req, res) => {
 
 
 io.on('connection', (socket: any) => {
-  console.log('a user connected');
+   console.log('a user connected');
 
   socket.on('userLoc', (userLoc: any) => {
-    console.log('userLoc', userLoc)
+    // console.log('userLoc', userLoc)
        io.emit('userLoc response', userLoc)
        //socket.broadcast.emit('userLoc response', userLoc)
 
@@ -146,7 +146,7 @@ io.on('connection', (socket: any) => {
   // });
 
   socket.on("disconnect", () => {
-    console.log("a user disconnected");
+     console.log("a user disconnected");
   });
 });
 

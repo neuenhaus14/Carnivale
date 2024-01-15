@@ -78,12 +78,12 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
 
  useEffect(() => {
   getLocation()
-  console.log('getLocation called in userLocation useEffect')
+  //console.log('getLocation called in userLocation useEffect')
  }, [userLocation])
 
  useEffect(() => {
   getLocation()
-  console.log('getLocation called in friends useEffect')
+  //console.log('getLocation called in friends useEffect')
  }, [friends])
 
 
@@ -91,7 +91,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
     geoControlRef.current?.trigger();
-    console.log('getLocation called in geoLocation')
+    //console.log('getLocation called in geoLocation')
   }, [geoControlRef.current]);
 
   //gets pins from database then removes all personal pins that don't match userId
@@ -202,7 +202,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
       } catch (err)  {
         try { // this handles the friend pin (if not POI... it's friend)
           const { data } = await axios.get(`/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`)
-          console.log('selectedFriend', data)
           setSelectedPin(data);
           setSelectedFriend(data);
           setShowFriendPopup(true)
