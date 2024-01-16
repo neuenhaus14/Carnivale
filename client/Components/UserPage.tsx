@@ -28,13 +28,13 @@ import { ThemeContext } from './Context';
 import { ToastContainer, toast } from 'react-toastify';
 //                              add userId as prop to get it from App
 const UserPage: React.FC<UserPageProps> = ({
-  // userId,
+  userId,
   lng,
   lat,
   setTheme,
 }) => {
-   const [searchParams] = useSearchParams();
-   const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  //  const [searchParams] = useSearchParams();
+  //  const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
