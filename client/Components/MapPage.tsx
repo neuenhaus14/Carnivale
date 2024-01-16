@@ -73,7 +73,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     getFriends();
     // getEvents();
     isSharingLoc();
-  }, []);
+  }, [userId]);
 
 
  useEffect(() => {
@@ -174,7 +174,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
     })
   });
 
-  //handles plus sign button to show createPin modal 
+  //handles plus sign button to show createPin modal
   const dropPin = (e: any) => {
     if (isPinSelected === false && isFriendSelected === false){
       setShowModal(true)
