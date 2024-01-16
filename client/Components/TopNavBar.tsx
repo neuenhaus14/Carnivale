@@ -42,7 +42,8 @@ const TopNavBar: React.FC<TopNavBarProps> = ({title}) => {
 
 
 return (
-  <Navbar fixed="top" className={`top-nav ${theme}`}>
+<div className={theme}>
+  <Navbar fixed="top" className={`top-nav`}>
     <Image src="img/pgLogo.png" style={{height: '6vh', width: 'auto'}}/>
     {title}
     <div style={{display: "inline-block"}}>
@@ -50,6 +51,8 @@ return (
     <span style={{fontSize: '15px'}}>{currTemp}° F</span>
     </div>
   </Navbar>
+  </div>
+
 )
 
 }

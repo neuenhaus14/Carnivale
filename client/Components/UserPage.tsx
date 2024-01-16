@@ -28,26 +28,26 @@ import { ThemeContext } from './Context';
 import { ToastContainer, toast } from 'react-toastify';
 //                              add userId as prop to get it from App
 const UserPage: React.FC<UserPageProps> = ({
-  userId,
+  // userId,
   lng,
   lat,
   setTheme,
 }) => {
-  // const [searchParams] = useSearchParams();
-  // const [userId] = useState(Number(searchParams.get('userid')) || 1);
+   const [searchParams] = useSearchParams();
+   const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
   const [eventsParticipating, setEventsParticipating] = useState([
-    { name: 'event1' },
+    { name: 'default' },
   ]);
   const [eventsInvited, setEventsInvited] = useState([
     {
-      event: { name: 'event2' },
-      sender: 'Evan Perry',
+      event: { name: 'default' },
+      sender: 'default sender',
     },
   ]);
-  const [eventsOwned, setEventsOwned] = useState([{ name: 'event3' }]);
+  const [eventsOwned, setEventsOwned] = useState([{ name: 'default' }]);
 
   const [nameOrPhoneForFriendRequest, setNameOrPhoneForFriendRequest] =
     useState('');
@@ -112,7 +112,6 @@ const UserPage: React.FC<UserPageProps> = ({
       const eventsInvited = await axios.get(
         `api/events/getEventsInvited/${userId}`
       );
-      console.log('eventsInvited', eventsInvited.data);
       setEventsInvited(eventsInvited.data);
     } catch (err) {
       console.error(
@@ -351,16 +350,6 @@ const UserPage: React.FC<UserPageProps> = ({
           )}
 
           {` from ${invitation.sender}`}
-
-          {/* {invitation.sender}: {invitation.event.name}
-          {now.isBetween(
-            invitation.event.startTime,
-            invitation.event.endTime
-          ) ? (
-            <em> happening now</em>
-          ) : (
-            <em> {now.to(dayjs(invitation.event.startTime))}</em>
-          )} */}
         </div>
       );
     });
@@ -368,7 +357,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
   // FUNCTIONS FOR DATA ITEMS
   // FRIENDS
-  async function requestFriend() {
+  const requestFriend = async () => {
     try {
       // checking for phoneNumber
       let phoneForFriendRequest = '';
@@ -408,17 +397,17 @@ const UserPage: React.FC<UserPageProps> = ({
     }
   }
 
-  async function cancelFriendRequest(recipient_userId: number) {
+  const cancelFriendRequest = async (recipient_userId: number) => {
     const deleteResponse = await axios.delete(
       `/api/friends/cancelFriendRequest/${userId}-${recipient_userId}`
     );
     getFriendRequests();
   }
 
-  async function answerFriendRequest(
+  const answerFriendRequest = async (
     requester_userId: number,
     isConfirmed: boolean
-  ) {
+  ) => {
     try {
       const updatedRelationship = await axios.patch(
         '/api/friends/answerFriendRequest',
@@ -445,18 +434,18 @@ const UserPage: React.FC<UserPageProps> = ({
         });
       }
     } catch (err) {
-      console.log('CLIENT ERROR: failed to answer friend request', err);
+      console.error('CLIENT ERROR: failed to answer friend request', err);
     }
   }
 
-  async function unfriend(friendId: number) {
+  const unfriend = async (friendId: number) => {
     const deleteResponse = await axios.delete(
       `/api/friends/unfriend/${userId}-${friendId}`
     );
     getFriends();
   }
 
-  function handleNameOrPhoneInput(e: any) {
+  const handleNameOrPhoneInput = (e: any) => {
     setNameOrPhoneForFriendRequest(e.target.value);
   }
 
@@ -638,8 +627,8 @@ const UserPage: React.FC<UserPageProps> = ({
       <Row>
         <div
           className='userPage-buttons-container'
-          style={{ position: 'absolute', bottom: '13vh' }}
         >
+
           <Button
             variant='primary'
             onClick={async () => {
