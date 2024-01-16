@@ -6,7 +6,6 @@ import { Button, Container } from "react-bootstrap";
 
 import { FaRoute, FaCirclePlus } from "react-icons/fa6";
 
-
 import { ThemeContext } from "./Context";
 
 interface ParadeInfo {
@@ -69,7 +68,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   });
   const [hideParadeSelector, setHideParadeSelector] = useState(false);
 
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
   // need to get friends in order to know
   // who we can invite to the event being created
   const getFriends = async () => {
@@ -251,15 +250,27 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
                 marginBottom: "10px",
               }}
             >
-              <img
-                src={`https://www.mardigrasneworleans.com${paradeInfo.imageParade}`}
-                alt="Parade Logo"
-                style={{
-                  height: "150px",
-                  width: "150px",
-                  marginRight: "10px",
-                }}
-              />
+              {paradeInfo.imageParade ? (
+                <img
+                  src={`https://www.mardigrasneworleans.com${paradeInfo.imageParade}`}
+                  alt="Parade Logo"
+                  style={{
+                    height: "150px",
+                    width: "150px",
+                    marginRight: "10px",
+                  }}
+                />
+              ) : (
+                <img
+                  src="img/jesterPin.png"
+                  alt="Default Parade Logo"
+                  style={{
+                    height: "150px",
+                    width: "150px",
+                    marginRight: "10px",
+                  }}
+                />
+              )}
               <div style={{ textAlign: "left" }}>
                 <h4>Start Time: </h4>
                 <p
@@ -435,6 +446,12 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
           getEventsOwned={null} // not needed for parades
         />
       </div>
+      <footer className="footer">
+        Parade info courtesy of{" "}
+        <a href="https://www.mardigrasneworleans.com/parades/">
+          Mardi Gras New Orleans
+        </a>
+      </footer>
     </Container>
   );
 };
