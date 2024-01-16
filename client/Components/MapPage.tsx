@@ -301,13 +301,13 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
  //sets pin category color when the pins load on the map
   const pinCategoryColor = (marker: any) => {
     const colorMapping: PinColorMapping = {
-      isFree:"#53CA3C",
-      isToilet: "#169873",
-      isFood: "#FCC54E",
-      isPersonal: "#BA37DD",
-      isPhoneCharger: '#53e3d4',
-      isPoliceStation: "#E7ABFF",
-      isEMTStation:"#f27d52"
+      isFree: theme === 'pg-theme-vis'? "#181818": "#53CA3C",
+      isToilet: theme === 'pg-theme-vis'? "#181818":"#169873",
+      isFood: theme === 'pg-theme-vis'? "#181818":"#FCC54E",
+      isPersonal: theme === 'pg-theme-vis'? "#181818":"#cf40f5",
+      isPhoneCharger: theme === 'pg-theme-vis'? "#181818":'#53e3d4',
+      isPoliceStation: theme === 'pg-theme-vis'? "#181818":"#E7ABFF",
+      isEMTStation:theme === 'pg-theme-vis'? "#181818":"#f27d52"
     }
 
     for(const key in marker){
@@ -320,13 +320,13 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
   // styles the filter buttons
   const filterStyling = (value: string) => {
     const colorMapping: PinColorMapping = {
-      isFree:"#53CA3C",
-      isToilet: "#169873",
-      isFood: "#FCC54E",
-      isPersonal: "#cf40f5",
-      isPhoneCharger: '#53e3d4',
-      isPoliceStation: "#E7ABFF",
-      isEMTStation:"#f27d52"
+      isFree: theme === 'pg-theme-vis'? "#181818": "#53CA3C",
+      isToilet: theme === 'pg-theme-vis'? "#181818":"#169873",
+      isFood: theme === 'pg-theme-vis'? "#181818":"#FCC54E",
+      isPersonal: theme === 'pg-theme-vis'? "#181818":"#cf40f5",
+      isPhoneCharger: theme === 'pg-theme-vis'? "#181818":'#53e3d4',
+      isPoliceStation: theme === 'pg-theme-vis'? "#181818":"#E7ABFF",
+      isEMTStation:theme === 'pg-theme-vis'? "#181818":"#f27d52"
     }
 
     const off = {
@@ -491,7 +491,7 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
             </div>
           </div>
         ) : null}
-         <button onClick={(e) => {dropPin(e)}}><FaCirclePlus style={{color: "#cf40f5", width: "60px", height: "60px", border: "5px solid #E7ABFF", borderRadius: "50%", position: "absolute", right: "5%", bottom: "8%"}}/></button>
+         <button onClick={(e) => {dropPin(e)}}><FaCirclePlus style={{color: theme === 'pg-theme-vis'? '#291F1F' : "#cf40f5", width: "60px", height: "60px", border: "5px solid #E7ABFF", borderRadius: "50%", position: "absolute", right: "5%", bottom: "8%"}}/></button>
       </Map>
       <div id="map-filter-container" className="container">
         <p style={{textAlign: "center",}}>FILTER PINS</p>

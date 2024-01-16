@@ -15,7 +15,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({title, currTemp, currWeather}) => 
 
 return (
 <div className={theme}>
-  <Navbar fixed="top" className={`top-nav`}>
+  <Navbar fixed="top" className='top-nav'>
     <Image src="img/pgLogo.png" style={{height: '6vh', width: 'auto'}}/>
     {title}
     <div style={{display: "inline-block"}}>

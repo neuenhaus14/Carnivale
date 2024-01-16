@@ -530,10 +530,10 @@ const UserPage: React.FC<UserPageProps> = ({
                   onChange={handleNameOrPhoneInput}
                 ></input>
                 <div className='d-flex flew-row m-2'>
-                  <small className='mx-1'>Invite to Krewe</small>
+                  <div className='mx-1'>Invite to Krewe</div>
                   <Button
                     className='mx-1'
-                    style={{ width: '23px' }}
+                    // style={{ width: '23px' }}
                     size='sm'
                     variant='success'
                     onClick={requestFriend}
@@ -571,13 +571,13 @@ const UserPage: React.FC<UserPageProps> = ({
                   eventsInvited.length === 0 &&
                   eventsParticipating.length === 0 && (
                     <>
-                      <div className='card-content text-center mt-3'>
+                      <p className='card-content text-center mt-3'>
                         Nothing going on in here!
-                      </div>
-                      <div className='card-detail text-center'>
+                      </p>
+                      <p className='card-detail text-center'>
                         Make plans or connect with your Krewe to beef up your
                         calendar.
-                      </div>
+                      </p>
                     </>
                   )
               }
