@@ -203,8 +203,8 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
               }}
               style={{
                 position: "fixed",
-                right: "18px",
-                bottom: "82px",
+                right: "8vw",
+                bottom: "13vh",
                 backgroundColor: "transparent",
                 border: "none",
                 outline: "none",
@@ -213,7 +213,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
             >
               <FaCirclePlus
                 style={{
-                  color: "#cf40f5",
+                  color: theme === 'pg-theme-vis'? '#291F1F' : "#cf40f5",
                   width: "60px",
                   height: "60px",
                   border: "5px solid #E7ABFF",

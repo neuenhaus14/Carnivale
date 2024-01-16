@@ -36,6 +36,10 @@ $tabUnselectedBorder: #e3e3e3;
 $tan: #D2B48C;
 $turq: #30D5C8;
 
+$offBlack: #291F1F;
+$cardBackground2: #fdf9f4;
+
+
 .card {
   padding: 10px;
   display: flex;
@@ -78,17 +82,6 @@ $turq: #30D5C8;
   border: 1px solid $secondaryColor;
 }
 
-// span {
-//   font-size: medium;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   text-align: center;
-//   margin: 4px;
-//   padding-bottom: 1rem;
-//   color: $dark;
-// }
-
 .btn {
   border: none;
 }
@@ -119,6 +112,11 @@ $turq: #30D5C8;
   padding: 3px 6px;
   font-size: x-small;
   font-weight: bold;
+}
+
+.userPage-tabs .btn-sm {
+  font-size:small !important;
+  padding: 3px 6px !important;
 }
 
 .bottom-nav-button {
@@ -153,9 +151,7 @@ $turq: #30D5C8;
   padding-bottom: 15vh;
   display: flex;
   flex-direction: column;
-
   background-color: $primaryColor;
-
   min-height: 100vh;
 }
 
@@ -255,7 +251,10 @@ body{
   height: 15vh;
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-evenly;
+  justify-content: space-between;
+  padding: 0px 30px;
+  position: absolute;
+  bottom: 13vh;
 }
 
 .userPage-buttons-container .btn{
@@ -264,7 +263,6 @@ body{
 
 .userPage-buttons-container .dropup{
   margin: auto;
-
 }
 
 .nav-tabs .nav-link {
@@ -361,23 +359,83 @@ body{
     background-color: $yeller !important;
     color: $dark;
   }
+
+  .top-nav {
+    justify-content: space-evenly;
+    background-color: $greeny;
+    height: 8vh;
+    color: white;
+    font-size: 1em;
+    font-weight: 200;
+  }
 }
+
+
 //colorblind mode
 .pg-theme-vis {
   .btn-primary {
-    background-color: black !important;
+    background-color: $offBlack !important;
     color: white;
     text-transform: uppercase;
   }
-  .btn-danger{
-    background-color: black !important;
+
+  .btn-success {
+    background-color: $offBlack !important;
+    color: white;
     text-transform: uppercase;
   }
-  .mx-11 {
-    background-color: black !important;
+
+  .btn-danger{
+    background-color: $offBlack !important;
+    color: white;
+    text-transform: uppercase;
   }
 
-  text-transform: uppercase;
+  .dropdown-toggle{
+    background-color: $offBlack !important;
+    color: white;
+    text-transform: uppercase;
+  }
+
+  h5 {
+    color: $offBlack;
+    text-transform: uppercase;
+  }
+
+  .top-nav {
+    background-color: $offBlack !important;
+  }
+
+  .card {
+    background-color: $cardBackground2 !important;
+  }
+
+  * {
+    border-color: $offBlack !important;
+  }
+
+  .bottom-nav {
+    border-top-color: $offBlack !important;
+  }
+
+  .nav-tabs .nav-link {
+    background-color: $tabSelected ;
+    color: gray;
+  }
+
+
+  .nav-tabs .nav-link.active {
+    background-color:$tabSelected;
+    color: $offBlack;
+    border-bottom: solid 1px $tabSelected !important;
+  }
+
+  #modal-header {
+    color: white !important;
+    background-color: $offBlack !important;
+  }
+
+
 }
 
 .pg-theme-deep {
