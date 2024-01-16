@@ -5,41 +5,13 @@ import { ThemeContext } from "./Context";
 
 interface TopNavBarProps {
   title: string;
+ currWeather: string;
+ currTemp: string;
 }
 
 
-const TopNavBar: React.FC<TopNavBarProps> = ({title}) => {
-  const [location, setLocation] = useState('');
-  const [currWeather, setCurrWeather] = useState("");
-  const [currTemp, setCurrTemp] = useState("");
+const TopNavBar: React.FC<TopNavBarProps> = ({title, currTemp, currWeather}) => {
   const theme = useContext(ThemeContext)
-
-  const getWeather = async (pos: any) => {
-    const crd = pos.coords;
-    try {
-      const { data } = await axios.get(`/api/weather/${crd.latitude},${crd.longitude}`);
-      setCurrWeather(data.current.condition.icon);
-      setCurrTemp(data.current.temp_f);
-      console.log(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    getLocation();
-  }, []);
-
-
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      return navigator.geolocation.getCurrentPosition(getWeather)
-    } else {
-      console.log("Geolocation is not supported by this browser")
-      return null
-    }
-  }
-
 
 return (
   <Navbar fixed="top" className={`top-nav ${theme}`}>
