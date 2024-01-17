@@ -74,7 +74,6 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   const getFriends = async () => {
     try {
       const friends = await axios.get(`/api/friends/getFriends/${userId}`);
-      // console.log('here', friends.data);
       setFriends(friends.data);
     } catch (err) {
       console.error("CLIENT ERROR: failed to GET user friends", err);
@@ -86,7 +85,6 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
       const response = await axios.get<ParadeInfo>(
         `/api/parades/parade-info/${paradeName}`
       );
-      console.log("parade response", response.data);
       setParadeInfo(response.data);
     } catch (error) {
       console.error("Error fetching parade information:", error.message);
@@ -125,13 +123,11 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
       const formattedDate = dayjs(paradeResponse.data.startDate).format(
         "YYYY-MM-DD"
       );
-      console.log("date", formattedDate);
 
       // Fetch weather data for the selected date
       const weatherResponse = await axios.get(
         `/api/weather/forecast/${formattedDate}`
       );
-      console.log("weather", weatherResponse);
       setWeatherForecast(weatherResponse.data);
     } catch (error) {
       console.error(

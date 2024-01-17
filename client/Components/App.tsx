@@ -38,8 +38,9 @@ const App = () => {
   const [currTemp, setCurrTemp] = useState('');
   const [theme, setTheme] = useState('pg-theme-light');
 
-  const [lng, setLng] = useState(0);
-  const [lat, setLat] = useState(0);
+  // start with NOLA coordinates
+  const [lng, setLng] = useState(-90.0715);
+  const [lat, setLat] = useState(29.9511);
 
   // this gets user from database
   // sets user state
@@ -64,9 +65,6 @@ const App = () => {
       latitude: position.coords.latitude,
       id: userId,
     });
-
-    // socket.emit("getFriends:read", {userId})
-    // console.log('socket emitted from App')
   };
 
   useEffect(() => {
@@ -78,20 +76,20 @@ const App = () => {
         id: userId,
       })
       .then()
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
     //}
-  }, [lng]); // the other option here is [setLng] to save to DB at the rate of the sockets, but once should be fine to fix the friend bug
+  }, [lng]);
 
   // this get coordinates from the browser
   const getLocation = () => {
     if (navigator.geolocation) {
       return navigator.geolocation.getCurrentPosition(
         showPosition,
-        (error) => console.log(error),
+        (error) => console.error(error),
         { enableHighAccuracy: true }
       );
     } else {
-      console.log('Geolocation is not supported by this browser');
+      console.error('Geolocation is not supported by this browser');
       return null;
     }
   };
@@ -114,28 +112,25 @@ const App = () => {
     }
   }, [userId]);
 
-  // this could be irrelevant -gn 1/15/24
-  useEffect(() => {
-    // this coords is data.dataValues from the database as a response to the emit
-    socket.on('userLoc response', (userLoc: any) => {
-      // console.log('userLoc response in App', userLoc)
-    });
-  }, []);
-
   const getWeather = async () => {
     try {
       const { data } = await axios.get(`/api/weather/${lat},${lng}`);
       setCurrWeather(data.current.condition.icon);
       setCurrTemp(data.current.temp_f);
-      console.log(data);
+      console.log('weatherData', data, 'lat/lng', lat, lng);
     } catch (err) {
       console.error(err);
     }
   };
 
+  // makes sure weather doesn't keep refreshing whenever lat changes
+  let weatherRefreshCount = 0
   useEffect(() => {
-    getWeather();
-  }, []);
+    if (weatherRefreshCount < 2 && lat !== 0){
+      getWeather();
+      weatherRefreshCount += 1;
+    }
+  }, [lat]);
 
   if (isLoading || (isLoading && lng === 0 && user)) {
     return <Loading />;
@@ -270,7 +265,6 @@ const App = () => {
     )
   );
 
-  console.log('bottom of app', userId, lng, lat, 'theme', theme);
   return (
     <ThemeContext.Provider value={theme}>
       <RouterProvider router={router} />

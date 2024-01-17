@@ -361,7 +361,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       );
       handleClose();
     } catch (err) {
-      console.log('CLIENT ERROR: failed to DELETE event record', err);
+      console.error('CLIENT ERROR: failed to DELETE event record', err);
     }
   };
 
@@ -415,7 +415,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventLongitude(evtLongitude);
       setEventLatitude(evtLatitude);
     } catch (err) {
-      console.log('CLIENT ERROR: failed to GET coords from address', err);
+      console.error('CLIENT ERROR: failed to GET coords from address', err);
     }
   };
 

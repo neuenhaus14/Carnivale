@@ -78,12 +78,10 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
 
  useEffect(() => {
   getLocation()
-  //console.log('getLocation called in userLocation useEffect')
  }, [userLocation])
 
  useEffect(() => {
   getLocation()
-  //console.log('getLocation called in friends useEffect')
  }, [friends])
 
 
@@ -91,7 +89,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
   useEffect(() => {
     geoControlRef.current?.trigger();
-    //console.log('getLocation called in geoLocation')
   }, [geoControlRef.current]);
 
   //gets pins from database then removes all personal pins that don't match userId
@@ -116,7 +113,6 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
       const {data} = await axios.get(`/api/friends/getFriends/${userId}`)
       // setFriends(data)
       const friends = data.filter((friend: any) => friend.shareLoc === true)
-      console.log('getFriends where shareLoc is true', friends)
       setFriends(friends)
     } catch (err)  {
       console.error(err)
@@ -153,18 +149,15 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
   //this useEffect should update user or friend locations everytime they move
   useEffect(() => {
     socket.on('userLoc response', (userLoc) => {
-      //console.log('userLoc response in map', userLoc)
 
       if (userLoc.id === userId){
         setUserLocation([userLoc.longitude, userLoc.latitude]) // assuming everytime state is set there is a new render with updated loc
 
       } else {
         friends.forEach((friend) => {
-          //console.log('friend inside socket', friend)
           if (friend.id === userLoc.id){
             friend.longitude = userLoc.longitude
             friend.latitude = userLoc.latitude
-            //console.log('friendID that matched', friend)
           }
         })
         setFriends(prevFriends => [...prevFriends]) // assuming everytime state is set there is a new render with updated friend loc
@@ -331,7 +324,8 @@ const MapPage: React.FC<MapProps> = ({userLat, userLng, getLocation, userId}) =>
 
     const off = {
       backgroundColor: `${colorMapping[value]}`,
-      color: ['isFree', 'isToilet', 'isFood', 'isPersonal'].includes(value) ? "white" : "black",
+      color: theme !== 'pg-theme-vis'? "black" : ['isFree', 'isToilet', 'isFood', 'isPersonal'].includes(value) ?
+      "white" : "black",
       lineHeight: 1,
       width: "25%",
       height: "44px",
@@ -523,23 +517,8 @@ interface PinColorMapping {
 
 export default MapPage;
 
-// gets friends from database? probably unnecessary with the getFriends axios call
-//   useEffect (() => {
-//     socket.emit("getFriends:read", {userId})
-//     const handleGetFriends = (allFriendsUsers: any) => {
-//       console.log('Got friends from socket', allFriendsUsers)
-//       setFriends(allFriendsUsers)
-//     };
 
-//     socket.on("getFriends:send", handleGetFriends)
-
-//     return () => {
-//       socket.off("getFriends:send", handleGetFriends)
-//     };
-
-// }, [setUserLocation]);
-
-// //gets owned and participating events from database
+  // FOR L8R: gets owned and participating events from database
   // const getEvents = async () => {
   //   const endpoints = [`/api/events/getEventsOwned/${userId}`, `/api/events/getEventsParticipating/${userId}`]
   //   try {
