@@ -1,9 +1,8 @@
 import React, { useContext } from 'react';
 import { useAuth0 } from '@auth0/auth0-react'; //TODO: temporary
-import { Link, To, useNavigate } from 'react-router-dom';
+import { To, useNavigate } from 'react-router-dom';
 import { Navbar, Button } from 'react-bootstrap/';
 import { MdDynamicFeed } from 'react-icons/md';
-import { VscFeedback } from 'react-icons/vsc';
 import { FaMapMarkedAlt } from 'react-icons/fa';
 import { IoHomeOutline, IoPeople } from 'react-icons/io5';
 import { ThemeContext } from './Context';

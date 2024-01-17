@@ -6,9 +6,7 @@ import {
   Container,
   Row,
   Tab,
-  Tabs,
-  DropdownButton,
-  Dropdown,
+  Tabs
 } from 'react-bootstrap';
 import { FaCamera, FaCommentDots } from 'react-icons/fa';
 import axios from 'axios';
@@ -71,7 +69,6 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   const getPosts = async (e: string) => {
     try {
       const { data } = await axios.get(`/api/home/${e}`);
-      console.log(data);
       if (order === 'upvotes') {
         setPosts(
           data.sort(
@@ -97,28 +94,15 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
     //on initial render, or tab click
     //getPosts and setInterval for 5 sec
     getPosts(key);
-    const interval = setInterval(() => {
+    const interval = setTimeout(() => {
       getPosts(key);
-      console.log('fetch', order);
-    }, 5000);
-    return () => clearInterval(interval);
+    }, 15000);
+    return () => clearTimeout(interval);
   }, [key, order]);
 
   return (
     <Container className={`body-home ${theme}`}>
       <Row>
-        {/* <DropdownButton
-          className="my-3 mx-auto"
-          style={{ width: "200px" }}
-          title="Sort"
-          onSelect={(e) => {
-            setOrder(e);
-            console.log(e);
-          }}
-        >
-          <Dropdown.Item eventKey={"createdAt"}>Created</Dropdown.Item>
-          <Dropdown.Item eventKey={"upvotes"}>Upvotes</Dropdown.Item>
-        </DropdownButton> */}
         <div
           key={'inline-radio'}
           style={{

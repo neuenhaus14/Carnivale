@@ -361,7 +361,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       );
       handleClose();
     } catch (err) {
-      console.log('CLIENT ERROR: failed to DELETE event record', err);
+      console.error('CLIENT ERROR: failed to DELETE event record', err);
     }
   };
 
@@ -415,7 +415,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventLongitude(evtLongitude);
       setEventLatitude(evtLatitude);
     } catch (err) {
-      console.log('CLIENT ERROR: failed to GET coords from address', err);
+      console.error('CLIENT ERROR: failed to GET coords from address', err);
     }
   };
 
@@ -687,10 +687,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
               <Tab eventKey='people' title='People'>
                 {friends.length === 0 && (
                   <div>
-                    <div className='card-content text-center mt-3'>
+                    <div className='ep-card-content text-center mt-3'>
                       You're flying solo!
                     </div>
-                    <div className='card-detail text-center'>
+                    <div className='ep-card-detail text-center'>
                       Add to your Krewe to send invitations.
                     </div>
                   </div>

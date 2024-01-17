@@ -262,6 +262,18 @@ body {
   margin: auto;
 }
 
+#share-modal-button {
+  background-color: $yeller;
+  margin: 0px 0px 0px 15px;
+  color: black !important;
+}
+
+#share-modal-dropdown {
+  background-color: $yeller;
+  margin: 0px 0px 0px 15px;
+  color: black !important;
+}
+
 .nav-tabs .nav-link {
   color: rgb(86, 86, 86);
   font-family: "Permanent Marker", serif;
@@ -283,12 +295,26 @@ body {
 }
 
 .card-detail {
-  font-size: smaller;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 100;
+  margin-top: -5px;
+  margin-left: 0px;
+}
+
+.card-content {
+  font-weight: 500;
+  line-height: normal;
+  margin-left: 0px;
+}
+
+.ep-card-detail {
+  font-size: 16px;
   font-style: italic;
   font-weight: 100;
 }
 
-.card-content {
+.ep-card-content {
   font-weight: 500;
 }
 //HOMEPAGE

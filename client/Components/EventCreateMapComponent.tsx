@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Map, Marker, NavigationControl, GeolocateControl, Layer, Source } from 'react-map-gl';
+import { Map, Marker, NavigationControl, GeolocateControl } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
 // This map displays in the Create Modal for either
