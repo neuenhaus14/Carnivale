@@ -83,11 +83,12 @@ const EventPage: React.FC<EventPageProps> = ({
 
   return (
     <div className={`body ${theme}`}>
+      <div className='gig-body-calendar'>
       <Card
             className='comment-form'
             style={{ position: 'fixed', bottom: '11.4vh', zIndex: 1 }}
           >
-      <h3 className='date-picker'>Select the Date:</h3>
+      <h3 className='date-picker-name'>Select the Date:</h3>
 
       <DatePicker
         className='date-picker'
@@ -113,6 +114,7 @@ const EventPage: React.FC<EventPageProps> = ({
         getEventsOwned={null}
       />
       <footer className='footer'>Live music info courtesy of <a href='https://www.wwoz.org/calendar/livewire-music'>WWOZ</a></footer>
+    </div>
     </div>
   );
 };
