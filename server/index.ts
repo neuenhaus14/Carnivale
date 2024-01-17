@@ -1,15 +1,15 @@
 import express, { Request, Response, Router } from "express";
 import path from "path";
 import "./db"; //importing not using. so it does the same thing
-import { auth, requiresAuth } from "express-openid-connect";
+import { auth } from "express-openid-connect";
 import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER, REDIRECT_URL } from "./config";
 import { Server } from "socket.io";
-import { Op, Model } from "sequelize";
+import { Model } from "sequelize";
 import PinRoutes from "./routes/Pins";
 import http from "http";
 import cors from "cors";
 //import Upload  from "./routes/PhotoUpload"
-import cloudinary from "./utils/cloudinary_helpers"; //grabbing reference to an already configured cloudinary object
+// import cloudinary from "./utils/cloudinary_helpers"; //grabbing reference to an already configured cloudinary object
 import FriendsRoutes from "./routes/Friends";
 import WeatherRoutes from "./routes/WeatherApi";
 import WeatherForecastRoutes from "./routes/WeatherForecast";
@@ -19,9 +19,9 @@ import FeedRoutes from "./routes/Feed";
 import ImageRouter from "./routes/PhotoUpload";
 import ParadesRoutes from "./routes/Parades";
 import GigsRoutes from "./routes/ScrapeEvents";
-import { User, Join_friend } from "./db/index";
-import { Sequelize } from "sequelize";
-import { Socket } from "dgram";
+import { User, } from "./db/index";
+// import { Sequelize } from "sequelize";
+// import { Socket } from "dgram";
 //start()
 //this is declaring db as an obj so it can be ran when server starts
 //this is running db/index.ts

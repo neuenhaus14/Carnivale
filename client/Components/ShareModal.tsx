@@ -72,7 +72,7 @@ const ShareModal = (props: {
         </Modal.Header>
 
         <Form>
-          <DropdownButton title={friendName || "Krewe"}>
+          <DropdownButton id="share-modal-dropdown" title={friendName || "Krewe"}>
             {friends.map((friend, index) => {
               const name = `${friend.firstName} ${friend.lastName}`;
               return (
@@ -92,6 +92,7 @@ const ShareModal = (props: {
 
         <Modal.Footer>
           <Button
+            id="share-modal-button"
             variant="primary"
             onClick={() => sharePost(postType)}
             disabled={!shareId}

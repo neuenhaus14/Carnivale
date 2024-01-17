@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from 'react';
-// import { useSearchParams } from 'react-router-dom';
 import EventCreateModal from './EventCreateModal';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -8,14 +7,12 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Card } from 'react-bootstrap';
 import { ThemeContext } from './Context';
 interface EventPageProps {
-  getLocation: any;
   lng: number;
   lat: number;
   userId: number;
 }
 
 const EventPage: React.FC<EventPageProps> = ({
-  getLocation,
   lng,
   lat,
   userId,

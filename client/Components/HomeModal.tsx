@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import React, { useState, useContext } from 'react';
+import { Modal, Form } from 'react-bootstrap';
 import Photos from './Photos';
 import { ThemeContext } from './Context';
 

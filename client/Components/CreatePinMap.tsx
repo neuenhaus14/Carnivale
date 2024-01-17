@@ -1,7 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
-import { Map, Marker, NavigationControl, GeolocateControl, Layer, Source } from 'react-map-gl';
+import {
+  Map,
+  Marker,
+  NavigationControl,
+  GeolocateControl,
+} from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface Props {
@@ -15,7 +20,7 @@ const CreatePinMap: React.FC<Props> = ( {userLocation} ) => {
   const [viewState, setViewState] = useState({
     longitude: userLocation[0],
     latitude: userLocation[1],
-    zoom: 16,
+    zoom: 18,
   });
 
   const mapRef = useRef(null);
@@ -57,9 +62,9 @@ const CreatePinMap: React.FC<Props> = ( {userLocation} ) => {
           showAccuracyCircle={false}
           ref={geoControlRef}
         />
-        { droppedPin ? <Marker longitude={parseFloat(lng)} latitude={parseFloat(lat)} anchor="bottom"></Marker> : null}      
+        { droppedPin ? <Marker longitude={parseFloat(lng)} latitude={parseFloat(lat)} anchor="bottom"></Marker> : null}
         <NavigationControl/>
-      </Map>  
+      </Map>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useSearchParams } from "react-router-dom";
+// import { useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import EventBasicModal from "./EventBasicModal";

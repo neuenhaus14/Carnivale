@@ -1,9 +1,9 @@
 import React, {
   useEffect,
   useState,
-  useContext,
-  createContext,
-  useRef,
+  // useContext,
+  // createContext,
+  // useRef,
 } from 'react';
 import {
   Link,
@@ -11,7 +11,7 @@ import {
   RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
-  useLoaderData,
+  // useLoaderData,
 } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import ProtectedRoute from './ProtectedRoutes';
@@ -143,13 +143,13 @@ const App = () => {
           path='/'
           element={<Login />}
         />
-        {/* <Route element={<ProtectedRoute />}>  */}
+        <Route element={<ProtectedRoute />}>
         <Route
           path='/homepage'
           element={
             <div>
               <TopNavBar
-                title={user ? `Welcome ${user.given_name}!` : ''}
+                title={user ? `Welcome, ${user.given_name}!` : ''}
                 currWeather={currWeather}
                 currTemp={currTemp}
               />
@@ -231,7 +231,6 @@ const App = () => {
               </Link>
               <EventPage
                 userId={userId}
-                getLocation={getLocation}
                 lng={lng}
                 lat={lat}
               />{' '}
@@ -245,7 +244,7 @@ const App = () => {
             <div>
               <Link to='/homepage'>
                 <TopNavBar
-                  title={'User'}
+                  title= "Krewe & Calendar"
                   currWeather={currWeather}
                   currTemp={currTemp}
                 />
@@ -260,7 +259,7 @@ const App = () => {
             </div>
           }
         />
-        {/* </Route>  */}
+        </Route>
       </Route>
     )
   );

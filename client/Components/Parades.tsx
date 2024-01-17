@@ -3,9 +3,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import EventCreateModal from "./EventCreateModal";
 import { Button, Container } from "react-bootstrap";
-
 import { FaRoute, FaCirclePlus } from "react-icons/fa6";
-
 import { ThemeContext } from "./Context";
 
 interface ParadeInfo {

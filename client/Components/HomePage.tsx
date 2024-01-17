@@ -6,9 +6,7 @@ import {
   Container,
   Row,
   Tab,
-  Tabs,
-  DropdownButton,
-  Dropdown,
+  Tabs
 } from 'react-bootstrap';
 import { FaCamera, FaCommentDots } from 'react-icons/fa';
 import axios from 'axios';
