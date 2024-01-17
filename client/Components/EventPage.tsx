@@ -61,10 +61,10 @@ const EventPage: React.FC<EventPageProps> = ({
           await setShowCreateModal(true);
         }}
       >
-        <Card.Text>
-          <div className='card-content'>{event.name}</div>
-          <div className='card-detail'>{event.address}</div>
-          <div className='card-detail'>{dayjs(event.startTime).format(' MMMM D, YYYY h:mm') + 'pm'}</div>
+        <Card.Text as="div">
+          <p className='card-content'>{event.name}</p>
+          <p className='card-detail'>{event.address}</p>
+          <p className='card-detail'>{dayjs(event.startTime).format(' MMMM D, YYYY h:mm') + 'pm'}</p>
         </Card.Text>
       </Card>
     );

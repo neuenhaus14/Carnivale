@@ -687,10 +687,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
               <Tab eventKey='people' title='People'>
                 {friends.length === 0 && (
                   <div>
-                    <div className='card-content text-center mt-3'>
+                    <div className='ep-card-content text-center mt-3'>
                       You're flying solo!
                     </div>
-                    <div className='card-detail text-center'>
+                    <div className='ep-card-detail text-center'>
                       Add to your Krewe to send invitations.
                     </div>
                   </div>

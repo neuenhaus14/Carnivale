@@ -110,12 +110,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
       <Card>
         {post.comment ? (
           <Card.Body>
-            <Card.Text>
-              <div className="card-content">{post.comment}</div>
-              <div className="card-detail">
+            <Card.Text as="div">
+              <p className="card-content">{post.comment}</p>
+              <p className="card-detail">
                 {owner} posted
-                <div>
-                  {/* {' '} */}
+                <br />
+                <>
                   <OverlayTrigger
                     placement="top"
                     overlay={
@@ -130,9 +130,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                       {dayjs(post.createdAt.toString()).fromNow()}
                     </span>
                   </OverlayTrigger>
-                </div>
+                </>
                 {/* {dayjs(post.createdAt.toString()).fromNow()} */}
-              </div>
+              </p>
             </Card.Text>
             <ButtonGroup
               style={{
@@ -192,8 +192,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
         ) : (
           <Card.Body>
             <Card.Img variant="top" src={post.photoURL} />
-            <Card.Text>
-              <div className="card-content">{post.description}</div>
+            <Card.Text as='div'>
+              <p className="card-content">{post.description}</p>
               <div className="card-detail">
                 {owner} posted
                 <div>

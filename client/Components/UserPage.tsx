@@ -529,10 +529,10 @@ const UserPage: React.FC<UserPageProps> = ({
                 <div className="m-2">{userFriendsItems}</div>
               ) : (
                 <>
-                  <div className="card-content text-center">
+                  <div className="ep-card-content text-center">
                     You're flying solo!
                   </div>
-                  <div className="card-detail text-center">
+                  <div className="ep-card-detail text-center">
                     Assemble your krewe by searching for friends below
                   </div>
                 </>
@@ -590,10 +590,10 @@ const UserPage: React.FC<UserPageProps> = ({
                   eventsParticipating.length === 0 && (
                     <>
 
-                      <p className='card-content text-center mt-3'>
+                      <p className='ep-card-content text-center mt-3'>
                         Nothing going on in here!
                       </p>
-                      <p className='card-detail text-center'>
+                      <p className='ep-card-detail text-center'>
 
                         Make plans or connect with your Krewe to beef up your
                         calendar.
