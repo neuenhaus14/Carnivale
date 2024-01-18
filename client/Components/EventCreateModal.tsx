@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Button, Form, Tabs, Tab } from 'react-bootstrap';
 import EventCreateMapComponent from './EventCreateMapComponent';
 import axios from 'axios';
 import dayjs = require('dayjs');
-import { is } from 'cheerio/lib/api/traversing';
+import { ThemeContext } from './Context';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ConfirmActionModal from './ConfirmActionModal';
 
 interface EventCreateModalProps {
   selectedEvent: any;
@@ -34,6 +37,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   eventType,
   getEventsOwned,
 }) => {
+  const theme = useContext(ThemeContext);
   const [eventAddress, setEventAddress] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [eventName, setEventName] = useState('');
@@ -41,7 +45,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   const [eventLatitude, setEventLatitude] = useState(0);
   const [eventLongitude, setEventLongitude] = useState(0);
 
-  const now = dayjs()
+  const now = dayjs();
   // Event time data: will combine to make Date string
   const [eventStartDate, setEventStartDate] = useState('');
   const [eventEndDate, setEventEndDate] = useState('');
@@ -51,9 +55,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   const [userLatitude, setUserLatitude] = useState(lat); // lat is user location from getLocation
   const [userLongitude, setUserLongitude] = useState(lng); // lng is user location from getLocation
 
-  // all three get passed to accordion
+  // INVITATION STATE
   const [friendsToInvite, setFriendsToInvite] = useState([]);
-
   const [invitees, setInvitees] = useState([]);
   const [participants, setParticipants] = useState([]);
 
@@ -65,6 +68,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   const nolaLong = -90.06285;
   const nolaLat = 29.95742;
 
+  // CONFIRM ACTION MODAL STATE
+  const [showConfirmActionModal, setShowConfirmActionModal] = useState(false);
+  const [confirmActionFunction, setConfirmActionFunction] = useState(null);
+  const [confirmActionText, setConfirmActionText] = useState('');
+
   // geo use effect
   useEffect(() => {
     setUserLatitude(lat);
@@ -75,21 +83,12 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   // values from old events and sets
   // state for parades (start time, location)
   useEffect(() => {
-    console.log(
-      'Top of uE. eventType',
-      eventType,
-      'selectedEvent',
-      selectedEvent,
-      'dayJS now',
-      now
-    );
     // user event edit mode: old user event with ownerId of current user
     if (
       isNewEvent === false &&
       eventType === 'user' &&
       selectedEvent.ownerId === userId
     ) {
-      console.log('Inside edit mode block. isNewEvent:', isNewEvent);
       setEventName(selectedEvent.name);
       setEventAddress(selectedEvent.address);
       setEventDescription(selectedEvent.description);
@@ -104,15 +103,14 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
     // user event create mode
     else if (isNewEvent === true && eventType === 'user') {
-      console.log('Inside user block');
       setEventName('');
       setEventDescription('');
       setEventAddress('');
 
-      const oneHourLaterTime = Number(now.add(1, 'hour').format('HH'))
-      const oneHourLaterDate = now.add(1, 'hour').format('YYYY-MM-DD')
-      const twoHoursLaterTime = Number(now.add(2, 'hour').format('HH'))
-      const twoHoursLaterDate = now.add(2, 'hour').format('YYYY-MM-DD')
+      const oneHourLaterTime = Number(now.add(1, 'hour').format('HH'));
+      const oneHourLaterDate = now.add(1, 'hour').format('YYYY-MM-DD');
+      const twoHoursLaterTime = Number(now.add(2, 'hour').format('HH'));
+      const twoHoursLaterDate = now.add(2, 'hour').format('YYYY-MM-DD');
 
       handleUserCoordinatesToAddress();
       setEventStartTime(oneHourLaterTime);
@@ -124,7 +122,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
     // parade event create mode
     else if (isNewEvent === true && eventType === 'parade') {
-      console.log('Inside new parade block');
       setEventName(selectedEvent.title);
       if (selectedEvent.location) {
         setEventAddress(selectedEvent.location);
@@ -134,7 +131,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
     //gig event create mode
     else if (isNewEvent === true && eventType === 'gig') {
-      console.log('Inside new gig block');
       setEventName(`${selectedEvent.name} gig`);
       setEventDescription('Live music');
       setEventAddress(selectedEvent.address);
@@ -190,12 +186,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           .add(2, 'hour')
           .format('YYYY-MM-DDTHH:mm')
           .toString();
-        console.log(
-          'adding end time. startTime',
-          startTime,
-          'endTime',
-          endTime
-        );
         parseDateIntoDateAndTime(endTime, 'end', false);
       }
     } else if (startOrEnd === 'end') {
@@ -215,7 +205,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     });
     await setInvitees([]);
     await setParticipants([]);
-
+    await setFriendsToInvite([]);
     await setIsNewEvent(false); // returns to default state
     await setIsEventUpdated(false); // also default state
     await getEventsOwned(); // retrieves updated or newly created events
@@ -225,7 +215,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     time: number,
     twelveHourClock: boolean = false
   ) => {
-    // console.log('TIME', time)
     let hour: any;
     let minute: any;
     const timeString: string = time.toString();
@@ -248,6 +237,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
 
     if (!twelveHourClock) {
+      if (hour.length===1){
+        hour = `0${hour}`
+      }
       return `${hour}:${minute}`;
     }
 
@@ -256,7 +248,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         return 'Midnight';
       } else if (hour === '12' && minute === '00') {
         return 'Noon';
-      } else if (Number(hour) > 12) {
+      } else if (Number(hour) >= 12) {
+        if (Number(hour) === 12){
+          return `${hour.toString()}:${minute} pm`;
+        }
         hour = Number(hour) - 12;
         return `${hour.toString()}:${minute} pm`;
       } else {
@@ -274,7 +269,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     try {
       const startTimeString = stringifyDateTime(eventStartDate, eventStartTime);
       const endTimeString = stringifyDateTime(eventEndDate, eventEndTime);
-      // console.log('sts,ets', startTimeString, endTimeString)
       const newEvent = await axios.post('/api/events/createEvent', {
         event: {
           ownerId: userId,
@@ -292,10 +286,20 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           invitees: friendsToInvite,
         },
       });
-      // console.log(newEvent.data)
-      handleClose(); // close the modal after creating event
+      toast('🎭 Plans made! 🎭', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST new event', err);
+    } finally {
+      handleClose(); // close the modal after creating event
     }
   };
 
@@ -305,9 +309,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         invitations: {
           eventId: selectedEvent.id,
           invitees: friendsToInvite,
+          senderId: userId,
         },
       });
-      getPeopleForEvent(true);
+      setFriendsToInvite([]);
+      getPeopleForEvent(false); // sendFriendInvites only used with old events
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST event invites', err);
     }
@@ -328,21 +334,23 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           longitude: eventLongitude,
           startTime: startTimeString,
           endTime: endTimeString,
-          //system: false,
-          //link: null,
-          //invitedCount: friendsToInvite.length,
-          //attendingCount: 1,
-          //invitees: friendsToInvite,
         },
       });
       setIsEventUpdated(false); // return to default state
-      // console.log('updatedEvent response', updatedEvent.data);
-      // if (friendsToInvite.length > 0) {
-      //   sendFriendInvites();
-      // }
-      handleClose();
+      toast('🎭 Plans changed! 🎭', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
     } catch (err) {
       console.error('CLIENT ERROR: failed to PUT event update', err);
+    } finally {
+      handleClose();
     }
   };
 
@@ -353,7 +361,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       );
       handleClose();
     } catch (err) {
-      console.log('CLIENT ERROR: failed to DELETE event record', err);
+      console.error('CLIENT ERROR: failed to DELETE event record', err);
     }
   };
 
@@ -397,7 +405,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   // handles setting coordinates when address is changed and onBlurred
   const setCoordinatesFromAddress = async (address: any) => {
-    console.log('sCFA. Address: ', address);
     try {
       const coordinatesResponse = await axios.post(
         '/api/events/getCoordinatesFromAddress',
@@ -408,7 +415,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventLongitude(evtLongitude);
       setEventLatitude(evtLatitude);
     } catch (err) {
-      console.log('CLIENT ERROR: failed to GET coords from address', err);
+      console.error('CLIENT ERROR: failed to GET coords from address', err);
     }
   };
 
@@ -419,19 +426,21 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   const handleUserCoordinatesToAddress = async () => {
     try {
-    const eventAddressResponse = await axios.post('/api/events/getAddressFromCoordinates', {
-      coordinates : {
-        latitude: lat,
-        longitude: lng
-      }
-    });
-    const eventAddress = eventAddressResponse.data;
-    setEventAddress(eventAddress);
-  } catch (err) {
-    console.error('CLIENT ERROR: failed to GET address from coordinates')
-  }
-  }
-
+      const eventAddressResponse = await axios.post(
+        '/api/events/getAddressFromCoordinates',
+        {
+          coordinates: {
+            latitude: lat,
+            longitude: lng,
+          },
+        }
+      );
+      const eventAddress = eventAddressResponse.data;
+      setEventAddress(eventAddress);
+    } catch (err) {
+      console.error('CLIENT ERROR: failed to GET address from coordinates');
+    }
+  };
 
   const getPeopleForEvent = async (isNewEvent: boolean) => {
     try {
@@ -439,7 +448,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       // invitees or participants who were added
       // in previous clicks
       if (isNewEvent === true) {
-        console.log('inside get people for Event, isNewEvent', isNewEvent);
         await setInvitees([]);
         await setParticipants([]);
       } else if (isNewEvent === false) {
@@ -463,14 +471,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   //  GETTING PEOPLE FOR THE MODAL
   //  depends on what's inside the selected event
   useEffect(() => {
-    console.log('selectedEventChanged', selectedEvent);
     if (selectedEvent.ownerId === userId) {
       // old event
-      //console.log('first block');
       getPeopleForEvent(false);
     } else if (!selectedEvent.ownerId && isNewEvent === true) {
       // new event
-      //console.log('second block');
       getPeopleForEvent(true);
     }
   }, [selectedEvent]);
@@ -525,197 +530,261 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
             onChange={async () => {
               await toggleFriendInvite(friend.id);
             }}
-          />
+            checked={friendsToInvite.includes(friend.id)}
+          ></Form.Check>
         </div>
       );
     });
 
-  ///////////////////////////////////////////////
-  // console.log('Bottom of eventCreateModal. selectedEvent', selectedEvent, 'isNewEvent', isNewEvent, 'invitees', invitees, 'participants', participants, 'isNewEvent', isNewEvent)
   return (
-    <Modal className='event-modal' show={showCreateModal} onHide={handleClose}>
-      <Modal.Header>
-        <Modal.Title>
-          {isNewEvent === false
-            ? eventName
-            : eventName
-            ? eventName
-            : 'Drop a pin for your event'}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignContent: 'center',
-          }}
-        >
-          <Tabs defaultActiveKey='details'>
-            <Tab eventKey='details' title='Details'>
-              <div className='my-2 px-2'>
-                <EventCreateMapComponent
-                  isNewEvent={isNewEvent}
-                  userLatitude={userLatitude}
-                  userLongitude={userLongitude}
-                  eventLatitude={eventLatitude}
-                  eventLongitude={eventLongitude}
-                  setEventLatitude={setEventLatitude}
-                  setEventLongitude={setEventLongitude}
-                  setEventAddress={setEventAddress}
-                  setIsEventUpdated={setIsEventUpdated}
-                  eventType={eventType}
-                  selectedEvent={selectedEvent}
-                  userId={userId}
-                />
-              </div>
-              <div>
-                <Form>
-                  <Form.Group controlId='formEvent'>
-                    {/* <p>{eventName}</p> */}
+    <>
+      <ToastContainer
+        position='top-right'
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='light'
+      />
+      <ConfirmActionModal
+        confirmActionFunction={confirmActionFunction}
+        setConfirmActionFunction={setConfirmActionFunction}
+        confirmActionText={confirmActionText}
+        setConfirmActionText={setConfirmActionText}
+        showConfirmActionModal={showConfirmActionModal}
+        setShowConfirmActionModal={setShowConfirmActionModal}
+      />
+      <Modal
+        className={`event-modal ${theme}`}
+        show={showCreateModal}
+        onHide={handleClose}
+      >
+        <Modal.Header>
+          <Modal.Title>
+            {isNewEvent === false
+              ? eventName
+              : eventName
+              ? eventName
+              : 'Drop a pin for your event'}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignContent: 'center',
+            }}
+          >
+            <Tabs defaultActiveKey='details'>
+              <Tab eventKey='details' title='Details'>
+                <div className='my-2 px-2'>
+                  <EventCreateMapComponent
+                    isNewEvent={isNewEvent}
+                    userLatitude={userLatitude}
+                    userLongitude={userLongitude}
+                    eventLatitude={eventLatitude}
+                    eventLongitude={eventLongitude}
+                    setEventLatitude={setEventLatitude}
+                    setEventLongitude={setEventLongitude}
+                    setEventAddress={setEventAddress}
+                    setIsEventUpdated={setIsEventUpdated}
+                    eventType={eventType}
+                    selectedEvent={selectedEvent}
+                    userId={userId}
+                  />
+                </div>
+                <div>
+                  <Form>
+                    <Form.Group controlId='formEvent'>
+                      {/* <p>{eventName}</p> */}
 
-                    <Form.Control
-                      type='text'
-                      name='name'
-                      value={eventName}
-                      onChange={handleInputChange}
-                      placeholder='Event Name'
-                    />
+                      <Form.Control
+                        type='text'
+                        name='name'
+                        value={eventName}
+                        onChange={handleInputChange}
+                        placeholder='Event Name'
+                      />
 
-                    {/* <p>{eventDescription}</p> */}
+                      {/* <p>{eventDescription}</p> */}
 
-                    <Form.Control
-                      type='text'
-                      name='description'
-                      value={eventDescription}
-                      onChange={handleInputChange}
-                      placeholder='Description'
-                    />
+                      <Form.Control
+                        type='text'
+                        name='description'
+                        value={eventDescription}
+                        onChange={handleInputChange}
+                        placeholder='Description'
+                      />
 
-                    {/* <p>{eventAddress}</p> */}
+                      {/* <p>{eventAddress}</p> */}
 
-                    <Form.Control
-                      type='text'
-                      name='address'
-                      value={eventAddress}
-                      onChange={handleInputChange}
-                      onBlur={handleAddressToCoordinates}
-                      placeholder='Address'
-                    />
+                      <Form.Control
+                        type='text'
+                        name='address'
+                        value={eventAddress}
+                        onChange={handleInputChange}
+                        onBlur={handleAddressToCoordinates}
+                        placeholder='Address'
+                      />
 
-                    {/* <p>{eventStartDate}</p> */}
-                    <Form.Control
-                      type='text'
-                      name='start'
-                      value={eventStartDate}
-                      onChange={handleDateChange}
-                      placeholder='Start Date: YYYY-MM-DD'
-                    />
-
-                    <div style={{ display: 'flex', flexDirection: 'row' }}>
-                      <div style={{ width: '100px' }}>
-                        <div>{convertDecimalToTime(eventStartTime, true)}</div>
-                      </div>
-                      <Form.Range
-                        min={0}
-                        max={24}
-                        value={eventStartTime}
+                      {/* <p>{eventStartDate}</p> */}
+                      <Form.Control
+                        type='text'
                         name='start'
-                        step={0.25}
-                        onChange={handleRangeChange}
+                        value={eventStartDate}
+                        onChange={handleDateChange}
+                        placeholder='Start Date: YYYY-MM-DD'
                       />
-                    </div>
 
-                    {/* <p>{eventEndDate}</p> */}
-                    <Form.Control
-                      type='text'
-                      name='end'
-                      value={eventEndDate}
-                      onChange={handleDateChange}
-                      placeholder='End Date: YYYY-MM-DD'
-                    />
-
-                    <div style={{ display: 'flex', flexDirection: 'row' }}>
-                      <div style={{ width: '100px' }}>
-                        <div>{convertDecimalToTime(eventEndTime, true)}</div>
+                      <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <div style={{ width: '100px' }}>
+                          <div>
+                            {convertDecimalToTime(eventStartTime, true)}
+                          </div>
+                        </div>
+                        <Form.Range
+                          min={0}
+                          max={24}
+                          value={eventStartTime}
+                          name='start'
+                          step={0.25}
+                          onChange={handleRangeChange}
+                        />
                       </div>
-                      <Form.Range
-                        min={0}
-                        max={24}
-                        value={eventEndTime}
-                        step={0.25}
+
+                      {/* <p>{eventEndDate}</p> */}
+                      <Form.Control
+                        type='text'
                         name='end'
-                        onChange={handleRangeChange}
+                        value={eventEndDate}
+                        onChange={handleDateChange}
+                        placeholder='End Date: YYYY-MM-DD'
                       />
+
+                      <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <div style={{ width: '100px' }}>
+                          <div>{convertDecimalToTime(eventEndTime, true)}</div>
+                        </div>
+                        <Form.Range
+                          min={0}
+                          max={24}
+                          value={eventEndTime}
+                          step={0.25}
+                          name='end'
+                          onChange={handleRangeChange}
+                        />
+                      </div>
+                    </Form.Group>
+                  </Form>
+                </div>
+              </Tab>
+
+              <Tab eventKey='people' title='People'>
+                {friends.length === 0 && (
+                  <div>
+                    <div className='ep-card-content text-center mt-3'>
+                      You're flying solo!
                     </div>
-                  </Form.Group>
-                </Form>
-              </div>
-            </Tab>
+                    <div className='ep-card-detail text-center'>
+                      Add to your Krewe to send invitations.
+                    </div>
+                  </div>
+                )}
 
-            <Tab eventKey='people' title='People'>
-              {friends.length === 0 && (
-                <div>
-                  <div className='card-content text-center mt-3'>You're flying solo!</div>
-                  <div className='card-detail text-center'>Add to your Krewe to send invitations.</div>
-                </div>
-              )}
+                {attendingFriendsItems.length > 0 && (
+                  <div>
+                    <h5>Attending</h5>
+                    <ul>{attendingFriendsItems}</ul>
+                  </div>
+                )}
 
-              {attendingFriendsItems.length > 0 && (
-                <div>
-                  <h5>Attending</h5>
-                  <ul>{attendingFriendsItems}</ul>
-                </div>
-              )}
+                {invitedFriendsItems.length > 0 && (
+                  <div>
+                    <h5>Invited</h5>
+                    <ul>{invitedFriendsItems}</ul>
+                  </div>
+                )}
 
-              {invitedFriendsItems.length > 0 && (
-                <div>
-                  <h5>Invited</h5>
-                  <ul>{invitedFriendsItems}</ul>
-                </div>
-              )}
+                {uninvitedFriendsItems.length > 0 && (
+                  <div>
+                    <h5>Uninvited</h5>
+                    <ul>{uninvitedFriendsItems}</ul>
+                  </div>
+                )}
 
-              {uninvitedFriendsItems.length > 0 && (
-                <div>
-                  <h5>Uninvited</h5>
-                  <ul>{uninvitedFriendsItems}</ul>
-                </div>
-              )}
+                {isNewEvent === false && uninvitedFriendsItems.length > 0 && (
+                  <Button
+                    onClick={() => sendFriendInvites()}
+                    disabled={friendsToInvite.length === 0}
+                  >
+                    Send Invites
+                  </Button>
+                )}
+              </Tab>
+            </Tabs>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className='d-flex flex-row justify-content-between'>
+          {/* left side of footer */}
+          <div>
+            {!isNewEvent && (
+              <Button
+                variant='danger'
+                onClick={async () => {
+                  await setConfirmActionFunction(() => () => {
+                    handleDeleteEvent();
+                  });
+                  await setConfirmActionText(`delete ${selectedEvent.name}`);
+                  await setShowConfirmActionModal(true);
+                }}
+              >
+                Delete
+              </Button>
+            )}
+          </div>
+          {/* right side of footer */}
+          <div>
+            {isNewEvent && (
+              <Button
+                onClick={handleEventCreation}
+                className='mx-2'
+                disabled={
+                  eventName.length === 0 || eventDescription.length === 0
+                }
+              >
+                Create Event
+              </Button>
+            )}
 
-              {isNewEvent === false && uninvitedFriendsItems.length > 0 && (
-                <Button
-                  onClick={() => sendFriendInvites()}
-                  disabled={friendsToInvite.length === 0}
-                >
-                  Send Invites
-                </Button>
-              )}
-            </Tab>
-          </Tabs>
-        </div>
-      </Modal.Body>
-      <Modal.Footer>
-        {isNewEvent && (
-          <Button onClick={handleEventCreation}>Create Event</Button>
-        )}
-        {!isNewEvent && (
+            {!isNewEvent && (
+              <Button
+                className='mx-2'
+                onClick={handleEventUpdate}
+                disabled={isEventUpdated === false}
+              >
+                Update
+              </Button>
+            )}
+
+            <Button variant='danger' onClick={handleClose}>
+              Close
+            </Button>
+          </div>
+
+          {/* {!isNewEvent && (
           <>
-            <Button
-              onClick={handleEventUpdate}
-              disabled={isEventUpdated === false}
-            >
-              Update
-            </Button>
-            <Button variant='danger' onClick={handleDeleteEvent}>
-              Delete
-            </Button>
+
+
           </>
-        )}
-        <Button variant='danger' onClick={handleClose}>
-          Close
-        </Button>
-      </Modal.Footer>
-    </Modal>
+        )} */}
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 

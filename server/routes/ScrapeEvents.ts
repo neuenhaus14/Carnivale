@@ -63,7 +63,7 @@ async function start(userDate: string) {
   for (let i = 0; i < day.length; i++) {
     proper.push(dayjs(`${date[i]} 2024 ${time[i]}`).format('YYYY-MM-DDTHH:mm'));
   }
-//console.log('day', day.length, 'act', act.length, 'date', date.length, 'time', time.length, 'location', location.length, 'infos', infos.length, 'venueTagContent', venueTagContent[0], 'info', info[0])
+
   //finally, array to hold individual objects to be added to db
   const mainArr = [];
   for (let i = 0; i < location.length; i++) { //or day.length
@@ -77,7 +77,7 @@ async function start(userDate: string) {
       address: `${location[i]} New Orleans`,
       link: url,
       system: true,
-      //invitees: [],
+      // invitees: [],
       invitedCount: 0,
       attendingCount: 0,
       // imageUrl: null,
@@ -110,16 +110,3 @@ async function start(userDate: string) {
   });
 
 export default Gigs;
-
-//VESTIGIAL WRITE TO DB CODE
- //conditional logic to prevent duplicates. Find or Create
-  // for (let i = 0; i < mainArr.length; i++) {
-  //   //const rand = Math.floor(Math.random() * mainArr.length)
-  //   await Event.findOrCreate({where: mainArr[i]})
-  //   .then(() => {
-  //     console.log("Successfully written to Event Database")
-  //   })
-  //   .catch((err) => {
-  //     console.error("Failed to write to event db")
-  //   })
-  // }

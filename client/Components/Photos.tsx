@@ -37,7 +37,6 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
       const reader = new FileReader(); //built into JS API
       reader.readAsDataURL(file) //convert image to a string
       reader.onloadend = () => {
-        //console.log('reader.result', reader.result)
         const res: any = reader.result
         setPreviewSource(res); //if set we want to display it
       }
@@ -53,7 +52,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
       //setRes(res.data);
       saveToDb()
     } catch (error) {
-      console.log('upload error', error);
+      console.error('upload error', error);
     } finally {
       setLoading(false);
     }
@@ -75,7 +74,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
         }
       });
     } catch (error) {
-      console.log('upload error', error);
+      console.error('upload error', error);
     }
   }
   else {
@@ -93,7 +92,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
         }
       });
     } catch (error) {
-      console.log('upload error', error);
+      console.error('upload error', error);
     }
   }
 }
@@ -129,7 +128,7 @@ const Upload: React.FC<Props> = ({lng, lat, saveCreatedPin, latPost, lngPost, cr
           <Button
           className="btn-success"
           size="lg"
-          disabled={description === ''}
+          disabled={file === null || description === ''}
           onClick={uploadFile}>
              {loading ? "Saving..." : "Save"}
           </Button>

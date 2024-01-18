@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Map,
   Marker,
   NavigationControl,
   GeolocateControl,
-  Layer,
-  Source,
+
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -64,6 +63,7 @@ const EventBasicMapComponent: React.FC<EventBasicMapComponentProps> = ({
           showAccuracyCircle={false}
           ref={geoControlRef}
         />
+        <NavigationControl/>
       </Map>
     </div>
   );

@@ -1,16 +1,17 @@
 import React, {
   useEffect,
   useState,
-  useContext,
-  createContext,
-  useRef,
+  // useContext,
+  // createContext,
+  // useRef,
 } from 'react';
 import {
+  Link,
   Route,
   RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
-  useLoaderData,
+  // useLoaderData,
 } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import ProtectedRoute from './ProtectedRoutes';
@@ -29,23 +30,24 @@ import Parades from './Parades';
 import { ThemeContext } from './Context';
 import TopNavBar from './TopNavBar';
 
-
-
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
-  const theme = 'light'
+  const [currWeather, setCurrWeather] = useState('');
+  const [currTemp, setCurrTemp] = useState('');
+  const [theme, setTheme] = useState('pg-theme-light');
 
-  const [lng, setLng] = useState(0);
-  const [lat, setLat] = useState(0);
+  // start with NOLA coordinates
+  const [lng, setLng] = useState(-90.0715);
+  const [lat, setLat] = useState(29.9511);
 
   // this gets user from database
   // sets user state
   const getUser = async () => {
     try {
       const { data } = await axios.post(`api/home/user/`, { user });
-      console.log('userId', data[0].id)
+      console.log('userId', data[0].id);
       setUserData(data[0]);
       setUserId(data[0].id);
     } catch (err) {
@@ -53,63 +55,44 @@ const App = () => {
     }
   };
 
-
   // this sends coordinates to socket
   const showPosition = (position: any) => {
-    //console.log(position)
     setLng(position.coords.longitude);
     setLat(position.coords.latitude);
-
-    // axios.post('/userLoc', {
-    //   longitude: position.coords.longitude,
-    //   latitude: position.coords.latitude,
-    //   id: userId,
-    // }).then(res => console.log('done', res)).catch(err => console.log(err))
 
     socket.emit('userLoc', {
       longitude: position.coords.longitude,
       latitude: position.coords.latitude,
       id: userId,
     });
-
-    // socket.emit("getFriends:read", {userId})
-    // console.log('socket emitted from App')
   };
+
+  useEffect(() => {
+    // if (userId !== null) {
+    axios
+      .patch('/userLoc', {
+        longitude: lng,
+        latitude: lat,
+        id: userId,
+      })
+      .then()
+      .catch((err) => console.error(err));
+    //}
+  }, [lng]);
 
   // this get coordinates from the browser
   const getLocation = () => {
     if (navigator.geolocation) {
       return navigator.geolocation.getCurrentPosition(
         showPosition,
-        (error) => console.log(error),
+        (error) => console.error(error),
         { enableHighAccuracy: true }
       );
     } else {
-      console.log('Geolocation is not supported by this browser');
+      console.error('Geolocation is not supported by this browser');
       return null;
     }
   };
-
-  // let watchId: number;
-  // const watchLocation = (): void => {
-  //   if (navigator.geolocation) {
-  //     watchId = navigator.geolocation.watchPosition(showPosition, error => console.log(error), { enableHighAccuracy: true })
-  //     console.log(`GeoLoc is watching ${userId} Location`)
-  //   } else {
-  //     console.log("Geolocation is not supported by this browser")
-  //     return null
-  //   }
-  // }
-
-  // watchLocation();
-
-  // const stopWatchingLocation = (): void => {
-  //   if (watchId !== undefined) {
-  //     navigator.geolocation.clearWatch(watchId)
-  //     console.log('Stopped watching location')
-  //   }
-  // };
-
 
   // The two useEffects below both run on the first load,
   // but have conditions to check if the next operation
@@ -121,7 +104,6 @@ const App = () => {
   // is looked up and emitted to socket.io server
   useEffect(() => {
     user && getUser();
-
   }, [isAuthenticated]);
 
   useEffect(() => {
@@ -130,15 +112,27 @@ const App = () => {
     }
   }, [userId]);
 
+  const getWeather = async () => {
+    try {
+      const { data } = await axios.get(`/api/weather/${lat},${lng}`);
+      setCurrWeather(data.current.condition.icon);
+      setCurrTemp(data.current.temp_f);
+      console.log('weatherData', data, 'lat/lng', lat, lng);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
+  // makes sure weather doesn't keep refreshing whenever lat changes
+  let weatherRefreshCount = 0
   useEffect(() => {
-    // this coords is data.dataValues from the database as a response to the emit
-    socket.on('userLoc response', (userLoc: any) => {
-      console.log('userLoc response in App', userLoc)
-    })
-  }, [])
+    if (weatherRefreshCount < 2 && lat !== 0){
+      getWeather();
+      weatherRefreshCount += 1;
+    }
+  }, [lat]);
 
-  if (isLoading) {
+  if (isLoading || (isLoading && lng === 0 && user)) {
     return <Loading />;
   }
 
@@ -149,12 +143,16 @@ const App = () => {
           path='/'
           element={<Login />}
         />
-        {/* <Route element={<ProtectedRoute />}>  */}
+        <Route element={<ProtectedRoute />}>
         <Route
           path='/homepage'
           element={
             <div>
-              <TopNavBar title={user?`Welcome ${user.given_name}!`:''}/>
+              <TopNavBar
+                title={user ? `Welcome, ${user.given_name}!` : ''}
+                currWeather={currWeather}
+                currTemp={currTemp}
+              />
               <HomePage
                 userId={userId}
                 lat={lat}
@@ -168,7 +166,13 @@ const App = () => {
           path='/mappage'
           element={
             <div>
-              <TopNavBar title={'Map'}/>
+              <Link to='/homepage'>
+                <TopNavBar
+                  title={'Map'}
+                  currWeather={currWeather}
+                  currTemp={currTemp}
+                />
+              </Link>
               <MapPage
                 userLat={lat}
                 userLng={lng}
@@ -183,7 +187,13 @@ const App = () => {
           path='/feedpage'
           element={
             <div>
-              <TopNavBar title={user ? `${user.given_name}'s Feed` : 'Feed'}/>
+              <Link to='/homepage'>
+                <TopNavBar
+                  title={user ? `${user.given_name}'s Feed` : 'Feed'}
+                  currWeather={currWeather}
+                  currTemp={currTemp}
+                />
+              </Link>
               <FeedPage userId={userId} /> <NavBar />
             </div>
           }
@@ -192,13 +202,19 @@ const App = () => {
           path='/parades'
           element={
             <div>
-              <TopNavBar title={'Parades'}/>
+              <Link to='/homepage'>
+                <TopNavBar
+                  title={'Parades'}
+                  currWeather={currWeather}
+                  currTemp={currTemp}
+                />
+              </Link>
               <Parades
-              userId={userId}
-              lng={lng}
-              lat={lat}
-
-              /> <NavBar />
+                userId={userId}
+                lng={lng}
+                lat={lat}
+              />{' '}
+              <NavBar />
             </div>
           }
         />
@@ -206,10 +222,15 @@ const App = () => {
           path='/eventpage'
           element={
             <div>
-              <TopNavBar title={'Live Music'}/>
+              <Link to='/homepage'>
+                <TopNavBar
+                  title={'Live Music'}
+                  currWeather={currWeather}
+                  currTemp={currTemp}
+                />
+              </Link>
               <EventPage
                 userId={userId}
-                getLocation={getLocation}
                 lng={lng}
                 lat={lat}
               />{' '}
@@ -221,26 +242,31 @@ const App = () => {
           path='/userpage'
           element={
             <div>
-              <TopNavBar title={'User'}/>
+              <Link to='/homepage'>
+                <TopNavBar
+                  title= "Krewe & Calendar"
+                  currWeather={currWeather}
+                  currTemp={currTemp}
+                />
+              </Link>
               <UserPage
                 userId={userId}
-                getLocation={getLocation}
                 lng={lng}
                 lat={lat}
+                setTheme={setTheme}
               />{' '}
               <NavBar />
             </div>
           }
         />
-        {/* </Route>  */}
+        </Route>
       </Route>
     )
   );
 
-  console.log('bottom of app', userId, lng, lat);
   return (
     <ThemeContext.Provider value={theme}>
-        <RouterProvider router={router} />
+      <RouterProvider router={router} />
     </ThemeContext.Provider>
   );
 };

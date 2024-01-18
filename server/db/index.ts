@@ -253,6 +253,13 @@ const Join_user_event = db.define(
         key: "id"
       }
     },
+    senderId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: User,
+        key: "id"
+      }
+    },
     isAttending: {
       type: DataTypes.BOOLEAN,
 

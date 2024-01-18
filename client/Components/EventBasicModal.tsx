@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Button, Form, Tabs, Tab } from 'react-bootstrap';
 import EventBasicMapComponent from './EventBasicMapComponent';
 import axios from 'axios';
@@ -6,6 +6,7 @@ import dayjs = require('dayjs');
 import relativeTime from 'dayjs/plugin/relativeTime';
 import calendar from 'dayjs/plugin/calendar';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { ThemeContext } from './Context';
 dayjs.extend(customParseFormat);
 dayjs.extend(relativeTime);
 dayjs.extend(calendar);
@@ -64,15 +65,15 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
         },
       }
     );
-
-    // console.log('eventCount', eventUpdateCount.data);
     getEventsInvited();
     getEventsParticipating();
     setIsUserAttending(!isUserAttending);
   };
 
-  //    PEOPLE ACCORDION FUNCTIONALITY
+  const theme = useContext(ThemeContext)
 
+
+  //    PEOPLE ACCORDION FUNCTIONALITY
   const [invitees, setInvitees] = useState([]);
   const [participants, setParticipants] = useState([]);
   const [friendsToInvite, setFriendsToInvite] = useState([]); // collects friends to invite as group to event
@@ -89,13 +90,6 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
       `/api/events/getPeopleForEvent/${userId}-${selectedEvent.id}`
     );
     const { eventParticipants, eventInvitees } = eventPeopleData.data;
-    console.log(
-      'inside getPeopleForEvent',
-      'eP',
-      eventParticipants,
-      'eI',
-      eventInvitees
-    );
     setInvitees(eventInvitees);
     setParticipants(eventParticipants);
   };
@@ -121,7 +115,6 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
           invitees: friendsToInvite,
         },
       });
-      // console.log('iR', inviteResponse)
       getPeopleForEvent();
       setFriendsToInvite([]);
     } catch (err) {
@@ -171,10 +164,9 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
       );
     });
 
-  ////////////////////////////////////////
-  // console.log('bottom of eventBasicModal. invitees', invitees, 'participants', participants)
+
   return (
-    <Modal show={showBasicModal} onHide={handleClose}>
+    <Modal className={theme} show={showBasicModal} onHide={handleClose}>
       <Modal.Header>
         <Modal.Title>
           {selectedEvent.name} {}
@@ -214,9 +206,9 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
                 </div>
 
                 {selectedEvent.address && (
-                  <p>
+                  <div>
                     <b>Where:</b> {selectedEvent.address}
-                  </p>
+                  </div>
                 )}
               </div>
             </div>
@@ -262,6 +254,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
           label={isUserAttending ? 'Attending' : 'Not attending'}
           onChange={() => toggleAttendance()}
           defaultChecked={isUserAttending}
+          disabled = {dayjs().isAfter(selectedEvent.endTime)}
         />
         <Button variant='danger' onClick={handleClose}>
           Close Event

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap';
 import { FaShareFromSquare  } from "react-icons/fa6";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ThemeContext } from './Context';
 
 const ShareModal = (props: {
   postId: number;
@@ -11,7 +12,7 @@ const ShareModal = (props: {
   postType: string;
 }) => {
   const { postId, userId, postType } = props;
-
+  const theme = useContext(ThemeContext);
   const [show, setShow] = useState(false);
   const [friends, setFriends] = useState([]);
   const [shareId, setShareId] = useState(null);
@@ -60,7 +61,7 @@ const ShareModal = (props: {
   };
 
   return (
-    <div >
+    <div className={theme}>
       <Button onClick={handleShow} style={{ marginLeft: '150px'}}>
         <FaShareFromSquare  />
       </Button>
@@ -71,7 +72,7 @@ const ShareModal = (props: {
         </Modal.Header>
 
         <Form>
-          <DropdownButton title={friendName || "Krewe"}>
+          <DropdownButton id="share-modal-dropdown" title={friendName || "Krewe"}>
             {friends.map((friend, index) => {
               const name = `${friend.firstName} ${friend.lastName}`;
               return (
@@ -91,6 +92,7 @@ const ShareModal = (props: {
 
         <Modal.Footer>
           <Button
+            id="share-modal-button"
             variant="primary"
             onClick={() => sharePost(postType)}
             disabled={!shareId}
