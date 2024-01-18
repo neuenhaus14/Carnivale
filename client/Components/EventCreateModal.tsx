@@ -108,9 +108,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventAddress('');
 
       const oneHourLaterTime = Number(now.add(1, 'hour').format('HH'));
-      const oneHourLaterDate = now.add(1, 'hour').format('YYYY-MM-DD');
+      const oneHourLaterDate = now.add(1, 'hour').format('MM/DD/YYYY');
       const twoHoursLaterTime = Number(now.add(2, 'hour').format('HH'));
-      const twoHoursLaterDate = now.add(2, 'hour').format('YYYY-MM-DD');
+      const twoHoursLaterDate = now.add(2, 'hour').format('MM/DD/YYYY');
 
       handleUserCoordinatesToAddress();
       setEventStartTime(oneHourLaterTime);
@@ -177,6 +177,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
 
     const timeRangeValue = Number(`${hour}.${minute}`);
+
+    const dateArray = date.split('-');
+    date = `${dateArray[1]}/${dateArray[2]}/${dateArray[0]}`
 
     if (startOrEnd === 'start') {
       setEventStartDate(date);
@@ -263,7 +266,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   const stringifyDateTime = (date: string, timeDecimal: number) => {
     const formattedTime = convertDecimalToTime(timeDecimal);
-    return `${date}T${formattedTime}`;
+    const dateArray = date.split('/');
+    const formattedDate = `${dateArray[2]}-${dateArray[0]}-${dateArray[1]}`
+    return `${formattedDate}T${formattedTime}`;
   };
 
   const handleEventCreation = async () => {

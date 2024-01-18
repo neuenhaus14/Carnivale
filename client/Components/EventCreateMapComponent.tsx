@@ -106,7 +106,6 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
     setEventAddress(eventAddress)
   }
 
-  console.log('event long/lat', eventLongitude, eventLatitude, 'viewState', viewState);
   return (
     <div>
       <Map

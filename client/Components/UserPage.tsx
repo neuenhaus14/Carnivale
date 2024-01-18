@@ -148,7 +148,7 @@ const UserPage: React.FC<UserPageProps> = ({
   // uE runs whenever a modal closes,
   // to refresh info
   useEffect(() => {
-    if (isNewEvent === false) {
+    if (isNewEvent === false && userId !== null) {
       getFriends();
       getEventsOwned();
       getEventsParticipating();
