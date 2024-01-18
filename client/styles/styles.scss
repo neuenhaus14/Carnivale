@@ -218,6 +218,12 @@ body {
 
   min-height: 100vh;
 }
+.gig-body-calendar {
+  padding-bottom: 5vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 .date-picker-name {
 
   text-align: left;
