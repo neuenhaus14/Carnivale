@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import EventCreateModal from "./EventCreateModal";
-import { Button, Container } from "react-bootstrap";
+import { Card, Button, Container } from "react-bootstrap";
 import { FaRoute, FaCirclePlus } from "react-icons/fa6";
 import { ThemeContext } from "./Context";
 
@@ -64,7 +64,6 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
     startTime: null,
     endTime: null,
   });
-  const [hideParadeSelector, setHideParadeSelector] = useState(false);
 
   const theme = useContext(ThemeContext);
   // need to get friends in order to know
@@ -141,49 +140,53 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
     userId && getFriends();
   }, [userId]);
 
-  const handleModalClose = () => {
-    setHideParadeSelector(false);
-  };
-
   return (
-    <Container className={`body ${theme}`}>
-      <div className="card">
-        <label style={{ textAlign: "center" }} htmlFor="paradeSelect">
-          Select a Parade:{" "}
-        </label>
-        <div
+    <Container className={`body ${theme}`} style={{ paddingBottom: "150px" }}>
+      <div className="gig-body-calendar">
+        <Card
+          className="comment-form"
           style={{
-            textAlign: "center",
-            marginTop: "10px",
-            position: "sticky",
-            top: "73px",
-            backgroundColor: "none",
-            zIndex: 2000,
+            position: "fixed",
+            bottom: "11.4vh",
+            left: "0",
+            right: "0",
+            marginLeft: "auto",
+            marginRight: "auto",
+            zIndex: 1,
           }}
         >
-          {!hideParadeSelector && (
-            <>
-              <select
-                id="paradeSelect"
-                onChange={handleParadeChange}
-                value={selectedParade || ""}
-              >
-                <option value="" disabled>
-                  Select a parade
-                </option>
-                {paradeList.map((paradeName) => (
-                  <option key={paradeName} value={paradeName}>
-                    {paradeName}
-                  </option>
-                ))}
-              </select>
-            </>
-          )}
+          <label
+            htmlFor="paradeSelect"
+            style={{
+              display: selectedParade ? "none" : "block",
+              margin: "auto",
+            }}
+          >
+            Select a Parade:
+          </label>
+          <select
+            id="paradeSelect"
+            onChange={handleParadeChange}
+            value={selectedParade || ""}
+            style={{ width: "auto", height: "35px", margin: "20px" }}
+          >
+            <option
+              value=""
+              disabled
+              style={{ display: selectedParade ? "none" : "block" }}
+            >
+              Select a parade
+            </option>
 
-          {selectedParade && !hideParadeSelector && (
+            {paradeList.map((paradeName) => (
+              <option key={paradeName} value={paradeName}>
+                {paradeName}
+              </option>
+            ))}
+          </select>
+          {selectedParade && (
             <button
               onClick={async () => {
-                setHideParadeSelector(true);
                 await setIsNewEvent(true);
                 await setShowCreateModal(true);
                 await setSelectedEvent({
@@ -195,45 +198,29 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
                 });
               }}
               style={{
-                position: "fixed",
-                right: "8vw",
-                bottom: "13vh",
                 backgroundColor: "transparent",
                 border: "none",
                 outline: "none",
                 cursor: "pointer",
+                marginTop: "10px",
               }}
             >
               <FaCirclePlus
                 style={{
-                  color: theme === 'pg-theme-vis'? '#291F1F' : "#cf40f5",
+                  color: theme === "pg-theme-vis" ? "#291F1F" : "#cf40f5",
                   width: "60px",
                   height: "60px",
                   border: "5px solid #E7ABFF",
                   borderRadius: "50%",
+                  alignContent: "center",
                 }}
               />
             </button>
           )}
-        </div>
+        </Card>
 
         {paradeInfo && (
           <div style={{ textAlign: "center", marginTop: "20px" }}>
-            {/* <Button
-              onClick={async () => {
-                await setIsNewEvent(true);
-                await setShowCreateModal(true);
-                await setSelectedEvent({
-                  ...paradeInfo,
-                  latitude: 0,
-                  longitude: 0,
-                  endTime: null,
-                  startTime: null,
-                });
-              }}
-            >
-              Create Event
-            </Button> */}
             <h2>{paradeInfo.title}</h2>
 
             <div
@@ -302,7 +289,6 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
                 marginRight: "auto",
               }}
             />
-
             {weatherForecast &&
             weatherForecast.forecast &&
             weatherForecast.forecast.forecastday.length > 0 ? (
@@ -418,12 +404,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
         <EventCreateModal
           selectedEvent={selectedEvent}
           setSelectedEvent={setSelectedEvent}
-          setShowCreateModal={(value: boolean) => {
-            setShowCreateModal(value);
-            if (!value) {
-              handleModalClose();
-            }
-          }}
+          setShowCreateModal={setShowCreateModal}
           showCreateModal={showCreateModal}
           friends={friends}
           userId={userId}
@@ -437,7 +418,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
           lng={lng}
           //getLocation={getLocation}
           eventType={"parade"}
-          getEventsOwned={null} // not needed for parades
+          getEventsOwned={() => {}} // not needed for parades
         />
       </div>
       <footer className="footer">
