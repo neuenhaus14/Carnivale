@@ -30,7 +30,7 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
 
   const mapRef = useRef(null);
 
-  // in tandem, these load the userLoc marker immediately
+
   const geoControlRef = useRef<mapboxgl.GeolocateControl>();
 
   // these useEffects determines where/when the map zooms
@@ -84,8 +84,8 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
 
   const [viewState, setViewState] = useState({
     // lat and long default to zero, so new events will not have lat/long
-    latitude: eventLatitude > 0 ? eventLatitude : userLatitude,
-    longitude: eventLongitude > 0 ? eventLongitude : userLongitude,
+    latitude: eventLatitude !== 0 ? eventLatitude : userLatitude,
+    longitude: eventLongitude !== 0 ? eventLongitude : userLongitude,
     zoom: 12,
   });
 
@@ -106,6 +106,7 @@ const EventCreateMapComponent: React.FC<EventCreateMapComponentProps> = ({ isNew
     setEventAddress(eventAddress)
   }
 
+  console.log('event long/lat', eventLongitude, eventLatitude, 'viewState', viewState);
   return (
     <div>
       <Map
