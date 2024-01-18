@@ -4,6 +4,8 @@ import EventCreateMapComponent from './EventCreateMapComponent';
 import axios from 'axios';
 import dayjs = require('dayjs');
 import { ThemeContext } from './Context';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ConfirmActionModal from './ConfirmActionModal';
@@ -107,6 +109,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventDescription('');
       setEventAddress('');
 
+      // default new event start time to the next hour and end time to
+      // two hours later
       const oneHourLaterTime = Number(now.add(1, 'hour').format('HH'));
       const oneHourLaterDate = now.add(1, 'hour').format('MM/DD/YYYY');
       const twoHoursLaterTime = Number(now.add(2, 'hour').format('HH'));
@@ -179,7 +183,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     const timeRangeValue = Number(`${hour}.${minute}`);
 
     const dateArray = date.split('-');
-    date = `${dateArray[1]}/${dateArray[2]}/${dateArray[0]}`
+    date = `${dateArray[1]}/${dateArray[2]}/${dateArray[0]}`;
 
     if (startOrEnd === 'start') {
       setEventStartDate(date);
@@ -241,8 +245,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
 
     if (!twelveHourClock) {
-      if (hour.length===1){
-        hour = `0${hour}`
+      if (hour.length === 1) {
+        hour = `0${hour}`;
       }
       return `${hour}:${minute}`;
     }
@@ -253,7 +257,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       } else if (hour === '12' && minute === '00') {
         return 'Noon';
       } else if (Number(hour) >= 12) {
-        if (Number(hour) === 12){
+        if (Number(hour) === 12) {
           return `${hour.toString()}:${minute} pm`;
         }
         hour = Number(hour) - 12;
@@ -267,7 +271,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   const stringifyDateTime = (date: string, timeDecimal: number) => {
     const formattedTime = convertDecimalToTime(timeDecimal);
     const dateArray = date.split('/');
-    const formattedDate = `${dateArray[2]}-${dateArray[0]}-${dateArray[1]}`
+    const formattedDate = `${dateArray[2]}-${dateArray[0]}-${dateArray[1]}`;
     return `${formattedDate}T${formattedTime}`;
   };
 
@@ -639,13 +643,27 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                       />
 
                       {/* <p>{eventStartDate}</p> */}
-                      <Form.Control
+                      {/* <Form.Control
                         type='text'
                         name='start'
                         value={eventStartDate}
                         onChange={handleDateChange}
                         placeholder='Start Date: YYYY-MM-DD'
-                      />
+                      /> */}
+
+                      <div className='d-flex flex-direction-row justify-content-around'>
+                        <b className='my-auto'>Start: </b>
+                        <DatePicker
+                          className='date-picker align-middle'
+                          popperPlacement='bottom'
+                          selected={new Date(eventStartDate)}
+                          onChange={(date: Date) => {
+                            setEventStartDate(dayjs(date).format('MM/DD/YYYY'));
+                            setEventEndDate(dayjs(date).format('MM/DD/YYYY'));
+                            setIsEventUpdated(true);
+                          }}
+                        />
+                      </div>
 
                       <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <div style={{ width: '100px' }}>
@@ -664,13 +682,27 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                       </div>
 
                       {/* <p>{eventEndDate}</p> */}
-                      <Form.Control
+
+                      {/* <Form.Control
                         type='text'
                         name='end'
                         value={eventEndDate}
                         onChange={handleDateChange}
                         placeholder='End Date: YYYY-MM-DD'
-                      />
+                      /> */}
+
+                      <div className='d-flex flex-direction-row justify-content-around'>
+                        <b className='my-auto'>End: </b>
+                        <DatePicker
+                          className='date-picker align-middle'
+                          popperPlacement='bottom'
+                          selected={new Date(eventEndDate)}
+                          onChange={(date: Date) => {
+                            setEventEndDate(dayjs(date).format('MM/DD/YYYY'));
+                            setIsEventUpdated(true);
+                          }}
+                        />
+                      </div>
 
                       <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <div style={{ width: '100px' }}>
@@ -760,7 +792,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                 onClick={handleEventCreation}
                 className='mx-2'
                 disabled={
-                  (!eventName || eventName.length === 0) || (!eventDescription || eventDescription.length === 0)
+                  !eventName ||
+                  eventName.length === 0 ||
+                  !eventDescription ||
+                  eventDescription.length === 0
                 }
               >
                 Create Event
