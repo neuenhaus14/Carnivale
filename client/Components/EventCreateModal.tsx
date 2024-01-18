@@ -123,6 +123,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     // parade event create mode
     else if (isNewEvent === true && eventType === 'parade') {
       setEventName(selectedEvent.title);
+      setEventDescription('Parade');
       if (selectedEvent.location) {
         setEventAddress(selectedEvent.location);
         setCoordinatesFromAddress(selectedEvent.location);
@@ -754,7 +755,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                 onClick={handleEventCreation}
                 className='mx-2'
                 disabled={
-                  eventName.length === 0 || eventDescription.length === 0
+                  (!eventName || eventName.length === 0) || (!eventDescription || eventDescription.length === 0)
                 }
               >
                 Create Event
