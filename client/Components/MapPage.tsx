@@ -330,11 +330,11 @@ const MapPage: React.FC<MapProps> = ({
   const pinCategoryColor = (marker: any) => {
     const colorMapping: PinColorMapping = {
       isFree: theme === 'pg-theme-vis' ? '#101010' : '#53CA3C',
-      isToilet: theme === 'pg-theme-vis' ? '#303030' : '#169873',
-      isFood: theme === 'pg-theme-vis' ? '#505050' : '#FCC54E',
-      isPersonal: theme === 'pg-theme-vis' ? '#696969' : '#cf40f5',
-      isPhoneCharger: theme === 'pg-theme-vis' ? '#A0A0A0' : '#53e3d4',
-      isPoliceStation: theme === 'pg-theme-vis' ? '#B8B8B8' : '#E7ABFF',
+      isToilet: theme === 'pg-theme-vis' ? '#196d66' : '#169873',
+      isFood: theme === 'pg-theme-vis' ? '#6d6d6d' : '#FCC54E',
+      isPersonal: theme === 'pg-theme-vis' ? '#d2b48c' : '#cf40f5',
+      isPhoneCharger: theme === 'pg-theme-vis' ? '#aeaeae' : '#53e3d4',
+      isPoliceStation: theme === 'pg-theme-vis' ? '#30d5c8' : '#E7ABFF',
       isEMTStation: theme === 'pg-theme-vis' ? '#D3D3D3' : '#f27d52',
     };
 
@@ -349,14 +349,13 @@ const MapPage: React.FC<MapProps> = ({
   const filterStyling = (value: string) => {
     const colorMapping: PinColorMapping = {
       isFree: theme === 'pg-theme-vis' ? '	#101010' : '#53CA3C',
-      isToilet: theme === 'pg-theme-vis' ? '#303030' : '#169873',
-      isFood: theme === 'pg-theme-vis' ? '#505050' : '#FCC54E',
-      isPersonal: theme === 'pg-theme-vis' ? '#696969' : '#cf40f5',
-      isPhoneCharger: theme === 'pg-theme-vis' ? '#A0A0A0' : '#53e3d4',
-      isPoliceStation: theme === 'pg-theme-vis' ? '#B8B8B8' : '#E7ABFF',
+      isToilet: theme === 'pg-theme-vis' ? '#196d66' : '#169873',
+      isFood: theme === 'pg-theme-vis' ? '#6d6d6d' : '#FCC54E',
+      isPersonal: theme === 'pg-theme-vis' ? '#d2b48c' : '#cf40f5',
+      isPhoneCharger: theme === 'pg-theme-vis' ? '#aeaeae' : '#53e3d4',
+      isPoliceStation: theme === 'pg-theme-vis' ? '#30d5c8' : '#E7ABFF',
       isEMTStation: theme === 'pg-theme-vis' ? '#D3D3D3' : '#f27d52',
     };
-
     const off = {
       backgroundColor: `${colorMapping[value]}`,
       color:
