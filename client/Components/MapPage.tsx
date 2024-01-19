@@ -331,9 +331,9 @@ const MapPage: React.FC<MapProps> = ({
     const colorMapping: PinColorMapping = {
       isFree: theme === 'pg-theme-vis' ? '#101010' : '#53CA3C',
       isToilet: theme === 'pg-theme-vis' ? '#196d66' : '#169873',
-      isFood: theme === 'pg-theme-vis' ? '#5c5c5c' : '#FCC54E',
+      isFood: theme === 'pg-theme-vis' ? '#6d6d6d' : '#FCC54E',
       isPersonal: theme === 'pg-theme-vis' ? '#d2b48c' : '#cf40f5',
-      isPhoneCharger: theme === 'pg-theme-vis' ? '#A0A0A0' : '#53e3d4',
+      isPhoneCharger: theme === 'pg-theme-vis' ? '#aeaeae' : '#53e3d4',
       isPoliceStation: theme === 'pg-theme-vis' ? '#30d5c8' : '#E7ABFF',
       isEMTStation: theme === 'pg-theme-vis' ? '#D3D3D3' : '#f27d52',
     };
@@ -350,9 +350,9 @@ const MapPage: React.FC<MapProps> = ({
     const colorMapping: PinColorMapping = {
       isFree: theme === 'pg-theme-vis' ? '	#101010' : '#53CA3C',
       isToilet: theme === 'pg-theme-vis' ? '#196d66' : '#169873',
-      isFood: theme === 'pg-theme-vis' ? '#5c5c5c' : '#FCC54E',
+      isFood: theme === 'pg-theme-vis' ? '#6d6d6d' : '#FCC54E',
       isPersonal: theme === 'pg-theme-vis' ? '#d2b48c' : '#cf40f5',
-      isPhoneCharger: theme === 'pg-theme-vis' ? '#A0A0A0' : '#53e3d4',
+      isPhoneCharger: theme === 'pg-theme-vis' ? '#aeaeae' : '#53e3d4',
       isPoliceStation: theme === 'pg-theme-vis' ? '#30d5c8' : '#E7ABFF',
       isEMTStation: theme === 'pg-theme-vis' ? '#D3D3D3' : '#f27d52',
     };

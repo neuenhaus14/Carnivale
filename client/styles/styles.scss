@@ -34,6 +34,7 @@ $tan: #d2b48c;
 $turq: #30d5c8;
 
 $offBlack: #291F1F;
+$offGrey: #aeaeae;
 $cardBackground2: #fdf9f4;
 
 
@@ -486,9 +487,20 @@ body {
 
   #modal-header {
     color: white !important;
+    opacity: 1;
+    background-color: $offBlack !important;
+  }
+  #modal-footer {
+    color: white !important;
     background-color: $offBlack !important;
   }
 
+  .btn-close {
+    background-color: white !important;
+  }
+  .form-check-label {
+    color: black !important;
+  }
 
 }
 
