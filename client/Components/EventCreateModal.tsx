@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Button, Form, Tabs, Tab } from 'react-bootstrap';
 import EventCreateMapComponent from './EventCreateMapComponent';
 import axios from 'axios';
-import dayjs = require('dayjs');
+import dayjs from 'dayjs';
 import { ThemeContext } from './Context';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -49,8 +49,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   const now = dayjs();
   // Event time data: will combine to make Date string
-  const [eventStartDate, setEventStartDate] = useState(new Date());
-  const [eventEndDate, setEventEndDate] = useState(new Date());
+  const [eventStartDate, setEventStartDate] = useState<Date>(now.toDate());
+  const [eventEndDate, setEventEndDate] = useState<Date>(now.toDate());
   const [eventStartTime, setEventStartTime] = useState(2); // 0-24 in 15 min increments
   const [eventEndTime, setEventEndTime] = useState(6); // same
 
@@ -112,15 +112,15 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       // default new event start time to the next hour and end time to
       // two hours later
       const oneHourLaterTime = Number(now.add(1, 'hour').format('HH'));
-      const oneHourLaterDate = now.add(1, 'hour').format('YYYY-MM-DD');
+      const oneHourLaterDate = now.add(1, 'hour').toDate();
       const twoHoursLaterTime = Number(now.add(2, 'hour').format('HH'));
-      const twoHoursLaterDate = now.add(2, 'hour').format('YYYY-MM-DD');
+      const twoHoursLaterDate = now.add(2, 'hour').toDate();
 
       handleUserCoordinatesToAddress();
       setEventStartTime(oneHourLaterTime);
-      setEventStartDate(new Date(oneHourLaterDate));
+      setEventStartDate(oneHourLaterDate);
       setEventEndTime(twoHoursLaterTime);
-      setEventEndDate(new Date(twoHoursLaterDate));
+      setEventEndDate(twoHoursLaterDate);
       setEventLatitude(lat ? lat : nolaLat);
       setEventLongitude(lng ? lng : nolaLong);
     }
@@ -183,12 +183,12 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
     const timeRangeValue = Number(`${hour}.${minute}`);
 
-    console.log('inside parseDateIntoDateAndTime. dateString:', date, 'new Date', new Date(date))
+    console.log('inside parseDateIntoDateAndTime. dateString:', date, 'dayjs', dayjs(date, "YYYY-MM-DD"), 'new Date', new Date(date))
 
 
 
     if (startOrEnd === 'start') {
-      setEventStartDate(new Date(date));
+      setEventStartDate(dayjs(date, "YYYY-MM-DD").toDate());
       setEventStartTime(timeRangeValue);
       if (addEndTime === true) {
         const startTime = dayjs(fullDate);
@@ -199,7 +199,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         parseDateIntoDateAndTime(endTime, 'end', false);
       }
     } else if (startOrEnd === 'end') {
-      setEventEndDate(new Date(date));
+      setEventEndDate(dayjs(date, "YYYY-MM-DD").toDate());
       setEventEndTime(timeRangeValue);
     }
   };
