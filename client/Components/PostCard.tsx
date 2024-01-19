@@ -266,7 +266,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                 <ShareModal
                   postId={post.id}
                   userId={userId}
-                  postType={"comment"}
+                  postType={"photo"}
                 />
               </div>
             </ButtonGroup>
