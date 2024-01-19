@@ -198,29 +198,32 @@ const MapPage: React.FC<MapProps> = ({
   };
 
   //finds clicked marker/pin and friend pin from database
-  const clickedMarker = async (e: any) => {
+  const clickedMarker = async (e: any, type: string, coords: [number, number]) => {
     const currMarkerLng = e._lngLat.lng || e.lngLat.lng;
     const currMarkerLat = e._lngLat.lat || e.lngLat.lat;
 
-    const lngRounded = currMarkerLng.toString().slice(0, 11);
-    const latRounded = currMarkerLat.toString().slice(0, 10);
+    const lngRounded = currMarkerLng.toString().slice(0, 10);
+    const latRounded = currMarkerLat.toString().slice(0, 9);
     setClickedPinCoords([lngRounded, latRounded]);
 
-    try {
-      //this handles the POI pins
-      const { data } = await axios.get(
-        `/api/pins/get-clicked-pin-marker/${lngRounded}/${latRounded}`
-      );
-      setSelectedPin(data);
-      setIsPinSelected(true);
-      setShowDirections(true);
-      setIsFriendSelected(false);
-    } catch (err) {
+    if (type === "marker"){
       try {
-        // this handles the friend pin (if not POI... it's friend)
         const { data } = await axios.get(
-          `/api/pins/get-clicked-friend-marker/${lngRounded}/${latRounded}`
+          `/api/pins/get-clicked-pin-marker/${coords[0]}/${coords[1]}`
         );
+        setSelectedPin(data);
+        setIsPinSelected(true);
+        setShowDirections(true);
+        setIsFriendSelected(false);
+      } catch (err) {
+        console.error(err);
+      } 
+    } else {
+      try {
+        const { data } = await axios.get(
+          `/api/pins/get-clicked-friend-marker/${coords[0]}/${coords[1]}`
+        );
+        console.log('clicked friend ', data)
         setSelectedPin(data);
         setSelectedFriend(data);
         setShowFriendPopup(true);
@@ -231,6 +234,7 @@ const MapPage: React.FC<MapProps> = ({
         console.error(err);
       }
     }
+
   };
 
   // when pin is selected, route and modal are triggered
@@ -457,7 +461,7 @@ const MapPage: React.FC<MapProps> = ({
             <Marker
               key={marker.id}
               onClick={(e) => {
-                clickedMarker(e.target);
+                clickedMarker(e.target, "marker", [marker.longitude, marker.latitude]);
               }}
               longitude={marker.longitude}
               latitude={marker.latitude}
@@ -471,7 +475,7 @@ const MapPage: React.FC<MapProps> = ({
             <Marker
               key={friend.id}
               onClick={(e) => {
-                clickedMarker(e.target);
+                clickedMarker(e.target, "friend", [friend.longitude, friend.latitude]);
               }}
               longitude={friend.longitude}
               latitude={friend.latitude}
