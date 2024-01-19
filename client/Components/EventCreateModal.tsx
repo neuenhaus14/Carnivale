@@ -49,8 +49,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   const now = dayjs();
   // Event time data: will combine to make Date string
-  const [eventStartDate, setEventStartDate] = useState('');
-  const [eventEndDate, setEventEndDate] = useState('');
+  const [eventStartDate, setEventStartDate] = useState(new Date());
+  const [eventEndDate, setEventEndDate] = useState(new Date());
   const [eventStartTime, setEventStartTime] = useState(2); // 0-24 in 15 min increments
   const [eventEndTime, setEventEndTime] = useState(6); // same
 
@@ -112,15 +112,15 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       // default new event start time to the next hour and end time to
       // two hours later
       const oneHourLaterTime = Number(now.add(1, 'hour').format('HH'));
-      const oneHourLaterDate = now.add(1, 'hour').format('MM/DD/YYYY');
+      const oneHourLaterDate = now.add(1, 'hour').format('YYYY-MM-DD');
       const twoHoursLaterTime = Number(now.add(2, 'hour').format('HH'));
-      const twoHoursLaterDate = now.add(2, 'hour').format('MM/DD/YYYY');
+      const twoHoursLaterDate = now.add(2, 'hour').format('YYYY-MM-DD');
 
       handleUserCoordinatesToAddress();
       setEventStartTime(oneHourLaterTime);
-      setEventStartDate(oneHourLaterDate);
+      setEventStartDate(new Date(oneHourLaterDate));
       setEventEndTime(twoHoursLaterTime);
-      setEventEndDate(twoHoursLaterDate);
+      setEventEndDate(new Date(twoHoursLaterDate));
       setEventLatitude(lat ? lat : nolaLat);
       setEventLongitude(lng ? lng : nolaLong);
     }
@@ -131,6 +131,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       if (selectedEvent.location) {
         setEventAddress(selectedEvent.location);
         setCoordinatesFromAddress(selectedEvent.location);
+        // scraped parades have startDate property
         parseDateIntoDateAndTime(selectedEvent.startDate, 'start', true);
       }
     }
@@ -182,11 +183,12 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
     const timeRangeValue = Number(`${hour}.${minute}`);
 
-    const dateArray = date.split('-');
-    date = `${dateArray[1]}/${dateArray[2]}/${dateArray[0]}`;
+    console.log('inside parseDateIntoDateAndTime. dateString:', date, 'new Date', new Date(date))
+
+
 
     if (startOrEnd === 'start') {
-      setEventStartDate(date);
+      setEventStartDate(new Date(date));
       setEventStartTime(timeRangeValue);
       if (addEndTime === true) {
         const startTime = dayjs(fullDate);
@@ -197,7 +199,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         parseDateIntoDateAndTime(endTime, 'end', false);
       }
     } else if (startOrEnd === 'end') {
-      setEventEndDate(date);
+      setEventEndDate(new Date(date));
       setEventEndTime(timeRangeValue);
     }
   };
@@ -268,10 +270,12 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
   };
 
-  const stringifyDateTime = (date: string, timeDecimal: number) => {
+  const stringifyDateTime = (date: Date, timeDecimal: number) => {
     const formattedTime = convertDecimalToTime(timeDecimal);
-    const dateArray = date.split('/');
-    const formattedDate = `${dateArray[2]}-${dateArray[0]}-${dateArray[1]}`;
+    const dateYear = date.getFullYear(); // number
+    const dateMonth = date.getMonth() + 1; // number, months are zero-indexed so add 1
+    const dateDay = date.getDate();
+    const formattedDate = `${dateYear}-${dateMonth}-${dateDay}`;
     return `${formattedDate}T${formattedTime}`;
   };
 
@@ -388,17 +392,17 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     setIsEventUpdated(true);
   };
 
-  const handleDateChange = (e: any) => {
-    const { value, name } = e.target;
+  // const handleDateChange = (e: any) => {
+  //   const { value, name } = e.target;
 
-    if (name === 'start') {
-      setEventStartDate(value);
-    } else if (name === 'end') {
-      setEventEndDate(value);
-    }
-    // enable Update button in update mode
-    setIsEventUpdated(true);
-  };
+  //   if (name === 'start') {
+  //     setEventStartDate(value);
+  //   } else if (name === 'end') {
+  //     setEventEndDate(value);
+  //   }
+  //   // enable Update button in update mode
+  //   setIsEventUpdated(true);
+  // };
 
   const handleInputChange = (e: any) => {
     const { value, name } = e.target;
@@ -546,6 +550,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       );
     });
 
+
+  console.log('bottom of eventCreateModal. eventStartDate', eventStartDate, 'eventEndDate', eventEndDate)
   return (
     <>
       <ToastContainer
@@ -656,10 +662,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                         <DatePicker
                           className='date-picker align-middle'
                           popperPlacement='bottom'
-                          selected={new Date(eventStartDate)}
+                          selected={eventStartDate}
                           onChange={(date: Date) => {
-                            setEventStartDate(dayjs(date).format('MM/DD/YYYY'));
-                            setEventEndDate(dayjs(date).format('MM/DD/YYYY'));
+                            setEventStartDate(date);
+                            setEventEndDate(date);
                             setIsEventUpdated(true);
                           }}
                         />
@@ -696,9 +702,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                         <DatePicker
                           className='date-picker align-middle'
                           popperPlacement='bottom'
-                          selected={new Date(eventEndDate)}
+                          selected={new Date(eventEndDate)} // not working when populating with other data
                           onChange={(date: Date) => {
-                            setEventEndDate(dayjs(date).format('MM/DD/YYYY'));
+                            setEventEndDate(date);
                             setIsEventUpdated(true);
                           }}
                         />

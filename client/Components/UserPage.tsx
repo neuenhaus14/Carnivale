@@ -465,6 +465,8 @@ const UserPage: React.FC<UserPageProps> = ({
     setTimeout(() => setShowGif(false), 5000);
   };
 
+
+  console.log('bottom of userPage selectedEvent', selectedEvent)
   return (
     <Container className={`body ${theme}`}>
       <ToastContainer
