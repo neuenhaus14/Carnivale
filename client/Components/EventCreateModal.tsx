@@ -183,10 +183,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
     const timeRangeValue = Number(`${hour}.${minute}`);
 
-    console.log('inside parseDateIntoDateAndTime. dateString:', date, 'dayjs', dayjs(date, "YYYY-MM-DD"), 'new Date', new Date(date))
-
-
-
     if (startOrEnd === 'start') {
       setEventStartDate(dayjs(date, "YYYY-MM-DD").toDate());
       setEventStartTime(timeRangeValue);
