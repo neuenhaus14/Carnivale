@@ -536,7 +536,7 @@ const MapPage: React.FC<MapProps> = ({
             className='card w-35'
             style={{ backgroundColor: '#fffcf8' }}
           >
-            <div className='card-body' style={{ backgroundColor: '#fffcf8' }}>
+            <div className='card-body' style={{ backgroundColor: '#fffcf8', padding: '1px' }}>
               <p style={{ fontSize: '15px' }}>
                 <b>{humanizedDuration(duration)}</b> away
               </p>

@@ -148,7 +148,7 @@ const UserPage: React.FC<UserPageProps> = ({
   // uE runs whenever a modal closes,
   // to refresh info
   useEffect(() => {
-    if (isNewEvent === false) {
+    if (isNewEvent === false && userId !== null) {
       getFriends();
       getEventsOwned();
       getEventsParticipating();
@@ -465,6 +465,8 @@ const UserPage: React.FC<UserPageProps> = ({
     setTimeout(() => setShowGif(false), 5000);
   };
 
+
+  console.log('bottom of userPage selectedEvent', selectedEvent)
   return (
     <Container className={`body ${theme}`}>
       <ToastContainer
