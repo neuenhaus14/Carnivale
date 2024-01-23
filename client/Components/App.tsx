@@ -117,7 +117,6 @@ const App = () => {
       const { data } = await axios.get(`/api/weather/${lat},${lng}`);
       setCurrWeather(data.current.condition.icon);
       setCurrTemp(data.current.temp_f);
-      console.log('weatherData', data, 'lat/lng', lat, lng);
     } catch (err) {
       console.error(err);
     }

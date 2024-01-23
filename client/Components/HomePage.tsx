@@ -151,6 +151,9 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                     key={`${item.id} + ${index}`}
                     post={item}
                     userId={userId}
+                    getPosts = {getPosts}
+                    order = {order}
+                    eventKey = {'posts'}
                   />
                 ))
               : ''}
@@ -165,6 +168,9 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                     key={`${item.id} + ${index}`}
                     post={item}
                     userId={userId}
+                    getPosts = {getPosts}
+                    order = {order}
+                    eventKey={'costumes'}
                   />
                 ))
               : ''}
@@ -179,6 +185,9 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                     key={`${item.id} + ${index}`}
                     post={item}
                     userId={userId}
+                    getPosts = {getPosts}
+                    order = {order}
+                    eventKey= {'throws'}
                   />
                 ))
               : ''}

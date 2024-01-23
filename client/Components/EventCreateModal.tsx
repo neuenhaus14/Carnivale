@@ -161,7 +161,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
     fullDate = fullDate.slice(0, 16);
 
-    console.log('fulldate', fullDate)
     if (fullDate.indexOf('T') !== -1) {
       [date, time] = fullDate.split('T');
     } else if (fullDate.indexOf(' ')) {
@@ -547,8 +546,6 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       );
     });
 
-
-  console.log('bottom of eventCreateModal. eventStartDate', eventStartDate, 'eventEndDate', eventEndDate, 'sE', selectedEvent)
   return (
     <>
       <ToastContainer

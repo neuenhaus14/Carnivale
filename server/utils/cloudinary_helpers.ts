@@ -17,7 +17,6 @@ export async function handleUpload(file: any) {
     quality: 50,
     folder: "Carnivale"
   });
-  console.log
   return res;
 }
 

@@ -27,9 +27,12 @@ interface Post {
 interface PostCardProps {
   post: Post;
   userId: number;
+  getPosts: any;
+  order: string;
+  eventKey: string;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
+const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, eventKey }) => {
   const [owner, setOwner] = useState("");
   const [commentVotingStatus, setCommentVotingStatus] = useState<
     "upvoted" | "downvoted" | "none"
@@ -61,6 +64,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
       }
     } catch (err) {
       toast.warning("You've already upvoted this post!");
+    } finally {
+      getPosts(eventKey);
     }
   };
 
@@ -83,6 +88,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
       }
     } catch (err) {
       toast.warning("You've already downvoted this post!");
+    } finally {
+      getPosts(eventKey);
     }
   };
 
@@ -110,6 +117,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
     } catch (error) {
       console.error("Error deleting post:", error);
       toast.error("Error deleting post. Please try again.");
+    } finally {
+      getPosts(eventKey);
     }
   };
 
@@ -190,6 +199,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
               </button>
               {isOwner && (
                 <button
+
                   style={{
                     border: "none",
                     cursor: "pointer",
