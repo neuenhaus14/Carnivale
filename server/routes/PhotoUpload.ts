@@ -1,4 +1,3 @@
-import  { v2 as cloudinary }  from "cloudinary" //grabbing reference to an already configured cloudinary object
 import handleUpload from "../utils/cloudinary_helpers"
 import express, { Request, Response, Router } from "express";
 import multer from 'multer';
@@ -97,34 +96,7 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
 /////////////////////////
 // Uploads an image file
 /////////////////////////
-const uploadImage = async (imagePath: string) => {
 
-  // Use the uploaded file's name as the asset's public ID and
-  // allow overwriting the asset with new versions
-  const options = {
-    use_filename: true,
-    unique_filename: false,
-    chunk_size: 6000000,
-    overwrite: true,
-    folder : "Carnivale"
-  };
-
-  try {
-    // Upload the image
-    const result = await cloudinary.uploader.upload_large(imagePath,
-       options);
-    return result.public_id;
-  } catch (error) {
-    console.error('upload image', error);
-  }
-};
-
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
 
 export default ImageRouter;
 
