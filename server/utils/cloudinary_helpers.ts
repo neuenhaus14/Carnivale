@@ -14,8 +14,10 @@ import { v2 as cloudinary } from 'cloudinary';
 export async function handleUpload(file: any) {
   const res = await cloudinary.uploader.upload(file, {
     resource_type: "auto",
+    quality: 50,
     folder: "Carnivale"
   });
+  console.log
   return res;
 }
 
