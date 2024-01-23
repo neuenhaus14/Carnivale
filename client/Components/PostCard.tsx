@@ -34,11 +34,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
   const [commentVotingStatus, setCommentVotingStatus] = useState<
     "upvoted" | "downvoted" | "none"
   >("none");
+  const [isOwner, setIsOwner] = useState(false);
 
   const getOwner = async () => {
     try {
       const { data } = await axios.get(`api/home/post/${post.ownerId}`);
       setOwner(data.firstName + " " + data.lastName);
+      setIsOwner(data.id === userId);
     } catch (err) {
       console.error(err);
     }
@@ -56,16 +58,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
 
       if (commentVotingStatus !== "upvoted") {
         setCommentVotingStatus("upvoted");
-        // toast("🎭Upvoted successfully!🎭", {
-        //   position: "top-right",
-        //   autoClose: 5000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        //   theme: "light",
-        // });
       }
     } catch (err) {
       toast.warning("You've already upvoted this post!");
@@ -84,16 +76,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
 
       if (commentVotingStatus !== "downvoted") {
         setCommentVotingStatus("downvoted");
-        // toast.error("Downvoted!", {
-        //   position: "top-right",
-        //   autoClose: 5000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        //   theme: "light",
-        // });
 
         if (post.upvotes - 1 <= -5) {
           toast.error("Post deleted due to too many downvotes!");
@@ -107,6 +89,29 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
   useEffect(() => {
     getOwner();
   }, []);
+
+  const handleDeletePost = async (type: string) => {
+    try {
+      if (isOwner) {
+        await axios.delete(
+          `/api/home/${
+            type === "comment"
+              ? `delete-comment/${post.id}`
+              : `delete-photo/${post.id}`
+          }`,
+          {
+            data: { userId },
+          }
+        );
+        toast.success("Post deleted successfully!");
+      } else {
+        toast.error("You are not the owner of this post. Delete not allowed.");
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast.error("Error deleting post. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -183,6 +188,21 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                   }}
                 />
               </button>
+              {isOwner && (
+                <button
+                  style={{
+                    border: "none",
+                    cursor: "pointer",
+                    outline: "none",
+                    boxShadow: "none",
+                    background: "transparent",
+                    color: "red",
+                  }}
+                  onClick={() => handleDeletePost("comment")}
+                >
+                  Delete
+                </button>
+              )}
               <div style={{ marginLeft: "auto" }}>
                 <ShareModal
                   postId={post.id}
@@ -265,6 +285,21 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                   }}
                 />
               </button>
+              {isOwner && (
+                <button
+                  style={{
+                    border: "none",
+                    cursor: "pointer",
+                    outline: "none",
+                    boxShadow: "none",
+                    background: "transparent",
+                    color: "red",
+                  }}
+                  onClick={() => handleDeletePost("photo")}
+                >
+                  Delete
+                </button>
+              )}
               <div style={{ marginLeft: "auto" }}>
                 <ShareModal
                   postId={post.id}
