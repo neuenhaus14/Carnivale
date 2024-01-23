@@ -548,7 +548,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     });
 
 
-  console.log('bottom of eventCreateModal. eventStartDate', eventStartDate, 'eventEndDate', eventEndDate)
+  console.log('bottom of eventCreateModal. eventStartDate', eventStartDate, 'eventEndDate', eventEndDate, 'sE', selectedEvent)
   return (
     <>
       <ToastContainer

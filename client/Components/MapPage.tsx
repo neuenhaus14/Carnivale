@@ -11,8 +11,8 @@ import {
 } from 'react-map-gl';
 import { Container, Form } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
-import { FaPersonWalking } from 'react-icons/fa6';
-import { FaCirclePlus } from 'react-icons/fa6';
+import { FaWalking } from '@react-icons/all-files/fa/FaWalking';
+import { FaPlusCircle } from '@react-icons/all-files/fa/FaPlusCircle';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -217,7 +217,7 @@ const MapPage: React.FC<MapProps> = ({
         setIsFriendSelected(false);
       } catch (err) {
         console.error(err);
-      } 
+      }
     } else {
       try {
         const { data } = await axios.get(
@@ -554,7 +554,7 @@ const MapPage: React.FC<MapProps> = ({
               >
                 Close
               </button>
-              <FaPersonWalking
+              <FaWalking
                 style={{
                   color: '#cf40f5',
                   float: 'right',
@@ -571,7 +571,7 @@ const MapPage: React.FC<MapProps> = ({
             dropPin(e);
           }}
         >
-          <FaCirclePlus
+          <FaPlusCircle
             style={{
               color: theme === 'pg-theme-vis' ? '#291F1F' : '#cf40f5',
               width: '60px',

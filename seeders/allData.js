@@ -85,8 +85,8 @@ module.exports = {
     await queryInterface.bulkInsert("events", [
       {
         name: "Meetup at the Friendly Bar",
-        startTime: "2024-01-22T18:00",
-        endTime: "2024-01-22T19:00",
+        startTime: "2024-01-23T18:00",
+        endTime: "2024-01-23T19:00",
         description: "Grabbing a pint for old time's sake",
         longitude: -90.05951,
         latitude: 29.963724,
@@ -113,7 +113,7 @@ module.exports = {
         link: null,
         system: false,
         attendingCount: 3,
-        invitedCount: 0,
+        invitedCount: 1,
         upvotes: 0,
         ownerId: 2,
         createdAt: new Date(),
@@ -133,6 +133,23 @@ module.exports = {
         invitedCount: 0,
         upvotes: 0,
         ownerId: 3,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: "Garage Sale",
+        startTime: "2024-01-24T14:00",
+        endTime: "2024-01-24T15:00",
+        description: "Help me find gifts for my Aunt Patty.",
+        longitude: -90.052452,
+        latitude: 29.964846,
+        address: null,
+        link: null,
+        system: false,
+        attendingCount: 0,
+        invitedCount: 1,
+        upvotes: 0,
+        ownerId: 6,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -218,7 +235,15 @@ module.exports = {
         isAttending: false,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      },
+      {
+        eventId: 4,
+        userId: 7,
+        senderId: 6,
+        isAttending: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
 
     await queryInterface.bulkInsert("pins", [
@@ -526,7 +551,7 @@ module.exports = {
         latitude: 29.963165,
         description: "🥁 Drumline woooo!",
         photoURL:
-        "https://media.npr.org/assets/img/2022/02/28/mardi-gras-6_custom-80ee70368937f26a1da301e4a5a1948e41dc093c-s1300-c85.webp",
+        "https://assets.myneworleans.com/2021/12/9P4dFtdN-MBst.-aug1.gif",
         isCostume: false,
         isThrow: false,
         isPin: false,
