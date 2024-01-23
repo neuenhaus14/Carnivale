@@ -321,7 +321,8 @@ const MapPage: React.FC<MapProps> = ({
     const m = Math.floor((duration % 3600) / 60);
 
     const hDisplay = h > 0 ? h + (h == 1 ? ' hour, ' : ' hours, ') : '';
-    const mDisplay = m > 0 ? m + (m == 1 ? ' minute ' : ' minutes') : '';
+    const mDisplay = m > 0 ? m + (m == 1 ? ' minute ' : ' minutes') : 'Less than 1 min ';
+
 
     return `${hDisplay + mDisplay}`;
   };
