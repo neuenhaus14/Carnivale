@@ -161,6 +161,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
     fullDate = fullDate.slice(0, 16);
 
+    console.log('fulldate', fullDate)
     if (fullDate.indexOf('T') !== -1) {
       [date, time] = fullDate.split('T');
     } else if (fullDate.indexOf(' ')) {
@@ -184,7 +185,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     const timeRangeValue = Number(`${hour}.${minute}`);
 
     if (startOrEnd === 'start') {
-      setEventStartDate(dayjs(date, "YYYY-MM-DD").toDate());
+      setEventStartDate(dayjs(date, ["YYYY-MM-DD", "YYYY-M-DD",  "YYYY-MM-D", "YYYY-M-D"]).toDate());
       setEventStartTime(timeRangeValue);
       if (addEndTime === true) {
         const startTime = dayjs(fullDate);
@@ -195,7 +196,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         parseDateIntoDateAndTime(endTime, 'end', false);
       }
     } else if (startOrEnd === 'end') {
-      setEventEndDate(dayjs(date, "YYYY-MM-DD").toDate());
+      setEventEndDate(dayjs(date, ["YYYY-MM-DD", "YYYY-M-DD", "YYYY-MM-D", "YYYY-M-D"]).toDate());
       setEventEndTime(timeRangeValue);
     }
   };
@@ -547,7 +548,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     });
 
 
-  console.log('bottom of eventCreateModal. eventStartDate', eventStartDate, 'eventEndDate', eventEndDate)
+  console.log('bottom of eventCreateModal. eventStartDate', eventStartDate, 'eventEndDate', eventEndDate, 'sE', selectedEvent)
   return (
     <>
       <ToastContainer

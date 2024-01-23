@@ -85,8 +85,8 @@ module.exports = {
     await queryInterface.bulkInsert("events", [
       {
         name: "Meetup at the Friendly Bar",
-        startTime: "2024-01-22T18:00",
-        endTime: "2024-01-22T19:00",
+        startTime: "2024-01-23T18:00",
+        endTime: "2024-01-23T19:00",
         description: "Grabbing a pint for old time's sake",
         longitude: -90.05951,
         latitude: 29.963724,
@@ -113,7 +113,7 @@ module.exports = {
         link: null,
         system: false,
         attendingCount: 3,
-        invitedCount: 0,
+        invitedCount: 1,
         upvotes: 0,
         ownerId: 2,
         createdAt: new Date(),
@@ -133,6 +133,23 @@ module.exports = {
         invitedCount: 0,
         upvotes: 0,
         ownerId: 3,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: "Garage Sale",
+        startTime: "2024-01-24T14:00",
+        endTime: "2024-01-24T15:00",
+        description: "Help me find gifts for my Aunt Patty.",
+        longitude: -90.052452,
+        latitude: 29.964846,
+        address: null,
+        link: null,
+        system: false,
+        attendingCount: 0,
+        invitedCount: 1,
+        upvotes: 0,
+        ownerId: 6,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -218,7 +235,15 @@ module.exports = {
         isAttending: false,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      },
+      {
+        eventId: 4,
+        userId: 7,
+        senderId: 6,
+        isAttending: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
 
     await queryInterface.bulkInsert("pins", [
@@ -358,7 +383,7 @@ module.exports = {
         longitude: -90.053271,
         latitude: 29.962828,
         description: "A free toilet!",
-        photoURL: "http://tinyurl.com/yc7k6fck",
+        photoURL: "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/yfpo9qrachrpizrgkt47.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,
@@ -372,7 +397,7 @@ module.exports = {
         latitude: 29.963333,
         description: "$3 dollars per use! Nice and clean!",
         photoURL:
-          "https://patch.com/img/cdn20/users/22844250/20180308/033221/styles/raw/public/processed_images/shutterstock_60614002-1520541125-6182.jpg?width=1200",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/ebsvvw2yy75mgdszogzl.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,
@@ -386,7 +411,7 @@ module.exports = {
         latitude: 29.963600,
         description: "Hot sausage in da house. $10 ftw!",
         photoURL:
-          "https://i.redd.it/xnchnbpecor71.jpg",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/ktpl4konvtsxeuy3mgi8.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,
@@ -400,7 +425,7 @@ module.exports = {
         latitude: 29.963600,
         description: "Not so fast! Now a long line for po boys!",
         photoURL:
-          "https://images.inc.com/uploaded_files/image/1920x1080/getty_177129252_49311.jpg",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/z84caqng7omrheoqksrw.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,
@@ -414,7 +439,7 @@ module.exports = {
         latitude: 29.961779,
         description: "Left bike here!",
         photoURL:
-          "http://tinyurl.com/48ctcz2s",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/yrzmn9ssn6ysrnripdue.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,
@@ -428,7 +453,7 @@ module.exports = {
         latitude: 29.963299,
         description: "Check out my costume",
         photoURL:
-          "https://upload.wikimedia.org/wikipedia/commons/4/46/Inflatable_costume.jpg",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/ndhf9ymjk2dmilprjgst.jpg",
         isCostume: true,
         isThrow: false,
         isPin: false,
@@ -442,7 +467,7 @@ module.exports = {
         latitude: 29.963645,
         description: "Space vikings skol!",
         photoURL:
-          "http://tinyurl.com/24cw2hun",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/ucpmdxbhujyrqzpjxml2.jpg",
         isCostume: true,
         isThrow: false,
         isPin: false,
@@ -456,7 +481,7 @@ module.exports = {
         latitude: 29.963277,
         description: "Oh yeah! Thank you, Muses",
         photoURL:
-          "https://i.ebayimg.com/images/g/V-cAAOSwjkpj9hWk/s-l1600.jpg",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/krwwlsqiiwlu8ujyt8zk.jpg",
         isCostume: false,
         isThrow: true,
         isPin: false,
@@ -470,7 +495,7 @@ module.exports = {
         latitude: 29.963244,
         description: "Check out what I got at Zulu!",
         photoURL:
-        "https://i.etsystatic.com/39954801/r/il/fb6a52/4740714815/il_794xN.4740714815_h0o7.jpg",
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/z4ips6rseyeyydt0zgix.jpg",
         isCostume: false,
         isThrow: true,
         isPin: false,
@@ -484,7 +509,7 @@ module.exports = {
         latitude: 29.963234,
         description: "All hail Doctor Oz!",
         photoURL:
-        "https://akns-images.eonline.com/eol_images/Entire_Site/201423/rs_634x1024-140303152956-634.Hugh-Laurie-Mardi-Gras-Mardi-Gras.ms.030314.jpg?fit=around%7C776:1254&output-quality=90&crop=776:1254",
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/petewb3zjwanwibxffsk.jpg",
         isCostume: false,
         isThrow: false,
         isPin: false,
@@ -498,7 +523,7 @@ module.exports = {
         latitude: 29.963765,
         description: "Motley Crew in the FQ",
         photoURL:
-        "https://www.etereshop.com/wp-content/uploads/2022/12/Mens-costumes-for-the-Mardi-Gras-Festival.jpg",
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/wkkc6ixqekszbjbolslu.jpg",
         isCostume: true,
         isThrow: false,
         isPin: false,
@@ -512,7 +537,7 @@ module.exports = {
         latitude: 29.963765,
         description: "Uggh more beaadddszzz 😭 Wahhh",
         photoURL:
-        "https://i.ebayimg.com/images/g/j4IAAOSwqzFd3c3W/s-l1600.jpg",
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/t9fdgexvifjlzqpbcaa7.jpg",
         isCostume: false,
         isThrow: true,
         isPin: false,
@@ -526,7 +551,7 @@ module.exports = {
         latitude: 29.963165,
         description: "🥁 Drumline woooo!",
         photoURL:
-        "https://media.npr.org/assets/img/2022/02/28/mardi-gras-6_custom-80ee70368937f26a1da301e4a5a1948e41dc093c-s1300-c85.webp",
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/r2dlbdsnrc6tj5a1r7ax.jpg",
         isCostume: false,
         isThrow: false,
         isPin: false,
@@ -540,7 +565,7 @@ module.exports = {
         latitude: 29.965501,
         description: "Emt if you need a helping hand",
         photoURL:
-        "http://tinyurl.com/33fash4p",
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/oh8ugtya4ykz6d0ysl32.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,
@@ -554,7 +579,7 @@ module.exports = {
         latitude: 29.966916,
         description: "Phone charger if ur outta juice",
         photoURL:
-        "https://solarchargingstation.com/wp-content/uploads/2020/11/solar-charging-station-community-gatherings.jpg",
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/dubvno2a2fr1ncbzeazk.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,
@@ -568,7 +593,7 @@ module.exports = {
         latitude: 29.963603,
         description: "Hot fuzz, 6 o'clock (that means they're behind you).",
         photoURL:
-        "https://images.radio.com/aiu-media/Mardi-Gras-Parade-NOPD-Horse-Matt-Doyle-90040f65-5f92-4dfd-8779-c36153c4b9eb.jpg?width=800",
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/u3vgjan0n7ufckqbh7tt.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,

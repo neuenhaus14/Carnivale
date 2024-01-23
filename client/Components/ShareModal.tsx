@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap';
-import { FaShareFromSquare  } from "react-icons/fa6";
+import { FaShareSquare  } from "@react-icons/all-files/fa/FaShareSquare";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -63,7 +63,7 @@ const ShareModal = (props: {
   return (
     <div className={theme}>
       <Button onClick={handleShow} style={{ marginLeft: '150px'}}>
-        <FaShareFromSquare  />
+        <FaShareSquare  />
       </Button>
 
       <Modal show={show} onHide={handleClose}>

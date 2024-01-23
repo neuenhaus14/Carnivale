@@ -2,9 +2,12 @@ import React, { useContext } from 'react';
 import { useAuth0 } from '@auth0/auth0-react'; //TODO: temporary
 import { To, useNavigate } from 'react-router-dom';
 import { Navbar, Button } from 'react-bootstrap/';
-import { MdDynamicFeed } from 'react-icons/md';
-import { FaMapMarkedAlt } from 'react-icons/fa';
-import { IoHomeOutline, IoPeople } from 'react-icons/io5';
+//import { MdDynamicFeed } from 'react-icons/md';
+// import { MdDynamicFeed } from 'react-icons/md/index'
+import { MdShare } from '@react-icons/all-files/md/MdShare'
+import { FaMapMarkedAlt } from '@react-icons/all-files/fa/FaMapMarkedAlt';
+import {IoHomeOutline} from '@react-icons/all-files/io5/IoHomeOutline';
+import {IoPeople} from '@react-icons/all-files/io5/IoPeople';
 import { ThemeContext } from './Context';
 
 const NavBar = () => {
@@ -44,7 +47,7 @@ const NavBar = () => {
           id='feedButton'
           onClick={() => handleNavigation('/feedpage')}
         >
-          <MdDynamicFeed />
+          <MdShare />
         </Button>
 
         <Button

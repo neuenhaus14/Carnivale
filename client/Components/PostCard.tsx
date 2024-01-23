@@ -7,7 +7,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import ShareModal from "./ShareModal";
-import { IoArrowUpCircle, IoArrowDownCircle } from "react-icons/io5";
+// import {IoMdArrowUp} from "@react-icons/all-files/io/IoMdArrowUp";
+// import {IoMdArrowDown} from "@react-icons/all-files/io/IoMdArrowDown";
+import {IoArrowDownCircle} from '@react-icons/all-files/io5/IoArrowDownCircle';
+import {IoArrowUpCircle} from '@react-icons/all-files/io5/IoArrowUpCircle';
 
 dayjs.extend(relativeTime);
 

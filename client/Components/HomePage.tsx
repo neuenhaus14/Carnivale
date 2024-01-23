@@ -8,7 +8,11 @@ import {
   Tab,
   Tabs
 } from 'react-bootstrap';
-import { FaCamera, FaCommentDots } from 'react-icons/fa';
+import { FaCommentDots } from '@react-icons/all-files/fa/FaCommentDots';
+
+import { FaCamera } from '@react-icons/all-files/fa/FaCamera';
+
+
 import axios from 'axios';
 import HomeModal from './HomeModal';
 import PostCard from './PostCard';
