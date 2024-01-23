@@ -9,8 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 import ShareModal from "./ShareModal";
 // import {IoMdArrowUp} from "@react-icons/all-files/io/IoMdArrowUp";
 // import {IoMdArrowDown} from "@react-icons/all-files/io/IoMdArrowDown";
-import {IoArrowDownCircle} from '@react-icons/all-files/io5/IoArrowDownCircle';
-import {IoArrowUpCircle} from '@react-icons/all-files/io5/IoArrowUpCircle';
+import { IoArrowDownCircle } from "@react-icons/all-files/io5/IoArrowDownCircle";
+import { IoArrowUpCircle } from "@react-icons/all-files/io5/IoArrowUpCircle";
 
 dayjs.extend(relativeTime);
 
@@ -32,7 +32,13 @@ interface PostCardProps {
   eventKey: string;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, eventKey }) => {
+const PostCard: React.FC<PostCardProps> = ({
+  post,
+  userId,
+  getPosts,
+  order,
+  eventKey,
+}) => {
   const [owner, setOwner] = useState("");
   const [commentVotingStatus, setCommentVotingStatus] = useState<
     "upvoted" | "downvoted" | "none"
@@ -106,10 +112,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, even
               ? `delete-comment/${post.id}`
               : `delete-photo/${post.id}`
           }`,
-          {
-            data: { userId },
-          }
+          { data: { userId } }
         );
+
         toast.success("Post deleted successfully!");
       } else {
         toast.error("You are not the owner of this post. Delete not allowed.");
@@ -156,6 +161,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, even
                 display: "flex",
                 alignItems: "center",
                 marginLeft: "-6px",
+                position: "relative",
               }}
             >
               <button
@@ -199,7 +205,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, even
               </button>
               {isOwner && (
                 <button
-
                   style={{
                     border: "none",
                     cursor: "pointer",
@@ -208,12 +213,20 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, even
                     background: "transparent",
                     color: "red",
                   }}
-                  onClick={() => handleDeletePost("comment")}
+                  onClick={() =>
+                    handleDeletePost(post.comment ? "comment" : "photo")
+                  }
                 >
                   Delete
                 </button>
               )}
-              <div style={{ marginLeft: "auto" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "0",
+                  right: "0",
+                }}
+              >
                 <ShareModal
                   postId={post.id}
                   userId={userId}
@@ -225,7 +238,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, even
         ) : (
           <Card.Body>
             <Card.Img variant="top" src={post.photoURL} />
-            <Card.Text as='div'>
+            <Card.Text as="div">
               <p className="card-content">{post.description}</p>
               <div className="card-detail">
                 {owner} posted
@@ -254,6 +267,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, even
                 display: "flex",
                 alignItems: "center",
                 marginLeft: "-6px",
+                position: "relative",
               }}
             >
               <button
@@ -305,12 +319,20 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, even
                     background: "transparent",
                     color: "red",
                   }}
-                  onClick={() => handleDeletePost("photo")}
+                  onClick={() =>
+                    handleDeletePost(post.comment ? "comment" : "photo")
+                  }
                 >
                   Delete
                 </button>
               )}
-              <div style={{ marginLeft: "auto" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "0",
+                  right: "0",
+                }}
+              >
                 <ShareModal
                   postId={post.id}
                   userId={userId}
@@ -330,9 +352,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, even
         newestOnTop={false}
         closeOnClick
         rtl={false}
-        pauseOnFocusLoss
+        pauseOnFocusLoss={false}
         draggable
-        pauseOnHover
+        pauseOnHover={false}
         theme="light"
       />
     </>

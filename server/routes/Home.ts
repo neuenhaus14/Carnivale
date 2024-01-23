@@ -1,5 +1,12 @@
 import { Router, Request, Response } from "express";
-import { User, Comment, Photo, Join_shared_post } from "../db";
+import {
+  User,
+  Comment,
+  Photo,
+  Join_shared_post,
+  Join_comment_vote,
+  Join_photo_vote,
+} from "../db";
 import { Op } from "sequelize";
 const HomeRoutes = Router();
 
@@ -12,11 +19,23 @@ HomeRoutes.delete(
     try {
       const comment = await Comment.findByPk(postId);
 
+      if (!comment) {
+        return res.status(404).json({ error: "Comment not found" });
+      }
+
       if (comment.dataValues.ownerId !== userId) {
         return res
           .status(403)
           .json({ error: "Unauthorized to delete this comment" });
       }
+
+      await Join_shared_post.destroy({
+        where: { shared_commentId: postId },
+      });
+
+      await Join_comment_vote.destroy({
+        where: { commentId: postId },
+      });
 
       await comment.destroy();
 
@@ -37,15 +56,27 @@ HomeRoutes.delete(
     try {
       const photo = await Photo.findByPk(postId);
 
+      if (!photo) {
+        return res.status(404).json({ error: "Photo not found" });
+      }
+
       if (photo.dataValues.ownerId !== userId) {
         return res
           .status(403)
-          .json({ error: "Unauthorized to delete this comment" });
+          .json({ error: "Unauthorized to delete this photo" });
       }
+
+      await Join_shared_post.destroy({
+        where: { shared_photoId: postId },
+      });
+
+      await Join_photo_vote.destroy({
+        where: { photoId: postId },
+      });
 
       await photo.destroy();
 
-      return res.status(200).json({ message: "Comment deleted successfully" });
+      return res.status(200).json({ message: "Photo deleted successfully" });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: "Internal server error" });
@@ -196,7 +227,6 @@ HomeRoutes.post("/:ownerId", async (req: Request, res: Response) => {
   }
 });
 
-
 // HomeRoutes.post('/create-post/:ownerId', async(req: Request, res: Response) => {
 //   const { ownerId } = req.params
 //   const {longitude, latitude, isFree, isToilet, isFood, isPersonal} = req.body.options
@@ -211,4 +241,3 @@ HomeRoutes.post("/:ownerId", async (req: Request, res: Response) => {
 // })
 
 export default HomeRoutes;
-
