@@ -439,7 +439,7 @@ module.exports = {
         latitude: 29.961779,
         description: "Left bike here!",
         photoURL:
-          "http://tinyurl.com/48ctcz2s",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/yrzmn9ssn6ysrnripdue.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,
