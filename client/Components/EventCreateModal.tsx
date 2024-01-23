@@ -2,8 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Button, Form, Tabs, Tab } from 'react-bootstrap';
 import EventCreateMapComponent from './EventCreateMapComponent';
 import axios from 'axios';
-import dayjs = require('dayjs');
+import dayjs from 'dayjs';
 import { ThemeContext } from './Context';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ConfirmActionModal from './ConfirmActionModal';
@@ -47,8 +49,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   const now = dayjs();
   // Event time data: will combine to make Date string
-  const [eventStartDate, setEventStartDate] = useState('');
-  const [eventEndDate, setEventEndDate] = useState('');
+  const [eventStartDate, setEventStartDate] = useState<Date>(now.toDate());
+  const [eventEndDate, setEventEndDate] = useState<Date>(now.toDate());
   const [eventStartTime, setEventStartTime] = useState(2); // 0-24 in 15 min increments
   const [eventEndTime, setEventEndTime] = useState(6); // same
 
@@ -107,10 +109,12 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventDescription('');
       setEventAddress('');
 
+      // default new event start time to the next hour and end time to
+      // two hours later
       const oneHourLaterTime = Number(now.add(1, 'hour').format('HH'));
-      const oneHourLaterDate = now.add(1, 'hour').format('YYYY-MM-DD');
+      const oneHourLaterDate = now.add(1, 'hour').toDate();
       const twoHoursLaterTime = Number(now.add(2, 'hour').format('HH'));
-      const twoHoursLaterDate = now.add(2, 'hour').format('YYYY-MM-DD');
+      const twoHoursLaterDate = now.add(2, 'hour').toDate();
 
       handleUserCoordinatesToAddress();
       setEventStartTime(oneHourLaterTime);
@@ -123,9 +127,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     // parade event create mode
     else if (isNewEvent === true && eventType === 'parade') {
       setEventName(selectedEvent.title);
+      setEventDescription('Parade');
       if (selectedEvent.location) {
         setEventAddress(selectedEvent.location);
         setCoordinatesFromAddress(selectedEvent.location);
+        // scraped parades have startDate property
         parseDateIntoDateAndTime(selectedEvent.startDate, 'start', true);
       }
     }
@@ -155,6 +161,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
     fullDate = fullDate.slice(0, 16);
 
+    console.log('fulldate', fullDate)
     if (fullDate.indexOf('T') !== -1) {
       [date, time] = fullDate.split('T');
     } else if (fullDate.indexOf(' ')) {
@@ -178,7 +185,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     const timeRangeValue = Number(`${hour}.${minute}`);
 
     if (startOrEnd === 'start') {
-      setEventStartDate(date);
+      setEventStartDate(dayjs(date, ["YYYY-MM-DD", "YYYY-M-DD",  "YYYY-MM-D", "YYYY-M-D"]).toDate());
       setEventStartTime(timeRangeValue);
       if (addEndTime === true) {
         const startTime = dayjs(fullDate);
@@ -189,7 +196,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         parseDateIntoDateAndTime(endTime, 'end', false);
       }
     } else if (startOrEnd === 'end') {
-      setEventEndDate(date);
+      setEventEndDate(dayjs(date, ["YYYY-MM-DD", "YYYY-M-DD", "YYYY-MM-D", "YYYY-M-D"]).toDate());
       setEventEndTime(timeRangeValue);
     }
   };
@@ -237,8 +244,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
 
     if (!twelveHourClock) {
-      if (hour.length===1){
-        hour = `0${hour}`
+      if (hour.length === 1) {
+        hour = `0${hour}`;
       }
       return `${hour}:${minute}`;
     }
@@ -249,7 +256,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       } else if (hour === '12' && minute === '00') {
         return 'Noon';
       } else if (Number(hour) >= 12) {
-        if (Number(hour) === 12){
+        if (Number(hour) === 12) {
           return `${hour.toString()}:${minute} pm`;
         }
         hour = Number(hour) - 12;
@@ -260,9 +267,13 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
   };
 
-  const stringifyDateTime = (date: string, timeDecimal: number) => {
+  const stringifyDateTime = (date: Date, timeDecimal: number) => {
     const formattedTime = convertDecimalToTime(timeDecimal);
-    return `${date}T${formattedTime}`;
+    const dateYear = date.getFullYear(); // number
+    const dateMonth = date.getMonth() + 1; // number, months are zero-indexed so add 1
+    const dateDay = date.getDate();
+    const formattedDate = `${dateYear}-${dateMonth}-${dateDay}`;
+    return `${formattedDate}T${formattedTime}`;
   };
 
   const handleEventCreation = async () => {
@@ -361,7 +372,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       );
       handleClose();
     } catch (err) {
-      console.log('CLIENT ERROR: failed to DELETE event record', err);
+      console.error('CLIENT ERROR: failed to DELETE event record', err);
     }
   };
 
@@ -378,17 +389,17 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     setIsEventUpdated(true);
   };
 
-  const handleDateChange = (e: any) => {
-    const { value, name } = e.target;
+  // const handleDateChange = (e: any) => {
+  //   const { value, name } = e.target;
 
-    if (name === 'start') {
-      setEventStartDate(value);
-    } else if (name === 'end') {
-      setEventEndDate(value);
-    }
-    // enable Update button in update mode
-    setIsEventUpdated(true);
-  };
+  //   if (name === 'start') {
+  //     setEventStartDate(value);
+  //   } else if (name === 'end') {
+  //     setEventEndDate(value);
+  //   }
+  //   // enable Update button in update mode
+  //   setIsEventUpdated(true);
+  // };
 
   const handleInputChange = (e: any) => {
     const { value, name } = e.target;
@@ -415,7 +426,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventLongitude(evtLongitude);
       setEventLatitude(evtLatitude);
     } catch (err) {
-      console.log('CLIENT ERROR: failed to GET coords from address', err);
+      console.error('CLIENT ERROR: failed to GET coords from address', err);
     }
   };
 
@@ -536,6 +547,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       );
     });
 
+
+  console.log('bottom of eventCreateModal. eventStartDate', eventStartDate, 'eventEndDate', eventEndDate, 'sE', selectedEvent)
   return (
     <>
       <ToastContainer
@@ -633,13 +646,27 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                       />
 
                       {/* <p>{eventStartDate}</p> */}
-                      <Form.Control
+                      {/* <Form.Control
                         type='text'
                         name='start'
                         value={eventStartDate}
                         onChange={handleDateChange}
                         placeholder='Start Date: YYYY-MM-DD'
-                      />
+                      /> */}
+
+                      <div className='d-flex flex-direction-row justify-content-around'>
+                        <b className='my-auto'>Start: </b>
+                        <DatePicker
+                          className='date-picker align-middle'
+                          popperPlacement='bottom'
+                          selected={eventStartDate}
+                          onChange={(date: Date) => {
+                            setEventStartDate(date);
+                            setEventEndDate(date);
+                            setIsEventUpdated(true);
+                          }}
+                        />
+                      </div>
 
                       <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <div style={{ width: '100px' }}>
@@ -658,13 +685,27 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                       </div>
 
                       {/* <p>{eventEndDate}</p> */}
-                      <Form.Control
+
+                      {/* <Form.Control
                         type='text'
                         name='end'
                         value={eventEndDate}
                         onChange={handleDateChange}
                         placeholder='End Date: YYYY-MM-DD'
-                      />
+                      /> */}
+
+                      <div className='d-flex flex-direction-row justify-content-around'>
+                        <b className='my-auto'>End: </b>
+                        <DatePicker
+                          className='date-picker align-middle'
+                          popperPlacement='bottom'
+                          selected={new Date(eventEndDate)} // not working when populating with other data
+                          onChange={(date: Date) => {
+                            setEventEndDate(date);
+                            setIsEventUpdated(true);
+                          }}
+                        />
+                      </div>
 
                       <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <div style={{ width: '100px' }}>
@@ -687,10 +728,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
               <Tab eventKey='people' title='People'>
                 {friends.length === 0 && (
                   <div>
-                    <div className='card-content text-center mt-3'>
+                    <div className='ep-card-content text-center mt-3'>
                       You're flying solo!
                     </div>
-                    <div className='card-detail text-center'>
+                    <div className='ep-card-detail text-center'>
                       Add to your Krewe to send invitations.
                     </div>
                   </div>
@@ -754,7 +795,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                 onClick={handleEventCreation}
                 className='mx-2'
                 disabled={
-                  eventName.length === 0 || eventDescription.length === 0
+                  !eventName ||
+                  eventName.length === 0 ||
+                  !eventDescription ||
+                  eventDescription.length === 0
                 }
               >
                 Create Event

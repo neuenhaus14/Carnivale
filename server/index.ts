@@ -1,15 +1,15 @@
 import express, { Request, Response, Router } from "express";
 import path from "path";
 import "./db"; //importing not using. so it does the same thing
-import { auth, requiresAuth } from "express-openid-connect";
+import { auth } from "express-openid-connect";
 import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER, REDIRECT_URL } from "./config";
 import { Server } from "socket.io";
-import { Op, Model } from "sequelize";
+import { Model } from "sequelize";
 import PinRoutes from "./routes/Pins";
 import http from "http";
 import cors from "cors";
 //import Upload  from "./routes/PhotoUpload"
-import cloudinary from "./utils/cloudinary_helpers"; //grabbing reference to an already configured cloudinary object
+// import cloudinary from "./utils/cloudinary_helpers"; //grabbing reference to an already configured cloudinary object
 import FriendsRoutes from "./routes/Friends";
 import WeatherRoutes from "./routes/WeatherApi";
 import WeatherForecastRoutes from "./routes/WeatherForecast";
@@ -19,9 +19,9 @@ import FeedRoutes from "./routes/Feed";
 import ImageRouter from "./routes/PhotoUpload";
 import ParadesRoutes from "./routes/Parades";
 import GigsRoutes from "./routes/ScrapeEvents";
-import { User, Join_friend } from "./db/index";
-import { Sequelize } from "sequelize";
-import { Socket } from "dgram";
+import { User, } from "./db/index";
+// import { Sequelize } from "sequelize";
+// import { Socket } from "dgram";
 //start()
 //this is declaring db as an obj so it can be ran when server starts
 //this is running db/index.ts
@@ -71,20 +71,17 @@ app.use(auth(config));
 
 // req.isAuthenticated is provided from the auth router
 app.get("/auth", (req, res) => {
-  console.log(req.oidc.isAuthenticated());
   res.render("index", { isAuthenticated: req.oidc.isAuthenticated() });
 });
 
 app.patch('/userLoc', (req, res) => {
   const {longitude, latitude, id} = req.body
-  // console.log('app.patch', longitude, latitude, id)
 
   User.update({longitude, latitude}, {where: {id}})
   .then(() => {
-    // console.log('successfully updated location', data)
     res.sendStatus(200)
   })
-  .catch((err) => console.error(err))  
+  .catch((err) => console.error(err))
 })
 
 
@@ -92,58 +89,11 @@ io.on('connection', (socket: any) => {
    console.log('a user connected');
 
   socket.on('userLoc', (userLoc: any) => {
-    // console.log('userLoc', userLoc)
+
        io.emit('userLoc response', userLoc)
        //socket.broadcast.emit('userLoc response', userLoc)
-
-    //   console.log('emitted userLoc')
-    //console.log('userLoc', userLoc.longitude, userLoc.latitude, userLoc.id)
-    // User.update({longitude: userLoc.longitude, latitude: userLoc.latitude}, {where: {id: userLoc.id}})
-    // .then(() => {
-    //   console.log('successfully updated location')}
-    //   User.findOne({where: {id: userLoc.id}})
-    //     .then((data) => {
-    //       io.emit('userLoc response', data.dataValues)
-    //     })
-    // )
-    // .catch((err) => console.error(err))
   });
 
-  // socket.on("getFriends:read", (user: any) => {
-  //   const userId = user.userId;
-
-  //   Join_friend.findAll({
-  //     where: {
-  //       [Op.or]: [{ requester_userId: userId }, { recipient_userId: userId }],
-  //       isConfirmed: true,
-  //     },
-  //   })
-  //     .then((allFriendships: Array<Model>) => {
-  //       if (allFriendships.length > 0) {
-  //         const allFriendsIds = allFriendships.map(
-  //           (friendship: RelationshipModel) => {
-  //             return friendship.requester_userId === Number(userId)
-  //               ? friendship.recipient_userId
-  //               : friendship.requester_userId;
-  //           }
-  //         );
-  //         return User.findAll({
-  //           where: { id: { [Op.or]: [...allFriendsIds] } },
-  //         });
-  //       } else {
-  //         return [];
-  //       }
-  //     })
-  //     .then((allFriendsUsers: Array<Model>) => {
-  //       if (allFriendsUsers.length > 0) {
-  //         console.log("sending back friends from server");
-  //         socket.emit("getFriends:send", allFriendsUsers);
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.error("SERVER ERROR: could not DELETE friendship", err);
-  //     });
-  // });
 
   socket.on("disconnect", () => {
      console.log("a user disconnected");

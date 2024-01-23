@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import {Navbar, Image} from 'react-bootstrap/';
-import axios from "axios";
 import { ThemeContext } from "./Context";
 
 interface TopNavBarProps {

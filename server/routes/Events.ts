@@ -136,7 +136,6 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
     })
     // if user has no events that they're invited to...
     if (userEventsInvitedRecords.length === 0) {
-      // console.log('No event invitations')
       res.status(200).send([])
     } else {
       const userEventsInvitedObjs = userEventsInvitedRecords.map((record: any) => { return {
@@ -165,7 +164,6 @@ Events.get('/getEventsInvited/:userId', async (req: Request, res: Response) => {
       ))
 
       const userEventsInvitedRecentAndSorted = userEventsInvited.filter((invite: any) => {
-        // console.log(dayjs(invite.event.endTime).isAfter(oneDayAgo));
         return dayjs(invite.event.endTime).isAfter(oneDayAgo);
       }).sort((a:any,b:any) => {
         if (dayjs(a.event.startTime).isBefore(b.event.startTime)) {
@@ -209,10 +207,8 @@ Events.get('/getPublicEventsParticipating/:userId', async (req: Request, res: Re
         isAttending: true,
       }
     });
-    // console.log('user events participating', userId, userEventsParticipatingRecords)
     // if user has no events that they're going to
     if (userEventsParticipatingRecords.length === 0) {
-      console.log('No user event participation records')
       // send empty array
       res.status(200).send([]);
     } else {
@@ -227,7 +223,6 @@ Events.get('/getPublicEventsParticipating/:userId', async (req: Request, res: Re
           system: true
         }
       });
-      // console.log('array of public participating events ids', userPublicEventsParticipating.map((event: any) => event.id))
       res.status(200).send(userPublicEventsParticipating.map((event: any) => event.id));
     }
   } catch (err) {
@@ -250,7 +245,6 @@ Events.get('/getPublicEventsInvited/:userId', async (req: Request, res: Response
     })
     // if user has no events that they're invited to...
     if (userEventsInvitedRecords.length === 0) {
-      // console.log('No event invitations')
       res.status(200).send([])
     } else {
 
@@ -455,11 +449,6 @@ Events.patch('/updateEvent', async (req: Request, res: Response) => {
         id
       }
      })
-
-     console.log('updatedEvent', updatedEvent);
-
-
-
      res.status(200).send(updatedEvent)
     } catch (err) {
       console.error('SERVER ERROR: failed to PATCH event', err);
@@ -487,7 +476,6 @@ Events.post('/setEventAttendance', async (req: Request, res: Response) => {
         isAttending,
       })
     }
-    // console.log('uC', updatedCount);
     res.status(201).send(updatedCount)
   } catch (err) {
     console.error("SERVER ERROR: could not POST event answer", err);
@@ -541,10 +529,7 @@ Events.post('/inviteToEvent', async (req: Request, res: Response) => {
     res.status(500).send(err);
   }
 })
-// Events.get('/trial-endpoint', async (req: Request, res: Response) => {
-//   console.log('Trial endpoint')
-//   res.status(201).send('Connected in trial endpoint')
-// })
+
 Events.post('/getCoordinatesFromAddress', async (req: Request, res: Response) => {
 
   const apiUrlBeginning = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
@@ -555,7 +540,6 @@ Events.post('/getCoordinatesFromAddress', async (req: Request, res: Response) =>
     const apiUrl = apiUrlBeginning + address + apiUrlEnd;
     const coordinateResponse: any = await axios.get(apiUrl).catch((error) => console.error(error));
     const coordinates = coordinateResponse.data.features[0].center;
-    console.log('address success')
     res.status(200).send(coordinates);
   } catch (err) {
     console.error("SERVER ERROR: failed to 'POST' new coordinates from address", err);

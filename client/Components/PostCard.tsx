@@ -7,7 +7,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import ShareModal from "./ShareModal";
-import { IoArrowUpCircle, IoArrowDownCircle } from "react-icons/io5";
+// import {IoMdArrowUp} from "@react-icons/all-files/io/IoMdArrowUp";
+// import {IoMdArrowDown} from "@react-icons/all-files/io/IoMdArrowDown";
+import {IoArrowDownCircle} from '@react-icons/all-files/io5/IoArrowDownCircle';
+import {IoArrowUpCircle} from '@react-icons/all-files/io5/IoArrowUpCircle';
 
 dayjs.extend(relativeTime);
 
@@ -115,12 +118,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
       <Card>
         {post.comment ? (
           <Card.Body>
-            <Card.Text>
-              <div className="card-content">{post.comment}</div>
-              <div className="card-detail">
+            <Card.Text as="div">
+              <p className="card-content">{post.comment}</p>
+              <p className="card-detail">
                 {owner} posted
-                <div>
-                  {/* {' '} */}
+                <br />
+                <>
                   <OverlayTrigger
                     placement="top"
                     overlay={
@@ -135,9 +138,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                       {dayjs(post.createdAt.toString()).fromNow()}
                     </span>
                   </OverlayTrigger>
-                </div>
+                </>
                 {/* {dayjs(post.createdAt.toString()).fromNow()} */}
-              </div>
+              </p>
             </Card.Text>
             <ButtonGroup
               style={{
@@ -212,8 +215,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
         ) : (
           <Card.Body>
             <Card.Img variant="top" src={post.photoURL} />
-            <Card.Text>
-              <div className="card-content">{post.description}</div>
+            <Card.Text as='div'>
+              <p className="card-content">{post.description}</p>
               <div className="card-detail">
                 {owner} posted
                 <div>
@@ -301,7 +304,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                 <ShareModal
                   postId={post.id}
                   userId={userId}
-                  postType={"comment"}
+                  postType={"photo"}
                 />
               </div>
             </ButtonGroup>

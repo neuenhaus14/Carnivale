@@ -196,6 +196,7 @@ HomeRoutes.post("/:ownerId", async (req: Request, res: Response) => {
   }
 });
 
+
 // HomeRoutes.post('/create-post/:ownerId', async(req: Request, res: Response) => {
 //   const { ownerId } = req.params
 //   const {longitude, latitude, isFree, isToilet, isFood, isPersonal} = req.body.options
@@ -210,3 +211,4 @@ HomeRoutes.post("/:ownerId", async (req: Request, res: Response) => {
 // })
 
 export default HomeRoutes;
+

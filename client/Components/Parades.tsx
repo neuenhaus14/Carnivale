@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
-import dayjs from "dayjs";
-import EventCreateModal from "./EventCreateModal";
-import { Button, Container } from "react-bootstrap";
+import React, { useEffect, useState, useContext } from 'react';
+import axios from 'axios';
+import dayjs from 'dayjs';
+import EventCreateModal from './EventCreateModal';
+import { Card, Button, Container } from 'react-bootstrap';
+import { FaPlusCircle } from '@react-icons/all-files/fa/FaPlusCircle';
+import { FaRoute } from '@react-icons/all-files/fa/FaRoute';
 
-import { FaRoute, FaCirclePlus } from "react-icons/fa6";
-
-import { ThemeContext } from "./Context";
+import { ThemeContext } from './Context';
 
 interface ParadeInfo {
   title: string;
@@ -66,7 +66,6 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
     startTime: null,
     endTime: null,
   });
-  const [hideParadeSelector, setHideParadeSelector] = useState(false);
 
   const theme = useContext(ThemeContext);
   // need to get friends in order to know
@@ -74,10 +73,9 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   const getFriends = async () => {
     try {
       const friends = await axios.get(`/api/friends/getFriends/${userId}`);
-      // console.log('here', friends.data);
       setFriends(friends.data);
     } catch (err) {
-      console.error("CLIENT ERROR: failed to GET user friends", err);
+      console.error('CLIENT ERROR: failed to GET user friends', err);
     }
   };
 
@@ -86,21 +84,20 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
       const response = await axios.get<ParadeInfo>(
         `/api/parades/parade-info/${paradeName}`
       );
-      console.log("parade response", response.data);
       setParadeInfo(response.data);
     } catch (error) {
-      console.error("Error fetching parade information:", error.message);
+      console.error('Error fetching parade information:', error.message);
     }
   };
 
   const fetchParadeList = async () => {
     try {
       const response = await axios.get<{ parades: string[] }>(
-        "/api/parades/parade-list"
+        '/api/parades/parade-list'
       );
       setParadeList(response.data.parades);
     } catch (error) {
-      console.error("Error fetching parade list:", error.message);
+      console.error('Error fetching parade list:', error.message);
     }
   };
 
@@ -109,7 +106,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   ) => {
     const selectedParadeName = event.target.value;
     const formattedParadeName = encodeURIComponent(
-      selectedParadeName.replace(/\s+/g, "-").toLowerCase()
+      selectedParadeName.replace(/\s+/g, '-').toLowerCase()
     );
 
     try {
@@ -123,19 +120,17 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
 
       // Format the date to "YYYY-MM-DD"
       const formattedDate = dayjs(paradeResponse.data.startDate).format(
-        "YYYY-MM-DD"
+        'YYYY-MM-DD'
       );
-      console.log("date", formattedDate);
 
       // Fetch weather data for the selected date
       const weatherResponse = await axios.get(
         `/api/weather/forecast/${formattedDate}`
       );
-      console.log("weather", weatherResponse);
       setWeatherForecast(weatherResponse.data);
     } catch (error) {
       console.error(
-        "Error fetching parade or weather information:",
+        'Error fetching parade or weather information:',
         error.message
       );
     }
@@ -147,49 +142,53 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
     userId && getFriends();
   }, [userId]);
 
-  const handleModalClose = () => {
-    setHideParadeSelector(false);
-  };
-
   return (
-    <Container className={`body ${theme}`}>
-      <div className="card">
-        <label style={{ textAlign: "center" }} htmlFor="paradeSelect">
-          Select a Parade:{" "}
-        </label>
-        <div
+    <Container className={`body ${theme}`} style={{ paddingBottom: '170px' }}>
+      <div className='gig-body-calendar'>
+        <Card
+          className='comment-form'
           style={{
-            textAlign: "center",
-            marginTop: "10px",
-            position: "sticky",
-            top: "73px",
-            backgroundColor: "none",
-            zIndex: 2000,
+            position: 'fixed',
+            bottom: '11.4vh',
+            left: '0',
+            right: '0',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            zIndex: 1,
           }}
         >
-          {!hideParadeSelector && (
-            <>
-              <select
-                id="paradeSelect"
-                onChange={handleParadeChange}
-                value={selectedParade || ""}
-              >
-                <option value="" disabled>
-                  Select a parade
-                </option>
-                {paradeList.map((paradeName) => (
-                  <option key={paradeName} value={paradeName}>
-                    {paradeName}
-                  </option>
-                ))}
-              </select>
-            </>
-          )}
+          <label
+            htmlFor='paradeSelect'
+            style={{
+              display: selectedParade ? 'none' : 'block',
+              margin: 'auto',
+            }}
+          >
+            Select a Parade:
+          </label>
+          <select
+            id='paradeSelect'
+            onChange={handleParadeChange}
+            value={selectedParade || ''}
+            style={{ width: 'auto', height: '35px', margin: '20px' }}
+          >
+            <option
+              value=''
+              disabled
+              style={{ display: selectedParade ? 'none' : 'block' }}
+            >
+              Select a parade
+            </option>
 
-          {selectedParade && !hideParadeSelector && (
+            {paradeList.map((paradeName) => (
+              <option key={paradeName} value={paradeName}>
+                {paradeName}
+              </option>
+            ))}
+          </select>
+          {selectedParade && (
             <button
               onClick={async () => {
-                setHideParadeSelector(true);
                 await setIsNewEvent(true);
                 await setShowCreateModal(true);
                 await setSelectedEvent({
@@ -201,96 +200,80 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
                 });
               }}
               style={{
-                position: "fixed",
-                right: "8vw",
-                bottom: "13vh",
-                backgroundColor: "transparent",
-                border: "none",
-                outline: "none",
-                cursor: "pointer",
+                backgroundColor: 'transparent',
+                border: 'none',
+                outline: 'none',
+                cursor: 'pointer',
+                marginTop: '10px',
               }}
             >
-              <FaCirclePlus
+              <FaPlusCircle
                 style={{
-                  color: theme === 'pg-theme-vis'? '#291F1F' : "#cf40f5",
-                  width: "60px",
-                  height: "60px",
-                  border: "5px solid #E7ABFF",
-                  borderRadius: "50%",
+                  color: theme === 'pg-theme-vis' ? '#291F1F' : '#cf40f5',
+                  width: '60px',
+                  height: '60px',
+                  border: '5px solid #E7ABFF',
+                  borderRadius: '50%',
+                  alignContent: 'center',
                 }}
               />
             </button>
           )}
-        </div>
+        </Card>
 
         {paradeInfo && (
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
-            {/* <Button
-              onClick={async () => {
-                await setIsNewEvent(true);
-                await setShowCreateModal(true);
-                await setSelectedEvent({
-                  ...paradeInfo,
-                  latitude: 0,
-                  longitude: 0,
-                  endTime: null,
-                  startTime: null,
-                });
-              }}
-            >
-              Create Event
-            </Button> */}
+          <div style={{ textAlign: 'center', marginTop: '20px' }}>
             <h2>{paradeInfo.title}</h2>
 
             <div
               style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginBottom: "10px",
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: '10px',
               }}
             >
               {paradeInfo.imageParade ? (
                 <img
                   src={`https://www.mardigrasneworleans.com${paradeInfo.imageParade}`}
-                  alt="Parade Logo"
+                  alt='Parade Logo'
                   style={{
-                    height: "150px",
-                    width: "150px",
-                    marginRight: "10px",
+                    height: '150px',
+                    width: '150px',
+                    marginRight: '10px',
                   }}
                 />
               ) : (
                 <img
-                  src="img/jesterPin.png"
-                  alt="Default Parade Logo"
+                  src='img/jesterPin.png'
+                  alt='Default Parade Logo'
                   style={{
-                    height: "150px",
-                    width: "150px",
-                    marginRight: "10px",
+                    height: '150px',
+                    width: '150px',
+                    marginRight: '10px',
                   }}
                 />
               )}
-              <div style={{ textAlign: "left" }}>
+              <div style={{ textAlign: 'left' }}>
                 <h4>Start Time: </h4>
                 <p
                   style={{
-                    margin: "-2px",
-                    marginTop: "-10px",
-                    marginBottom: "5px",
+                    margin: '-2px',
+                    marginTop: '-10px',
+                    marginBottom: '5px',
                   }}
                 >
-                  {dayjs(paradeInfo.startDate).format("MMMM D YYYY, h:mm A")}
+                  {dayjs(paradeInfo.startDate).format('MMMM D YYYY, h:mm A')}
                 </p>
                 <h4>Parade Location:</h4>
                 <p
                   style={{
-                    margin: "-2px",
-                    marginTop: "-10px",
-                    marginBottom: "5px",
+                    margin: '-2px',
+                    marginTop: '-10px',
+                    marginBottom: '5px',
                   }}
                 >
-                  {" "}
+                  {' '}
                   {paradeInfo.location}
                 </p>
               </div>
@@ -298,25 +281,24 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
 
             <img
               src={`https://www.mardigrasneworleans.com${paradeInfo.imageSrc}`}
-              alt="Parade Map"
+              alt='Parade Map'
               style={{
-                maxWidth: "100%",
-                height: "auto",
-                marginTop: "10px",
-                display: "block",
-                marginLeft: "auto",
-                marginRight: "auto",
+                maxWidth: '100%',
+                height: 'auto',
+                marginTop: '10px',
+                display: 'block',
+                marginLeft: 'auto',
+                marginRight: 'auto',
               }}
             />
-
             {weatherForecast &&
             weatherForecast.forecast &&
             weatherForecast.forecast.forecastday.length > 0 ? (
               <div
                 style={{
-                  textAlign: "center",
-                  marginTop: "30px",
-                  marginBottom: "20px",
+                  textAlign: 'center',
+                  marginTop: '30px',
+                  marginBottom: '20px',
                 }}
               >
                 <h3>Weather Forecast</h3>
@@ -324,37 +306,37 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
                   (forecastDay: WeatherDay) => (
                     <div
                       key={forecastDay.date}
-                      style={{ textAlign: "center", marginBottom: "5px" }}
+                      style={{ textAlign: 'center', marginBottom: '5px' }}
                     >
                       <div
                         style={{
-                          margin: "3px 0",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
+                          margin: '3px 0',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
                         <img
                           src={`https:${forecastDay.day.condition.icon}`}
                           alt={`Weather Icon for ${forecastDay.date}`}
-                          style={{ marginRight: "5px" }}
+                          style={{ marginRight: '5px' }}
                         />
                         {forecastDay.day.condition.text}
                       </div>
                       <div
                         style={{
-                          margin: "1px 0",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
+                          margin: '1px 0',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
-                        <span style={{ marginRight: "5px" }}>
+                        <span style={{ marginRight: '5px' }}>
                           High: {forecastDay.day.maxtemp_f} °F
                         </span>
                         <span>Low: {forecastDay.day.mintemp_f} °F</span>
                       </div>
-                      <p style={{ margin: "1px 0", fontSize: "1rem" }}>
+                      <p style={{ margin: '1px 0', fontSize: '1rem' }}>
                         Chance of Rain: {forecastDay.day.daily_chance_of_rain}%
                       </p>
                     </div>
@@ -371,25 +353,25 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
             <h3>Parade History</h3>
             <p>
               {paradeInfo.paradeInfo
-                .replace(/(Year founded:)/g, ", $1")
-                .replace(/(Membership:)/g, ", $1")
-                .replace(/(Number of floats:)/g, ", $1")
-                .replace(/(Floats by Kern Studios »)/g, ", $1")}
+                .replace(/(Year founded:)/g, ', $1')
+                .replace(/(Membership:)/g, ', $1')
+                .replace(/(Number of floats:)/g, ', $1')
+                .replace(/(Floats by Kern Studios »)/g, ', $1')}
             </p>
             <h3>Parade Directions</h3>
             <p>{paradeInfo.directionsText}</p>
             <h3>
-              Other Parades on{" "}
-              {dayjs(paradeInfo.startDate).format("MMMM D YYYY")}
+              Other Parades on{' '}
+              {dayjs(paradeInfo.startDate).format('MMMM D YYYY')}
             </h3>
-            <div style={{ display: "flex", flexWrap: "wrap" }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
               {paradeInfo.otherParades
-                .split("\n")
+                .split('\n')
                 .filter(
                   (parade) =>
                     !parade.includes(
                       `Parades On ${dayjs(paradeInfo.startDate).format(
-                        "MMM D"
+                        'MMM D'
                       )}`
                     )
                 )
@@ -397,9 +379,9 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
                   <Button
                     key={parade}
                     onClick={() =>
-                      fetchParadeInfo(parade.replace(/\s+/g, "-").toLowerCase())
+                      fetchParadeInfo(parade.replace(/\s+/g, '-').toLowerCase())
                     }
-                    style={{ marginRight: "10px", marginBottom: "10px" }}
+                    style={{ marginRight: '10px', marginBottom: '10px' }}
                   >
                     {parade}
                   </Button>
@@ -410,13 +392,13 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
               <FaRoute />
               <a
                 href={paradeInfo.mapLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ marginLeft: "5px", marginRight: "5px" }}
+                target='_blank'
+                rel='noopener noreferrer'
+                style={{ marginLeft: '5px', marginRight: '5px' }}
               >
                 View Parade Route
               </a>
-              <FaRoute style={{ transform: "scaleX(-1)" }} />
+              <FaRoute style={{ transform: 'scaleX(-1)' }} />
             </p>
           </div>
         )}
@@ -424,12 +406,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
         <EventCreateModal
           selectedEvent={selectedEvent}
           setSelectedEvent={setSelectedEvent}
-          setShowCreateModal={(value: boolean) => {
-            setShowCreateModal(value);
-            if (!value) {
-              handleModalClose();
-            }
-          }}
+          setShowCreateModal={setShowCreateModal}
           showCreateModal={showCreateModal}
           friends={friends}
           userId={userId}
@@ -442,16 +419,16 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
           lat={lat}
           lng={lng}
           //getLocation={getLocation}
-          eventType={"parade"}
-          getEventsOwned={null} // not needed for parades
+          eventType={'parade'}
+          getEventsOwned={() => {}} // not needed for parades
         />
+        <footer className='footer'>
+          Parade info courtesy of{' '}
+          <a href='https://www.mardigrasneworleans.com/parades/'>
+            Mardi Gras New Orleans
+          </a>
+        </footer>
       </div>
-      <footer className="footer">
-        Parade info courtesy of{" "}
-        <a href="https://www.mardigrasneworleans.com/parades/">
-          Mardi Gras New Orleans
-        </a>
-      </footer>
     </Container>
   );
 };
