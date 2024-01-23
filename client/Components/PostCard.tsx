@@ -64,6 +64,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, even
       }
     } catch (err) {
       toast.warning("You've already upvoted this post!");
+    } finally {
+      getPosts(eventKey);
     }
   };
 
@@ -86,6 +88,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, even
       }
     } catch (err) {
       toast.warning("You've already downvoted this post!");
+    } finally {
+      getPosts(eventKey);
     }
   };
 
@@ -114,7 +118,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, even
       console.error("Error deleting post:", error);
       toast.error("Error deleting post. Please try again.");
     } finally {
-      console.log('finally');
       getPosts(eventKey);
     }
   };
@@ -196,6 +199,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId, getPosts, order, even
               </button>
               {isOwner && (
                 <button
+
                   style={{
                     border: "none",
                     cursor: "pointer",

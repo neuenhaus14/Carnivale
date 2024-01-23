@@ -223,7 +223,6 @@ const MapPage: React.FC<MapProps> = ({
         const { data } = await axios.get(
           `/api/pins/get-clicked-friend-marker/${coords[0]}/${coords[1]}`
         );
-        console.log('clicked friend ', data)
         setSelectedPin(data);
         setSelectedFriend(data);
         setShowFriendPopup(true);
