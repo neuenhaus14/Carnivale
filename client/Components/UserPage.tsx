@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useSearchParams } from 'react-router-dom';
+// import { useSearchParams } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
@@ -14,10 +14,17 @@ import {
   Dropdown,
   DropdownButton,
 } from 'react-bootstrap';
-import { MdCancel } from 'react-icons/md';
-import { IoPersonRemoveSharp } from 'react-icons/io5';
-import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
-import { FaEnvelope } from 'react-icons/fa';
+
+// import { MdCancel } from "react-icons/md";
+import { MdCancel } from '@react-icons/all-files/md/MdCancel';
+//import { IoPersonRemoveSharp } from "react-icons/io5/";
+import { IoPersonRemoveSharp } from '@react-icons/all-files/io5/IoPersonRemoveSharp';
+
+import { FaThumbsUp } from '@react-icons/all-files/fa/FaThumbsUp';
+
+import { FaThumbsDown } from '@react-icons/all-files/fa/FaThumbsDown';
+
+import { FaEnvelope } from '@react-icons/all-files/fa/FaEnvelope';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -27,27 +34,24 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { ThemeContext } from './Context';
 import { ToastContainer, toast } from 'react-toastify';
 //                              add userId as prop to get it from App
-const UserPage: React.FC<UserPageProps> = ({
-  userId,
-  lng,
-  lat,
-  setTheme,
-}) => {
-  // const [searchParams] = useSearchParams();
-  // const [userId] = useState(Number(searchParams.get('userid')) || 1);
+
+const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
+  //  const [searchParams] = useSearchParams();
+  //  const [userId] = useState(Number(searchParams.get('userid')) || 1);
+
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
   const [friendRequestsReceived, setFriendRequestsReceived] = useState([]);
   const [eventsParticipating, setEventsParticipating] = useState([
-    { name: 'event1' },
+    { name: 'default' },
   ]);
   const [eventsInvited, setEventsInvited] = useState([
     {
-      event: { name: 'event2' },
-      sender: 'Evan Perry',
+      event: { name: 'default' },
+      sender: 'default sender',
     },
   ]);
-  const [eventsOwned, setEventsOwned] = useState([{ name: 'event3' }]);
+  const [eventsOwned, setEventsOwned] = useState([{ name: 'default' }]);
 
   const [nameOrPhoneForFriendRequest, setNameOrPhoneForFriendRequest] =
     useState('');
@@ -67,6 +71,8 @@ const UserPage: React.FC<UserPageProps> = ({
   const [confirmActionText, setConfirmActionText] = useState('');
 
   const [isNewEvent, setIsNewEvent] = useState(false);
+
+  const [showGif, setShowGif] = useState(false);
 
   const theme = useContext(ThemeContext);
 
@@ -112,7 +118,7 @@ const UserPage: React.FC<UserPageProps> = ({
       const eventsInvited = await axios.get(
         `api/events/getEventsInvited/${userId}`
       );
-      console.log('eventsInvited', eventsInvited.data);
+
       setEventsInvited(eventsInvited.data);
     } catch (err) {
       console.error(
@@ -142,7 +148,7 @@ const UserPage: React.FC<UserPageProps> = ({
   // uE runs whenever a modal closes,
   // to refresh info
   useEffect(() => {
-    if (isNewEvent === false) {
+    if (isNewEvent === false && userId !== null) {
       getFriends();
       getEventsOwned();
       getEventsParticipating();
@@ -156,7 +162,7 @@ const UserPage: React.FC<UserPageProps> = ({
   if (friends.length > 0) {
     userFriendsItems = friends.map((friend: any, index: number) => {
       return (
-        <div className='d-flex' key={index}>
+        <div className='d-flex mb-1' key={index}>
           <div className='flex-grow-1  mx-5'>
             {friend.firstName} {`${friend.lastName.slice(0, 1)}.`}
           </div>
@@ -185,7 +191,7 @@ const UserPage: React.FC<UserPageProps> = ({
   if (friendRequestsMade.length > 0) {
     requestsMadeItems = friendRequestsMade.map((requestee, index: number) => {
       return (
-        <div className='d-flex' key={index}>
+        <div className='d-flex mb-1' key={index}>
           <div className='flex-grow-1  mx-5'>
             {requestee.firstName} {`${requestee.lastName.slice(0, 1)}.`}
           </div>
@@ -216,7 +222,7 @@ const UserPage: React.FC<UserPageProps> = ({
   if (friendRequestsReceived.length > 0) {
     requestsReceivedItems = friendRequestsReceived.map((requester, index) => {
       return (
-        <div className='d-flex' key={index}>
+        <div className='d-flex mb-1' key={index}>
           <div className='flex-grow-1  mx-5'>
             {requester.firstName} {`${requester.lastName.slice(0, 1)}.`}
           </div>
@@ -350,17 +356,8 @@ const UserPage: React.FC<UserPageProps> = ({
             <em> ended {now.to(dayjs(invitation.event.endTime))}</em>
           )}
 
-          {` from ${invitation.sender}`}
-
-          {/* {invitation.sender}: {invitation.event.name}
-          {now.isBetween(
-            invitation.event.startTime,
-            invitation.event.endTime
-          ) ? (
-            <em> happening now</em>
-          ) : (
-            <em> {now.to(dayjs(invitation.event.startTime))}</em>
-          )} */}
+          <br />
+          {`Invited by ${invitation.sender}`}
         </div>
       );
     });
@@ -368,7 +365,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
   // FUNCTIONS FOR DATA ITEMS
   // FRIENDS
-  async function requestFriend() {
+  const requestFriend = async () => {
     try {
       // checking for phoneNumber
       let phoneForFriendRequest = '';
@@ -406,19 +403,19 @@ const UserPage: React.FC<UserPageProps> = ({
     } catch (err) {
       console.error('CLIENT ERROR: failed to POST friend request', err);
     }
-  }
+  };
 
-  async function cancelFriendRequest(recipient_userId: number) {
+  const cancelFriendRequest = async (recipient_userId: number) => {
     const deleteResponse = await axios.delete(
       `/api/friends/cancelFriendRequest/${userId}-${recipient_userId}`
     );
     getFriendRequests();
-  }
+  };
 
-  async function answerFriendRequest(
+  const answerFriendRequest = async (
     requester_userId: number,
     isConfirmed: boolean
-  ) {
+  ) => {
     try {
       const updatedRelationship = await axios.patch(
         '/api/friends/answerFriendRequest',
@@ -445,23 +442,45 @@ const UserPage: React.FC<UserPageProps> = ({
         });
       }
     } catch (err) {
-      console.log('CLIENT ERROR: failed to answer friend request', err);
+      console.error('CLIENT ERROR: failed to answer friend request', err);
     }
-  }
+  };
 
-  async function unfriend(friendId: number) {
+  const unfriend = async (friendId: number) => {
     const deleteResponse = await axios.delete(
       `/api/friends/unfriend/${userId}-${friendId}`
     );
     getFriends();
-  }
+  };
 
-  function handleNameOrPhoneInput(e: any) {
+  const handleNameOrPhoneInput = (e: any) => {
     setNameOrPhoneForFriendRequest(e.target.value);
-  }
+  };
+  const handleDeepGrasMode = () => {
+    setTheme('pg-theme-deep');
+
+    setShowGif(true);
+
+    setTimeout(() => setShowGif(false), 5000);
+  };
 
   return (
     <Container className={`body ${theme}`}>
+      {showGif && (
+          <img
+            src='/img/mardi-gras.gif'
+            alt='Mardi Gras GIF'
+            style={{
+              width: '100%',
+              height: 'auto',
+              position: 'absolute',
+              top: '15%',
+              zIndex: '1',
+            }}
+          />
+        )}
+
+
       <ToastContainer
         position='top-right'
         autoClose={5000}
@@ -524,10 +543,10 @@ const UserPage: React.FC<UserPageProps> = ({
                 <div className='m-2'>{userFriendsItems}</div>
               ) : (
                 <>
-                  <div className='card-content text-center'>
+                  <div className='ep-card-content text-center'>
                     You're flying solo!
                   </div>
-                  <div className='card-detail text-center'>
+                  <div className='ep-card-detail text-center'>
                     Assemble your krewe by searching for friends below
                   </div>
                 </>
@@ -536,15 +555,16 @@ const UserPage: React.FC<UserPageProps> = ({
               <div className='d-flex flex-column align-items-center p-2'>
                 <input
                   style={{ width: '75vw' }}
-                  placeholder='###-###-#### || First Last'
+                  placeholder='Search by First & Last Name'
                   value={nameOrPhoneForFriendRequest}
                   onChange={handleNameOrPhoneInput}
                 ></input>
+
                 <div className='d-flex flew-row m-2'>
-                  <small className='mx-1'>Invite to Krewe</small>
+                  <div className='mx-1'>Invite to Krewe</div>
                   <Button
                     className='mx-1'
-                    style={{ width: '23px' }}
+                    // style={{ width: '23px' }}
                     size='sm'
                     variant='success'
                     onClick={requestFriend}
@@ -582,13 +602,13 @@ const UserPage: React.FC<UserPageProps> = ({
                   eventsInvited.length === 0 &&
                   eventsParticipating.length === 0 && (
                     <>
-                      <div className='card-content text-center mt-3'>
+                      <p className='ep-card-content text-center mt-3'>
                         Nothing going on in here!
-                      </div>
-                      <div className='card-detail text-center'>
+                      </p>
+                      <p className='ep-card-detail text-center'>
                         Make plans or connect with your Krewe to beef up your
                         calendar.
-                      </div>
+                      </p>
                     </>
                   )
               }
@@ -636,10 +656,20 @@ const UserPage: React.FC<UserPageProps> = ({
       {/* Buttons for logout, other events */}
 
       <Row>
-        <div
-          className='userPage-buttons-container'
-          style={{ position: 'absolute', bottom: '13vh' }}
-        >
+        {/* {showGif && (
+          <img
+            src='/img/mardi-gras.gif'
+            alt='Mardi Gras GIF'
+            style={{
+              width: '100%',
+              height: 'auto',
+              position: 'fixed',
+              top: '30%',
+              left: '25%',
+            }}
+          />
+        )} */}
+        <div className='userPage-buttons-container'>
           <Button
             variant='primary'
             onClick={async () => {
@@ -675,13 +705,20 @@ const UserPage: React.FC<UserPageProps> = ({
           </Button>
 
           <DropdownButton
-          title='Select Theme'
-          drop='up'
-          id='theme-dropup'
-          variant='secondary'>
-              <Dropdown.Item onClick={()=>setTheme("pg-theme-light")}>Regular Mode</Dropdown.Item>
-              <Dropdown.Item onClick={()=>setTheme("pg-theme-vis")}>Colorblind Mode</Dropdown.Item>
-              <Dropdown.Item onClick={()=>setTheme("pg-theme-deep")}>Deep Gras Mode</Dropdown.Item>
+            title='Select Theme'
+            drop='up'
+            id='theme-dropup'
+            variant='secondary'
+          >
+            <Dropdown.Item onClick={() => setTheme('pg-theme-light')}>
+              Regular Mode
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setTheme('pg-theme-vis')}>
+              Colorblind Mode
+            </Dropdown.Item>
+            <Dropdown.Item onClick={handleDeepGrasMode}>
+              Deep Gras Mode
+            </Dropdown.Item>
           </DropdownButton>
         </div>
       </Row>

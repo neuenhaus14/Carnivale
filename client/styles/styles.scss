@@ -1,19 +1,48 @@
-@import "~bootstrap/scss/bootstrap";
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@100;200;400;500;700&family=Inter:wght@600;700&family=Shrikhand&family=Permanent+Marker&display=swap');
+
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/reboot";
+@import "~bootstrap/scss/type";
+@import "~bootstrap/scss/images";
+@import "~bootstrap/scss/tables";
+@import "~bootstrap/scss/buttons";
+@import "~bootstrap/scss/transitions";
+@import "~bootstrap/scss/dropdown";
+@import "~bootstrap/scss/button-group";
+
+@import "~bootstrap/scss/nav";
+@import "~bootstrap/scss/navbar";
+@import "~bootstrap/scss/card";
+@import "~bootstrap/scss/breadcrumb";
+@import "~bootstrap/scss/pagination";
+@import "~bootstrap/scss/badge";
+@import "~bootstrap/scss/alert";
+@import "~bootstrap/scss/progress";
+
+@import "~bootstrap/scss/list-group";
+@import "~bootstrap/scss/close";
+@import "~bootstrap/scss/modal";
+@import "~bootstrap/scss/tooltip";
+@import "~bootstrap/scss/popover";
+@import "~bootstrap/scss/carousel";
 
 
 
-$isFree:#53CA3C;
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@100;200;400;500;700&family=Inter:wght@600;700&family=Shrikhand&family=Permanent+Marker&display=swap");
+
+
+
+$isFree: #53ca3c;
 $isToilet: #169873;
-$isFood: #FCC54E;
-$isPersonal: #BA37DD;
+$isFood: #fcc54e;
+$isPersonal: #ba37dd;
 $isPhoneCharger: #53e3d4;
-$isPoliceStation: #E7ABFF;
-$isEMTStation:#f27d52;
-
+$isPoliceStation: #e7abff;
+$isEMTStation: #f27d52;
 
 $greeny: #169874;
-$lightGreeny: #53CA3C;
+$lightGreeny: #53ca3c;
 $darkGreeny: #015d43;
 $pinky: #e7abff;
 $dark: #211234;
@@ -33,11 +62,17 @@ $tabUnselected: $cardBackground;
 $tabUnselectedBorder: #e3e3e3;
 
 //colorblind friendly hues
-$tan: #D2B48C;
-$turq: #30D5C8;
+$tan: #d2b48c;
+$turq: #30d5c8;
+
+$offBlack: #291F1F;
+$offGrey: #aeaeae;
+$cardBackground2: #fdf9f4;
+
+@import "bootstrap";
 
 .card {
-  padding: 10px;
+  padding: 15px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -49,16 +84,16 @@ $turq: #30D5C8;
   background-color: $cardBackground;
 }
 
-.card-body{
+.card-body {
   padding: 0px;
 }
 
-#map-direction-card{
+#map-direction-card {
   max-width: 7rem;
   max-height: 10rem;
   margin-left: 10px;
 
-  .card-body{
+  .card-body {
     padding-top: 1px;
     padding-right: 1px;
     padding-bottom: 1px;
@@ -78,21 +113,9 @@ $turq: #30D5C8;
   border: 1px solid $secondaryColor;
 }
 
-// span {
-//   font-size: medium;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   text-align: center;
-//   margin: 4px;
-//   padding-bottom: 1rem;
-//   color: $dark;
-// }
-
 .btn {
   border: none;
 }
-
 
 .btn-wide {
   width: 80vw;
@@ -101,8 +124,8 @@ $turq: #30D5C8;
   border: $secondaryColor solid 2px;
 }
 
-
-.btn-success { // keep this
+.btn-success {
+  // keep this
   background-color: $yeller !important;
   color: white;
 }
@@ -119,6 +142,11 @@ $turq: #30D5C8;
   padding: 3px 6px;
   font-size: x-small;
   font-weight: bold;
+}
+
+.userPage-tabs .btn-sm {
+  font-size:small !important;
+  padding: 3px 6px !important;
 }
 
 .bottom-nav-button {
@@ -153,37 +181,36 @@ $turq: #30D5C8;
   padding-bottom: 15vh;
   display: flex;
   flex-direction: column;
-
   background-color: $primaryColor;
-
   min-height: 100vh;
 }
 
 // USER PAGE
 
-#modal-header{
+#modal-header {
   background-color: $greeny;
 }
 
-#login{
+#login {
   background-color: $greeny;
   min-height: 100vh;
-  padding: 50px
+  padding: 50px;
 }
 
-#login-img{
-  display:block;
+#login-img {
+  display: block;
   margin: 0 auto;
   padding-bottom: 20px;
 }
 
 .modal-body {
-background-color: $primaryColor;}
+  background-color: $primaryColor;
+}
 
 .modal-title {
-  font-family: 'Permanent Marker', serif;
+  font-family: "Permanent Marker", serif;
 }
-#modal-footer{
+#modal-footer {
   background-color: $greeny;
 }
 
@@ -211,9 +238,9 @@ p {
   margin: 0px 6px 6px;
 }
 
-body{
+body {
   color: $dark;
-  font-family: 'Fredoka', sans-serif;
+  font-family: "Fredoka", sans-serif;
 }
 .gig-body {
   padding-top: 10vh;
@@ -225,16 +252,30 @@ body{
 
   min-height: 100vh;
 }
-.date-picker{
+.gig-body-calendar {
+  padding-bottom: 5vh;
   display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.date-picker-name {
+
   text-align: left;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 6px;
+}
+.date-picker {
+
+  text-align: center;
+  margin-left: auto;
+  margin-right: 10px;
+  margin-top: 6px;
 }
 
 // purple border for tab
 .nav-tabs {
-  border-bottom: 1px solid $tabSelectedBorder
+  border-bottom: 1px solid $tabSelectedBorder;
 }
 
 .nav-tabs .nav-item.show {
@@ -246,7 +287,7 @@ body{
   background-color: $tabSelected;
 }
 
-.userPage-tabs .tab-content .tab-pane{
+.userPage-tabs .tab-content .tab-pane {
   max-height: 55vh;
   overflow: scroll;
 }
@@ -255,21 +296,35 @@ body{
   height: 15vh;
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-evenly;
+  justify-content: space-between;
+  padding: 0px 30px;
+  position: absolute;
+  bottom: 13vh;
 }
 
-.userPage-buttons-container .btn{
+.userPage-buttons-container .btn {
   margin: auto;
 }
 
-.userPage-buttons-container .dropup{
+.userPage-buttons-container .dropup {
   margin: auto;
+}
 
+#share-modal-button {
+  background-color: $yeller;
+  margin: 0px 0px 0px 15px;
+  color: black !important;
+}
+
+#share-modal-dropdown {
+  background-color: $yeller;
+  margin: 0px 0px 0px 15px;
+  color: black !important;
 }
 
 .nav-tabs .nav-link {
   color: rgb(86, 86, 86);
-  font-family: 'Permanent Marker', serif;
+  font-family: "Permanent Marker", serif;
   background-color: $tabUnselected;
   border-top: 1px solid $tabUnselectedBorder;
   border-left: 1px solid $tabUnselectedBorder;
@@ -278,7 +333,7 @@ body{
 }
 
 .nav-tabs .nav-link.active {
-  font-family: 'Permanent Marker', serif;
+  font-family: "Permanent Marker", serif;
   background-color: $tabSelected;
   color: $dark;
   border-top: solid 1px $tabSelectedBorder;
@@ -288,12 +343,26 @@ body{
 }
 
 .card-detail {
-  font-size: smaller;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 100;
+  margin-top: -5px;
+  margin-left: 0px;
+}
+
+.card-content {
+  font-weight: 500;
+  line-height: normal;
+  margin-left: 0px;
+}
+
+.ep-card-detail {
+  font-size: 16px;
   font-style: italic;
   font-weight: 100;
 }
 
-.card-content {
+.ep-card-content {
   font-weight: 500;
 }
 //HOMEPAGE
@@ -331,13 +400,12 @@ body{
   margin: 3px auto;
 }
 
-
 .form-check-input:checked {
   background-color: $pinky;
   border-color: $ternaryColor;
 }
 
-.form-check.form-switch{
+.form-check.form-switch {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -345,9 +413,9 @@ body{
 }
 
 .form-check-input:focus {
-    border-color: #cc86fe;
-    outline: 0;
-    box-shadow: 0 0 0 0.25rem rgba(149, 13, 253, 0.25);
+  border-color: #cc86fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(149, 13, 253, 0.25);
 }
 
 .footer {
@@ -355,34 +423,143 @@ body{
 }
 
 
+.loader{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  position: relative;
+  margin-top: 100px;
+  text-align: center;
+  font-size: 3em;
+  flex-direction: column;
+
+  // width: 100%;
+  // height: auto;
+}
+
+
 //regular mode
-.pg-theme-light{
+.pg-theme-light {
   .btn-primary {
     background-color: $yeller !important;
     color: $dark;
   }
+
+  .top-nav {
+    justify-content: space-evenly;
+    background-color: $greeny;
+    height: 8vh;
+    color: white;
+    font-size: 1em;
+    font-weight: 200;
+  }
 }
+
+
 //colorblind mode
 .pg-theme-vis {
   .btn-primary {
-    background-color: black !important;
+    background-color: $offBlack !important;
     color: white;
     text-transform: uppercase;
   }
-  .btn-danger{
-    background-color: black !important;
+
+  .btn-success {
+    background-color: $offBlack !important;
+    color: white;
     text-transform: uppercase;
   }
-  .mx-11 {
-    background-color: black !important;
+
+
+  .btn-danger{
+    background-color: $offBlack !important;
+    color: white;
+    text-transform: uppercase;
   }
 
-  text-transform: uppercase;
+  .dropdown-toggle{
+    background-color: $offBlack !important;
+    color: white;
+
+    text-transform: uppercase;
+  }
+
+  h5 {
+    color: $offBlack;
+    text-transform: uppercase;
+  }
+
+  .top-nav {
+    background-color: $offBlack !important;
+  }
+
+  .card {
+    background-color: $cardBackground2 !important;
+  }
+
+  * {
+    border-color: $offBlack !important;
+  }
+
+  .bottom-nav {
+    border-top-color: $offBlack !important;
+  }
+
+  .nav-tabs .nav-link {
+    background-color: $tabSelected ;
+    color: gray;
+  }
+
+
+  .nav-tabs .nav-link.active {
+    background-color:$tabSelected;
+    color: $offBlack;
+    border-bottom: solid 1px $tabSelected !important;
+  }
+
+  #modal-header {
+    color: white !important;
+    opacity: 1;
+    background-color: $offBlack !important;
+  }
+  #modal-footer {
+    color: white !important;
+    background-color: $offBlack !important;
+  }
+
+  .btn-close {
+    background-color: white !important;
+  }
+  .form-check-label {
+    color: black !important;
+  }
+
 }
 
 .pg-theme-deep {
   .btn-primary {
     background-color: $pinky !important;
     color: $dark;
+    animation: funEffects 2s linear infinite, jiggle 0.3s ease-in-out infinite;
+    transform-origin: center;
+    z-index: 1;
+  }
+
+  @keyframes funEffects {
+    0%,
+    100% {
+      transform: translateY(0) rotate(0deg) translateX(0) scale(1);
+    }
+    25% {
+      transform: translateY(-5px) rotate(90deg) translateX(-5px) scale(1.1);
+    }
+    50% {
+      transform: translateY(0) rotate(180deg) translateX(0) scale(1);
+    }
+    75% {
+      transform: translateY(-5px) rotate(270deg) translateX(-5px) scale(1.1);
+    }
   }
 }
+

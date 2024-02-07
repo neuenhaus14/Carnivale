@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Map,
   Marker,

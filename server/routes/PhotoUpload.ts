@@ -1,4 +1,3 @@
-import  { v2 as cloudinary }  from "cloudinary" //grabbing reference to an already configured cloudinary object
 import handleUpload from "../utils/cloudinary_helpers"
 import express, { Request, Response, Router } from "express";
 import multer from 'multer';
@@ -7,12 +6,10 @@ import { Pin } from '../db'
 
 //Multer provides us with two storage options: disk and memory storage. In the below snippet, we start by selecting the storage option we want for our Multer instance. We choose the memory storage option because we do not want to store parsed files on our server; instead, we want them temporarily stored on the RAM so that we can quickly upload them to Cloudinary.
 const storage = multer.memoryStorage();
-//console.log('storage', storage)
 const upload = multer({  storage: storage,
   limits: {
     fileSize: 10000000 // 10000000 Bytes = 10 MB
   }});
-//console.log('upload', upload)
 const myUploadMiddleware = upload.single("sample_file");
 const ImageRouter = express.Router()
 let photoURL : string;
@@ -37,7 +34,6 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
     const b64 = Buffer.from(req.file.buffer).toString("base64");
     const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
     const cldRes = await handleUpload(dataURI);
-    //console.log('backend', cldRes)
     const url = cldRes.secure_url
     photoURL = url
     //after posting to cloudinary, we take the cloudResponse (cldRes) and access the secure_url data to our database
@@ -48,7 +44,7 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
     })
     res.json(cldRes);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.send({
       message: error.message,
     });
@@ -100,35 +96,7 @@ ImageRouter.post('/upload', async (req: Request, res: Response) => {
 /////////////////////////
 // Uploads an image file
 /////////////////////////
-const uploadImage = async (imagePath: string) => {
 
-  // Use the uploaded file's name as the asset's public ID and
-  // allow overwriting the asset with new versions
-  const options = {
-    use_filename: true,
-    unique_filename: false,
-    chunk_size: 6000000,
-    overwrite: true,
-    folder : "Carnivale"
-  };
-
-  try {
-    // Upload the image
-    const result = await cloudinary.uploader.upload_large(imagePath,
-       options);
-    //console.log(result);
-    return result.public_id;
-  } catch (error) {
-    console.error('upload image', error);
-  }
-};
-
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
 
 export default ImageRouter;
 

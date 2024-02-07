@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap';
-import { FaShareFromSquare  } from "react-icons/fa6";
+import { FaShareSquare  } from "@react-icons/all-files/fa/FaShareSquare";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -63,7 +63,7 @@ const ShareModal = (props: {
   return (
     <div className={theme}>
       <Button onClick={handleShow} style={{ marginLeft: '150px'}}>
-        <FaShareFromSquare  />
+        <FaShareSquare  />
       </Button>
 
       <Modal show={show} onHide={handleClose}>
@@ -72,7 +72,7 @@ const ShareModal = (props: {
         </Modal.Header>
 
         <Form>
-          <DropdownButton title={friendName || "Krewe"}>
+          <DropdownButton id="share-modal-dropdown" title={friendName || "Krewe"}>
             {friends.map((friend, index) => {
               const name = `${friend.firstName} ${friend.lastName}`;
               return (
@@ -92,6 +92,7 @@ const ShareModal = (props: {
 
         <Modal.Footer>
           <Button
+            id="share-modal-button"
             variant="primary"
             onClick={() => sharePost(postType)}
             disabled={!shareId}

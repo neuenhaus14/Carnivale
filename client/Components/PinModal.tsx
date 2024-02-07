@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react'
+import React, {useState, useContext} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import axios from 'axios'
 import Photos from './Photos'
@@ -142,7 +142,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
       )
     :
     (
-      <Modal show={isShow} onHide={initModal}>
+      <Modal className={theme} show={isShow} onHide={initModal}>
         <Modal.Header id="modal-header" closeButton onClick={initModal}>
           <Modal.Title>Create a Pin</Modal.Title>
         </Modal.Header>
@@ -156,7 +156,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
                 onClick={() => {resetBooleanState(); setIsFree(!isFree)} }
               />
               <Form.Check type="radio" id="toilet" name="pin-cat"
-                label="Toilet" value="isToilet" inline isValid
+                label="Pay Toilet" value="isToilet" inline isValid
                 onClick={() => {resetBooleanState(); setIsToilet(!isToilet)} }
               />
               <Form.Check type="radio" id="food" name="pin-cat"
@@ -168,7 +168,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
                 onClick={() => {resetBooleanState(); setIsPersonal(!isPersonal)} }
               />
               <Form.Check type="radio" id="PhoneCharger" name="pin-cat"
-                label="Charging Station" value="PhoneCharger" inline isValid
+                label="Phone Charger" value="PhoneCharger" inline isValid
                 onClick={() => {resetBooleanState(); setIsPhoneCharger(!isPhoneCharger)} }
               />
               <Form.Check type="radio" id="PoliceStation" name="pin-cat"

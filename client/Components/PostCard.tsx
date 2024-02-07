@@ -7,7 +7,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import ShareModal from "./ShareModal";
-import { IoArrowUpCircle, IoArrowDownCircle } from "react-icons/io5";
+// import {IoMdArrowUp} from "@react-icons/all-files/io/IoMdArrowUp";
+// import {IoMdArrowDown} from "@react-icons/all-files/io/IoMdArrowDown";
+import { IoArrowDownCircle } from "@react-icons/all-files/io5/IoArrowDownCircle";
+import { IoArrowUpCircle } from "@react-icons/all-files/io5/IoArrowUpCircle";
 
 dayjs.extend(relativeTime);
 
@@ -24,18 +27,29 @@ interface Post {
 interface PostCardProps {
   post: Post;
   userId: number;
+  getPosts: any;
+  order: string;
+  eventKey: string;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
+const PostCard: React.FC<PostCardProps> = ({
+  post,
+  userId,
+  getPosts,
+  order,
+  eventKey,
+}) => {
   const [owner, setOwner] = useState("");
   const [commentVotingStatus, setCommentVotingStatus] = useState<
     "upvoted" | "downvoted" | "none"
   >("none");
+  const [isOwner, setIsOwner] = useState(false);
 
   const getOwner = async () => {
     try {
       const { data } = await axios.get(`api/home/post/${post.ownerId}`);
       setOwner(data.firstName + " " + data.lastName);
+      setIsOwner(data.id === userId);
     } catch (err) {
       console.error(err);
     }
@@ -53,19 +67,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
 
       if (commentVotingStatus !== "upvoted") {
         setCommentVotingStatus("upvoted");
-        // toast("🎭Upvoted successfully!🎭", {
-        //   position: "top-right",
-        //   autoClose: 5000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        //   theme: "light",
-        // });
       }
     } catch (err) {
       toast.warning("You've already upvoted this post!");
+    } finally {
+      getPosts(eventKey);
     }
   };
 
@@ -81,16 +87,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
 
       if (commentVotingStatus !== "downvoted") {
         setCommentVotingStatus("downvoted");
-        // toast.error("Downvoted!", {
-        //   position: "top-right",
-        //   autoClose: 5000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        //   theme: "light",
-        // });
 
         if (post.upvotes - 1 <= -5) {
           toast.error("Post deleted due to too many downvotes!");
@@ -98,6 +94,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
       }
     } catch (err) {
       toast.warning("You've already downvoted this post!");
+    } finally {
+      getPosts(eventKey);
     }
   };
 
@@ -105,17 +103,41 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
     getOwner();
   }, []);
 
+  const handleDeletePost = async (type: string) => {
+    try {
+      if (isOwner) {
+        await axios.delete(
+          `/api/home/${
+            type === "comment"
+              ? `delete-comment/${post.id}`
+              : `delete-photo/${post.id}`
+          }`,
+          { data: { userId } }
+        );
+
+        toast.success("Post deleted successfully!");
+      } else {
+        toast.error("You are not the owner of this post. Delete not allowed.");
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast.error("Error deleting post. Please try again.");
+    } finally {
+      getPosts(eventKey);
+    }
+  };
+
   return (
     <>
       <Card>
         {post.comment ? (
           <Card.Body>
-            <Card.Text>
-              <div className="card-content">{post.comment}</div>
-              <div className="card-detail">
+            <Card.Text as="div">
+              <p className="card-content">{post.comment}</p>
+              <p className="card-detail">
                 {owner} posted
-                <div>
-                  {/* {' '} */}
+                <br />
+                <>
                   <OverlayTrigger
                     placement="top"
                     overlay={
@@ -130,15 +152,16 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                       {dayjs(post.createdAt.toString()).fromNow()}
                     </span>
                   </OverlayTrigger>
-                </div>
+                </>
                 {/* {dayjs(post.createdAt.toString()).fromNow()} */}
-              </div>
+              </p>
             </Card.Text>
             <ButtonGroup
               style={{
                 display: "flex",
                 alignItems: "center",
                 marginLeft: "-6px",
+                position: "relative",
               }}
             >
               <button
@@ -180,7 +203,30 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                   }}
                 />
               </button>
-              <div style={{ marginLeft: "auto" }}>
+              {isOwner && (
+                <button
+                  style={{
+                    border: "none",
+                    cursor: "pointer",
+                    outline: "none",
+                    boxShadow: "none",
+                    background: "transparent",
+                    color: "red",
+                  }}
+                  onClick={() =>
+                    handleDeletePost(post.comment ? "comment" : "photo")
+                  }
+                >
+                  Delete
+                </button>
+              )}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "0",
+                  right: "0",
+                }}
+              >
                 <ShareModal
                   postId={post.id}
                   userId={userId}
@@ -192,8 +238,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
         ) : (
           <Card.Body>
             <Card.Img variant="top" src={post.photoURL} />
-            <Card.Text>
-              <div className="card-content">{post.description}</div>
+            <Card.Text as="div">
+              <p className="card-content">{post.description}</p>
               <div className="card-detail">
                 {owner} posted
                 <div>
@@ -221,6 +267,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                 display: "flex",
                 alignItems: "center",
                 marginLeft: "-6px",
+                position: "relative",
               }}
             >
               <button
@@ -262,7 +309,30 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
                   }}
                 />
               </button>
-              <div style={{ marginLeft: "auto" }}>
+              {isOwner && (
+                <button
+                  style={{
+                    border: "none",
+                    cursor: "pointer",
+                    outline: "none",
+                    boxShadow: "none",
+                    background: "transparent",
+                    color: "red",
+                  }}
+                  onClick={() =>
+                    handleDeletePost(post.comment ? "comment" : "photo")
+                  }
+                >
+                  Delete
+                </button>
+              )}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "0",
+                  right: "0",
+                }}
+              >
                 <ShareModal
                   postId={post.id}
                   userId={userId}
@@ -282,9 +352,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, userId }) => {
         newestOnTop={false}
         closeOnClick
         rtl={false}
-        pauseOnFocusLoss
+        pauseOnFocusLoss={false}
         draggable
-        pauseOnHover
+        pauseOnHover={false}
         theme="light"
       />
     </>

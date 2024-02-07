@@ -212,7 +212,7 @@ const Photo = db.define(
     longitude: DataTypes.DECIMAL,
     latitude: DataTypes.DECIMAL,
     description: DataTypes.STRING,
-    photoURL: DataTypes.STRING,
+    photoURL: DataTypes.STRING(1000),
     isCostume: DataTypes.BOOLEAN,
     isThrow: DataTypes.BOOLEAN,
     isPin: DataTypes.BOOLEAN,

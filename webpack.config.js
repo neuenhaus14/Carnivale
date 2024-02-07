@@ -1,15 +1,26 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-//import HtmlWebpackPlugin from 'html-webpack-plugin';
+// import HtmlWebpackPlugin from 'html-webpack-plugin';
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 const webpack = require('webpack');
+// import { webpack } from 'webpack';
+
 const WebpackBar = require('webpackbar');
-//import WebpackBar from 'webpackbar'
+// import WebpackBar from 'webpackbar'
+
 const path = require('path');
-//import path from 'path'
+// import path from 'path'
+
 //import { fileURLToPath } from 'url';
+
 const Dotenv = require('dotenv-webpack');
 //import Dotenv from 'dotenv-webpack'
+
 const autoprefixer = require('autoprefixer');
 //import autoprefixer from 'autoprefixer'
+
+//import 'dotenv/config'
+
 require("dotenv").config()
 const {NODE_ENV = "production"} = process.env
 const isDev = NODE_ENV.includes("dev")
@@ -30,8 +41,8 @@ module.exports = {
     path: DIST_DIR,
     filename: '[name].bundle.js',
   },
-  mode: isDev ? "development" : "production", 
-  devtool: isDev ? "inline-source-map" : "source-map",  
+  mode: isDev ? "development" : "production",
+  devtool: isDev ? "inline-source-map" : "source-map",
 
   plugins: [
     // Creates a loading bar
@@ -43,7 +54,8 @@ module.exports = {
       template: path.resolve(SRC_DIR, 'index.html'),
     }),
 
-    new Dotenv()
+    new Dotenv(),
+    new BundleAnalyzerPlugin()
   ],
 
   module: {
@@ -57,7 +69,7 @@ module.exports = {
         type: 'asset/resource',
       },
       { //for typescript
-        test: /\.tsx?$/, //match the least number of files it needs to 
+        test: /\.tsx?$/, //match the least number of files it needs to
         use: 'ts-loader',
         exclude: /node_modules/,
       },

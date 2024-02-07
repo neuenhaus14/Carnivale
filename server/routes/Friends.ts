@@ -17,7 +17,7 @@ interface RelationshipModel extends Model {
 
 // Checks friends join table
 // and returns all User records where
-// id is either request or recipient 
+// id is either request or recipient
 // AND isConfirmed is true.
 // This route exists so only friend info
 // can go to map, rather than all relationships
@@ -77,7 +77,7 @@ Friends.get('/getFriendRequests/:id', async (req: Request, res: Response) => {
       return request.recipient_userId
     })
 
-    // if requestsMadeId's turns out 
+    // if requestsMadeId's turns out
     // empty, then it will return all users,
     // so we need to contain this is logic to check
     // that we have some Id's to lookup users with
@@ -103,9 +103,7 @@ Friends.get('/getFriendRequests/:id', async (req: Request, res: Response) => {
       return request.requester_userId
     })
 
-    // console.log('HEHERHERHEHRE', requestsMadeIds, requestsReceivedIds)
-
-    // set the user objects array as undefined, and 
+    // set the user objects array as undefined, and
     // only assign if there are user objects to retrieve
     let requestsReceivedUsers;
     if (requestsReceivedIds.length > 0) {
@@ -118,7 +116,6 @@ Friends.get('/getFriendRequests/:id', async (req: Request, res: Response) => {
       });
     }
 
-    // console.log('here', requestsMadeUsers, requestsReceivedUsers)
     // if requests are still undefined (ie, don't pass the conditional
     // length check), then we'll return an empty array
     const response = {
@@ -142,7 +139,7 @@ Friends.post('/requestFriend', async (req: Request, res: Response) => {
   const { requester_userId, recipient_phoneNumber, recipient_name } = req.body.friendRequest
 
   try {
-    
+
     let userWithNameOrPhone: any;
     if (recipient_name.length > 0){
       const [ firstName, lastName ] = recipient_name.split(' ');
@@ -150,9 +147,6 @@ Friends.post('/requestFriend', async (req: Request, res: Response) => {
     } else if (recipient_phoneNumber.length > 0){
       userWithNameOrPhone = await User.findOne({ where: { phone: recipient_phoneNumber }})
     }
-
-
-    console.log('uWPN', userWithNameOrPhone);
     if (userWithNameOrPhone === null) {
       res.status(404).send('No user with that phone number')
     } else {
@@ -165,8 +159,8 @@ Friends.post('/requestFriend', async (req: Request, res: Response) => {
   }
 })
 
-// accept or reject a friend request, will update relationship 
-// eventually add some kind of thing that disallows 
+// accept or reject a friend request, will update relationship
+// eventually add some kind of thing that disallows
 Friends.patch('/answerFriendRequest', async (req: Request, res: Response) => {
 
   const { requester_userId, recipient_userId, isConfirmed } = req.body.answer;
@@ -243,10 +237,9 @@ Friends.delete('/unfriend/:userId-:friendId', async (req, res) => {
 Friends.patch('/updateShareLoc', async (req: Request, res: Response) => {
 
   const { userId, shareLoc } = req.body.options;
-  
+
   try {
     await User.update({ shareLoc }, {where: {id: userId} })
-    // console.log(`user shareLoc Updated to ${shareLoc}`)
     res.sendStatus(200)
   } catch (err) {
     console.error('SERVER ERROR: could not PATCH friend sharing Loc', err);
@@ -258,7 +251,7 @@ Friends.patch('/updateShareLoc', async (req: Request, res: Response) => {
 Friends.get('/updateShareLoc/:userId', async (req: Request, res: Response) => {
 
   const { userId } = req.params;
-  
+
   try {
     const isUserSharingLoc = await User.findOne({where: {id: userId} })
     res.status(200).send(isUserSharingLoc.dataValues.shareLoc)
