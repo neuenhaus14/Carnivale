@@ -47,8 +47,10 @@ const App = () => {
   const getUser = async () => {
     try {
       const { data } = await axios.post(`api/home/user/`, { user });
+
       console.log("userId", data[0].id);
       setUserData(1);
+
       setUserId(1);
     } catch (err) {
       console.error(err);
@@ -138,12 +140,36 @@ const App = () => {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
-        <Route path="/" element={<Login />} />
-        <Route element={<ProtectedRoute />}>
-          <Route
-            path="/homepage"
-            element={
-              <div>
+
+        <Route
+          path='/'
+          element={<Login />}
+        />
+        {/* <Route element={<ProtectedRoute />}> */}
+        <Route
+          path='/homepage'
+          element={
+            <div>
+              <TopNavBar
+                title={user ? `Welcome, ${user.given_name}!` : 'Welcome, Bob!'}
+                currWeather={currWeather}
+                currTemp={currTemp}
+              />
+              <HomePage
+                userId={userId}
+                lat={lat}
+                lng={lng}
+              />{' '}
+              <NavBar />
+            </div>
+          }
+        />
+        <Route
+          path='/mappage'
+          element={
+            <div>
+              <Link to='/homepage'>
+
                 <TopNavBar
                   title={user ? `Welcome, ${user.given_name}!` : ""}
                   currWeather={currWeather}
@@ -241,7 +267,7 @@ const App = () => {
             }
           />
         </Route>
-      </Route>
+      // </Route>
     )
   );
 
