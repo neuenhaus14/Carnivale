@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from "react";
 import {
   Card,
   Form,
@@ -6,17 +6,17 @@ import {
   Container,
   Row,
   Tab,
-  Tabs
-} from 'react-bootstrap';
-import { FaCommentDots } from '@react-icons/all-files/fa/FaCommentDots';
+  Tabs,
+  Modal,
+} from "react-bootstrap";
+import { FaCommentDots } from "@react-icons/all-files/fa/FaCommentDots";
 
-import { FaCamera } from '@react-icons/all-files/fa/FaCamera';
+import { FaCamera } from "@react-icons/all-files/fa/FaCamera";
 
-
-import axios from 'axios';
-import HomeModal from './HomeModal';
-import PostCard from './PostCard';
-import { ThemeContext } from './Context';
+import axios from "axios";
+import HomeModal from "./HomeModal";
+import PostCard from "./PostCard";
+import { ThemeContext } from "./Context";
 
 //PARENT OF HOMEMODAL
 
@@ -27,12 +27,18 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
   const [posts, setPosts] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [key, setKey] = useState('posts');
-  const [order, setOrder] = useState('upvotes');
+  const [key, setKey] = useState("posts");
+  const [order, setOrder] = useState("upvotes");
   const theme = useContext(ThemeContext);
+
+  const [showAboutModal, setShowAboutModal] = useState(true);
+
+  const toggleAboutModal = () => {
+    setShowAboutModal(!showAboutModal);
+  };
 
   const modalTrigger = () => {
     setShowModal(true);
@@ -44,13 +50,13 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
 
   function handleKeyDown(e: any) {
     //if key is enter, prevent default
-    if (e.key === 'Enter' && comment.length > 0) {
-      //if comment is valid, submit comment
-      e.preventDefault();
-      handleSubmit();
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-    }
+    // if (e.key === "Enter" && comment.length > 0) {
+    //   //if comment is valid, submit comment
+    //   e.preventDefault();
+    //   handleSubmit();
+    // } else if (e.key === "Enter") {
+    //   e.preventDefault();
+    // }
   }
 
   //when tab is changed, set tab key and getPost for that tab
@@ -62,7 +68,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   const handleSubmit = async () => {
     try {
       await axios.post(`/api/home/${userId}`, { comment });
-      setComment('');
+      setComment("");
     } catch (err) {
       console.error(err);
     } finally {
@@ -73,7 +79,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   const getPosts = async (e: string) => {
     try {
       const { data } = await axios.get(`/api/home/${e}`);
-      if (order === 'upvotes') {
+      if (order === "upvotes") {
         setPosts(
           data.sort(
             (a: any, b: any) =>
@@ -106,114 +112,111 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
 
   return (
     <Container className={`body-home ${theme}`}>
+      <Modal show={showAboutModal} onHide={toggleAboutModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>About</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Info</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={toggleAboutModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Row>
         <div
-          key={'inline-radio'}
+          key={"inline-radio"}
           style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingBottom: '5px'
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            paddingBottom: "5px",
           }}
         >
           Sort by:
           <Form.Check
-          style={{marginLeft: '20px'}}
-            type='radio'
-            name='Sort'
-            label='Newest'
+            style={{ marginLeft: "20px" }}
+            type="radio"
+            name="Sort"
+            label="Newest"
             inline
-            onClick={() => setOrder('createdAt')}
+            onClick={() => setOrder("createdAt")}
           />
-
           <Form.Check
-            type='radio'
-            name='Sort'
-            label='Upvotes'
+            type="radio"
+            name="Sort"
+            label="Upvotes"
             inline
-            onClick={() => setOrder('upvotes')}
+            onClick={() => setOrder("upvotes")}
           />
         </div>
       </Row>
 
       <Row>
-        <Tabs
-          activeKey={key}
-          onSelect={handleSelect}
-        >
-          <Tab
-            eventKey='posts'
-            title='Gossip'
-          >
+        <Tabs activeKey={key} onSelect={handleSelect}>
+          <Tab eventKey="posts" title="Gossip">
             {posts
               ? posts.map((item: any, index: number) => (
                   <PostCard
                     key={`${item.id} + ${index}`}
                     post={item}
                     userId={userId}
-                    getPosts = {getPosts}
-                    order = {order}
-                    eventKey = {'posts'}
+                    getPosts={getPosts}
+                    order={order}
+                    eventKey={"posts"}
                   />
                 ))
-              : ''}
+              : ""}
           </Tab>
-          <Tab
-            eventKey='costumes'
-            title='Costumes'
-          >
+          <Tab eventKey="costumes" title="Costumes">
             {posts
               ? posts.map((item: any, index: number) => (
                   <PostCard
                     key={`${item.id} + ${index}`}
                     post={item}
                     userId={userId}
-                    getPosts = {getPosts}
-                    order = {order}
-                    eventKey={'costumes'}
+                    getPosts={getPosts}
+                    order={order}
+                    eventKey={"costumes"}
                   />
                 ))
-              : ''}
+              : ""}
           </Tab>
-          <Tab
-            eventKey='throws'
-            title='Throws'
-          >
+          <Tab eventKey="throws" title="Throws">
             {posts
               ? posts.map((item: any, index: number) => (
                   <PostCard
                     key={`${item.id} + ${index}`}
                     post={item}
                     userId={userId}
-                    getPosts = {getPosts}
-                    order = {order}
-                    eventKey= {'throws'}
+                    getPosts={getPosts}
+                    order={order}
+                    eventKey={"throws"}
                   />
                 ))
-              : ''}
+              : ""}
           </Tab>
         </Tabs>
       </Row>
-      {key === 'posts' ? (
+      {key === "posts" ? (
         <Row>
           <Card
-            className='comment-form'
-            style={{ position: 'fixed', bottom: '11.4vh' }}
+            className="comment-form"
+            style={{ position: "fixed", bottom: "11.4vh" }}
           >
-            <Form style={{ width: '100%' }}>
+            <Form style={{ width: "100%" }}>
               <Form.Group>
                 <Form.Control
-                  placeholder='leave a comment...'
+                  placeholder="leave a comment..."
                   onChange={handleInput}
                   value={comment}
                   onKeyDown={(e) => {
                     handleKeyDown(e);
                   }}
                 />
-                <Button
-                  onClick={modalTrigger}
-                  className='photo-btn'
-                >
+                <Button onClick={modalTrigger} className="photo-btn">
                   <FaCamera />
                 </Button>
                 {showModal ? (
@@ -225,10 +228,11 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                   />
                 ) : null}
                 <Button
-                  variant='primary'
+                  variant="primary"
                   onClick={handleSubmit}
-                  disabled={comment.length <= 0}
-                  className='comment-btn'
+                  //disabled={comment.length <= 0}
+                  disabled={true}
+                  className="comment-btn"
                 >
                   <FaCommentDots />
                 </Button>
@@ -237,7 +241,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
           </Card>
         </Row>
       ) : (
-        ''
+        ""
       )}
     </Container>
   );

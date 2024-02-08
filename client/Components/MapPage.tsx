@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, { useEffect, useRef, useState, useContext } from "react";
 import {
   Map,
   Marker,
@@ -8,18 +8,18 @@ import {
   Source,
   Layer,
   Popup,
-} from 'react-map-gl';
-import { Container, Form } from 'react-bootstrap';
-import { useSearchParams } from 'react-router-dom';
-import { FaWalking } from '@react-icons/all-files/fa/FaWalking';
-import { FaPlusCircle } from '@react-icons/all-files/fa/FaPlusCircle';
-import axios from 'axios';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import PinModal from './PinModal';
-import { ThemeContext } from './Context';
+} from "react-map-gl";
+import { Container, Form, Card, Button, Modal } from "react-bootstrap";
+import { useSearchParams } from "react-router-dom";
+import { FaWalking } from "@react-icons/all-files/fa/FaWalking";
+import { FaPlusCircle } from "@react-icons/all-files/fa/FaPlusCircle";
+import axios from "axios";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import PinModal from "./PinModal";
+import { ThemeContext } from "./Context";
 
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 const socket = io();
 
 interface MapProps {
@@ -48,7 +48,7 @@ const MapPage: React.FC<MapProps> = ({
   const [markers, setMarkers] = useState([]);
   const [filteredMarkers, setFilteredMarkers] = useState([]);
   const [filterOn, setFilterOn] = useState<boolean>(false);
-  const [filterChoice, setFilterChoice] = useState<string>('');
+  const [filterChoice, setFilterChoice] = useState<string>("");
   const [userLocation, setUserLocation] = useState<[number, number]>([
     userLng,
     userLat,
@@ -78,14 +78,20 @@ const MapPage: React.FC<MapProps> = ({
     zoom: 16,
   });
 
+  const [showAboutModal, setShowAboutModal] = useState(true);
+
+  const toggleAboutModal = () => {
+    setShowAboutModal(!showAboutModal);
+  };
+
   // determines which path to take on route render ie walk, cycle, or drive
   const routeProfiles = [
-    { id: 'walking', label: 'Walking' },
-    { id: 'cycling', label: 'Cylcing' },
-    { id: 'driving', label: 'Driving' },
+    { id: "walking", label: "Walking" },
+    { id: "cycling", label: "Cylcing" },
+    { id: "driving", label: "Driving" },
   ];
   const [selectedRouteProfile, setselectedRouteProfile] =
-    useState<string>('walking');
+    useState<string>("walking");
 
   //determines which pins to show- filter or not filter
   const renderMarkers = filterOn ? filteredMarkers : markers;
@@ -107,15 +113,15 @@ const MapPage: React.FC<MapProps> = ({
   }, [friends]);
 
   // in tandem, these load the userLoc marker immediately
-  const geoControlRef = useRef<mapboxgl.GeolocateControl>();
-  useEffect(() => {
-    geoControlRef.current?.trigger();
-  }, [geoControlRef.current]);
+  // const geoControlRef = useRef<mapboxgl.GeolocateControl>();
+  // useEffect(() => {
+  //   geoControlRef.current?.trigger();
+  // }, [geoControlRef.current]);
 
   //gets pins from database then removes all personal pins that don't match userId
   const getPins = async () => {
     try {
-      const response = await axios.get('/api/pins/get-pins');
+      const response = await axios.get("/api/pins/get-pins");
 
       const pins = response.data
         .filter((pin: any) => {
@@ -156,7 +162,7 @@ const MapPage: React.FC<MapProps> = ({
   //handles the share location toggle change and updates the db
   const toggleShareLoc = async () => {
     try {
-      await axios.patch('/api/friends/updateShareLoc', {
+      await axios.patch("/api/friends/updateShareLoc", {
         options: {
           userId,
           shareLoc: !shareLoc,
@@ -172,7 +178,7 @@ const MapPage: React.FC<MapProps> = ({
 
   //this useEffect should update user or friend locations everytime they move
   useEffect(() => {
-    socket.on('userLoc response', (userLoc) => {
+    socket.on("userLoc response", (userLoc) => {
       if (userLoc.id === userId) {
         setUserLocation([userLoc.longitude, userLoc.latitude]); // assuming everytime state is set there is a new render with updated loc
       } else {
@@ -198,7 +204,11 @@ const MapPage: React.FC<MapProps> = ({
   };
 
   //finds clicked marker/pin and friend pin from database
-  const clickedMarker = async (e: any, type: string, coords: [number, number]) => {
+  const clickedMarker = async (
+    e: any,
+    type: string,
+    coords: [number, number]
+  ) => {
     const currMarkerLng = e._lngLat.lng || e.lngLat.lng;
     const currMarkerLat = e._lngLat.lat || e.lngLat.lat;
 
@@ -206,7 +216,7 @@ const MapPage: React.FC<MapProps> = ({
     const latRounded = currMarkerLat.toString().slice(0, 9);
     setClickedPinCoords([lngRounded, latRounded]);
 
-    if (type === "marker"){
+    if (type === "marker") {
       try {
         const { data } = await axios.get(
           `/api/pins/get-clicked-pin-marker/${coords[0]}/${coords[1]}`
@@ -233,7 +243,6 @@ const MapPage: React.FC<MapProps> = ({
         console.error(err);
       }
     }
-
   };
 
   // when pin is selected, route and modal are triggered
@@ -258,13 +267,13 @@ const MapPage: React.FC<MapProps> = ({
   // these are the details that are being set to build the "route"/ line for the directions
   const makeRouterFeature = (coordinates: [number, number][]): any => {
     const routerFeature = {
-      type: 'FeatureCollection',
+      type: "FeatureCollection",
       features: [
         {
-          type: 'Feature',
+          type: "Feature",
           properties: {},
           geometry: {
-            type: 'LineString',
+            type: "LineString",
             coordinates: coordinates,
           },
         },
@@ -278,7 +287,7 @@ const MapPage: React.FC<MapProps> = ({
   const createRouterLine = async (routeProfile: string): Promise<void> => {
     const startCoords = `${userLocation[0]},${userLocation[1]}`;
     const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`;
-    const geometries = 'geojson';
+    const geometries = "geojson";
     const url = `https://api.mapbox.com/directions/v5/mapbox/${routeProfile}/${startCoords};${endCoords}?alternatives=true&geometries=${geometries}&steps=true&banner_instructions=true&overview=full&voice_instructions=true&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw`;
 
     try {
@@ -289,9 +298,9 @@ const MapPage: React.FC<MapProps> = ({
         setDuration(route.duration.toFixed(2)); // hours
       });
 
-      const coordinates = data['routes'][0]['geometry']['coordinates'];
+      const coordinates = data["routes"][0]["geometry"]["coordinates"];
       const destinationCoordinates =
-        data['routes'][0]['geometry']['coordinates'].slice(-1)[0];
+        data["routes"][0]["geometry"]["coordinates"].slice(-1)[0];
       setDestinationCoords(destinationCoordinates);
 
       if (coordinates.length) {
@@ -319,9 +328,9 @@ const MapPage: React.FC<MapProps> = ({
     const h = Math.floor(duration / 3600);
     const m = Math.floor((duration % 3600) / 60);
 
-    const hDisplay = h > 0 ? h + (h == 1 ? ' hour, ' : ' hours, ') : '';
-    const mDisplay = m > 0 ? m + (m == 1 ? ' minute ' : ' minutes') : 'Less than 1 min ';
-
+    const hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+    const mDisplay =
+      m > 0 ? m + (m == 1 ? " minute " : " minutes") : "Less than 1 min ";
 
     return `${hDisplay + mDisplay}`;
   };
@@ -329,13 +338,13 @@ const MapPage: React.FC<MapProps> = ({
   //sets pin category color when the pins load on the map
   const pinCategoryColor = (marker: any) => {
     const colorMapping: PinColorMapping = {
-      isFree: theme === 'pg-theme-vis' ? '#101010' : '#53CA3C',
-      isToilet: theme === 'pg-theme-vis' ? '#196d66' : '#169873',
-      isFood: theme === 'pg-theme-vis' ? '#6d6d6d' : '#FCC54E',
-      isPersonal: theme === 'pg-theme-vis' ? '#d2b48c' : '#cf40f5',
-      isPhoneCharger: theme === 'pg-theme-vis' ? '#aeaeae' : '#53e3d4',
-      isPoliceStation: theme === 'pg-theme-vis' ? '#30d5c8' : '#E7ABFF',
-      isEMTStation: theme === 'pg-theme-vis' ? '#D3D3D3' : '#f27d52',
+      isFree: theme === "pg-theme-vis" ? "#101010" : "#53CA3C",
+      isToilet: theme === "pg-theme-vis" ? "#196d66" : "#169873",
+      isFood: theme === "pg-theme-vis" ? "#6d6d6d" : "#FCC54E",
+      isPersonal: theme === "pg-theme-vis" ? "#d2b48c" : "#cf40f5",
+      isPhoneCharger: theme === "pg-theme-vis" ? "#aeaeae" : "#53e3d4",
+      isPoliceStation: theme === "pg-theme-vis" ? "#30d5c8" : "#E7ABFF",
+      isEMTStation: theme === "pg-theme-vis" ? "#D3D3D3" : "#f27d52",
     };
 
     for (const key in marker) {
@@ -348,38 +357,38 @@ const MapPage: React.FC<MapProps> = ({
   // styles the filter buttons
   const filterStyling = (value: string) => {
     const colorMapping: PinColorMapping = {
-      isFree: theme === 'pg-theme-vis' ? '	#101010' : '#53CA3C',
-      isToilet: theme === 'pg-theme-vis' ? '#196d66' : '#169873',
-      isFood: theme === 'pg-theme-vis' ? '#6d6d6d' : '#FCC54E',
-      isPersonal: theme === 'pg-theme-vis' ? '#d2b48c' : '#cf40f5',
-      isPhoneCharger: theme === 'pg-theme-vis' ? '#aeaeae' : '#53e3d4',
-      isPoliceStation: theme === 'pg-theme-vis' ? '#30d5c8' : '#E7ABFF',
-      isEMTStation: theme === 'pg-theme-vis' ? '#D3D3D3' : '#f27d52',
+      isFree: theme === "pg-theme-vis" ? "	#101010" : "#53CA3C",
+      isToilet: theme === "pg-theme-vis" ? "#196d66" : "#169873",
+      isFood: theme === "pg-theme-vis" ? "#6d6d6d" : "#FCC54E",
+      isPersonal: theme === "pg-theme-vis" ? "#d2b48c" : "#cf40f5",
+      isPhoneCharger: theme === "pg-theme-vis" ? "#aeaeae" : "#53e3d4",
+      isPoliceStation: theme === "pg-theme-vis" ? "#30d5c8" : "#E7ABFF",
+      isEMTStation: theme === "pg-theme-vis" ? "#D3D3D3" : "#f27d52",
     };
     const off = {
       backgroundColor: `${colorMapping[value]}`,
       color:
-        theme !== 'pg-theme-vis'
-          ? 'black'
-          : ['isFree', 'isToilet', 'isFood', 'isPersonal'].includes(value)
-          ? 'white'
-          : 'black',
+        theme !== "pg-theme-vis"
+          ? "black"
+          : ["isFree", "isToilet", "isFood", "isPersonal"].includes(value)
+          ? "white"
+          : "black",
       lineHeight: 1,
-      width: '25%',
-      height: '44px',
-      marginBottom: '3px',
+      width: "25%",
+      height: "44px",
+      marginBottom: "3px",
     };
 
     const on = {
-      backgroundColor: '#fffcf8',
+      backgroundColor: "#fffcf8",
       color: `${colorMapping[value]}`,
       borderColor: `${colorMapping[value]}`,
-      borderWidth: '1px',
-      borderStyle: 'solid',
+      borderWidth: "1px",
+      borderStyle: "solid",
       lineHeight: 1,
-      width: '25%',
-      height: '44px',
-      marginBottom: '3px',
+      width: "25%",
+      height: "44px",
+      marginBottom: "3px",
     };
 
     if (value === filterChoice && filterOn === true) {
@@ -409,6 +418,19 @@ const MapPage: React.FC<MapProps> = ({
 
   return (
     <Container className={`body ${theme}`}>
+      <Modal show={showAboutModal} onHide={toggleAboutModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>About</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Info</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={toggleAboutModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
       {showModal ? (
         <PinModal
           userId={userId}
@@ -422,71 +444,77 @@ const MapPage: React.FC<MapProps> = ({
         />
       ) : null}
       <Form.Switch
-        type='switch'
-        id='share-location-switch'
+        type="switch"
+        id="share-location-switch"
         label={
           shareLoc
-            ? 'Sharing Location with Friends'
-            : 'Not Sharing Location with Friends'
+            ? "Sharing Location with Friends"
+            : "Not Sharing Location with Friends"
         }
         onClick={() => toggleShareLoc()}
         defaultChecked={shareLoc}
-        style={{ paddingBottom: '1em' }}
+        style={{ paddingBottom: "1em" }}
       />
       <Map
         ref={mapRef}
         {...viewState}
         onMove={(e) => setViewState(e.viewState)}
         //onClick={(e) => {dropPin(e)}}
-        mapboxAccessToken='pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw'
+        mapboxAccessToken="pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw"
         style={{
-          position: 'relative',
-          bottom: '0px',
-          maxWidth: '100vw',
-          height: '50vh',
+          position: "relative",
+          bottom: "0px",
+          maxWidth: "100vw",
+          height: "50vh",
         }}
-        mapStyle='mapbox://styles/mapbox/streets-v9'
+        mapStyle="mapbox://styles/mapbox/streets-v9"
       >
-        <GeolocateControl
+        {/* <GeolocateControl
           positionOptions={{ enableHighAccuracy: true }}
           trackUserLocation={true}
           showUserHeading={true}
           showUserLocation={true}
           showAccuracyCircle={false}
           ref={geoControlRef}
-        />
-        <div id='map-markers'>
+        /> */}
+        <div id="map-markers">
           {renderMarkers.map((marker) => (
             <Marker
               key={marker.id}
               onClick={(e) => {
-                clickedMarker(e.target, "marker", [marker.longitude, marker.latitude]);
+                clickedMarker(e.target, "marker", [
+                  marker.longitude,
+                  marker.latitude,
+                ]);
               }}
               longitude={marker.longitude}
               latitude={marker.latitude}
-              anchor='bottom'
+              anchor="bottom"
               color={pinCategoryColor(marker)}
             ></Marker>
           ))}
         </div>
-        <div id='friend-markers'>
+        <div id="friend-markers">
           {friends.map((friend) => (
             <Marker
               key={friend.id}
               onClick={(e) => {
-                clickedMarker(e.target, "friend", [friend.longitude, friend.latitude]);
+                clickedMarker(e.target, "friend", [
+                  friend.longitude,
+                  friend.latitude,
+                ]);
               }}
               longitude={friend.longitude}
               latitude={friend.latitude}
-              anchor='bottom'
+              anchor="bottom"
             >
-              <div style={{ textAlign: 'center' }}>
+              <div style={{ textAlign: "center" }}>
                 <b>
                   {friend.firstName[0]}
                   {friend.lastName[0]}
                 </b>
                 <br />
-                <img src='img/pgLogo.png' width='45px' height='55px' />
+                <img src="img/pgLogo.png" width="45px" height="55px" />
               </div>
             </Marker>
           ))}
@@ -505,13 +533,13 @@ const MapPage: React.FC<MapProps> = ({
         }
       </div> */}
         {showRouteDirections ? (
-          <Source id='line1' type='geojson' data={routeDirections}>
+          <Source id="line1" type="geojson" data={routeDirections}>
             <Layer
-              id='routerLine01'
-              type='line'
+              id="routerLine01"
+              type="line"
               paint={{
-                'line-color': '#cf40f5',
-                'line-width': 3,
+                "line-color": "#cf40f5",
+                "line-width": 3,
               }}
             />
           </Source>
@@ -521,7 +549,7 @@ const MapPage: React.FC<MapProps> = ({
           <Popup
             longitude={selectedFriend.longitude}
             latitude={selectedFriend.latitude}
-            anchor='top'
+            anchor="top"
             closeOnMove={true}
             onClose={() => setShowFriendPopup(false)}
           >
@@ -532,21 +560,24 @@ const MapPage: React.FC<MapProps> = ({
         ) : null}
         {showDirections ? (
           <div
-            id='map-direction-card'
-            className='card w-35'
-            style={{ backgroundColor: '#fffcf8', padding: "1px" }}
+            id="map-direction-card"
+            className="card w-35"
+            style={{ backgroundColor: "#fffcf8", padding: "1px" }}
           >
-            <div className='card-body' style={{ backgroundColor: '#fffcf8', padding: "1px", }}>
-              <p style={{ fontSize: '15px' }}>
+            <div
+              className="card-body"
+              style={{ backgroundColor: "#fffcf8", padding: "1px" }}
+            >
+              <p style={{ fontSize: "15px" }}>
                 <b>{humanizedDuration(duration)}</b> away
               </p>
-              <p style={{ fontSize: '15px' }}>
-                {' '}
+              <p style={{ fontSize: "15px" }}>
+                {" "}
                 <b>{distance}</b> miles
               </p>
               <button
-                type='button'
-                className='btn btn-primary btn-sm'
+                type="button"
+                className="btn btn-primary btn-sm"
                 onClick={() => {
                   setShowDirections(false);
                   setShowRouteDirections(false);
@@ -556,11 +587,11 @@ const MapPage: React.FC<MapProps> = ({
               </button>
               <FaWalking
                 style={{
-                  color: '#cf40f5',
-                  float: 'right',
-                  width: '25px',
-                  height: '30px',
-                  paddingBottom: '6px',
+                  color: "#cf40f5",
+                  float: "right",
+                  width: "25px",
+                  height: "30px",
+                  paddingBottom: "6px",
                 }}
               />
             </div>
@@ -573,29 +604,29 @@ const MapPage: React.FC<MapProps> = ({
         >
           <FaPlusCircle
             style={{
-              color: theme === 'pg-theme-vis' ? '#291F1F' : '#cf40f5',
-              width: '60px',
-              height: '60px',
-              border: '5px solid #E7ABFF',
-              borderRadius: '50%',
-              position: 'absolute',
-              right: '5%',
-              bottom: '8%',
+              color: theme === "pg-theme-vis" ? "#291F1F" : "#cf40f5",
+              width: "60px",
+              height: "60px",
+              border: "5px solid #E7ABFF",
+              borderRadius: "50%",
+              position: "absolute",
+              right: "5%",
+              bottom: "8%",
             }}
           />
         </button>
       </Map>
-      <div id='map-filter-container' className='container'>
-        <p style={{ textAlign: 'center' }}>FILTER PINS</p>
+      <div id="map-filter-container" className="container">
+        <p style={{ textAlign: "center" }}>FILTER PINS</p>
         <div
-          className='filter-buttons'
-          style={{ flexWrap: 'wrap', textAlign: 'center' }}
+          className="filter-buttons"
+          style={{ flexWrap: "wrap", textAlign: "center" }}
         >
           <button
-            type='button'
-            style={filterStyling('isFree')}
-            value='isFree'
-            className='btn'
+            type="button"
+            style={filterStyling("isFree")}
+            value="isFree"
+            className="btn"
             onClick={(e) => {
               filterResults(e.currentTarget.value);
             }}
@@ -603,10 +634,10 @@ const MapPage: React.FC<MapProps> = ({
             Free Toilets
           </button>
           <button
-            type='button'
-            style={filterStyling('isToilet')}
-            value='isToilet'
-            className='btn'
+            type="button"
+            style={filterStyling("isToilet")}
+            value="isToilet"
+            className="btn"
             onClick={(e) => {
               filterResults(e.currentTarget.value);
             }}
@@ -614,10 +645,10 @@ const MapPage: React.FC<MapProps> = ({
             Pay for Toilet
           </button>
           <button
-            type='button'
-            style={filterStyling('isFood')}
-            value='isFood'
-            className='btn'
+            type="button"
+            style={filterStyling("isFood")}
+            value="isFood"
+            className="btn"
             onClick={(e) => {
               filterResults(e.currentTarget.value);
             }}
@@ -625,10 +656,10 @@ const MapPage: React.FC<MapProps> = ({
             Food
           </button>
           <button
-            type='button'
-            style={filterStyling('isPersonal')}
-            value='isPersonal'
-            className='btn'
+            type="button"
+            style={filterStyling("isPersonal")}
+            value="isPersonal"
+            className="btn"
             onClick={(e) => {
               filterResults(e.currentTarget.value);
             }}
@@ -636,10 +667,10 @@ const MapPage: React.FC<MapProps> = ({
             Personal
           </button>
           <button
-            type='button'
-            style={filterStyling('isPhoneCharger')}
-            value='isPhoneCharger'
-            className='btn'
+            type="button"
+            style={filterStyling("isPhoneCharger")}
+            value="isPhoneCharger"
+            className="btn"
             onClick={(e) => {
               filterResults(e.currentTarget.value);
             }}
@@ -647,10 +678,10 @@ const MapPage: React.FC<MapProps> = ({
             Phone Charger
           </button>
           <button
-            type='button'
-            style={filterStyling('isPoliceStation')}
-            value='isPoliceStation'
-            className='btn'
+            type="button"
+            style={filterStyling("isPoliceStation")}
+            value="isPoliceStation"
+            className="btn"
             onClick={(e) => {
               filterResults(e.currentTarget.value);
             }}
@@ -658,10 +689,10 @@ const MapPage: React.FC<MapProps> = ({
             Police Station
           </button>
           <button
-            type='button'
-            style={filterStyling('isEMTStation')}
-            value='isEMTStation'
-            className='btn'
+            type="button"
+            style={filterStyling("isEMTStation")}
+            value="isEMTStation"
+            className="btn"
             onClick={(e) => {
               filterResults(e.currentTarget.value);
             }}
@@ -670,9 +701,9 @@ const MapPage: React.FC<MapProps> = ({
           </button>
         </div>
         <button
-          type='button'
-          value='clearFilters'
-          className='btn btn-wide'
+          type="button"
+          value="clearFilters"
+          className="btn btn-wide"
           onClick={() => {
             setFilterOn(false);
             filterStyling(filterChoice);

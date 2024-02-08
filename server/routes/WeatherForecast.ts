@@ -12,6 +12,7 @@ WeatherForecastRoutes.get("/:date", async (req: Request, res: Response) => {
     const { data } = await axios.get(
       `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${location}&aqi=no&alerts=no&dt=${date}`
     );
+
     res.status(200).send(data);
   } catch (err) {
     console.error(err);
