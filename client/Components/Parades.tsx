@@ -153,10 +153,11 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
       <div className="gig-body-calendar">
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
-            <Modal.Title>About</Modal.Title>
+            <Modal.Title>About the Parades</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>Info</p>
+          <p>Select a parade to see the time, date, route, history, anticipated weater, and scroll down to the bottom to see other parades on that day!</p>
+            <p>Take the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform">Survey</a> and let us know what you think!</p>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={toggleAboutModal}>

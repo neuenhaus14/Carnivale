@@ -492,10 +492,11 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
 
       <Modal show={showAboutModal} onHide={toggleAboutModal}>
         <Modal.Header closeButton>
-          <Modal.Title>About</Modal.Title>
+          <Modal.Title>About the Krewe and Calendar</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Info</p>
+          <p>Add friends to your Krewe to invite them to custom events. Refer to your calendar to see the saved events.</p>
+          <p>Take the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform">Survey</a> and let us know what you think!</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={toggleAboutModal}>
@@ -724,6 +725,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
               await setConfirmActionText(`log your butt out.`);
               await setShowConfirmActionModal(true);
             }}
+            disabled={true}
           >
             Log Out
           </Button>
