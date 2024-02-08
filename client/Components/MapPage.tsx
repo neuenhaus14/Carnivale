@@ -65,6 +65,7 @@ const MapPage: React.FC<MapProps> = ({
   const [showRouteDirections, setShowRouteDirections] =
     useState<boolean>(false);
   const [isFriendSelected, setIsFriendSelected] = useState<boolean>(false);
+  // const [friends, setFriends] = useState([]);
   const [friends, setFriends] = useState([]);
 
   const theme = useContext(ThemeContext);
@@ -285,7 +286,8 @@ const MapPage: React.FC<MapProps> = ({
   // handles the route line creation by making the response from the directions API into a geoJSON
   // which is the only way to use it in the <Source> tag (displays the "route/line")
   const createRouterLine = async (routeProfile: string): Promise<void> => {
-    const startCoords = `${userLocation[0]},${userLocation[1]}`;
+    // const startCoords = `${userLocation[0]},${userLocation[1]}`;
+    const startCoords = `-90.0546585,29.9631183`;
     const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`;
     const geometries = "geojson";
     const url = `https://api.mapbox.com/directions/v5/mapbox/${routeProfile}/${startCoords};${endCoords}?alternatives=true&geometries=${geometries}&steps=true&banner_instructions=true&overview=full&voice_instructions=true&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw`;
@@ -420,10 +422,11 @@ const MapPage: React.FC<MapProps> = ({
     <Container className={`body ${theme}`}>
       <Modal show={showAboutModal} onHide={toggleAboutModal}>
         <Modal.Header closeButton>
-          <Modal.Title>About</Modal.Title>
+          <Modal.Title>About the Map Page</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Info</p>
+        <p>Add a Point of Interest to the map by taking a picture and a short description. Share your location with your friends. Check out the best walking path and distance to each marker.</p>
+          <p>Take the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform">Survey</a> and let us know what you think!</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={toggleAboutModal}>
@@ -477,6 +480,12 @@ const MapPage: React.FC<MapProps> = ({
           showAccuracyCircle={false}
           ref={geoControlRef}
         /> */}
+        <Marker
+              longitude={-90.0546585}
+              latitude={29.9631183}
+              anchor="bottom"
+            >BOB</Marker>
+
         <div id="map-markers">
           {renderMarkers.map((marker) => (
             <Marker

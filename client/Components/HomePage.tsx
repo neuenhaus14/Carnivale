@@ -114,10 +114,11 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
     <Container className={`body-home ${theme}`}>
       <Modal show={showAboutModal} onHide={toggleAboutModal}>
         <Modal.Header closeButton>
-          <Modal.Title>About</Modal.Title>
+          <Modal.Title>About the Home Page</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Info</p>
+          <p>Home to gossip to share parade hold ups, fun sightings, or interesting images! Take a picture, filter results, and send a comment.</p>
+          <p>Take the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform">Survey</a> and let us know what you think!</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={toggleAboutModal}>

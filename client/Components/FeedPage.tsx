@@ -110,11 +110,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     const fetchData = async () => {
       try {
         const [postsResponse, userResponse] = await Promise.all([
-          axios.get(`/api/feed/shared-posts/${userId}`),
-          axios.get(`/api/feed/user/${userId}`),
+          // axios.get(`/api/feed/shared-posts/${userId}`),
+          // axios.get(`/api/feed/user/${userId}`),
           // Swap top and bottom comments for testing
-          //axios.get(`/api/feed/shared-posts/1`),
-          //axios.get(`/api/feed/user/1`),
+          axios.get(`/api/feed/shared-posts/1`),
+          axios.get(`/api/feed/user/1`),
         ]);
 
         setSharedPosts(postsResponse.data);
@@ -450,10 +450,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
       </h1>
       <Modal show={showAboutModal} onHide={toggleAboutModal}>
         <Modal.Header closeButton>
-          <Modal.Title>About</Modal.Title>
+          <Modal.Title>About the Feed Page</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Info</p>
+          <p>A curated feed of messages sent directly to you from the home page by your friends. Interact with the votes or hide from your view.</p>
+          <p>Take the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform">Survey</a> and let us know what you think!</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={toggleAboutModal}>

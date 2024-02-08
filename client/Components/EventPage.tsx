@@ -103,10 +103,11 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
         </Card>
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
-            <Modal.Title>About</Modal.Title>
+            <Modal.Title>About the Live Music</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>Info</p>
+            <p>Look at local music and create an event at your favorite venue!</p>
+            <p>Take the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform">Survey</a> and let us know what you think!</p>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={toggleAboutModal}>

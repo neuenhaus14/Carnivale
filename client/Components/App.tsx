@@ -164,21 +164,6 @@ const App = () => {
             </div>
           }
         />
-        <Route
-          path='/mappage'
-          element={
-            <div>
-              <Link to='/homepage'>
-
-                <TopNavBar
-                  title={user ? `Welcome, ${user.given_name}!` : ""}
-                  currWeather={currWeather}
-                  currTemp={currTemp}
-                />
-                <HomePage userId={userId} lat={lat} lng={lng} /> <NavBar />
-              </div>
-            }
-          />
           <Route
             path="/mappage"
             element={
@@ -193,7 +178,8 @@ const App = () => {
                 <MapPage
                   userLat={lat}
                   userLng={lng}
-                  userId={userId}
+                  // userId={userId}
+                  userId={1}
                   getLocation={getLocation}
                 />{" "}
                 <NavBar />
@@ -257,7 +243,8 @@ const App = () => {
                   />
                 </Link>
                 <UserPage
-                  userId={userId}
+                  // userId={userId}
+                  userId={1}
                   lng={lng}
                   lat={lat}
                   setTheme={setTheme}
