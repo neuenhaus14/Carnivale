@@ -4,7 +4,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Card } from "react-bootstrap";
+import { Card, Modal, Button } from "react-bootstrap";
 import { ThemeContext } from "./Context";
 interface EventPageProps {
   lng: number;
@@ -30,6 +30,12 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
   const [allGigs, setAllGigs] = useState([]);
   const [isNewEvent, setIsNewEvent] = useState(true);
   const [date, setDate] = useState(new Date());
+
+  const [showAboutModal, setShowAboutModal] = useState(true);
+
+  const toggleAboutModal = () => {
+    setShowAboutModal(!showAboutModal);
+  };
 
   const getFriends = async () => {
     try {
@@ -80,7 +86,7 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
   }, [date]);
 
   return (
-    <div className={`body ${theme}`}>
+    <div className={`body ${theme}`} onClick={toggleAboutModal}>
       <div className="gig-body-calendar">
         <Card
           className="comment-form"
@@ -95,6 +101,19 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
             onChange={(date: Date) => setDate(date)}
           />
         </Card>
+        <Modal show={showAboutModal} onHide={toggleAboutModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>About</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Info</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={toggleAboutModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
         {allGigItems}
         <EventCreateModal
           selectedEvent={selectedEvent}
@@ -110,7 +129,7 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
           eventType={"gig"}
           getEventsOwned={() => {}}
         />
-        <footer className="footer">
+        <footer className="footer" style={{ padding: 15 }}>
           Live music info courtesy of{" "}
           <a href="https://www.wwoz.org/calendar/livewire-music">WWOZ</a>
         </footer>

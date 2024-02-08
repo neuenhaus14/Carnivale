@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Modal, Button, Form, Tabs, Tab } from 'react-bootstrap';
-import EventCreateMapComponent from './EventCreateMapComponent';
-import axios from 'axios';
-import dayjs from 'dayjs';
-import { ThemeContext } from './Context';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import ConfirmActionModal from './ConfirmActionModal';
+import React, { useState, useEffect, useContext } from "react";
+import { Modal, Button, Form, Tabs, Tab } from "react-bootstrap";
+import EventCreateMapComponent from "./EventCreateMapComponent";
+import axios from "axios";
+import dayjs from "dayjs";
+import { ThemeContext } from "./Context";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ConfirmActionModal from "./ConfirmActionModal";
 
 interface EventCreateModalProps {
   selectedEvent: any;
@@ -40,9 +40,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   getEventsOwned,
 }) => {
   const theme = useContext(ThemeContext);
-  const [eventAddress, setEventAddress] = useState('');
-  const [eventDescription, setEventDescription] = useState('');
-  const [eventName, setEventName] = useState('');
+  const [eventAddress, setEventAddress] = useState("");
+  const [eventDescription, setEventDescription] = useState("");
+  const [eventName, setEventName] = useState("");
 
   const [eventLatitude, setEventLatitude] = useState(0);
   const [eventLongitude, setEventLongitude] = useState(0);
@@ -73,7 +73,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   // CONFIRM ACTION MODAL STATE
   const [showConfirmActionModal, setShowConfirmActionModal] = useState(false);
   const [confirmActionFunction, setConfirmActionFunction] = useState(null);
-  const [confirmActionText, setConfirmActionText] = useState('');
+  const [confirmActionText, setConfirmActionText] = useState("");
 
   // geo use effect
   useEffect(() => {
@@ -88,7 +88,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     // user event edit mode: old user event with ownerId of current user
     if (
       isNewEvent === false &&
-      eventType === 'user' &&
+      eventType === "user" &&
       selectedEvent.ownerId === userId
     ) {
       setEventName(selectedEvent.name);
@@ -97,24 +97,24 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventLatitude(Number(selectedEvent.latitude));
       setEventLongitude(Number(selectedEvent.longitude));
       if (selectedEvent.startTime !== null && selectedEvent !== null) {
-        parseDateIntoDateAndTime(selectedEvent.startTime, 'start', false);
+        parseDateIntoDateAndTime(selectedEvent.startTime, "start", false);
       }
       if (selectedEvent.endTime !== null && selectedEvent !== null) {
-        parseDateIntoDateAndTime(selectedEvent.endTime, 'end', false);
+        parseDateIntoDateAndTime(selectedEvent.endTime, "end", false);
       }
     }
     // user event create mode
-    else if (isNewEvent === true && eventType === 'user') {
-      setEventName('');
-      setEventDescription('');
-      setEventAddress('');
+    else if (isNewEvent === true && eventType === "user") {
+      setEventName("");
+      setEventDescription("");
+      setEventAddress("");
 
       // default new event start time to the next hour and end time to
       // two hours later
-      const oneHourLaterTime = Number(now.add(1, 'hour').format('HH'));
-      const oneHourLaterDate = now.add(1, 'hour').toDate();
-      const twoHoursLaterTime = Number(now.add(2, 'hour').format('HH'));
-      const twoHoursLaterDate = now.add(2, 'hour').toDate();
+      const oneHourLaterTime = Number(now.add(1, "hour").format("HH"));
+      const oneHourLaterDate = now.add(1, "hour").toDate();
+      const twoHoursLaterTime = Number(now.add(2, "hour").format("HH"));
+      const twoHoursLaterDate = now.add(2, "hour").toDate();
 
       handleUserCoordinatesToAddress();
       setEventStartTime(oneHourLaterTime);
@@ -125,26 +125,26 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventLongitude(lng ? lng : nolaLong);
     }
     // parade event create mode
-    else if (isNewEvent === true && eventType === 'parade') {
+    else if (isNewEvent === true && eventType === "parade") {
       setEventName(selectedEvent.title);
-      setEventDescription('Parade');
+      setEventDescription("Parade");
       if (selectedEvent.location) {
         setEventAddress(selectedEvent.location);
         setCoordinatesFromAddress(selectedEvent.location);
         // scraped parades have startDate property
-        parseDateIntoDateAndTime(selectedEvent.startDate, 'start', true);
+        parseDateIntoDateAndTime(selectedEvent.startDate, "start", true);
       }
     }
     //gig event create mode
-    else if (isNewEvent === true && eventType === 'gig') {
+    else if (isNewEvent === true && eventType === "gig") {
       setEventName(`${selectedEvent.name} gig`);
-      setEventDescription('Live music');
+      setEventDescription("Live music");
       setEventAddress(selectedEvent.address);
       if (selectedEvent.address) {
         setCoordinatesFromAddress(selectedEvent.address);
       }
       if (selectedEvent.startTime) {
-        parseDateIntoDateAndTime(selectedEvent.startTime, 'start', true);
+        parseDateIntoDateAndTime(selectedEvent.startTime, "start", true);
       }
     }
   }, [selectedEvent, isNewEvent]);
@@ -161,41 +161,55 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
     fullDate = fullDate.slice(0, 16);
 
-    if (fullDate.indexOf('T') !== -1) {
-      [date, time] = fullDate.split('T');
-    } else if (fullDate.indexOf(' ')) {
-      [date, time] = fullDate.split(' ');
+    if (fullDate.indexOf("T") !== -1) {
+      [date, time] = fullDate.split("T");
+    } else if (fullDate.indexOf(" ")) {
+      [date, time] = fullDate.split(" ");
     }
     const hour = time.slice(0, 2);
     let minute = time.slice(3, time.length);
 
     switch (minute) {
-      case '15':
-        minute = '25';
+      case "15":
+        minute = "25";
         break;
-      case '30':
-        minute = '5';
+      case "30":
+        minute = "5";
         break;
-      case '45':
-        minute = '75';
+      case "45":
+        minute = "75";
         break;
     }
 
     const timeRangeValue = Number(`${hour}.${minute}`);
 
-    if (startOrEnd === 'start') {
-      setEventStartDate(dayjs(date, ["YYYY-MM-DD", "YYYY-M-DD",  "YYYY-MM-D", "YYYY-M-D"]).toDate());
+    if (startOrEnd === "start") {
+      setEventStartDate(
+        dayjs(date, [
+          "YYYY-MM-DD",
+          "YYYY-M-DD",
+          "YYYY-MM-D",
+          "YYYY-M-D",
+        ]).toDate()
+      );
       setEventStartTime(timeRangeValue);
       if (addEndTime === true) {
         const startTime = dayjs(fullDate);
         const endTime = startTime
-          .add(2, 'hour')
-          .format('YYYY-MM-DDTHH:mm')
+          .add(2, "hour")
+          .format("YYYY-MM-DDTHH:mm")
           .toString();
-        parseDateIntoDateAndTime(endTime, 'end', false);
+        parseDateIntoDateAndTime(endTime, "end", false);
       }
-    } else if (startOrEnd === 'end') {
-      setEventEndDate(dayjs(date, ["YYYY-MM-DD", "YYYY-M-DD", "YYYY-MM-D", "YYYY-M-D"]).toDate());
+    } else if (startOrEnd === "end") {
+      setEventEndDate(
+        dayjs(date, [
+          "YYYY-MM-DD",
+          "YYYY-M-DD",
+          "YYYY-MM-D",
+          "YYYY-M-D",
+        ]).toDate()
+      );
       setEventEndTime(timeRangeValue);
     }
   };
@@ -224,20 +238,20 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     let hour: any;
     let minute: any;
     const timeString: string = time.toString();
-    if (timeString.indexOf('.') === -1) {
+    if (timeString.indexOf(".") === -1) {
       hour = timeString;
-      minute = '00';
+      minute = "00";
     } else {
-      [hour, minute] = timeString.split('.');
+      [hour, minute] = timeString.split(".");
       switch (minute) {
-        case '25':
-          minute = '15';
+        case "25":
+          minute = "15";
           break;
-        case '5':
-          minute = '30';
+        case "5":
+          minute = "30";
           break;
-        case '75':
-          minute = '45';
+        case "75":
+          minute = "45";
           break;
       }
     }
@@ -250,10 +264,10 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     }
 
     if (twelveHourClock) {
-      if (hour === '24') {
-        return 'Midnight';
-      } else if (hour === '12' && minute === '00') {
-        return 'Noon';
+      if (hour === "24") {
+        return "Midnight";
+      } else if (hour === "12" && minute === "00") {
+        return "Noon";
       } else if (Number(hour) >= 12) {
         if (Number(hour) === 12) {
           return `${hour.toString()}:${minute} pm`;
@@ -279,7 +293,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     try {
       const startTimeString = stringifyDateTime(eventStartDate, eventStartTime);
       const endTimeString = stringifyDateTime(eventEndDate, eventEndTime);
-      const newEvent = await axios.post('/api/events/createEvent', {
+      const newEvent = await axios.post("/api/events/createEvent", {
         event: {
           ownerId: userId,
           name: eventName,
@@ -296,18 +310,18 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
           invitees: friendsToInvite,
         },
       });
-      toast('🎭 Plans made! 🎭', {
-        position: 'top-right',
+      toast("🎭 Plans made! 🎭", {
+        position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: 'light',
+        theme: "light",
       });
     } catch (err) {
-      console.error('CLIENT ERROR: failed to POST new event', err);
+      console.error("CLIENT ERROR: failed to POST new event", err);
     } finally {
       handleClose(); // close the modal after creating event
     }
@@ -315,7 +329,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
   const sendFriendInvites = () => {
     try {
-      const inviteResponse = axios.post('/api/events/inviteToEvent', {
+      const inviteResponse = axios.post("/api/events/inviteToEvent", {
         invitations: {
           eventId: selectedEvent.id,
           invitees: friendsToInvite,
@@ -325,7 +339,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setFriendsToInvite([]);
       getPeopleForEvent(false); // sendFriendInvites only used with old events
     } catch (err) {
-      console.error('CLIENT ERROR: failed to POST event invites', err);
+      console.error("CLIENT ERROR: failed to POST event invites", err);
     }
   };
 
@@ -334,7 +348,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       const startTimeString = stringifyDateTime(eventStartDate, eventStartTime);
       const endTimeString = stringifyDateTime(eventEndDate, eventEndTime);
 
-      const updatedEvent = await axios.patch('/api/events/updateEvent', {
+      const updatedEvent = await axios.patch("/api/events/updateEvent", {
         event: {
           id: selectedEvent.id,
           name: eventName,
@@ -347,18 +361,18 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         },
       });
       setIsEventUpdated(false); // return to default state
-      toast('🎭 Plans changed! 🎭', {
-        position: 'top-right',
+      toast("🎭 Plans changed! 🎭", {
+        position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: 'light',
+        theme: "light",
       });
     } catch (err) {
-      console.error('CLIENT ERROR: failed to PUT event update', err);
+      console.error("CLIENT ERROR: failed to PUT event update", err);
     } finally {
       handleClose();
     }
@@ -371,16 +385,16 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       );
       handleClose();
     } catch (err) {
-      console.error('CLIENT ERROR: failed to DELETE event record', err);
+      console.error("CLIENT ERROR: failed to DELETE event record", err);
     }
   };
 
   const handleRangeChange = (e: any) => {
     const { value, name } = e.target;
 
-    if (name === 'start') {
+    if (name === "start") {
       setEventStartTime(value);
-    } else if (name === 'end') {
+    } else if (name === "end") {
       setEventEndTime(value);
     }
 
@@ -403,11 +417,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   const handleInputChange = (e: any) => {
     const { value, name } = e.target;
 
-    if (name === 'name') {
+    if (name === "name") {
       setEventName(value);
-    } else if (name === 'description') {
+    } else if (name === "description") {
       setEventDescription(value);
-    } else if (name === 'address') {
+    } else if (name === "address") {
       setEventAddress(value);
     }
     setIsEventUpdated(true); // enables Update Event button
@@ -417,7 +431,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   const setCoordinatesFromAddress = async (address: any) => {
     try {
       const coordinatesResponse = await axios.post(
-        '/api/events/getCoordinatesFromAddress',
+        "/api/events/getCoordinatesFromAddress",
         { address }
       );
 
@@ -425,7 +439,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       setEventLongitude(evtLongitude);
       setEventLatitude(evtLatitude);
     } catch (err) {
-      console.error('CLIENT ERROR: failed to GET coords from address', err);
+      console.error("CLIENT ERROR: failed to GET coords from address", err);
     }
   };
 
@@ -437,7 +451,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   const handleUserCoordinatesToAddress = async () => {
     try {
       const eventAddressResponse = await axios.post(
-        '/api/events/getAddressFromCoordinates',
+        "/api/events/getAddressFromCoordinates",
         {
           coordinates: {
             latitude: lat,
@@ -448,7 +462,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       const eventAddress = eventAddressResponse.data;
       setEventAddress(eventAddress);
     } catch (err) {
-      console.error('CLIENT ERROR: failed to GET address from coordinates');
+      console.error("CLIENT ERROR: failed to GET address from coordinates");
     }
   };
 
@@ -470,9 +484,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
       }
     } catch (err) {
       console.error(
-        'CLIENT ERROR: failed to GET people for event',
+        "CLIENT ERROR: failed to GET people for event",
         err,
-        'eT',
+        "eT",
         eventType
       );
     }
@@ -530,12 +544,12 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
     )
     .map((friend: any, index: number) => {
       return (
-        <div className='d-flex flex-row justify-content-between' key={index}>
-          {friend.firstName} {friend.lastName}{' '}
+        <div className="d-flex flex-row justify-content-between" key={index}>
+          {friend.firstName} {friend.lastName}{" "}
           <Form.Check
-            style={{ float: 'right', paddingRight: '20px' }}
-            label='Add invite'
-            type='checkbox'
+            style={{ float: "right", paddingRight: "20px" }}
+            label="Add invite"
+            type="checkbox"
             // id='invite-checkbox'
             onChange={async () => {
               await toggleFriendInvite(friend.id);
@@ -549,7 +563,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   return (
     <>
       <ToastContainer
-        position='top-right'
+        position="top-right"
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
@@ -558,7 +572,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme='light'
+        theme="light"
       />
       <ConfirmActionModal
         confirmActionFunction={confirmActionFunction}
@@ -579,20 +593,20 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
               ? eventName
               : eventName
               ? eventName
-              : 'Drop a pin for your event'}
+              : "Drop a pin for your event"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignContent: 'center',
+              display: "flex",
+              flexDirection: "column",
+              alignContent: "center",
             }}
           >
-            <Tabs defaultActiveKey='details'>
-              <Tab eventKey='details' title='Details'>
-                <div className='my-2 px-2'>
+            <Tabs defaultActiveKey="details">
+              <Tab eventKey="details" title="Details">
+                <div className="my-2 px-2">
                   <EventCreateMapComponent
                     isNewEvent={isNewEvent}
                     userLatitude={userLatitude}
@@ -610,36 +624,36 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                 </div>
                 <div>
                   <Form>
-                    <Form.Group controlId='formEvent'>
+                    <Form.Group controlId="formEvent">
                       {/* <p>{eventName}</p> */}
 
                       <Form.Control
-                        type='text'
-                        name='name'
+                        type="text"
+                        name="name"
                         value={eventName}
                         onChange={handleInputChange}
-                        placeholder='Event Name'
+                        placeholder="Event Name"
                       />
 
                       {/* <p>{eventDescription}</p> */}
 
                       <Form.Control
-                        type='text'
-                        name='description'
+                        type="text"
+                        name="description"
                         value={eventDescription}
                         onChange={handleInputChange}
-                        placeholder='Description'
+                        placeholder="Description"
                       />
 
                       {/* <p>{eventAddress}</p> */}
 
                       <Form.Control
-                        type='text'
-                        name='address'
+                        type="text"
+                        name="address"
                         value={eventAddress}
                         onChange={handleInputChange}
                         onBlur={handleAddressToCoordinates}
-                        placeholder='Address'
+                        placeholder="Address"
                       />
 
                       {/* <p>{eventStartDate}</p> */}
@@ -651,11 +665,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                         placeholder='Start Date: YYYY-MM-DD'
                       /> */}
 
-                      <div className='d-flex flex-direction-row justify-content-around'>
-                        <b className='my-auto'>Start: </b>
+                      <div className="d-flex flex-direction-row justify-content-around">
+                        <b className="my-auto">Start: </b>
                         <DatePicker
-                          className='date-picker align-middle'
-                          popperPlacement='bottom'
+                          className="date-picker align-middle"
+                          popperPlacement="bottom"
                           selected={eventStartDate}
                           onChange={(date: Date) => {
                             setEventStartDate(date);
@@ -665,8 +679,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                         />
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'row' }}>
-                        <div style={{ width: '100px' }}>
+                      <div style={{ display: "flex", flexDirection: "row" }}>
+                        <div style={{ width: "100px" }}>
                           <div>
                             {convertDecimalToTime(eventStartTime, true)}
                           </div>
@@ -675,7 +689,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                           min={0}
                           max={24}
                           value={eventStartTime}
-                          name='start'
+                          name="start"
                           step={0.25}
                           onChange={handleRangeChange}
                         />
@@ -691,11 +705,11 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                         placeholder='End Date: YYYY-MM-DD'
                       /> */}
 
-                      <div className='d-flex flex-direction-row justify-content-around'>
-                        <b className='my-auto'>End: </b>
+                      <div className="d-flex flex-direction-row justify-content-around">
+                        <b className="my-auto">End: </b>
                         <DatePicker
-                          className='date-picker align-middle'
-                          popperPlacement='bottom'
+                          className="date-picker align-middle"
+                          popperPlacement="bottom"
                           selected={new Date(eventEndDate)} // not working when populating with other data
                           onChange={(date: Date) => {
                             setEventEndDate(date);
@@ -704,8 +718,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                         />
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'row' }}>
-                        <div style={{ width: '100px' }}>
+                      <div style={{ display: "flex", flexDirection: "row" }}>
+                        <div style={{ width: "100px" }}>
                           <div>{convertDecimalToTime(eventEndTime, true)}</div>
                         </div>
                         <Form.Range
@@ -713,7 +727,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                           max={24}
                           value={eventEndTime}
                           step={0.25}
-                          name='end'
+                          name="end"
                           onChange={handleRangeChange}
                         />
                       </div>
@@ -722,13 +736,13 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                 </div>
               </Tab>
 
-              <Tab eventKey='people' title='People'>
+              <Tab eventKey="people" title="People">
                 {friends.length === 0 && (
                   <div>
-                    <div className='ep-card-content text-center mt-3'>
+                    <div className="ep-card-content text-center mt-3">
                       You're flying solo!
                     </div>
-                    <div className='ep-card-detail text-center'>
+                    <div className="ep-card-detail text-center">
                       Add to your Krewe to send invitations.
                     </div>
                   </div>
@@ -758,7 +772,8 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                 {isNewEvent === false && uninvitedFriendsItems.length > 0 && (
                   <Button
                     onClick={() => sendFriendInvites()}
-                    disabled={friendsToInvite.length === 0}
+                    // disabled={friendsToInvite.length === 0}
+                    disabled={true}
                   >
                     Send Invites
                   </Button>
@@ -767,12 +782,12 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
             </Tabs>
           </div>
         </Modal.Body>
-        <Modal.Footer className='d-flex flex-row justify-content-between'>
+        <Modal.Footer className="d-flex flex-row justify-content-between">
           {/* left side of footer */}
           <div>
             {!isNewEvent && (
               <Button
-                variant='danger'
+                variant="danger"
                 onClick={async () => {
                   await setConfirmActionFunction(() => () => {
                     handleDeleteEvent();
@@ -780,6 +795,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                   await setConfirmActionText(`delete ${selectedEvent.name}`);
                   await setShowConfirmActionModal(true);
                 }}
+                disabled={true}
               >
                 Delete
               </Button>
@@ -790,13 +806,14 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
             {isNewEvent && (
               <Button
                 onClick={handleEventCreation}
-                className='mx-2'
-                disabled={
-                  !eventName ||
-                  eventName.length === 0 ||
-                  !eventDescription ||
-                  eventDescription.length === 0
-                }
+                className="mx-2"
+                // disabled={
+                //   !eventName ||
+                //   eventName.length === 0 ||
+                //   !eventDescription ||
+                //   eventDescription.length === 0
+                // }
+                disabled={true}
               >
                 Create Event
               </Button>
@@ -804,15 +821,16 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
 
             {!isNewEvent && (
               <Button
-                className='mx-2'
+                className="mx-2"
                 onClick={handleEventUpdate}
-                disabled={isEventUpdated === false}
+                // disabled={isEventUpdated === false}
+                disabled={true}
               >
                 Update
               </Button>
             )}
 
-            <Button variant='danger' onClick={handleClose}>
+            <Button variant="danger" onClick={handleClose}>
               Close
             </Button>
           </div>

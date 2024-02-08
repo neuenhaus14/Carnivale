@@ -72,21 +72,21 @@ module.exports = {
       {
         email: "evmaperry@gmail.com",
         phone: "231-649-2298",
-        firstName: "Evan",
-        lastName: "Perry",
+        firstName: "Devan",
+        lastName: "Gary",
         latitude: 29.968048,
         longitude: -90.051059,
         createdAt: new Date(),
         updatedAt: new Date(),
         shareLoc: true,
-      }
+      },
     ]);
 
     await queryInterface.bulkInsert("events", [
       {
         name: "Meetup at the Friendly Bar",
-        startTime: "2024-01-23T18:00",
-        endTime: "2024-01-23T19:00",
+        startTime: "2024-02-18T18:00",
+        endTime: "2024-02-18T19:00",
         description: "Grabbing a pint for old time's sake",
         longitude: -90.05951,
         latitude: 29.963724,
@@ -159,8 +159,8 @@ module.exports = {
       {
         eventId: 1,
         userId: 1,
-        senderId: 1,
-        isAttending: true,
+        senderId: 2,
+        isAttending: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -247,7 +247,8 @@ module.exports = {
     ]);
 
     await queryInterface.bulkInsert("pins", [
-      { // free toilet
+      {
+        // free toilet
         longitude: -90.053271,
         latitude: 29.962828,
         isToilet: false,
@@ -262,7 +263,8 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // $3 toilent
+      {
+        // $3 toilent
         longitude: -90.051899,
         latitude: 29.963333,
         isToilet: true,
@@ -277,9 +279,10 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // # 3, food
+      {
+        // # 3, food
         longitude: -90.050777,
-        latitude: 29.963600,
+        latitude: 29.9636,
         isToilet: false,
         isFood: true,
         isPersonal: false,
@@ -292,7 +295,8 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // # 4, personal
+      {
+        // # 4, personal
         longitude: -90.056035,
         latitude: 29.961779,
         isToilet: false,
@@ -307,8 +311,9 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // # 5, emt
-        longitude: -90.056710,
+      {
+        // # 5, emt
+        longitude: -90.05671,
         latitude: 29.965501,
         isToilet: false,
         isFood: false,
@@ -322,8 +327,9 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // # 6, phone charger
-        longitude: -90.051980,
+      {
+        // # 6, phone charger
+        longitude: -90.05198,
         latitude: 29.966916,
         isToilet: false,
         isFood: false,
@@ -337,7 +343,8 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // # 7, police
+      {
+        // # 7, police
         longitude: -90.056241,
         latitude: 29.963603,
         isToilet: false,
@@ -379,11 +386,13 @@ module.exports = {
     ]);
 
     await queryInterface.bulkInsert("photos", [
-      { // 1
+      {
+        // 1
         longitude: -90.053271,
         latitude: 29.962828,
         description: "A free toilet!",
-        photoURL: "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/yfpo9qrachrpizrgkt47.jpg",
+        photoURL:
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/yfpo9qrachrpizrgkt47.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,
@@ -392,7 +401,8 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 2
+      {
+        // 2
         longitude: -90.051899,
         latitude: 29.963333,
         description: "$3 dollars per use! Nice and clean!",
@@ -406,9 +416,10 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 3
+      {
+        // 3
         longitude: -90.050777,
-        latitude: 29.963600,
+        latitude: 29.9636,
         description: "Hot sausage in da house. $10 ftw!",
         photoURL:
           "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/ktpl4konvtsxeuy3mgi8.jpg",
@@ -420,9 +431,10 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 4
+      {
+        // 4
         longitude: -90.050777,
-        latitude: 29.963600,
+        latitude: 29.9636,
         description: "Not so fast! Now a long line for po boys!",
         photoURL:
           "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/z84caqng7omrheoqksrw.jpg",
@@ -434,7 +446,8 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 5
+      {
+        // 5
         longitude: -90.056035,
         latitude: 29.961779,
         description: "Left bike here!",
@@ -448,7 +461,8 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 6
+      {
+        // 6
         longitude: -90.055109,
         latitude: 29.963299,
         description: "Check out my costume",
@@ -462,7 +476,8 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 7
+      {
+        // 7
         longitude: -90.055132,
         latitude: 29.963645,
         description: "Space vikings skol!",
@@ -476,7 +491,8 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 8
+      {
+        // 8
         longitude: -90.055155,
         latitude: 29.963277,
         description: "Oh yeah! Thank you, Muses",
@@ -490,12 +506,13 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 9
+      {
+        // 9
         longitude: -90.055144,
         latitude: 29.963244,
         description: "Check out what I got at Zulu!",
         photoURL:
-        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/z4ips6rseyeyydt0zgix.jpg",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/z4ips6rseyeyydt0zgix.jpg",
         isCostume: false,
         isThrow: true,
         isPin: false,
@@ -504,12 +521,13 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 10
+      {
+        // 10
         longitude: -90.055432,
         latitude: 29.963234,
         description: "All hail Doctor Oz!",
         photoURL:
-        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/petewb3zjwanwibxffsk.jpg",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/petewb3zjwanwibxffsk.jpg",
         isCostume: false,
         isThrow: false,
         isPin: false,
@@ -518,12 +536,13 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 11
+      {
+        // 11
         longitude: -90.051234,
         latitude: 29.963765,
         description: "Motley Crew in the FQ",
         photoURL:
-        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/wkkc6ixqekszbjbolslu.jpg",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/wkkc6ixqekszbjbolslu.jpg",
         isCostume: true,
         isThrow: false,
         isPin: false,
@@ -532,12 +551,13 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 12
+      {
+        // 12
         longitude: -90.051234,
         latitude: 29.963765,
         description: "Uggh more beaadddszzz 😭 Wahhh",
         photoURL:
-        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/t9fdgexvifjlzqpbcaa7.jpg",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/t9fdgexvifjlzqpbcaa7.jpg",
         isCostume: false,
         isThrow: true,
         isPin: false,
@@ -546,12 +566,13 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 13
+      {
+        // 13
         longitude: -90.051334,
         latitude: 29.963165,
         description: "🥁 Drumline woooo!",
         photoURL:
-        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/r2dlbdsnrc6tj5a1r7ax.jpg",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/r2dlbdsnrc6tj5a1r7ax.jpg",
         isCostume: false,
         isThrow: false,
         isPin: false,
@@ -560,12 +581,13 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 14
-        longitude: -90.056710,
+      {
+        // 14
+        longitude: -90.05671,
         latitude: 29.965501,
         description: "Emt if you need a helping hand",
         photoURL:
-        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/oh8ugtya4ykz6d0ysl32.jpg",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/oh8ugtya4ykz6d0ysl32.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,
@@ -574,12 +596,13 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 15
-        longitude: -90.051980,
+      {
+        // 15
+        longitude: -90.05198,
         latitude: 29.966916,
         description: "Phone charger if ur outta juice",
         photoURL:
-        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/dubvno2a2fr1ncbzeazk.jpg",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/dubvno2a2fr1ncbzeazk.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,
@@ -588,12 +611,13 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { // 16
+      {
+        // 16
         longitude: -90.056241,
         latitude: 29.963603,
         description: "Hot fuzz, 6 o'clock (that means they're behind you).",
         photoURL:
-        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/u3vgjan0n7ufckqbh7tt.jpg",
+          "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/u3vgjan0n7ufckqbh7tt.jpg",
         isCostume: false,
         isThrow: false,
         isPin: true,
@@ -664,49 +688,57 @@ module.exports = {
     ]);
 
     await queryInterface.bulkInsert("join_pin_photos", [
-      { //1
+      {
+        //1
         photoId: 1,
         pinId: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { //2
+      {
+        //2
         photoId: 2,
         pinId: 2,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { //3
+      {
+        //3
         photoId: 3,
         pinId: 3,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { //4
+      {
+        //4
         photoId: 4,
         pinId: 3,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { //5
+      {
+        //5
         photoId: 5,
         pinId: 4,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { //6
+      {
+        //6
         photoId: 14,
         pinId: 5,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { //7
+      {
+        //7
         photoId: 15,
         pinId: 6,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      { //7
+      {
+        //7
         photoId: 16,
         pinId: 7,
         createdAt: new Date(),
@@ -716,34 +748,37 @@ module.exports = {
 
     await queryInterface.bulkInsert("comments", [
       {
-        comment: "Cannot wait to see the satire at KdV, hope the weather holds up ⚡",
+        comment:
+          "Cannot wait to see the satire at KdV, hope the weather holds up ⚡",
         upvotes: 2,
         ownerId: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        comment: "🔥Police razor scooter is on fire!🔥 Passersby putting it out with their drinks!",
+        comment:
+          "🔥Police razor scooter is on fire!🔥 Passersby putting it out with their drinks!",
         upvotes: 1,
         ownerId: 2,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        comment: "Was that Morris Bart in a furry costume at Chewbacchus??? 🦦",
+        comment:
+          "Was that Morgus the Magnificent in a costume at Chewbacchus??? 🦦",
         upvotes: 1,
         ownerId: 3,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        comment: "🫣 I think I just saw that guy from the Bachelorette outside R bar...",
+        comment:
+          "🫣 I think I just saw that guy from the Bachelorette outside R bar...",
         upvotes: 3,
         ownerId: 4,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
-      ,
+      },
       {
         comment: "The sun is shining, and I'm already peeling like an 🍊",
         upvotes: 1,
@@ -752,8 +787,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        comment:
-          "Where should I get some food? Somebody drop a good pin!",
+        comment: "Where should I get some food? Somebody drop a good pin!",
         upvotes: 0,
         ownerId: 2,
         createdAt: new Date(),
@@ -863,8 +897,7 @@ module.exports = {
         isConfirmed: true,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
-      ,
+      },
       {
         requester_userId: 4,
         recipient_userId: 7,
@@ -880,19 +913,32 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        requester_userId: 1, // bob j
-        recipient_userId: 7, // Evan
-        isConfirmed: true, // are friends so I can get an invite
+        requester_userId: 1,
+        recipient_userId: 2,
+        isConfirmed: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-
+      {
+        requester_userId: 1,
+        recipient_userId: 3,
+        isConfirmed: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        requester_userId: 1,
+        recipient_userId: 6,
+        isConfirmed: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
 
     await queryInterface.bulkInsert("join_shared_posts", [
       {
-        sender_userId: 1,
-        recipient_userId: 7,
+        sender_userId: 2,
+        recipient_userId: 1,
         shared_commentId: null,
         shared_pinId: null,
         shared_photoId: 10,
@@ -901,7 +947,7 @@ module.exports = {
       },
       {
         sender_userId: 5,
-        recipient_userId: 7,
+        recipient_userId: 1,
         shared_commentId: 3,
         shared_pinId: null,
         shared_photoId: null,
@@ -910,7 +956,7 @@ module.exports = {
       },
       {
         sender_userId: 6,
-        recipient_userId: 7,
+        recipient_userId: 1,
         shared_commentId: 8,
         shared_pinId: null,
         shared_photoId: null,

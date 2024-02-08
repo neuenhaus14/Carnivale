@@ -56,47 +56,66 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   const handleUpvote = async (type: string) => {
-    try {
-      await axios.post(
-        `/api/feed/${
-          type === "comment"
-            ? `upvote-comment/${userId}/${post.id}`
-            : `upvote-photo/${userId}/${post.id}`
-        }`
-      );
-
-      if (commentVotingStatus !== "upvoted") {
-        setCommentVotingStatus("upvoted");
-      }
-    } catch (err) {
-      toast.warning("You've already upvoted this post!");
-    } finally {
-      getPosts(eventKey);
-    }
+    // try {
+    //   await axios.post(
+    //     `/api/feed/${
+    //       type === "comment"
+    //         ? `upvote-comment/${userId}/${post.id}`
+    //         : `upvote-photo/${userId}/${post.id}`
+    //     }`
+    //   );
+    //   if (commentVotingStatus !== "upvoted") {
+    //     setCommentVotingStatus("upvoted");
+    //   }
+    // } catch (err) {
+    //   toast.warning("You've already upvoted this post!");
+    // } finally {
+    //   getPosts(eventKey);
+    // }
+    toast("🎭Upvote post!🎭", {
+      position: "top-right",
+      autoClose: 2500,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   };
 
   const handleDownvote = async (type: string) => {
-    try {
-      await axios.post(
-        `/api/feed/${
-          type === "comment"
-            ? `downvote-comment/${userId}/${post.id}`
-            : `downvote-photo/${userId}/${post.id}`
-        }`
-      );
+    // try {
+    //   await axios.post(
+    //     `/api/feed/${
+    //       type === "comment"
+    //         ? `downvote-comment/${userId}/${post.id}`
+    //         : `downvote-photo/${userId}/${post.id}`
+    //     }`
+    //   );
 
-      if (commentVotingStatus !== "downvoted") {
-        setCommentVotingStatus("downvoted");
+    //   if (commentVotingStatus !== "downvoted") {
+    //     setCommentVotingStatus("downvoted");
 
-        if (post.upvotes - 1 <= -5) {
-          toast.error("Post deleted due to too many downvotes!");
-        }
-      }
-    } catch (err) {
-      toast.warning("You've already downvoted this post!");
-    } finally {
-      getPosts(eventKey);
-    }
+    //     if (post.upvotes - 1 <= -5) {
+    //       toast.error("Post deleted due to too many downvotes!");
+    //     }
+    //   }
+    // } catch (err) {
+    //   toast.warning("You've already downvoted this post!");
+    // } finally {
+    //   getPosts(eventKey);
+    // }
+    toast("🎭Downvote post!🎭", {
+      position: "top-right",
+      autoClose: 2500,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   };
 
   useEffect(() => {
@@ -104,27 +123,28 @@ const PostCard: React.FC<PostCardProps> = ({
   }, []);
 
   const handleDeletePost = async (type: string) => {
-    try {
-      if (isOwner) {
-        await axios.delete(
-          `/api/home/${
-            type === "comment"
-              ? `delete-comment/${post.id}`
-              : `delete-photo/${post.id}`
-          }`,
-          { data: { userId } }
-        );
+    // try {
+    //   if (isOwner) {
+    //     await axios.delete(
+    //       `/api/home/${
+    //         type === "comment"
+    //           ? `delete-comment/${post.id}`
+    //           : `delete-photo/${post.id}`
+    //       }`,
+    //       { data: { userId } }
+    //     );
 
-        toast.success("Post deleted successfully!");
-      } else {
-        toast.error("You are not the owner of this post. Delete not allowed.");
-      }
-    } catch (error) {
-      console.error("Error deleting post:", error);
-      toast.error("Error deleting post. Please try again.");
-    } finally {
-      getPosts(eventKey);
-    }
+    //     toast.success("Post deleted successfully!");
+    //   } else {
+    //     toast.error("You are not the owner of this post. Delete not allowed.");
+    //   }
+    // } catch (error) {
+    //   console.error("Error deleting post:", error);
+    //   toast.error("Error deleting post. Please try again.");
+    // } finally {
+    //   getPosts(eventKey);
+    // }
+    toast.success("Delete your post!");
   };
 
   return (

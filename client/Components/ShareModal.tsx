@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Modal, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap';
-import { FaShareSquare  } from "@react-icons/all-files/fa/FaShareSquare";
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { ThemeContext } from './Context';
+import React, { useState, useEffect, useContext } from "react";
+import { Modal, Button, Form, Dropdown, DropdownButton } from "react-bootstrap";
+import { FaShareSquare } from "@react-icons/all-files/fa/FaShareSquare";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ThemeContext } from "./Context";
 
 const ShareModal = (props: {
   postId: number;
@@ -38,12 +38,12 @@ const ShareModal = (props: {
 
   const sharePost = async (share: string) => {
     try {
-      await axios.post(`api/home/share/${share}`, {
-        recipient_userId: shareId,
-        sender_userId: userId,
-        id: postId,
-      });
-      toast("🎭Post shared successfully!🎭", {
+      // await axios.post(`api/home/share/${share}`, {
+      //   recipient_userId: shareId,
+      //   sender_userId: userId,
+      //   id: postId,
+      // });
+      toast("🎭Share post with your friends🎭", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -62,8 +62,8 @@ const ShareModal = (props: {
 
   return (
     <div className={theme}>
-      <Button onClick={handleShow} style={{ marginLeft: '150px'}}>
-        <FaShareSquare  />
+      <Button onClick={handleShow} style={{ marginLeft: "150px" }}>
+        <FaShareSquare />
       </Button>
 
       <Modal show={show} onHide={handleClose}>
@@ -72,7 +72,10 @@ const ShareModal = (props: {
         </Modal.Header>
 
         <Form>
-          <DropdownButton id="share-modal-dropdown" title={friendName || "Krewe"}>
+          <DropdownButton
+            id="share-modal-dropdown"
+            title={friendName || "Krewe"}
+          >
             {friends.map((friend, index) => {
               const name = `${friend.firstName} ${friend.lastName}`;
               return (
