@@ -49,7 +49,8 @@ const App = () => {
       const { data } = await axios.post(`api/home/user/`, { user });
       console.log('userId', data[0].id);
       setUserData(data[0]);
-      setUserId(data[0].id);
+      // setUserId(data[0].id);
+      setUserId(1);
     } catch (err) {
       console.error(err);
     }
@@ -142,13 +143,13 @@ const App = () => {
           path='/'
           element={<Login />}
         />
-        <Route element={<ProtectedRoute />}>
+        {/* <Route element={<ProtectedRoute />}> */}
         <Route
           path='/homepage'
           element={
             <div>
               <TopNavBar
-                title={user ? `Welcome, ${user.given_name}!` : ''}
+                title={user ? `Welcome, ${user.given_name}!` : 'Welcome, Bob!'}
                 currWeather={currWeather}
                 currTemp={currTemp}
               />
@@ -259,7 +260,7 @@ const App = () => {
           }
         />
         </Route>
-      </Route>
+      // </Route>
     )
   );
 
