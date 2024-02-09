@@ -71,6 +71,11 @@ $cardBackground2: #fdf9f4;
 
 @import "bootstrap";
 
+// background color for entire app
+#app {
+  background-color: #fffcf8;
+}
+
 .card {
   padding: 15px;
   display: flex;
@@ -238,10 +243,12 @@ p {
   margin: 0px 6px 6px;
 }
 
+// this is for the body tag, NOT the body class
 body {
   color: $dark;
   font-family: "Fredoka", sans-serif;
 }
+
 .gig-body {
   padding-top: 10vh;
   padding-bottom: 14vh;
@@ -287,8 +294,9 @@ body {
   background-color: $tabSelected;
 }
 
+// krewe and calendar tabs content
 .userPage-tabs .tab-content .tab-pane {
-  max-height: 55vh;
+  height: 55vh;
   overflow: scroll;
 }
 
@@ -298,8 +306,6 @@ body {
   flex-flow: row wrap;
   justify-content: space-between;
   padding: 0px 30px;
-  position: absolute;
-  bottom: 13vh;
 }
 
 .userPage-buttons-container .btn {
@@ -391,7 +397,7 @@ body {
 }
 
 .comment-form {
-  border-top: 1px solid $secondaryColor;
+  // border-top: 1px solid $secondaryColor;
   border-radius: 0px;
   display: flex;
   flex-direction: row;

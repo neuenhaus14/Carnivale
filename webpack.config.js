@@ -55,7 +55,8 @@ module.exports = {
     }),
 
     new Dotenv(),
-    new BundleAnalyzerPlugin()
+    // uncomment below to show package graphic in browser
+    // new BundleAnalyzerPlugin()
   ],
 
   module: {
