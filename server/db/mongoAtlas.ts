@@ -17,8 +17,8 @@ const mailSubscriberSchema = new mongoose.Schema({
   lastName: String,
   email: {
     type: String,
-    // required: true,
-    // validate: [validateEmail, 'Please fill a valid email address'],
+    required: true,
+    validate: [validateEmail, 'Please fill a valid email address'],
   }
 })
 
