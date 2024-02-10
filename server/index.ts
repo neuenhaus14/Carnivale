@@ -1,10 +1,11 @@
 import express, { Request, Response, Router } from "express";
 import path from "path";
 import "./db"; //importing not using. so it does the same thing
+import "./db/mongoAtlas" // same as above to spin up mongoConnection
 import { auth } from "express-openid-connect";
 import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER, REDIRECT_URL } from "./config";
 import { Server } from "socket.io";
-import { Model } from "sequelize";
+// import { Model } from "sequelize";
 import PinRoutes from "./routes/Pins";
 import http from "http";
 import cors from "cors";
@@ -19,6 +20,7 @@ import FeedRoutes from "./routes/Feed";
 import ImageRouter from "./routes/PhotoUpload";
 import ParadesRoutes from "./routes/Parades";
 import GigsRoutes from "./routes/ScrapeEvents";
+import MailListRoutes from "./routes/MailList"
 import { User, } from "./db/index";
 // import { Sequelize } from "sequelize";
 // import { Socket } from "dgram";
@@ -50,6 +52,7 @@ app.use("/api/feed", FeedRoutes);
 app.use("/api/images", ImageRouter);
 app.use("/api/parades", ParadesRoutes);
 app.use("/api/gigs", GigsRoutes);
+app.use("/api/mail", MailListRoutes)
 app.use(
   cors({
     origin: ["http://localhost:4000"],
@@ -122,11 +125,13 @@ server.listen(port, () => {
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-interface RelationshipModel extends Model {
-  id: number;
-  isConfirmed: boolean;
-  requester_userId: number;
-  recipient_userId: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
+
+// Don't need this
+// interface RelationshipModel extends Model {
+//   id: number;
+//   isConfirmed: boolean;
+//   requester_userId: number;
+//   recipient_userId: number;
+//   createdAt: Date;
+//   updatedAt: Date;
+// }
