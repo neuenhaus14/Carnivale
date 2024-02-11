@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Button, Form, Alert } from 'react-bootstrap';
+import { Button, Form, Alert, Row, Col, Container } from 'react-bootstrap';
 import axios from 'axios';
 
 import { To, useNavigate } from 'react-router-dom';
@@ -21,14 +21,14 @@ const LoginButton = () => {
   });
 
   const [formEmailAlert, setFormEmailAlert] = useState({
-    isDisplayed : false,
+    isDisplayed: false,
     text: '',
-    variant: ''
-  })
+    variant: '',
+  });
 
-  const validateEmail = function(email : string) {
+  const validateEmail = function (email: string) {
     const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    return re.test(email)
+    return re.test(email);
   };
 
   // add mailing list info from client to Atlas db
@@ -36,22 +36,26 @@ const LoginButton = () => {
     try {
       if (validateEmail(mailingListInfo.email)) {
         // console.log('email valid')
-        await axios.post('/api/mail/addToMailList', mailingListInfo)
+        await axios.post('/api/mail/addToMailList', mailingListInfo);
         setFormEmailAlert({
           isDisplayed: true,
-          text: 'Thanks! You\'re on the list!',
-          variant: 'success'
+          text: "Thanks! You're on the list!",
+          variant: 'success',
         });
       } else {
         console.log('email invalid');
         setFormEmailAlert({
           isDisplayed: true,
-          text: 'Woah, Nellie! Please submit a valid email',
+          text: 'Please submit a valid email',
           variant: 'danger',
+        });
+        setMailingListInfo({
+          ...mailingListInfo,
+          email: ''
         })
       }
     } catch (err) {
-      console.error('CLIENT ERROR: failed to add to mail list', err)
+      console.error('CLIENT ERROR: failed to add to mail list', err);
     }
   };
 
@@ -59,13 +63,13 @@ const LoginButton = () => {
     const { name, value } = e.target;
     setMailingListInfo({
       ...mailingListInfo,
-      [name]: value
-    })
-  }
+      [name]: value,
+    });
+  };
 
   return (
     <div id='login'>
-      <div
+      <Container
         style={{
           border: '1px solid #ccc',
           borderRadius: '8px',
@@ -76,49 +80,86 @@ const LoginButton = () => {
           flexDirection: 'column',
           position: 'relative',
           backgroundColor: '#fffcf8',
-          textAlign: 'center',
           paddingBottom: '2rem',
         }}
       >
-        <h1>OPEN BETA</h1>
-        <img
-          id='login-img'
-          src='img/jesterPin.png'
-          alt='jester pin logo'
-          width='100%'
-          height='auto'
-        />
-
-        <p>
+        <Row>
+          <Col></Col>
+          <Col xs={10} className='d-flex flex-row justify-content-around'>
+            <div className='d-flex flex-column mx-auto align-self-center'>
+              <h1 className='mb-0'>Pardi Gras</h1>
+              <h5 className='text-center mt-0'>OPEN BETA</h5>
+            </div>
+            <img
+              id='login-img'
+              src='img/jesterPin-1.png'
+              alt='jester pin logo'
+            />
+          </Col>
+          <Col></Col>
+        </Row>
+        <hr></hr>
+        <p className='text-center'>
           <b>Your one-stop-shop for managing the chaos of Mardi Gras.</b>
         </p>
-        <p style={{lineHeight:"normal"}}>
-          Share gossip, costumes, throws, drop pins with hot commodities, create
-          events with your friends, checkout local music, and look up parade
-          schedules!
-        </p>
-        <p>
-          Take the{' '}
+        <ul className='text-left'>
+          <li className='login-text'>Share gossip, costumes & throws</li>
+          <li className='login-text'>Drop pins to map hot commodities</li>
+          <li className='login-text'>
+            Find live music, parade info & make plans with your friends
+          </li>
+        </ul>
+
+        <p className='login-text'>
+          Wanna get involved?{' '}
           <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
-            Survey
+            Take our survey
           </a>{' '}
-          and let us know what you think!
+          or <a href='mailto:pardigrasinfo@gmail.com'>shoot us an email</a> to
+          let us know what your think. We'd love your feedback!
         </p>
-        <p>
-          Any additional feedback? Drop a line at{' '}
-          <a href='mailto:pardigrasinfo@gmail.com'>PardiGrasInfo@gmail.com</a>
+        <p className='text-center mt-1'>
+          <em>Subscribe to the mailing list</em>
         </p>
+
         {/* <p>Like what you see?  Support us on <a href="https://www.kickstarter.com">Kickstarter</a></p> */}
-        <br />
         {/* <Button className="btn-login" style={{backgroundColor: "#e7abff" }} onClick={() => loginWithRedirect()}>Log In</Button> */}
         <Form>
-          <Form.Control onChange={handleMailingInfoChange} type="text" name="firstName" placeholder='First Name'/>
-          <Form.Control onChange={handleMailingInfoChange} type="text" name="lastName" placeholder='Last Name'/>
-          <Form.Control onChange={handleMailingInfoChange} type="email" name="email" placeholder='Email'/>
-          {formEmailAlert.isDisplayed && <Alert variant={formEmailAlert.variant}>{formEmailAlert.text}</Alert>}
-          <Button variant='success' onClick={addToMailingList}>
-            Submit
-          </Button>
+          <div className='d-flex flex-row mail-list-form-items'>
+            <Form.Control
+              onChange={handleMailingInfoChange}
+              type='text'
+              name='firstName'
+              placeholder='First Name'
+              value={mailingListInfo.firstName}
+            />
+            <Form.Control
+              onChange={handleMailingInfoChange}
+              type='text'
+              name='lastName'
+              placeholder='Last Name'
+              value={mailingListInfo.lastName}
+            />
+          </div>
+          <div className='d-flex flex-row mail-list-form-items'>
+            <Form.Control
+              onChange={handleMailingInfoChange}
+              type='email'
+              name='email'
+              placeholder='Email'
+              value={mailingListInfo.email}
+            />
+            <Button variant='success' onClick={addToMailingList}>
+              Submit
+            </Button>
+          </div>
+          <div className='mail-list-form-items'>
+            {formEmailAlert.isDisplayed && (
+              <Alert variant={formEmailAlert.variant}>
+                {formEmailAlert.text}
+              </Alert>
+            )}
+          </div>
         </Form>
         <Button
           className='btn-login'
@@ -127,7 +168,7 @@ const LoginButton = () => {
         >
           Enter Here!
         </Button>
-      </div>
+      </Container>
     </div>
   );
 };
