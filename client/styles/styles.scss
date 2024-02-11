@@ -76,6 +76,10 @@ $cardBackground2: #fdf9f4;
   background-color: #fffcf8;
 }
 
+.alert{
+  --bs-alert-padding-y: .5rem;
+}
+
 .card {
   padding: 15px;
   display: flex;
@@ -197,9 +201,13 @@ $cardBackground2: #fdf9f4;
 }
 
 #login {
-  background-color: $greeny;
+  background-image: linear-gradient($darkGreeny, $greeny);
   min-height: 100vh;
   padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 #login-img {

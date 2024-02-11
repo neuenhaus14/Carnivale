@@ -39,14 +39,14 @@ const LoginButton = () => {
         await axios.post('/api/mail/addToMailList', mailingListInfo);
         setFormEmailAlert({
           isDisplayed: true,
-          text: "Thanks! You're on the list!",
+          text: "Thanks! You're on the list.",
           variant: 'success',
         });
       } else {
         console.log('email invalid');
         setFormEmailAlert({
           isDisplayed: true,
-          text: 'Please submit a valid email',
+          text: 'Please submit a valid email.',
           variant: 'danger',
         });
         setMailingListInfo({
@@ -80,7 +80,6 @@ const LoginButton = () => {
           flexDirection: 'column',
           position: 'relative',
           backgroundColor: '#fffcf8',
-          paddingBottom: '2rem',
         }}
       >
         <Row>
@@ -88,7 +87,7 @@ const LoginButton = () => {
           <Col xs={10} className='d-flex flex-row justify-content-around'>
             <div className='d-flex flex-column mx-auto align-self-center'>
               <h1 className='mb-0'>Pardi Gras</h1>
-              <h5 className='text-center mt-0'>OPEN BETA</h5>
+              <h5 className='text-center mt-0' style={{fontFamily: '"Permanent Marker", serif'}}>OPEN BETA</h5>
             </div>
             <img
               id='login-img'
@@ -99,7 +98,7 @@ const LoginButton = () => {
           <Col></Col>
         </Row>
         <hr></hr>
-        <p className='text-center'>
+        <p className='text-center lh-sm'>
           <b>Your one-stop-shop for managing the chaos of Mardi Gras.</b>
         </p>
         <ul className='text-left'>
@@ -110,17 +109,16 @@ const LoginButton = () => {
           </li>
         </ul>
 
-        <p className='login-text'>
+        <p className='login-text text-left lh-sm'>
           Wanna get involved?{' '}
           <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
             Take our survey
           </a>{' '}
-          or <a href='mailto:pardigrasinfo@gmail.com'>shoot us an email</a> to
-          let us know what your think. We'd love your feedback!
+          or <a href='mailto:pardigrasinfo@gmail.com'>shoot us an email</a> - we love feedback! Or subscribe to the mailing list below:
         </p>
-        <p className='text-center mt-1'>
-          <em>Subscribe to the mailing list</em>
-        </p>
+        <h5 className='text-center mt-2' style={{fontFamily: '"Permanent Marker", serif'}}>
+          Subscribe to the mailing list:
+        </h5>
 
         {/* <p>Like what you see?  Support us on <a href="https://www.kickstarter.com">Kickstarter</a></p> */}
         {/* <Button className="btn-login" style={{backgroundColor: "#e7abff" }} onClick={() => loginWithRedirect()}>Log In</Button> */}
@@ -150,7 +148,7 @@ const LoginButton = () => {
               value={mailingListInfo.email}
             />
             <Button variant='success' onClick={addToMailingList}>
-              Submit
+              Subscribe
             </Button>
           </div>
           <div className='mail-list-form-items'>
@@ -162,11 +160,11 @@ const LoginButton = () => {
           </div>
         </Form>
         <Button
-          className='btn-login'
-          style={{ backgroundColor: '#e7abff' }}
+          className='mt-4 mb-3'
+          variant='secondary'
           onClick={() => handleNavigation('/homepage')}
         >
-          Enter Here!
+          Enter Pardi Gras
         </Button>
       </Container>
     </div>
