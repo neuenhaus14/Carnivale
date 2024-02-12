@@ -151,7 +151,7 @@ const App = () => {
           element={
             <div>
               <TopNavBar
-                title={user ? `Welcome, ${user.given_name}!` : 'Welcome, Bob!'}
+                title={user ? `Welcome, ${user.given_name}!` : 'Welcome, Friend!'}
                 currWeather={currWeather}
                 currTemp={currTemp}
               />

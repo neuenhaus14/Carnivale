@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Button, Form, Alert, Row, Col, Container } from 'react-bootstrap';
+import {
+  Button,
+  Form,
+  Alert,
+  Row,
+  Col,
+  Container,
+  Carousel,
+  Image,
+} from 'react-bootstrap';
 import axios from 'axios';
 
 import { To, useNavigate } from 'react-router-dom';
@@ -60,7 +69,7 @@ const LoginButton = () => {
 
   return (
     <div id='login'>
-      <Container id='login-container'>
+      <Container className='login-info-container'>
         <Row>
           <Col></Col>
           <Col xs={10} className='d-flex flex-row justify-content-around'>
@@ -74,7 +83,7 @@ const LoginButton = () => {
               </h5>
             </div>
             <img
-              id='login-img'
+              id='login-info-icon'
               src='img/jesterPin-1.png'
               alt='jester pin logo'
             />
@@ -84,7 +93,10 @@ const LoginButton = () => {
         <hr></hr>
         <Row>
           <Col>
-            <h5 className='text-center' style={{color: '#8d3dad', fontWeight: '500'}}>
+            <h5
+              className='text-center'
+              style={{ color: '#8d3dad', fontWeight: '500' }}
+            >
               Your One-Stop-Shop for Managing the Chaos of Mardi Gras
             </h5>
             <ul className='text-left'>
@@ -94,7 +106,10 @@ const LoginButton = () => {
                 Find live music, parade info & make plans with your friends
               </li>
             </ul>
-            <h5 className='text-center' style={{color: '#8d3dad', fontWeight: '500'}}>
+            <h5
+              className='text-center'
+              style={{ color: '#8d3dad', fontWeight: '500' }}
+            >
               Get Involved!
             </h5>
             <p className='login-text text-left lh-sm mb-3'>
@@ -102,7 +117,8 @@ const LoginButton = () => {
                 Take our survey
               </a>{' '}
               or <a href='mailto:pardigrasinfo@gmail.com'>shoot us an email</a>{' '}
-             with comments or questions - we'd love your feedback! Or stay in the loop by subscribing to the mailing list:
+              with comments or questions - we'd love your feedback! Or stay in
+              the loop by subscribing to the mailing list:
             </p>
 
             {/* <p>Like what you see?  Support us on <a href="https://www.kickstarter.com">Kickstarter</a></p> */}
@@ -139,6 +155,60 @@ const LoginButton = () => {
             </div>
           </Col>
         </Row>
+      </Container>
+
+      <Container className='login-carousel-container'>
+        <Carousel interval={7000} data-bs-theme='dark'>
+          <Carousel.Item>
+            <div className='login-carousel-item'>
+              <h5 className='text-center'>Stay Connected to the Community</h5>
+              <p className='mx-5 mb-3 lh-sm login-text text-center'>
+                Posts and pics keep event-goers in-the-know about the
+                festivities.
+              </p>
+              <Image
+                src='../../img/screenshots/home.png'
+                className='login-carousel-img'
+              />
+            </div>
+          </Carousel.Item>
+          <Carousel.Item>
+          <div className='login-carousel-item'>
+            <h5 className='text-center'>Find Your Bearings</h5>
+            <p className='mx-5 mb-3 lh-sm login-text text-center'>
+              Crowd-sourced pins mark points of interest and conveniences.
+            </p>
+            <Image
+              src='../../img/screenshots/map.png'
+              className='login-carousel-img'
+            />
+            </div>
+          </Carousel.Item>
+          <Carousel.Item>
+          <div className='login-carousel-item'>
+            <h5 className='text-center'>Get into the Groove</h5>
+            <p className='mx-5 mb-3 lh-sm login-text text-center'>
+              Plan your night out with an up-to-date NOLA live music calendar.
+            </p>
+            <Image
+              src='../../img/screenshots/gigs.png'
+              className='login-carousel-img'
+            />
+            </div>
+          </Carousel.Item>
+          <Carousel.Item>
+            <div className='login-carousel-item'>
+            <h5 className='text-center'>Mark Your Calendar</h5>
+            <p className='mx-5 mb-3 lh-sm login-text text-center'>
+              Create geo-located events and invite your krewe to tag along.
+            </p>
+            <Image
+              src='../../img/screenshots/event.png'
+              className='login-carousel-img'
+            />
+            </div>
+          </Carousel.Item>
+        </Carousel>
       </Container>
     </div>
   );
