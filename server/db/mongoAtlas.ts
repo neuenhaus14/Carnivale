@@ -13,14 +13,13 @@ mongoose
   .catch((err) => console.log(err));
 
 const mailSubscriberSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
   email: {
     type: String,
     required: true,
     validate: [validateEmail, 'Please fill a valid email address'],
-  }
-})
+  }},
+  { timestamps: true }
+)
 
 const mailListSubscriber = mongoose.model('sub', mailSubscriberSchema)
 

@@ -14,13 +14,9 @@ const LoginButton = () => {
     navigate(path);
   };
 
-  const [mailingListInfo, setMailingListInfo] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-  });
+  const [subscriberEmail, setSubscriberEmail] = useState('');
 
-  const [formEmailAlert, setFormEmailAlert] = useState({
+  const [subscriberFormAlert, setSubscriberFormAlert] = useState({
     isDisplayed: false,
     text: '',
     variant: '',
@@ -33,26 +29,24 @@ const LoginButton = () => {
 
   // add mailing list info from client to Atlas db
   const addToMailingList = async () => {
+    console.log('aTML', subscriberEmail);
     try {
-      if (validateEmail(mailingListInfo.email)) {
-        // console.log('email valid')
-        await axios.post('/api/mail/addToMailList', mailingListInfo);
-        setFormEmailAlert({
+      if (validateEmail(subscriberEmail)) {
+        console.log('email valid');
+        await axios.post('/api/mail/addToMailList', { email: subscriberEmail });
+        setSubscriberFormAlert({
           isDisplayed: true,
           text: "Thanks! You're on the list.",
           variant: 'success',
         });
       } else {
         console.log('email invalid');
-        setFormEmailAlert({
+        setSubscriberFormAlert({
           isDisplayed: true,
           text: 'Please submit a valid email.',
           variant: 'danger',
         });
-        setMailingListInfo({
-          ...mailingListInfo,
-          email: ''
-        })
+        setSubscriberEmail('');
       }
     } catch (err) {
       console.error('CLIENT ERROR: failed to add to mail list', err);
@@ -61,33 +55,23 @@ const LoginButton = () => {
 
   const handleMailingInfoChange = (e: any) => {
     const { name, value } = e.target;
-    setMailingListInfo({
-      ...mailingListInfo,
-      [name]: value,
-    });
+    setSubscriberEmail(value);
   };
 
   return (
     <div id='login'>
-      <Container
-        style={{
-          border: '1px solid #ccc',
-          borderRadius: '8px',
-          padding: '10px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-          display: 'flex',
-          alignContent: 'center',
-          flexDirection: 'column',
-          position: 'relative',
-          backgroundColor: '#fffcf8',
-        }}
-      >
+      <Container id='login-container'>
         <Row>
           <Col></Col>
           <Col xs={10} className='d-flex flex-row justify-content-around'>
             <div className='d-flex flex-column mx-auto align-self-center'>
               <h1 className='mb-0'>Pardi Gras</h1>
-              <h5 className='text-center mt-0' style={{fontFamily: '"Permanent Marker", serif'}}>OPEN BETA</h5>
+              <h5
+                className='text-center mt-0'
+                style={{ fontFamily: '"Permanent Marker", serif' }}
+              >
+                OPEN BETA
+              </h5>
             </div>
             <img
               id='login-img'
@@ -98,74 +82,63 @@ const LoginButton = () => {
           <Col></Col>
         </Row>
         <hr></hr>
-        <p className='text-center lh-sm'>
-          <b>Your one-stop-shop for managing the chaos of Mardi Gras.</b>
-        </p>
-        <ul className='text-left'>
-          <li className='login-text'>Share gossip, costumes & throws</li>
-          <li className='login-text'>Drop pins to map hot commodities</li>
-          <li className='login-text'>
-            Find live music, parade info & make plans with your friends
-          </li>
-        </ul>
+        <Row>
+          <Col>
+            <h5 className='text-center' style={{color: '#8d3dad', fontWeight: '500'}}>
+              Your One-Stop-Shop for Managing the Chaos of Mardi Gras
+            </h5>
+            <ul className='text-left'>
+              <li className='login-text'>Share gossip, costumes & throws</li>
+              <li className='login-text'>Drop pins to map hot commodities</li>
+              <li className='login-text'>
+                Find live music, parade info & make plans with your friends
+              </li>
+            </ul>
+            <h5 className='text-center' style={{color: '#8d3dad', fontWeight: '500'}}>
+              Get Involved!
+            </h5>
+            <p className='login-text text-left lh-sm mb-3'>
+              <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
+                Take our survey
+              </a>{' '}
+              or <a href='mailto:pardigrasinfo@gmail.com'>shoot us an email</a>{' '}
+             with comments or questions - we'd love your feedback! Or stay in the loop by subscribing to the mailing list:
+            </p>
 
-        <p className='login-text text-left lh-sm'>
-          Wanna get involved?{' '}
-          <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
-            Take our survey
-          </a>{' '}
-          or <a href='mailto:pardigrasinfo@gmail.com'>shoot us an email</a> - we love feedback! Or subscribe to the mailing list below:
-        </p>
-        <h5 className='text-center mt-2' style={{fontFamily: '"Permanent Marker", serif'}}>
-          Subscribe to the mailing list:
-        </h5>
-
-        {/* <p>Like what you see?  Support us on <a href="https://www.kickstarter.com">Kickstarter</a></p> */}
-        {/* <Button className="btn-login" style={{backgroundColor: "#e7abff" }} onClick={() => loginWithRedirect()}>Log In</Button> */}
-        <Form>
-          <div className='d-flex flex-row mail-list-form-items'>
-            <Form.Control
-              onChange={handleMailingInfoChange}
-              type='text'
-              name='firstName'
-              placeholder='First Name'
-              value={mailingListInfo.firstName}
-            />
-            <Form.Control
-              onChange={handleMailingInfoChange}
-              type='text'
-              name='lastName'
-              placeholder='Last Name'
-              value={mailingListInfo.lastName}
-            />
-          </div>
-          <div className='d-flex flex-row mail-list-form-items'>
-            <Form.Control
-              onChange={handleMailingInfoChange}
-              type='email'
-              name='email'
-              placeholder='Email'
-              value={mailingListInfo.email}
-            />
-            <Button variant='success' onClick={addToMailingList}>
-              Subscribe
-            </Button>
-          </div>
-          <div className='mail-list-form-items'>
-            {formEmailAlert.isDisplayed && (
-              <Alert variant={formEmailAlert.variant}>
-                {formEmailAlert.text}
-              </Alert>
-            )}
-          </div>
-        </Form>
-        <Button
-          className='mt-4 mb-3'
-          variant='secondary'
-          onClick={() => handleNavigation('/homepage')}
-        >
-          Enter Pardi Gras
-        </Button>
+            {/* <p>Like what you see?  Support us on <a href="https://www.kickstarter.com">Kickstarter</a></p> */}
+            {/* <Button className="btn-login" style={{backgroundColor: "#e7abff" }} onClick={() => loginWithRedirect()}>Log In</Button> */}
+            <Form>
+              <div className='d-flex flex-row mail-list-form-items'>
+                <Form.Control
+                  onChange={handleMailingInfoChange}
+                  type='email'
+                  name='email'
+                  placeholder='Email'
+                  value={subscriberEmail}
+                />
+                <Button variant='success' onClick={addToMailingList}>
+                  Subscribe
+                </Button>
+              </div>
+              <div className='mail-list-form-items'>
+                {subscriberFormAlert.isDisplayed && (
+                  <Alert variant={subscriberFormAlert.variant}>
+                    {subscriberFormAlert.text}
+                  </Alert>
+                )}
+              </div>
+            </Form>
+            <div className='d-flex flex-column justify-content-center'>
+              <Button
+                className='mt-4 mb-3 px-5 mx-auto'
+                variant='secondary'
+                onClick={() => handleNavigation('/homepage')}
+              >
+                Enter Pardi Gras
+              </Button>
+            </div>
+          </Col>
+        </Row>
       </Container>
     </div>
   );

@@ -4,8 +4,9 @@ const MailList = Router();
 
 MailList.post("/addToMailList", async (req: Request, res: Response) => {
   try {
-    const recipient = req.body
-    await mailListSubscriber.create(recipient);
+    const {email} = req.body
+    console.log('inside addToMailList',email)
+    await mailListSubscriber.create({email: email});
     res.status(200).send("NICE!")
   } catch (err) {
     console.error("SERVER ERROR: failed to add to mail list", err)

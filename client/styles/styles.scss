@@ -210,6 +210,18 @@ $cardBackground2: #fdf9f4;
   align-items: center;
 }
 
+#login-container {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: $primaryColor;
+  max-width: 500px;
+}
+
 #login-img {
   display: block;
   margin: 0 auto;
