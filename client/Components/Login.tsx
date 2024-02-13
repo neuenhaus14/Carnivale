@@ -163,8 +163,7 @@ const LoginButton = () => {
             <div className='login-carousel-item'>
               <h5 className='text-center'>Stay Connected to the Community</h5>
               <p className='mx-5 mb-3 lh-sm login-text text-center'>
-                Posts and pics keep event-goers in-the-know about the
-                festivities.
+                Posts & pics keep event-goers in-the-know about the festivities.
               </p>
               <Image
                 src='../../img/screenshots/home.png'
@@ -176,7 +175,7 @@ const LoginButton = () => {
           <div className='login-carousel-item'>
             <h5 className='text-center'>Find Your Bearings</h5>
             <p className='mx-5 mb-3 lh-sm login-text text-center'>
-              Crowd-sourced pins mark points of interest and conveniences.
+              Map pins mark points of interest and your friends' real time locations.
             </p>
             <Image
               src='../../img/screenshots/map.png'

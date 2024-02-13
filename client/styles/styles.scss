@@ -233,7 +233,15 @@ $cardBackground2: #fdf9f4;
 
 @include media-breakpoint-up(lg) {
   .login-carousel-container {
-    display: flex;
+    display: flex; // displays carousel for lg screen
+    margin-left: 2vw;
+  }
+  .login-info-container {
+    margin-right: 2vw;
+  }
+  #login {
+    padding-left: calc(15px + 10vw);
+    padding-right: calc(15px + 10vw);
   }
 }
 
