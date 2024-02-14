@@ -12,6 +12,7 @@ const AUTH0_CLIENT_ID : string = process.env.AUTH0_CLIENT_ID;
 const AUTH0_CLIENT_SECRET : string = process.env.AUTH0_CLIENT_SECRET;
 const ISSUER : string = process.env.ISSUER;
 const REDIRECT_URL : string = process.env.REDIRECT_URL;
+const ATLAS_URI : string = process.env.ATLAS_URI;
 
 
 export {
@@ -24,6 +25,7 @@ export {
   AUTH0_CLIENT_SECRET,
   ISSUER,
   REDIRECT_URL,
+  ATLAS_URI
 }
 
 // export default {

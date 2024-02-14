@@ -1,37 +1,32 @@
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+@import '~bootstrap/scss/reboot';
+@import '~bootstrap/scss/type';
+@import '~bootstrap/scss/images';
+@import '~bootstrap/scss/tables';
+@import '~bootstrap/scss/buttons';
+@import '~bootstrap/scss/transitions';
+@import '~bootstrap/scss/dropdown';
+@import '~bootstrap/scss/button-group';
 
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/mixins";
-@import "~bootstrap/scss/reboot";
-@import "~bootstrap/scss/type";
-@import "~bootstrap/scss/images";
-@import "~bootstrap/scss/tables";
-@import "~bootstrap/scss/buttons";
-@import "~bootstrap/scss/transitions";
-@import "~bootstrap/scss/dropdown";
-@import "~bootstrap/scss/button-group";
+@import '~bootstrap/scss/nav';
+@import '~bootstrap/scss/navbar';
+@import '~bootstrap/scss/card';
+@import '~bootstrap/scss/breadcrumb';
+@import '~bootstrap/scss/pagination';
+@import '~bootstrap/scss/badge';
+@import '~bootstrap/scss/alert';
+@import '~bootstrap/scss/progress';
 
-@import "~bootstrap/scss/nav";
-@import "~bootstrap/scss/navbar";
-@import "~bootstrap/scss/card";
-@import "~bootstrap/scss/breadcrumb";
-@import "~bootstrap/scss/pagination";
-@import "~bootstrap/scss/badge";
-@import "~bootstrap/scss/alert";
-@import "~bootstrap/scss/progress";
+@import '~bootstrap/scss/list-group';
+@import '~bootstrap/scss/close';
+@import '~bootstrap/scss/modal';
+@import '~bootstrap/scss/tooltip';
+@import '~bootstrap/scss/popover';
+@import '~bootstrap/scss/carousel';
 
-@import "~bootstrap/scss/list-group";
-@import "~bootstrap/scss/close";
-@import "~bootstrap/scss/modal";
-@import "~bootstrap/scss/tooltip";
-@import "~bootstrap/scss/popover";
-@import "~bootstrap/scss/carousel";
-
-
-
-@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@100;200;400;500;700&family=Inter:wght@600;700&family=Shrikhand&family=Permanent+Marker&display=swap");
-
-
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@100;200;400;500;700&family=Inter:wght@600;700&family=Shrikhand&family=Permanent+Marker&display=swap');
 
 $isFree: #53ca3c;
 $isToilet: #169873;
@@ -65,15 +60,19 @@ $tabUnselectedBorder: #e3e3e3;
 $tan: #d2b48c;
 $turq: #30d5c8;
 
-$offBlack: #291F1F;
+$offBlack: #291f1f;
 $offGrey: #aeaeae;
 $cardBackground2: #fdf9f4;
 
-@import "bootstrap";
+@import 'bootstrap';
 
 // background color for entire app
 #app {
   background-color: #fffcf8;
+}
+
+.alert {
+  --bs-alert-padding-y: 0.5rem;
 }
 
 .card {
@@ -150,7 +149,7 @@ $cardBackground2: #fdf9f4;
 }
 
 .userPage-tabs .btn-sm {
-  font-size:small !important;
+  font-size: small !important;
   padding: 3px 6px !important;
 }
 
@@ -197,23 +196,92 @@ $cardBackground2: #fdf9f4;
 }
 
 #login {
-  background-color: $greeny;
+  background-image: linear-gradient($darkGreeny, $greeny);
   min-height: 100vh;
-  padding: 50px;
+  padding: 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
-#login-img {
+.login-info-container {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  margin: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: $primaryColor;
+  max-width: 475px;
+}
+
+.login-carousel-container {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: none;
+  flex-direction: column;
+  position: relative;
+  background-color: $primaryColor;
+  max-width: 450px;
+}
+
+@include media-breakpoint-up(lg) {
+  .login-carousel-container {
+    display: flex; // displays carousel for lg screen
+    margin-left: 2vw;
+  }
+  .login-info-container {
+    margin-right: 2vw;
+  }
+  #login {
+    padding-left: calc(15px + 10vw);
+    padding-right: calc(15px + 10vw);
+  }
+}
+
+.login-carousel-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 50px;
+}
+
+.login-carousel-img {
+  width: 70%;
+  height: auto;
+}
+
+#login-info-icon {
   display: block;
   margin: 0 auto;
-  padding-bottom: 20px;
+  width: 80px;
+  height: auto;
 }
+
+.login-text {
+  font-size: medium;
+}
+
+.mail-list-form-items > * {
+  margin: 2px;
+}
+
+
+
 
 .modal-body {
   background-color: $primaryColor;
 }
 
 .modal-title {
-  font-family: "Permanent Marker", serif;
+  font-family: 'Permanent Marker', serif;
 }
 #modal-footer {
   background-color: $greeny;
@@ -246,7 +314,7 @@ p {
 // this is for the body tag, NOT the body class
 body {
   color: $dark;
-  font-family: "Fredoka", sans-serif;
+  font-family: 'Fredoka', sans-serif;
 }
 
 .gig-body {
@@ -266,14 +334,12 @@ body {
   min-height: 100vh;
 }
 .date-picker-name {
-
   text-align: left;
   margin-left: auto;
   margin-right: auto;
   margin-top: 6px;
 }
 .date-picker {
-
   text-align: center;
   margin-left: auto;
   margin-right: 10px;
@@ -330,7 +396,7 @@ body {
 
 .nav-tabs .nav-link {
   color: rgb(86, 86, 86);
-  font-family: "Permanent Marker", serif;
+  font-family: 'Permanent Marker', serif;
   background-color: $tabUnselected;
   border-top: 1px solid $tabUnselectedBorder;
   border-left: 1px solid $tabUnselectedBorder;
@@ -339,7 +405,7 @@ body {
 }
 
 .nav-tabs .nav-link.active {
-  font-family: "Permanent Marker", serif;
+  font-family: 'Permanent Marker', serif;
   background-color: $tabSelected;
   color: $dark;
   border-top: solid 1px $tabSelectedBorder;
@@ -428,8 +494,7 @@ body {
   text-align: center;
 }
 
-
-.loader{
+.loader {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -443,9 +508,9 @@ body {
   // width: 100%;
   // height: auto;
 }
- .disclaimer {
+.disclaimer {
   font-size: smaller;
- }
+}
 
 //regular mode
 .pg-theme-light {
@@ -464,7 +529,6 @@ body {
   }
 }
 
-
 //colorblind mode
 .pg-theme-vis {
   .btn-primary {
@@ -479,14 +543,13 @@ body {
     text-transform: uppercase;
   }
 
-
-  .btn-danger{
+  .btn-danger {
     background-color: $offBlack !important;
     color: white;
     text-transform: uppercase;
   }
 
-  .dropdown-toggle{
+  .dropdown-toggle {
     background-color: $offBlack !important;
     color: white;
 
@@ -515,13 +578,12 @@ body {
   }
 
   .nav-tabs .nav-link {
-    background-color: $tabSelected ;
+    background-color: $tabSelected;
     color: gray;
   }
 
-
   .nav-tabs .nav-link.active {
-    background-color:$tabSelected;
+    background-color: $tabSelected;
     color: $offBlack;
     border-bottom: solid 1px $tabSelected !important;
   }
@@ -542,7 +604,6 @@ body {
   .form-check-label {
     color: black !important;
   }
-
 }
 
 .pg-theme-deep {
@@ -570,4 +631,3 @@ body {
     }
   }
 }
-
