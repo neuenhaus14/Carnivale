@@ -13,7 +13,8 @@ const AUTH0_CLIENT_SECRET : string = process.env.AUTH0_CLIENT_SECRET;
 const ISSUER : string = process.env.ISSUER;
 const REDIRECT_URL : string = process.env.REDIRECT_URL;
 const ATLAS_URI : string = process.env.ATLAS_URI;
-
+// RUN_MODE could be "demo" or "standard". "demo" deactivates buttons
+const RUN_MODE : string = process.env.RUN_MODE;
 
 export {
   DATABASE_PASSWORD,

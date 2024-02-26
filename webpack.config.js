@@ -1,38 +1,31 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-// import HtmlWebpackPlugin from 'html-webpack-plugin';
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
 const webpack = require('webpack');
-// import { webpack } from 'webpack';
-
-const WebpackBar = require('webpackbar');
-// import WebpackBar from 'webpackbar'
-
 const path = require('path');
-// import path from 'path'
 
-//import { fileURLToPath } from 'url';
-
-const Dotenv = require('dotenv-webpack');
-//import Dotenv from 'dotenv-webpack'
-
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const WebpackBar = require('webpackbar');
+const DotenvWebpack = require('dotenv-webpack');
 const autoprefixer = require('autoprefixer');
-//import autoprefixer from 'autoprefixer'
 
-//import 'dotenv/config'
+require('dotenv').config()
 
-require("dotenv").config()
-const {NODE_ENV = "production"} = process.env
-const isDev = NODE_ENV.includes("dev")
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
+const { NODE_ENV = 'production' } = process.env;
+const isDev = NODE_ENV.includes('dev');
 
 const SRC_DIR = path.resolve(__dirname, 'client');
 const DIST_DIR = path.resolve(__dirname, 'dist');
 
-module.exports = {
+const allPlugins = [
+  // generates html to add to dist
+  new HtmlWebpackPlugin({
+    template: path.resolve(SRC_DIR, 'index.html'),
+  }),
+  // imports environment variables into client-side
+  new DotenvWebpack(),
+];
 
+module.exports = {
   entry: {
     app: path.resolve(SRC_DIR, 'index.tsx'),
   },
@@ -41,23 +34,18 @@ module.exports = {
     path: DIST_DIR,
     filename: '[name].bundle.js',
   },
-  mode: isDev ? "development" : "production",
-  devtool: isDev ? "inline-source-map" : "source-map",
+  mode: isDev ? 'development' : 'production',
+  devtool: isDev ? 'inline-source-map' : 'source-map',
 
-  plugins: [
-    // Creates a loading bar
-    new WebpackBar(),
-    // Clears files in ./dist
-    // new CleanWebpackPlugin(),
-    // generates an html file from template
-    new HtmlWebpackPlugin({
-      template: path.resolve(SRC_DIR, 'index.html'),
-    }),
-
-    new Dotenv(),
-    // uncomment below to show package graphic in browser
-    // new BundleAnalyzerPlugin()
-  ],
+  plugins: isDev
+    ? allPlugins.concat([
+        // Add plugins for development
+        // Creates a loading bar
+        new WebpackBar(),
+        // Generates bundle analyzer
+        new BundleAnalyzerPlugin(),
+      ])
+    : allPlugins,
 
   module: {
     rules: [
@@ -69,7 +57,8 @@ module.exports = {
         test: /\.(gif|jpg|png|mp3|aac|ogg)$/,
         type: 'asset/resource',
       },
-      { //for typescript
+      {
+        //for typescript
         test: /\.tsx?$/, //match the least number of files it needs to
         use: 'ts-loader',
         exclude: /node_modules/,
@@ -103,9 +92,7 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
               postcssOptions: {
-                plugins: [
-                  autoprefixer,
-                ],
+                plugins: [autoprefixer],
               },
             },
           },
@@ -119,11 +106,11 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
-      fallback: {
-        // "fs": false,
-        "os": false,
-        "path": false,
-        "crypto": false
-      }
+    fallback: {
+      // "fs": false,
+      os: false,
+      path: false,
+      crypto: false,
+    },
   },
-}
+};
