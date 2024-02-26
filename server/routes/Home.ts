@@ -163,6 +163,7 @@ HomeRoutes.get("/photo/:id", async (req: Request, res: Response) => {
 });
 
 HomeRoutes.post("/user", async (req: Request, res: Response) => {
+  console.log('here', req.body)
   const { user } = req.body;
   try {
     const userData = await User.findOrCreate({

@@ -128,7 +128,7 @@ const Upload: React.FC<Props> = ({
         name="image"
         onChange={handleSelectFile}
         multiple={false}
-        disabled={true}
+        disabled={process.env.RUN_MODE === "demo"}
       />
       <br />
       <Form.Label>
@@ -146,8 +146,8 @@ const Upload: React.FC<Props> = ({
         <Button
           className="btn-success"
           size="lg"
-          //disabled={file === null || description === ''}
-          disabled={true}
+          disabled={process.env.RUN_MODE === "demo" || file === null || description === ''}
+
           onClick={uploadFile}
         >
           {loading ? "Saving..." : "Save"}

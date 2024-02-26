@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { ButtonGroup, Card, OverlayTrigger, Tooltip } from "react-bootstrap";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useState, useEffect } from 'react';
+import { ButtonGroup, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-import ShareModal from "./ShareModal";
+import ShareModal from './ShareModal';
 // import {IoMdArrowUp} from "@react-icons/all-files/io/IoMdArrowUp";
 // import {IoMdArrowDown} from "@react-icons/all-files/io/IoMdArrowDown";
-import { IoArrowDownCircle } from "@react-icons/all-files/io5/IoArrowDownCircle";
-import { IoArrowUpCircle } from "@react-icons/all-files/io5/IoArrowUpCircle";
+import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
+import { IoArrowUpCircle } from '@react-icons/all-files/io5/IoArrowUpCircle';
 
 dayjs.extend(relativeTime);
 
@@ -39,16 +39,16 @@ const PostCard: React.FC<PostCardProps> = ({
   order,
   eventKey,
 }) => {
-  const [owner, setOwner] = useState("");
+  const [owner, setOwner] = useState('');
   const [commentVotingStatus, setCommentVotingStatus] = useState<
-    "upvoted" | "downvoted" | "none"
-  >("none");
+    'upvoted' | 'downvoted' | 'none'
+  >('none');
   const [isOwner, setIsOwner] = useState(false);
 
   const getOwner = async () => {
     try {
       const { data } = await axios.get(`api/home/post/${post.ownerId}`);
-      setOwner(data.firstName + " " + data.lastName);
+      setOwner(data.firstName + ' ' + data.lastName);
       setIsOwner(data.id === userId);
     } catch (err) {
       console.error(err);
@@ -56,66 +56,78 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   const handleUpvote = async (type: string) => {
-    // try {
-    //   await axios.post(
-    //     `/api/feed/${
-    //       type === "comment"
-    //         ? `upvote-comment/${userId}/${post.id}`
-    //         : `upvote-photo/${userId}/${post.id}`
-    //     }`
-    //   );
-    //   if (commentVotingStatus !== "upvoted") {
-    //     setCommentVotingStatus("upvoted");
-    //   }
-    // } catch (err) {
-    //   toast.warning("You've already upvoted this post!");
-    // } finally {
-    //   getPosts(eventKey);
-    // }
-    toast("🎭Upvote post!🎭", {
-      position: "top-right",
-      autoClose: 2500,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+    // if demo mode, display toast
+    if (process.env.RUN_MODE === 'demo') {
+      toast('🎭Upvote post!🎭', {
+        position: 'top-right',
+        autoClose: 2500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+    }
+    // else run upvote logic
+    else {
+      try {
+        await axios.post(
+          `/api/feed/${
+            type === 'comment'
+              ? `upvote-comment/${userId}/${post.id}`
+              : `upvote-photo/${userId}/${post.id}`
+          }`
+        );
+        if (commentVotingStatus !== 'upvoted') {
+          setCommentVotingStatus('upvoted');
+        }
+      } catch (err) {
+        toast.warning("You've already upvoted this post!");
+      } finally {
+        getPosts(eventKey);
+      }
+    }
   };
 
   const handleDownvote = async (type: string) => {
-    // try {
-    //   await axios.post(
-    //     `/api/feed/${
-    //       type === "comment"
-    //         ? `downvote-comment/${userId}/${post.id}`
-    //         : `downvote-photo/${userId}/${post.id}`
-    //     }`
-    //   );
+    // if demo mode, display toast
+    if (process.env.RUN_MODE === 'demo') {
+      toast('🎭Downvote post!🎭', {
+        position: 'top-right',
+        autoClose: 2500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+    }
+    // if not demo mode, run downvote logic
+    else {
+      try {
+        await axios.post(
+          `/api/feed/${
+            type === 'comment'
+              ? `downvote-comment/${userId}/${post.id}`
+              : `downvote-photo/${userId}/${post.id}`
+          }`
+        );
 
-    //   if (commentVotingStatus !== "downvoted") {
-    //     setCommentVotingStatus("downvoted");
+        if (commentVotingStatus !== 'downvoted') {
+          setCommentVotingStatus('downvoted');
 
-    //     if (post.upvotes - 1 <= -5) {
-    //       toast.error("Post deleted due to too many downvotes!");
-    //     }
-    //   }
-    // } catch (err) {
-    //   toast.warning("You've already downvoted this post!");
-    // } finally {
-    //   getPosts(eventKey);
-    // }
-    toast("🎭Downvote post!🎭", {
-      position: "top-right",
-      autoClose: 2500,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+          if (post.upvotes - 1 <= -5) {
+            toast.error('Post deleted due to too many downvotes!');
+          }
+        }
+      } catch (err) {
+        toast.warning("You've already downvoted this post!");
+      } finally {
+        getPosts(eventKey);
+      }
+    }
   };
 
   useEffect(() => {
@@ -144,7 +156,7 @@ const PostCard: React.FC<PostCardProps> = ({
     // } finally {
     //   getPosts(eventKey);
     // }
-    toast.success("Delete your post!");
+    toast.success('Delete your post!');
   };
 
   return (
@@ -152,23 +164,23 @@ const PostCard: React.FC<PostCardProps> = ({
       <Card>
         {post.comment ? (
           <Card.Body>
-            <Card.Text as="div">
-              <p className="card-content">{post.comment}</p>
-              <p className="card-detail">
+            <Card.Text as='div'>
+              <p className='card-content'>{post.comment}</p>
+              <p className='card-detail'>
                 {owner} posted
                 <br />
                 <>
                   <OverlayTrigger
-                    placement="top"
+                    placement='top'
                     overlay={
                       <Tooltip id={`tooltip-${post.id}`}>
                         {dayjs(post.createdAt.toString()).format(
-                          "dddd [at] h:mm A"
+                          'dddd [at] h:mm A'
                         )}
                       </Tooltip>
                     }
                   >
-                    <span style={{ cursor: "pointer" }}>
+                    <span style={{ cursor: 'pointer' }}>
                       {dayjs(post.createdAt.toString()).fromNow()}
                     </span>
                   </OverlayTrigger>
@@ -178,63 +190,63 @@ const PostCard: React.FC<PostCardProps> = ({
             </Card.Text>
             <ButtonGroup
               style={{
-                display: "flex",
-                alignItems: "center",
-                marginLeft: "-6px",
-                position: "relative",
+                display: 'flex',
+                alignItems: 'center',
+                marginLeft: '-6px',
+                position: 'relative',
               }}
             >
               <button
                 style={{
-                  border: "none",
-                  cursor: "pointer",
-                  outline: "none",
-                  boxShadow: "none",
-                  background: "transparent",
+                  border: 'none',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  background: 'transparent',
                 }}
-                onClick={() => handleUpvote("comment")}
-                disabled={commentVotingStatus === "upvoted"}
+                onClick={() => handleUpvote('comment')}
+                disabled={commentVotingStatus === 'upvoted'}
               >
                 <IoArrowUpCircle
                   style={{
                     color:
-                      commentVotingStatus === "upvoted" ? "green" : "black",
-                    fontSize: "30px",
+                      commentVotingStatus === 'upvoted' ? 'green' : 'black',
+                    fontSize: '30px',
                   }}
                 />
               </button>
-              <span style={{ margin: "0 5px" }}>{post.upvotes}</span>
+              <span style={{ margin: '0 5px' }}>{post.upvotes}</span>
               <button
                 style={{
-                  border: "none",
-                  cursor: "pointer",
-                  outline: "none",
-                  boxShadow: "none",
-                  background: "transparent",
+                  border: 'none',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  background: 'transparent',
                 }}
-                onClick={() => handleDownvote("comment")}
-                disabled={commentVotingStatus === "downvoted"}
+                onClick={() => handleDownvote('comment')}
+                disabled={commentVotingStatus === 'downvoted'}
               >
                 <IoArrowDownCircle
                   style={{
                     color:
-                      commentVotingStatus === "downvoted" ? "red" : "black",
-                    fontSize: "30px",
+                      commentVotingStatus === 'downvoted' ? 'red' : 'black',
+                    fontSize: '30px',
                   }}
                 />
               </button>
               {isOwner && (
                 <button
                   style={{
-                    border: "none",
-                    cursor: "pointer",
-                    outline: "none",
-                    boxShadow: "none",
-                    background: "transparent",
-                    color: "red",
+                    border: 'none',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    boxShadow: 'none',
+                    background: 'transparent',
+                    color: 'red',
                   }}
                   onClick={() =>
-                    handleDeletePost(post.comment ? "comment" : "photo")
+                    handleDeletePost(post.comment ? 'comment' : 'photo')
                   }
                 >
                   Delete
@@ -242,39 +254,39 @@ const PostCard: React.FC<PostCardProps> = ({
               )}
               <div
                 style={{
-                  position: "absolute",
-                  bottom: "0",
-                  right: "0",
+                  position: 'absolute',
+                  bottom: '0',
+                  right: '0',
                 }}
               >
                 <ShareModal
                   postId={post.id}
                   userId={userId}
-                  postType={"comment"}
+                  postType={'comment'}
                 />
               </div>
             </ButtonGroup>
           </Card.Body>
         ) : (
           <Card.Body>
-            <Card.Img variant="top" src={post.photoURL} />
-            <Card.Text as="div">
-              <p className="card-content">{post.description}</p>
-              <div className="card-detail">
+            <Card.Img variant='top' src={post.photoURL} />
+            <Card.Text as='div'>
+              <p className='card-content'>{post.description}</p>
+              <div className='card-detail'>
                 {owner} posted
                 <div>
                   {/* {' '} */}
                   <OverlayTrigger
-                    placement="top"
+                    placement='top'
                     overlay={
                       <Tooltip id={`tooltip-${post.id}`}>
                         {dayjs(post.createdAt.toString()).format(
-                          "dddd [at] h:mm A"
+                          'dddd [at] h:mm A'
                         )}
                       </Tooltip>
                     }
                   >
-                    <span style={{ cursor: "pointer" }}>
+                    <span style={{ cursor: 'pointer' }}>
                       {dayjs(post.createdAt.toString()).fromNow()}
                     </span>
                   </OverlayTrigger>
@@ -284,63 +296,63 @@ const PostCard: React.FC<PostCardProps> = ({
             </Card.Text>
             <ButtonGroup
               style={{
-                display: "flex",
-                alignItems: "center",
-                marginLeft: "-6px",
-                position: "relative",
+                display: 'flex',
+                alignItems: 'center',
+                marginLeft: '-6px',
+                position: 'relative',
               }}
             >
               <button
                 style={{
-                  border: "none",
-                  cursor: "pointer",
-                  outline: "none",
-                  boxShadow: "none",
-                  background: "transparent",
+                  border: 'none',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  background: 'transparent',
                 }}
-                onClick={() => handleUpvote("photo")}
-                disabled={commentVotingStatus === "upvoted"}
+                onClick={() => handleUpvote('photo')}
+                disabled={commentVotingStatus === 'upvoted'}
               >
                 <IoArrowUpCircle
                   style={{
                     color:
-                      commentVotingStatus === "upvoted" ? "green" : "black",
-                    fontSize: "30px",
+                      commentVotingStatus === 'upvoted' ? 'green' : 'black',
+                    fontSize: '30px',
                   }}
                 />
               </button>
-              <span style={{ margin: "0 5px" }}>{post.upvotes}</span>
+              <span style={{ margin: '0 5px' }}>{post.upvotes}</span>
               <button
                 style={{
-                  border: "none",
-                  cursor: "pointer",
-                  outline: "none",
-                  boxShadow: "none",
-                  background: "transparent",
+                  border: 'none',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  background: 'transparent',
                 }}
-                onClick={() => handleDownvote("photo")}
-                disabled={commentVotingStatus === "downvoted"}
+                onClick={() => handleDownvote('photo')}
+                disabled={commentVotingStatus === 'downvoted'}
               >
                 <IoArrowDownCircle
                   style={{
                     color:
-                      commentVotingStatus === "downvoted" ? "red" : "black",
-                    fontSize: "30px",
+                      commentVotingStatus === 'downvoted' ? 'red' : 'black',
+                    fontSize: '30px',
                   }}
                 />
               </button>
               {isOwner && (
                 <button
                   style={{
-                    border: "none",
-                    cursor: "pointer",
-                    outline: "none",
-                    boxShadow: "none",
-                    background: "transparent",
-                    color: "red",
+                    border: 'none',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    boxShadow: 'none',
+                    background: 'transparent',
+                    color: 'red',
                   }}
                   onClick={() =>
-                    handleDeletePost(post.comment ? "comment" : "photo")
+                    handleDeletePost(post.comment ? 'comment' : 'photo')
                   }
                 >
                   Delete
@@ -348,15 +360,15 @@ const PostCard: React.FC<PostCardProps> = ({
               )}
               <div
                 style={{
-                  position: "absolute",
-                  bottom: "0",
-                  right: "0",
+                  position: 'absolute',
+                  bottom: '0',
+                  right: '0',
                 }}
               >
                 <ShareModal
                   postId={post.id}
                   userId={userId}
-                  postType={"photo"}
+                  postType={'photo'}
                 />
               </div>
             </ButtonGroup>
@@ -366,7 +378,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
       {/* Toast containers */}
       <ToastContainer
-        position="top-right"
+        position='top-right'
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
@@ -375,7 +387,7 @@ const PostCard: React.FC<PostCardProps> = ({
         pauseOnFocusLoss={false}
         draggable
         pauseOnHover={false}
-        theme="light"
+        theme='light'
       />
     </>
   );

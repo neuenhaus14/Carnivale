@@ -734,7 +734,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
                 await setConfirmActionText(`log your butt out.`);
                 await setShowConfirmActionModal(true);
               }}
-              disabled={true}
+              //disabled={true}
             >
               Log Out
             </Button>

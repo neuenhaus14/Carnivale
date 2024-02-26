@@ -110,6 +110,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
     return () => clearTimeout(interval);
   }, [key, order]);
 
+  console.log
   return (
     <Container className={`body-home ${theme}`}>
       <Modal show={showAboutModal} onHide={toggleAboutModal}>
@@ -239,8 +240,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                   <Button
                     variant='primary'
                     onClick={handleSubmit}
-                    //disabled={comment.length <= 0}
-                    disabled={true}
+                    disabled={ process.env.RUN_MODE === "demo" || comment.length <= 0}
                     className='comment-btn mx-1'
                   >
                     <FaCommentDots />
