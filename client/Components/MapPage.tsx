@@ -27,6 +27,7 @@ interface MapProps {
   userLng: number;
   userId: number;
   getLocation: any;
+  isDemoMode: boolean;
 }
 
 const MapPage: React.FC<MapProps> = ({
@@ -34,6 +35,7 @@ const MapPage: React.FC<MapProps> = ({
   userLng,
   getLocation,
   userId,
+  isDemoMode,
 }) => {
   // ADD userId BACK TO PROPS
 
@@ -420,7 +422,7 @@ const MapPage: React.FC<MapProps> = ({
 
   return (
     <Container className={`body ${theme}`}>
-      <Modal show={showAboutModal} onHide={toggleAboutModal}>
+      {isDemoMode && <Modal show={showAboutModal} onHide={toggleAboutModal}>
         <Modal.Header closeButton>
           <Modal.Title>About the Map Page</Modal.Title>
         </Modal.Header>
@@ -433,7 +435,7 @@ const MapPage: React.FC<MapProps> = ({
             Close
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal>}
       {showModal ? (
         <PinModal
           userId={userId}

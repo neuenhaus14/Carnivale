@@ -24,9 +24,10 @@ interface HomePageProps {
   lat: number;
   lng: number;
   userId: number;
+  isDemoMode: boolean;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
+const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId, isDemoMode }) => {
   const [comment, setComment] = useState('');
   const [posts, setPosts] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -113,7 +114,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   console.log
   return (
     <Container className={`body-home ${theme}`}>
-      <Modal show={showAboutModal} onHide={toggleAboutModal}>
+      {isDemoMode && <Modal show={showAboutModal} onHide={toggleAboutModal}>
         <Modal.Header closeButton>
           <Modal.Title>About the Home Page</Modal.Title>
         </Modal.Header>
@@ -138,7 +139,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
             Close
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal>}
       <Row>
         <div
           key={'inline-radio'}
@@ -180,6 +181,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                     getPosts={getPosts}
                     order={order}
                     eventKey={'posts'}
+                    isDemoMode={isDemoMode}
                   />
                 ))
               : ''}
@@ -194,6 +196,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                     getPosts={getPosts}
                     order={order}
                     eventKey={'costumes'}
+                    isDemoMode={isDemoMode}
                   />
                 ))
               : ''}
@@ -208,6 +211,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                     getPosts={getPosts}
                     order={order}
                     eventKey={'throws'}
+                    isDemoMode={isDemoMode}
                   />
                 ))
               : ''}
@@ -240,7 +244,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                   <Button
                     variant='primary'
                     onClick={handleSubmit}
-                    disabled={ process.env.RUN_MODE === "demo" || comment.length <= 0}
+                    disabled={ isDemoMode || comment.length <= 0}
                     className='comment-btn mx-1'
                   >
                     <FaCommentDots />

@@ -165,6 +165,7 @@ const App = () => {
                   userId={isDemoMode ? 1 : userId}
                   lat={lat}
                   lng={lng}
+                  isDemoMode={isDemoMode}
                 />{' '}
                 <NavBar />
               </div>
@@ -186,6 +187,7 @@ const App = () => {
                   userLng={lng}
                   userId={isDemoMode ? 1 : userId}
                   getLocation={getLocation}
+                  isDemoMode={isDemoMode}
                 />{' '}
                 <NavBar />
               </div>
@@ -202,7 +204,11 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <FeedPage userId={isDemoMode ? 1 : userId} /> <NavBar />
+                <FeedPage
+                  userId={isDemoMode ? 1 : userId}
+                  isDemoMode={isDemoMode}
+                />{' '}
+                <NavBar />
               </div>
             }
           />
@@ -258,6 +264,7 @@ const App = () => {
                   lng={lng}
                   lat={lat}
                   setTheme={setTheme}
+                  isDemoMode={isDemoMode}
                 />{' '}
                 <NavBar />
               </div>

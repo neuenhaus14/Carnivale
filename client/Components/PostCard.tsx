@@ -30,6 +30,7 @@ interface PostCardProps {
   getPosts: any;
   order: string;
   eventKey: string;
+  isDemoMode: boolean;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -38,6 +39,7 @@ const PostCard: React.FC<PostCardProps> = ({
   getPosts,
   order,
   eventKey,
+  isDemoMode,
 }) => {
   const [owner, setOwner] = useState('');
   const [commentVotingStatus, setCommentVotingStatus] = useState<
@@ -57,7 +59,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const handleUpvote = async (type: string) => {
     // if demo mode, display toast
-    if (process.env.RUN_MODE === 'demo') {
+    if (isDemoMode) {
       toast('🎭Upvote post!🎭', {
         position: 'top-right',
         autoClose: 2500,
@@ -92,7 +94,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const handleDownvote = async (type: string) => {
     // if demo mode, display toast
-    if (process.env.RUN_MODE === 'demo') {
+    if (isDemoMode) {
       toast('🎭Downvote post!🎭', {
         position: 'top-right',
         autoClose: 2500,

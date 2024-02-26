@@ -36,9 +36,15 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { ThemeContext } from './Context';
 import { ToastContainer, toast } from 'react-toastify';
 import { truncate } from 'fs';
-//                              add userId as prop to get it from App
 
-const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
+
+const UserPage: React.FC<UserPageProps> = ({
+  userId,
+  lng,
+  lat,
+  setTheme,
+  isDemoMode,
+}) => {
   //  const [searchParams] = useSearchParams();
   //  const [userId] = useState(Number(searchParams.get('userid')) || 1);
 
@@ -490,29 +496,31 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
         />
       )}
 
-      <Modal show={showAboutModal} onHide={toggleAboutModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>About the Krewe and Calendar</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            Add friends to your Krewe to invite them to custom events. Refer to
-            your calendar to see the saved events.
-          </p>
-          <p>
-            Take the{' '}
-            <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
-              Survey
-            </a>{' '}
-            and let us know what you think!
-          </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant='secondary' onClick={toggleAboutModal}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {isDemoMode && (
+        <Modal show={showAboutModal} onHide={toggleAboutModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>About the Krewe and Calendar</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>
+              Add friends to your Krewe to invite them to custom events. Refer
+              to your calendar to see the saved events.
+            </p>
+            <p>
+              Take the{' '}
+              <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
+                Survey
+              </a>{' '}
+              and let us know what you think!
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant='secondary' onClick={toggleAboutModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
 
       <ToastContainer
         position='top-right'
@@ -565,10 +573,11 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
       />
 
       <Row>
-        <div className='d-flex flex-column justify-content-between' style={{height: '75vh'}}>
-          <div
-            className='userPage-tabs'
-          >
+        <div
+          className='d-flex flex-column justify-content-between'
+          style={{ height: '75vh' }}
+        >
+          <div className='userPage-tabs'>
             <Tabs defaultActiveKey='krewe'>
               <Tab eventKey='krewe' title='Krewe'>
                 <h5> Krewe </h5>
@@ -687,20 +696,6 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
           </div>
 
           {/* Buttons for logout, other events */}
-
-          {/* {showGif && (
-          <img
-            src='/img/mardi-gras.gif'
-            alt='Mardi Gras GIF'
-            style={{
-              width: '100%',
-              height: 'auto',
-              position: 'fixed',
-              top: '30%',
-              left: '25%',
-            }}
-          />
-        )} */}
           <div className='userPage-buttons-container'>
             <Button
               variant='primary'
@@ -734,7 +729,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
                 await setConfirmActionText(`log your butt out.`);
                 await setShowConfirmActionModal(true);
               }}
-              //disabled={true}
+              // disabled={true}
             >
               Log Out
             </Button>
@@ -767,6 +762,7 @@ interface UserPageProps {
   lat: number;
   userId: number;
   setTheme: any;
+  isDemoMode: boolean;
 }
 
 export default UserPage;
