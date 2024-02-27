@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useContext } from "react";
-import EventCreateModal from "./EventCreateModal";
-import axios from "axios";
-import dayjs from "dayjs";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { Card, Modal, Button } from "react-bootstrap";
-import { ThemeContext } from "./Context";
+import React, { useEffect, useState, useContext } from 'react';
+import EventCreateModal from './EventCreateModal';
+import axios from 'axios';
+import dayjs from 'dayjs';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Card, Modal, Button } from 'react-bootstrap';
+import { ThemeContext, RunModeContext } from './Context';
 interface EventPageProps {
   lng: number;
   lat: number;
@@ -14,6 +14,7 @@ interface EventPageProps {
 
 const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
   const theme = useContext(ThemeContext);
+  const isDemoMode = useContext(RunModeContext) === 'demo'
   // const [searchParams] = useSearchParams();
   // const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [friends, setFriends] = useState([]); // will be passed to modal to manage invites
@@ -42,7 +43,7 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
       const friends = await axios.get(`/api/friends/getFriends/${userId}`);
       setFriends(friends.data);
     } catch (err) {
-      console.error("CLIENT ERROR: failed to GET user friends", err);
+      console.error('CLIENT ERROR: failed to GET user friends', err);
     }
   };
 
@@ -63,11 +64,11 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
           await setShowCreateModal(true);
         }}
       >
-        <Card.Text as="div">
-          <p className="card-content">{event.name}</p>
-          <p className="card-detail">{event.address}</p>
-          <p className="card-detail">
-            {dayjs(event.startTime).format(" MMMM D, YYYY h:mm") + "pm"}
+        <Card.Text as='div'>
+          <p className='card-content'>{event.name}</p>
+          <p className='card-detail'>{event.address}</p>
+          <p className='card-detail'>
+            {dayjs(event.startTime).format(' MMMM D, YYYY h:mm') + 'pm'}
           </p>
         </Card.Text>
       </Card>
@@ -76,7 +77,7 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
   //scraping logic
 
   async function scrapeEventsActivate() {
-    const userDate = dayjs(date).format("YYYY-MM-DD");
+    const userDate = dayjs(date).format('YYYY-MM-DD');
     const scrape = await axios.get(`/api/gigs/gigs-list/${userDate}`);
     setAllGigs(scrape.data.mainArr);
   }
@@ -87,34 +88,47 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
 
   return (
     <div className={`body ${theme}`} onClick={toggleAboutModal}>
-      <div className="gig-body-calendar">
+      <div className='gig-body-calendar'>
         <Card
-          className="comment-form"
-          style={{ position: "fixed", bottom: "11.4vh", zIndex: 1 }}
+          className='comment-form'
+          style={{ position: 'fixed', bottom: '11.4vh', zIndex: 1 }}
         >
-          <h3 className="date-picker-name">Select the Date:</h3>
+          <h3 className='date-picker-name'>Select the Date:</h3>
 
           <DatePicker
-            className="date-picker"
-            popperPlacement="bottom"
+            className='date-picker'
+            popperPlacement='bottom'
             selected={date}
             onChange={(date: Date) => setDate(date)}
           />
         </Card>
-        <Modal show={showAboutModal} onHide={toggleAboutModal}>
+        {isDemoMode && <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
-            <Modal.Title>About the Live Music</Modal.Title>
+            <Modal.Title>DEMO MODE: Live Music</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>Look at local music and create an event at your favorite venue!</p>
-            <p>Take the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform">Survey</a> and let us know what you think!</p>
+            <p className='fs-6 lh-sm'>
+              <b>Welcome to the Live Music calendar!</b>
+              <br />
+              <br />
+              Discover upcoming live music in New Orleans by selecting a date at
+              the bottom of the page. Clicking a gig opens a panel for creating
+              a custom event with the gig&apos;s details prepopulated, and you can update those details as needed.
+              <br />
+              <br />
+              <b>Got something to say?</b> Take the{' '}
+              <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
+                Survey
+              </a>{' '}
+              and let us know what you think!
+            </p>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={toggleAboutModal}>
+            <Button variant='secondary' onClick={toggleAboutModal}>
               Close
             </Button>
           </Modal.Footer>
-        </Modal>
+        </Modal>}
         {allGigItems}
         <EventCreateModal
           selectedEvent={selectedEvent}
@@ -127,12 +141,12 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
           setIsNewEvent={setIsNewEvent}
           lat={lat}
           lng={lng}
-          eventType={"gig"}
+          eventType={'gig'}
           getEventsOwned={() => {}}
         />
-        <footer className="footer" style={{ padding: 15 }}>
-          Live music info courtesy of{" "}
-          <a href="https://www.wwoz.org/calendar/livewire-music">WWOZ</a>
+        <footer className='footer' style={{ padding: 15 }}>
+          Live music info courtesy of{' '}
+          <a href='https://www.wwoz.org/calendar/livewire-music'>WWOZ</a>
         </footer>
       </div>
     </div>

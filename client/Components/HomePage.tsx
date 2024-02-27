@@ -118,25 +118,23 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
-            <Modal.Title>DEMO MODE: the Home Page</Modal.Title>
+            <Modal.Title>DEMO MODE: Home Page</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p className='fs-6 lh-sm'>
               <b>Welcome to Pardi Gras!</b> <br />
               <br />
-              This is a demo version of the app. Feel free to explore Pardi
-              Gras' features, but please note that much of the app's core
+              This is a demo version of Pardi Gras. Feel free to explore the app&apos;s features, but please note that much of its core
               functionality is disabled in this version.<br />
               <br />
-              After closing this window you'll be on the Home page, which
+              After closing this window you&apos;ll be on the Home page, which
               features a crowd-sourced global content feed covering Mardi Gras
               gossip, costumes and throws.<br />
               <br />
               Here you can discover the most recent or popular posts and create
               your own content to share with the Mardi Gras community. Upvote a
-              post to send it up the ranks, or downvote it if it's not up to
-              snuff - Pardi Gras promotes quality content by empowering users to
-              engage with and moderate the posts of other users.<br />
+              post to send it up the ranks, or downvote it if it&apos;s not up to
+              snuff.<br />
               <br />
               <b>Got a sec?</b> Please take the{' '}
               <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>

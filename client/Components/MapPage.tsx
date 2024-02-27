@@ -424,24 +424,24 @@ const MapPage: React.FC<MapProps> = ({
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
-            <Modal.Title>DEMO MODE: the Map Page</Modal.Title>
+            <Modal.Title>DEMO MODE: Map Page</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p className='fs-6 lh-sm'>
               <b>Welcome to the Map page!</b>
               <br />
               <br />
-              The map displays pins indicating points of interest like food stalls, bathrooms, EMT's and police personnel. All pins are added by Pardi Gras users, and each pin is accompanied by an image to verify the pin's contents.
+              The map displays pins indicating points of interest like food stalls, bathrooms, EMT&apos;s and police personnel. All pins are added by Pardi Gras users, and each pin is accompanied by an image to verify the pin&apos;s contents.
               <br />
               <br />
-              Users can also add supplemental pictures to a pin to document how a point of interest has changed since the original pin was dropped. Clicking a pin displays any photos tied to the pin, after which walking directions to the pin and an estimated travel duration are drawn on the map.
+              Users can also add supplemental pictures to a pin to document how a point of interest has changed since the original pin was dropped. Clicking on a pin displays any photos tied to it, after which walking directions to the pin and an estimated travel duration are drawn on the map.
               <br />
               <br />
-              Your friends also appear on the map if they opt in to location
+              Your Krewe members will also appear on the map if they opt in to location
               sharing.
               <br />
               <br />
-              <b>We'd love your feedback!</b> Take the{' '}
+              <b>We&apos;d love your feedback!</b> Take the{' '}
               <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
                 Survey
               </a>{' '}

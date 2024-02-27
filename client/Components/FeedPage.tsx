@@ -464,12 +464,12 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
-            <Modal.Title>DEMO MODE: the Feed Page</Modal.Title>
+            <Modal.Title>DEMO MODE: Feed Page</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p className='fs-6 lh-sm'>
-              <b>Welcome to the Feed page<b/><br/><br/>
-              Here you'll discover a private feed of content sent directly to you from your friends. Interact with the votes or hide from your view.
+              <b>Welcome to the Feed page!</b><br/><br/>
+              Here you&apos;ll discover a private feed of content sent directly to you from your friends. This content can be upvoted, downvoted or removed from your private feed altogether.
               <br />
               <br />
               Take the{' '}

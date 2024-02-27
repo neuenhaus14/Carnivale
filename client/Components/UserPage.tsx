@@ -37,13 +37,7 @@ import { ThemeContext, RunModeContext } from './Context';
 import { ToastContainer, toast } from 'react-toastify';
 import { truncate } from 'fs';
 
-
-const UserPage: React.FC<UserPageProps> = ({
-  userId,
-  lng,
-  lat,
-  setTheme
-}) => {
+const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
   //  const [searchParams] = useSearchParams();
   //  const [userId] = useState(Number(searchParams.get('userid')) || 1);
 
@@ -83,8 +77,7 @@ const UserPage: React.FC<UserPageProps> = ({
   const [showGif, setShowGif] = useState(false);
 
   const theme = useContext(ThemeContext);
-  const isDemoMode = useContext(RunModeContext) === 'demo'
-
+  const isDemoMode = useContext(RunModeContext) === 'demo';
 
   const [showAboutModal, setShowAboutModal] = useState(true);
 
@@ -501,19 +494,21 @@ const UserPage: React.FC<UserPageProps> = ({
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
-            <Modal.Title>About the Krewe and Calendar</Modal.Title>
+            <Modal.Title>DEMO MODE: Krewe & Calendar</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>
-              Add friends to your Krewe to invite them to custom events. Refer
-              to your calendar to see the saved events.
-            </p>
-            <p>
-              Take the{' '}
+            <p className='fs-6 lh-sm'>
+              <b>Welcome to the Krewe & Calendar page!</b><br/><br/>
+              Here you&apos;ll add friends to your Krewe and organize custom events. Navigate between the &apos;Krewe&apos; and &apos;Calendar&apos; tabs to display your connections or relevant events.
+              <br />
+              <br />
+              Click &apos;Make Plans&apos; to create an event from scratch, &apos;Live Music&apos; to view an up-to-date NOLA music calendar, and &apos;Parades&apos; to discover details about upcoming Mardi Gras parades.<br/>
+              <br />
+              <b>Before you go!</b> Please take the{' '}
               <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
                 Survey
               </a>{' '}
-              and let us know what you think!
+              and let us know what you think.
             </p>
           </Modal.Body>
           <Modal.Footer>
@@ -588,7 +583,7 @@ const UserPage: React.FC<UserPageProps> = ({
                 ) : (
                   <>
                     <div className='ep-card-content text-center'>
-                      You're flying solo!
+                      You&apos;re flying solo!
                     </div>
                     <div className='ep-card-detail text-center'>
                       Assemble your krewe by searching for friends below
