@@ -1,7 +1,7 @@
 import React, {
   useEffect,
   useState,
-  // useContext,
+  useContext,
   // createContext,
   // useRef,
 } from 'react';
@@ -27,12 +27,13 @@ import EventPage from './EventPage';
 import NavBar from './NavBar';
 import Loading from './Loading';
 import Parades from './Parades';
-import { ThemeContext } from './Context';
+import { ThemeContext, RunModeContext } from './Context';
 import TopNavBar from './TopNavBar';
 
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
-  // WHAT DOES userData do?
+
+  // WHAT DOES userData DO?
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
   const [currWeather, setCurrWeather] = useState('');
@@ -40,7 +41,7 @@ const App = () => {
 
   const [theme, setTheme] = useState('pg-theme-light');
 
-  const isDemoMode = process.env.RUN_MODE === 'demo';
+  const isDemoMode = useContext(RunModeContext) === 'demo';
 
   // start with NOLA coordinates
   const [lng, setLng] = useState(-90.0715);
@@ -114,6 +115,9 @@ const App = () => {
   // is looked up and emitted to socket.io server
   useEffect(() => {
     user && getUser();
+    if (isDemoMode) {
+      setUserId(1);
+    }
   }, [isAuthenticated]);
 
   useEffect(() => {
@@ -145,6 +149,7 @@ const App = () => {
     return <Loading />;
   }
 
+  console.log('isDemoMode', isDemoMode, 'user', userId);
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
@@ -161,13 +166,7 @@ const App = () => {
                   currWeather={currWeather}
                   currTemp={currTemp}
                 />
-                <HomePage
-                  userId={isDemoMode ? 1 : userId}
-                  lat={lat}
-                  lng={lng}
-                  isDemoMode={isDemoMode}
-                />{' '}
-                <NavBar />
+                <HomePage userId={userId} lat={lat} lng={lng} /> <NavBar />
               </div>
             }
           />
@@ -185,9 +184,8 @@ const App = () => {
                 <MapPage
                   userLat={lat}
                   userLng={lng}
-                  userId={isDemoMode ? 1 : userId}
+                  userId={userId}
                   getLocation={getLocation}
-                  isDemoMode={isDemoMode}
                 />{' '}
                 <NavBar />
               </div>
@@ -204,11 +202,7 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <FeedPage
-                  userId={isDemoMode ? 1 : userId}
-                  isDemoMode={isDemoMode}
-                />{' '}
-                <NavBar />
+                <FeedPage userId={userId} /> <NavBar />
               </div>
             }
           />
@@ -223,8 +217,7 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <Parades userId={isDemoMode ? 1 : userId} lng={lng} lat={lat} />{' '}
-                <NavBar />
+                <Parades userId={userId} lng={lng} lat={lat} /> <NavBar />
               </div>
             }
           />
@@ -239,12 +232,7 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <EventPage
-                  userId={isDemoMode ? 1 : userId}
-                  lng={lng}
-                  lat={lat}
-                />{' '}
-                <NavBar />
+                <EventPage userId={userId} lng={lng} lat={lat} /> <NavBar />
               </div>
             }
           />
@@ -260,11 +248,10 @@ const App = () => {
                   />
                 </Link>
                 <UserPage
-                  userId={isDemoMode ? 1 : userId}
+                  userId={userId}
                   lng={lng}
                   lat={lat}
                   setTheme={setTheme}
-                  isDemoMode={isDemoMode}
                 />{' '}
                 <NavBar />
               </div>
@@ -276,9 +263,11 @@ const App = () => {
   );
 
   return (
-    <ThemeContext.Provider value={theme}>
-      <RouterProvider router={router} />
-    </ThemeContext.Provider>
+    <RunModeContext.Provider value={process.env.RUN_MODE}>
+      <ThemeContext.Provider value={theme}>
+        <RouterProvider router={router} />
+      </ThemeContext.Provider>
+    </RunModeContext.Provider>
   );
 };
 

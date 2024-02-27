@@ -33,7 +33,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(relativeTime);
 dayjs.extend(isBetween);
 import { useAuth0 } from '@auth0/auth0-react';
-import { ThemeContext } from './Context';
+import { ThemeContext, RunModeContext } from './Context';
 import { ToastContainer, toast } from 'react-toastify';
 import { truncate } from 'fs';
 
@@ -42,8 +42,7 @@ const UserPage: React.FC<UserPageProps> = ({
   userId,
   lng,
   lat,
-  setTheme,
-  isDemoMode,
+  setTheme
 }) => {
   //  const [searchParams] = useSearchParams();
   //  const [userId] = useState(Number(searchParams.get('userid')) || 1);
@@ -84,6 +83,9 @@ const UserPage: React.FC<UserPageProps> = ({
   const [showGif, setShowGif] = useState(false);
 
   const theme = useContext(ThemeContext);
+  const isDemoMode = useContext(RunModeContext) === 'demo'
+
+
   const [showAboutModal, setShowAboutModal] = useState(true);
 
   const toggleAboutModal = () => {
@@ -729,7 +731,7 @@ const UserPage: React.FC<UserPageProps> = ({
                 await setConfirmActionText(`log your butt out.`);
                 await setShowConfirmActionModal(true);
               }}
-              // disabled={true}
+              disabled={isDemoMode}
             >
               Log Out
             </Button>
@@ -762,7 +764,6 @@ interface UserPageProps {
   lat: number;
   userId: number;
   setTheme: any;
-  isDemoMode: boolean;
 }
 
 export default UserPage;

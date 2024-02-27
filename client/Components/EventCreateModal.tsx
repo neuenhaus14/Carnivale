@@ -3,7 +3,7 @@ import { Modal, Button, Form, Tabs, Tab } from "react-bootstrap";
 import EventCreateMapComponent from "./EventCreateMapComponent";
 import axios from "axios";
 import dayjs from "dayjs";
-import { ThemeContext } from "./Context";
+import { ThemeContext, RunModeContext } from "./Context";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast, ToastContainer } from "react-toastify";
@@ -40,6 +40,9 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
   getEventsOwned,
 }) => {
   const theme = useContext(ThemeContext);
+  const isDemoMode = useContext(RunModeContext) === 'demo';
+
+
   const [eventAddress, setEventAddress] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const [eventName, setEventName] = useState("");
@@ -772,8 +775,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                 {isNewEvent === false && uninvitedFriendsItems.length > 0 && (
                   <Button
                     onClick={() => sendFriendInvites()}
-                    // disabled={friendsToInvite.length === 0}
-                    disabled={true}
+                    disabled={isDemoMode || friendsToInvite.length === 0}
                   >
                     Send Invites
                   </Button>
@@ -795,7 +797,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
                   await setConfirmActionText(`delete ${selectedEvent.name}`);
                   await setShowConfirmActionModal(true);
                 }}
-                disabled={true}
+                disabled={isDemoMode}
               >
                 Delete
               </Button>
@@ -807,13 +809,12 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
               <Button
                 onClick={handleEventCreation}
                 className="mx-2"
-                // disabled={
-                //   !eventName ||
-                //   eventName.length === 0 ||
-                //   !eventDescription ||
-                //   eventDescription.length === 0
-                // }
-                disabled={true}
+                disabled={ isDemoMode ||
+                  !eventName ||
+                  eventName.length === 0 ||
+                  !eventDescription ||
+                  eventDescription.length === 0
+                }
               >
                 Create Event
               </Button>
@@ -823,8 +824,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({
               <Button
                 className="mx-2"
                 onClick={handleEventUpdate}
-                // disabled={isEventUpdated === false}
-                disabled={true}
+                disabled={isDemoMode || isEventUpdated === false}
               >
                 Update
               </Button>

@@ -14,7 +14,7 @@ import {
   Card,
   Modal,
 } from 'react-bootstrap';
-import { ThemeContext } from './Context';
+import { ThemeContext, RunModeContext } from './Context';
 import ConfirmActionModal from './ConfirmActionModal';
 
 interface SharedPost {
@@ -60,10 +60,9 @@ interface Photo {
 
 interface FeedPageProps {
   userId: number;
-  isDemoMode: boolean;
 }
 
-const FeedPage: React.FC<FeedPageProps> = ({ userId, isDemoMode }) => {
+const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   const [sharedPosts, setSharedPosts] = useState<SharedPost[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userNames, setUserNames] = useState<{ [userId: number]: string }>({});
@@ -76,7 +75,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId, isDemoMode }) => {
   );
   const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
   const theme = useContext(ThemeContext);
-
+  const isDemoMode = useContext(RunModeContext) === 'demo';
   const fetchSenderName = async (userId: number) => {
     try {
       const response = await axios.get(`/api/feed/user/${userId}`);
@@ -245,121 +244,131 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId, isDemoMode }) => {
   }, [sharedPosts, userNames, userNames]);
 
   const handleUpvote = async (postId: number, type: string) => {
-    // try {
-    //   await axios.post(
-    //     `/api/feed/${
-    //       type === 'comment'
-    //         ? `upvote-comment/${userId}/${postId}`
-    //         : type === 'pin'
-    //         ? `upvote-pin/${userId}/${postId}`
-    //         : `upvote-photo/${userId}/${postId}`
-    //     }`
-    //   );
+    if (isDemoMode) {
+      toast('🎭Upvote post!🎭', {
+        position: 'top-right',
+        autoClose: 2500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+    } else {
+      try {
+        await axios.post(
+          `/api/feed/${
+            type === 'comment'
+              ? `upvote-comment/${userId}/${postId}`
+              : type === 'pin'
+              ? `upvote-pin/${userId}/${postId}`
+              : `upvote-photo/${userId}/${postId}`
+          }`
+        );
 
-    //   // Update the voting status based on the type
-    //   if (type === 'comment') {
-    //     setCommentVotingStatus((prev) => ({ ...prev, [postId]: 'upvoted' }));
-    //   } else if (type === 'pin') {
-    //     setPinVotingStatus((prev) => ({ ...prev, [postId]: 'upvoted' }));
-    //   } else if (type === 'photo') {
-    //     setPhotoVotingStatus((prev) => ({ ...prev, [postId]: 'upvoted' }));
-    //   }
+        // Update the voting status based on the type
+        if (type === 'comment') {
+          setCommentVotingStatus((prev) => ({ ...prev, [postId]: 'upvoted' }));
+        } else if (type === 'pin') {
+          setPinVotingStatus((prev) => ({ ...prev, [postId]: 'upvoted' }));
+        } else if (type === 'photo') {
+          setPhotoVotingStatus((prev) => ({ ...prev, [postId]: 'upvoted' }));
+        }
 
-    //   // Fetch updated post details
-    //   await fetchPostDetails(postId, type);
+        // Fetch updated post details
+        await fetchPostDetails(postId, type);
 
-    //   // Update the state using functional updates
-    //   setSharedPosts((prevSharedPosts) =>
-    //     prevSharedPosts.map((post) =>
-    //       post.id === postId
-    //         ? {
-    //             ...post,
-    //             upvotes: post.upvotes + 1,
-    //           }
-    //         : post
-    //     )
-    //   );
-    // } catch (error) {
-    //   toast.warning("You've already upvoted this post!");
-    // }
-    toast('🎭Upvote post!🎭', {
-      position: 'top-right',
-      autoClose: 2500,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-      theme: 'light',
-    });
+        // Update the state using functional updates
+        setSharedPosts((prevSharedPosts) =>
+          prevSharedPosts.map((post) =>
+            post.id === postId
+              ? {
+                  ...post,
+                  upvotes: post.upvotes + 1,
+                }
+              : post
+          )
+        );
+      } catch (error) {
+        toast.warning("You've already upvoted this post!");
+      }
+    }
   };
 
   const handleDownvote = async (postId: number, type: string) => {
-    // try {
-    //   await axios.post(
-    //     `/api/feed/${
-    //       type === 'comment'
-    //         ? `downvote-comment/${userId}/${postId}`
-    //         : type === 'pin'
-    //         ? `downvote-pin/${userId}/${postId}`
-    //         : `downvote-photo/${userId}/${postId}`
-    //     }`
-    //   );
+    if (isDemoMode) {
+      toast('Downvote post!🎭', {
+        position: 'top-right',
+        autoClose: 2500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+    } else {
+      try {
+        await axios.post(
+          `/api/feed/${
+            type === 'comment'
+              ? `downvote-comment/${userId}/${postId}`
+              : type === 'pin'
+              ? `downvote-pin/${userId}/${postId}`
+              : `downvote-photo/${userId}/${postId}`
+          }`
+        );
 
-    //   // Update the voting status based on the type
-    //   if (type === 'comment') {
-    //     setCommentVotingStatus((prev) => ({ ...prev, [postId]: 'downvoted' }));
-    //   } else if (type === 'pin') {
-    //     setPinVotingStatus((prev) => ({ ...prev, [postId]: 'downvoted' }));
-    //   } else if (type === 'photo') {
-    //     setPhotoVotingStatus((prev) => ({ ...prev, [postId]: 'downvoted' }));
-    //   }
+        // Update the voting status based on the type
+        if (type === 'comment') {
+          setCommentVotingStatus((prev) => ({
+            ...prev,
+            [postId]: 'downvoted',
+          }));
+        } else if (type === 'pin') {
+          setPinVotingStatus((prev) => ({ ...prev, [postId]: 'downvoted' }));
+        } else if (type === 'photo') {
+          setPhotoVotingStatus((prev) => ({ ...prev, [postId]: 'downvoted' }));
+        }
 
-    //   // Fetch updated post details
-    //   await fetchPostDetails(postId, type);
+        // Fetch updated post details
+        await fetchPostDetails(postId, type);
 
-    //   // Update the state using functional updates
-    //   setSharedPosts((prevSharedPosts) =>
-    //     prevSharedPosts.map((post) =>
-    //       post.id === postId
-    //         ? {
-    //             ...post,
-    //             upvotes: post.upvotes - 1,
-    //           }
-    //         : post
-    //     )
-    //   );
+        // Update the state using functional updates
+        setSharedPosts((prevSharedPosts) =>
+          prevSharedPosts.map((post) =>
+            post.id === postId
+              ? {
+                  ...post,
+                  upvotes: post.upvotes - 1,
+                }
+              : post
+          )
+        );
 
-    //   // Check if the post has reached -5 upvotes
-    //   const updatedUpvotes = sharedPosts
-    //     .map((post) =>
-    //       post.id === postId ? { ...post, upvotes: post.upvotes - 1 } : post
-    //     )
-    //     .find((post) => post.id === postId)?.upvotes;
+        // Check if the post has reached -5 upvotes
+        const updatedUpvotes = sharedPosts
+          .map((post) =>
+            post.id === postId ? { ...post, upvotes: post.upvotes - 1 } : post
+          )
+          .find((post) => post.id === postId)?.upvotes;
 
-    //   if (updatedUpvotes === -5) {
-    //     setDeletedPosts((prevDeletedPosts) => [...prevDeletedPosts, postId]);
-    //     // Show deletion toast
-    //     toast.error(`Post deleted due to too many downvotes: ID ${postId}`);
-    //     // Delay the page refresh by 2 seconds
-    //     setTimeout(() => {
-    //       window.location.reload();
-    //     }, 2000);
-    //   }
-    // } catch (error) {
-    //   toast.warning("You've already downvoted this post!");
-    // }
-    toast('Downvote post!🎭', {
-      position: 'top-right',
-      autoClose: 2500,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-      theme: 'light',
-    });
+        if (updatedUpvotes === -5) {
+          setDeletedPosts((prevDeletedPosts) => [...prevDeletedPosts, postId]);
+          // Show deletion toast
+          toast.error(`Post deleted due to too many downvotes: ID ${postId}`);
+          // Delay the page refresh by 2 seconds
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        }
+      } catch (error) {
+        toast.warning("You've already downvoted this post!");
+      }
+    }
   };
+
   const fetchPostDetails = async (postId: number, type: string) => {
     try {
       if (!sharedPosts.some((post) => post.id === postId)) {
@@ -445,13 +454,13 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId, isDemoMode }) => {
 
   return (
     <Container className={`body ${theme}`}>
-      <h1>
+      {/* <h1>
         Welcome,{' '}
         {currentUser
           ? `${currentUser.firstName} ${currentUser.lastName}`
           : 'User'}
         !
-      </h1>
+      </h1> */}
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>

@@ -17,7 +17,7 @@ import axios from "axios";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import PinModal from "./PinModal";
-import { ThemeContext } from "./Context";
+import { ThemeContext, RunModeContext } from "./Context";
 
 import { io } from "socket.io-client";
 const socket = io();
@@ -27,15 +27,13 @@ interface MapProps {
   userLng: number;
   userId: number;
   getLocation: any;
-  isDemoMode: boolean;
 }
 
 const MapPage: React.FC<MapProps> = ({
   userLat,
   userLng,
   getLocation,
-  userId,
-  isDemoMode,
+  userId
 }) => {
   // ADD userId BACK TO PROPS
 
@@ -71,6 +69,7 @@ const MapPage: React.FC<MapProps> = ({
   const [friends, setFriends] = useState([]);
 
   const theme = useContext(ThemeContext);
+  const isDemoMode = useContext(RunModeContext) === 'demo';
 
   const [showDirections, setShowDirections] = useState<boolean>(false);
   const [showFriendPopup, setShowFriendPopup] = useState<boolean>(false);

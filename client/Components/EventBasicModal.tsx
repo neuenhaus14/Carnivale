@@ -6,7 +6,7 @@ import dayjs = require('dayjs');
 import relativeTime from 'dayjs/plugin/relativeTime';
 import calendar from 'dayjs/plugin/calendar';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { ThemeContext } from './Context';
+import { ThemeContext, RunModeContext } from './Context';
 dayjs.extend(customParseFormat);
 dayjs.extend(relativeTime);
 dayjs.extend(calendar);
@@ -71,7 +71,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
   };
 
   const theme = useContext(ThemeContext)
-
+  const isDemoMode = useContext(RunModeContext) === 'demo'
 
   //    PEOPLE ACCORDION FUNCTIONALITY
   const [invitees, setInvitees] = useState([]);
@@ -238,7 +238,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
 
             {isUserAttending && uninvitedFriendsItems.length > 0 && (
               <Button
-                disabled={friendsToInvite.length === 0}
+                disabled={isDemoMode || friendsToInvite.length === 0}
                 onClick={() => sendFriendInvites()}
               >
                 Send Invites
@@ -254,7 +254,7 @@ const EventBasicModal: React.FC<EventBasicModalProps> = ({
           label={isUserAttending ? 'Attending' : 'Not attending'}
           onChange={() => toggleAttendance()}
           defaultChecked={isUserAttending}
-          disabled = {dayjs().isAfter(selectedEvent.endTime)}
+          disabled = {isDemoMode || dayjs().isAfter(selectedEvent.endTime)}
         />
         <Button variant='danger' onClick={handleClose}>
           Close Event

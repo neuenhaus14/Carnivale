@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import {
   Button,
@@ -13,23 +13,25 @@ import {
 import axios from 'axios';
 
 import { To, useNavigate } from 'react-router-dom';
+import { RunModeContext } from './Context';
 
 const LoginButton = () => {
-  const { loginWithRedirect } = useAuth0();
-
-  const navigate = useNavigate();
-
-  const handleNavigation = (path: To) => {
-    navigate(path);
-  };
-
   const [subscriberEmail, setSubscriberEmail] = useState('');
-
   const [subscriberFormAlert, setSubscriberFormAlert] = useState({
     isDisplayed: false,
     text: '',
     variant: '',
   });
+  const isDemoMode = useContext(RunModeContext) === 'demo'
+
+
+
+  const { loginWithRedirect } = useAuth0();
+  const navigate = useNavigate();
+  const handleNavigation = (path: To) => {
+    navigate(path);
+  };
+
 
   const validateEmail = function (email: string) {
     const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -146,7 +148,7 @@ const LoginButton = () => {
             </Form>
             <div className='d-flex flex-column justify-content-center'>
               {/* demo or normal login */}
-              {process.env.RUN_MODE === 'demo' ? (
+              {isDemoMode ? (
                 <Button
                   className='mt-4 mb-3 px-5 mx-auto'
                   variant='secondary'

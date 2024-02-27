@@ -16,7 +16,7 @@ import { FaCamera } from '@react-icons/all-files/fa/FaCamera';
 import axios from 'axios';
 import HomeModal from './HomeModal';
 import PostCard from './PostCard';
-import { ThemeContext } from './Context';
+import { RunModeContext, ThemeContext } from './Context';
 
 //PARENT OF HOMEMODAL
 
@@ -24,16 +24,18 @@ interface HomePageProps {
   lat: number;
   lng: number;
   userId: number;
-  isDemoMode: boolean;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId, isDemoMode }) => {
+const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   const [comment, setComment] = useState('');
   const [posts, setPosts] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [key, setKey] = useState('posts');
   const [order, setOrder] = useState('upvotes');
   const theme = useContext(ThemeContext);
+
+  const isDemoMode = useContext(RunModeContext) === 'demo'
+
 
   const [showAboutModal, setShowAboutModal] = useState(true);
 
@@ -181,7 +183,6 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId, isDemoMode }) => 
                     getPosts={getPosts}
                     order={order}
                     eventKey={'posts'}
-                    isDemoMode={isDemoMode}
                   />
                 ))
               : ''}
@@ -196,7 +197,6 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId, isDemoMode }) => 
                     getPosts={getPosts}
                     order={order}
                     eventKey={'costumes'}
-                    isDemoMode={isDemoMode}
                   />
                 ))
               : ''}
@@ -211,7 +211,6 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId, isDemoMode }) => 
                     getPosts={getPosts}
                     order={order}
                     eventKey={'throws'}
-                    isDemoMode={isDemoMode}
                   />
                 ))
               : ''}

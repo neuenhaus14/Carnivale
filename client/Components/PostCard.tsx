@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ButtonGroup, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -11,6 +11,7 @@ import ShareModal from './ShareModal';
 // import {IoMdArrowDown} from "@react-icons/all-files/io/IoMdArrowDown";
 import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
 import { IoArrowUpCircle } from '@react-icons/all-files/io5/IoArrowUpCircle';
+import { RunModeContext } from './Context';
 
 dayjs.extend(relativeTime);
 
@@ -30,7 +31,6 @@ interface PostCardProps {
   getPosts: any;
   order: string;
   eventKey: string;
-  isDemoMode: boolean;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -39,13 +39,13 @@ const PostCard: React.FC<PostCardProps> = ({
   getPosts,
   order,
   eventKey,
-  isDemoMode,
 }) => {
   const [owner, setOwner] = useState('');
   const [commentVotingStatus, setCommentVotingStatus] = useState<
     'upvoted' | 'downvoted' | 'none'
   >('none');
   const [isOwner, setIsOwner] = useState(false);
+  const isDemoMode = useContext(RunModeContext) === 'demo';
 
   const getOwner = async () => {
     try {
@@ -137,28 +137,33 @@ const PostCard: React.FC<PostCardProps> = ({
   }, []);
 
   const handleDeletePost = async (type: string) => {
-    // try {
-    //   if (isOwner) {
-    //     await axios.delete(
-    //       `/api/home/${
-    //         type === "comment"
-    //           ? `delete-comment/${post.id}`
-    //           : `delete-photo/${post.id}`
-    //       }`,
-    //       { data: { userId } }
-    //     );
+    if (isDemoMode) {
+      toast.success('Delete your post!');
+    } else {
+      try {
+        if (isOwner) {
+          await axios.delete(
+            `/api/home/${
+              type === 'comment'
+                ? `delete-comment/${post.id}`
+                : `delete-photo/${post.id}`
+            }`,
+            { data: { userId } }
+          );
 
-    //     toast.success("Post deleted successfully!");
-    //   } else {
-    //     toast.error("You are not the owner of this post. Delete not allowed.");
-    //   }
-    // } catch (error) {
-    //   console.error("Error deleting post:", error);
-    //   toast.error("Error deleting post. Please try again.");
-    // } finally {
-    //   getPosts(eventKey);
-    // }
-    toast.success('Delete your post!');
+          toast.success('Post deleted successfully!');
+        } else {
+          toast.error(
+            'You are not the owner of this post. Delete not allowed.'
+          );
+        }
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        toast.error('Error deleting post. Please try again.');
+      } finally {
+        getPosts(eventKey);
+      }
+    }
   };
 
   return (
