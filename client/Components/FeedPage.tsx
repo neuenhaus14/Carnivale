@@ -464,14 +464,14 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
-            <Modal.Title>About the Feed Page</Modal.Title>
+            <Modal.Title>DEMO MODE: the Feed Page</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>
-              A curated feed of messages sent directly to you from the home page
-              by your friends. Interact with the votes or hide from your view.
-            </p>
-            <p>
+            <p className='fs-6 lh-sm'>
+              <b>Welcome to the Feed page<b/><br/><br/>
+              Here you'll discover a private feed of content sent directly to you from your friends. Interact with the votes or hide from your view.
+              <br />
+              <br />
               Take the{' '}
               <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
                 Survey

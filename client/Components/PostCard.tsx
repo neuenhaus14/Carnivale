@@ -60,7 +60,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const handleUpvote = async (type: string) => {
     // if demo mode, display toast
     if (isDemoMode) {
-      toast('🎭Upvote post!🎭', {
+      toast('🎭 Post upvoted! 🎭', {
         position: 'top-right',
         autoClose: 2500,
         hideProgressBar: true,
@@ -95,7 +95,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const handleDownvote = async (type: string) => {
     // if demo mode, display toast
     if (isDemoMode) {
-      toast('🎭Downvote post!🎭', {
+      toast('🎭 Post downvoted! 🎭', {
         position: 'top-right',
         autoClose: 2500,
         hideProgressBar: true,
