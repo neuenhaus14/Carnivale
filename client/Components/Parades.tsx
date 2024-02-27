@@ -74,7 +74,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   };
 
   const theme = useContext(ThemeContext);
-  const isDemoMode = useContext(RunModeContext);
+  const isDemoMode = useContext(RunModeContext) === 'demo';
 
   // need to get friends in order to know
   // who we can invite to the event being created
