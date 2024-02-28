@@ -22,6 +22,7 @@ import ParadesRoutes from "./routes/Parades";
 import GigsRoutes from "./routes/ScrapeEvents";
 import MailListRoutes from "./routes/MailList"
 import { User, } from "./db/index";
+
 // import { Sequelize } from "sequelize";
 // import { Socket } from "dgram";
 //start()
@@ -125,13 +126,3 @@ server.listen(port, () => {
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-
-// Don't need this
-// interface RelationshipModel extends Model {
-//   id: number;
-//   isConfirmed: boolean;
-//   requester_userId: number;
-//   recipient_userId: number;
-//   createdAt: Date;
-//   updatedAt: Date;
-// }

@@ -108,9 +108,9 @@ const App = () => {
   // The two useEffects below both run on the first load,
   // but have conditions to check if the next operation
   // should execute.
-  // 1st: auth0 sends user object in, is Authenticated switches
+  // 1st: auth0 sends user object in, isAuthenticated switches
   // 2nd: provided a user object, useEffect gets the
-  // logged in user's info from the database
+  // logged in user's info from the database, setting userId
   // 3rd: provided a non-null userId, the user's location
   // is looked up and emitted to socket.io server
   useEffect(() => {

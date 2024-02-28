@@ -394,7 +394,7 @@ before(function () {
     console.log('Test database synced');
   })();
 
-  
+
 });
 
 describe('Pardi Gras', function () {
