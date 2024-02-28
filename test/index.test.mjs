@@ -393,6 +393,8 @@ before(function () {
     await testDb.sync();
     console.log('Test database synced');
   })();
+
+  
 });
 
 describe('Pardi Gras', function () {

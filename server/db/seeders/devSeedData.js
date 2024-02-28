@@ -70,7 +70,7 @@ module.exports = {
         shareLoc: true,
       },
       {
-        email: "evmaperry@gmail.com",
+        email: "y@g.com",
         phone: "231-649-2298",
         firstName: "Devan",
         lastName: "Gary",
