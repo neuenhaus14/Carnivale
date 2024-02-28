@@ -5,25 +5,26 @@ import {
   InferCreationAttributes,
   CreationOptional,
   DataTypes,
-} from "sequelize";
-import { DATABASE_USERNAME, DATABASE_PASSWORD } from "../config";
+} from 'sequelize';
+import { DATABASE_USERNAME, DATABASE_PASSWORD } from '../config';
 
-const HOST = "localhost";
+const HOST = 'localhost';
+
 const db = new Sequelize({
   host: HOST,
-  dialect: "postgres",
+  dialect: 'postgres',
   username: DATABASE_USERNAME,
-  database: "carnivale",
+  database: 'carnivale',
   password: DATABASE_PASSWORD,
   logging: false,
 });
 
 db.authenticate()
   .then(() => {
-    console.log("Database connection has been established");
+    console.log('Database connection has been established');
   })
   .catch((err) => {
-    console.error("Unable to connect to the database:", err);
+    console.error('Unable to connect to the database:', err);
   });
 
 interface User
@@ -39,7 +40,7 @@ interface User
 }
 
 const User = db.define(
-  "user",
+  'user',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -75,7 +76,7 @@ interface Event
 }
 
 const Event = db.define(
-  "event",
+  'event',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -109,7 +110,7 @@ const Event = db.define(
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
+        key: 'id',
       },
     },
   },
@@ -127,13 +128,13 @@ interface Pin
   isFree: boolean;
   isPhoneCharger: boolean;
   isPoliceStation: boolean;
-  isEMTStation:boolean;
+  isEMTStation: boolean;
   upvotes: number;
   ownerId: number;
 }
 
 const Pin = db.define(
-  "pin",
+  'pin',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -157,7 +158,7 @@ const Pin = db.define(
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
+        key: 'id',
       },
     },
   },
@@ -178,7 +179,7 @@ interface Comment
 }
 
 const Comment = db.define(
-  "comment",
+  'comment',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -194,7 +195,7 @@ const Comment = db.define(
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
+        key: 'id',
       },
     },
   },
@@ -202,7 +203,7 @@ const Comment = db.define(
 );
 
 const Photo = db.define(
-  "photo",
+  'photo',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -224,7 +225,7 @@ const Photo = db.define(
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
+        key: 'id',
       },
     },
   },
@@ -232,7 +233,7 @@ const Photo = db.define(
 );
 
 const Join_user_event = db.define(
-  "join_user_event",
+  'join_user_event',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -243,35 +244,32 @@ const Join_user_event = db.define(
       type: DataTypes.INTEGER,
       references: {
         model: Event,
-        key: "id"
-      }
+        key: 'id',
+      },
     },
     userId: {
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id"
-      }
+        key: 'id',
+      },
     },
     senderId: {
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id"
-      }
+        key: 'id',
+      },
     },
     isAttending: {
       type: DataTypes.BOOLEAN,
-
     },
   },
   { timestamps: true }
-)
-
-
+);
 
 const Join_friend = db.define(
-  "join_friend",
+  'join_friend',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -283,14 +281,14 @@ const Join_friend = db.define(
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
+        key: 'id',
       },
     },
     recipient_userId: {
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
+        key: 'id',
       },
     },
   },
@@ -298,7 +296,7 @@ const Join_friend = db.define(
 );
 
 const Join_pin_photo = db.define(
-  "join_pin_photo",
+  'join_pin_photo',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -309,14 +307,14 @@ const Join_pin_photo = db.define(
       type: DataTypes.INTEGER,
       references: {
         model: Photo,
-        key: "id",
+        key: 'id',
       },
     },
     pinId: {
       type: DataTypes.INTEGER,
       references: {
         model: Pin,
-        key: "id",
+        key: 'id',
       },
     },
   },
@@ -324,7 +322,7 @@ const Join_pin_photo = db.define(
 );
 
 const Join_comment_vote = db.define(
-  "join_comment_vote",
+  'join_comment_vote',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -336,14 +334,14 @@ const Join_comment_vote = db.define(
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
+        key: 'id',
       },
     },
     commentId: {
       type: DataTypes.INTEGER,
       references: {
         model: Comment,
-        key: "id",
+        key: 'id',
       },
     },
   },
@@ -351,7 +349,7 @@ const Join_comment_vote = db.define(
 );
 
 const Join_pin_vote = db.define(
-  "join_pin_vote",
+  'join_pin_vote',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -363,14 +361,14 @@ const Join_pin_vote = db.define(
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
+        key: 'id',
       },
     },
     pinId: {
       type: DataTypes.INTEGER,
       references: {
         model: Pin,
-        key: "id",
+        key: 'id',
       },
     },
   },
@@ -378,7 +376,7 @@ const Join_pin_vote = db.define(
 );
 
 const Join_photo_vote = db.define(
-  "join_photo_vote",
+  'join_photo_vote',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -390,14 +388,14 @@ const Join_photo_vote = db.define(
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
+        key: 'id',
       },
     },
     photoId: {
       type: DataTypes.INTEGER,
       references: {
         model: Photo,
-        key: "id",
+        key: 'id',
       },
     },
   },
@@ -405,7 +403,7 @@ const Join_photo_vote = db.define(
 );
 
 const Join_shared_post = db.define(
-  "join_shared_post",
+  'join_shared_post',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -416,35 +414,35 @@ const Join_shared_post = db.define(
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
+        key: 'id',
       },
     },
     recipient_userId: {
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
+        key: 'id',
       },
     },
     shared_commentId: {
       type: DataTypes.INTEGER,
       references: {
         model: Comment,
-        key: "id",
+        key: 'id',
       },
     },
     shared_pinId: {
       type: DataTypes.INTEGER,
       references: {
         model: Pin,
-        key: "id",
+        key: 'id',
       },
     },
     shared_photoId: {
       type: DataTypes.INTEGER,
       references: {
         model: Photo,
-        key: "id",
+        key: 'id',
       },
     },
   },

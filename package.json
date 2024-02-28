@@ -5,11 +5,11 @@
   "main": "index.jsx",
   "scripts": {
     "build-prod": "webpack --config webpack.config.js",
-    "test": "mocha",
+    "test": "npx sequelize db:drop --env test && npx sequelize db:create --env test && mocha",
     "build": "webpack --config webpack.config.js --watch",
     "start": "nodemon server/index.ts",
     "start-prod": "ts-node server/index.ts",
-    "seed": "npx sequelize db:drop && npx sequelize db:create && ts-node server/db/seed.ts && npx sequelize db:seed:all",
+    "seed": "npx sequelize db:drop --env development && npx sequelize db:create && ts-node server/db/seed.ts && npx sequelize db:seed:all",
     "scrape": "ts-node server/routes/scrapeEvents"
   },
   "repository": {

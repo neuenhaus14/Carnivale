@@ -2,5 +2,5 @@ import { db } from "./index";
 
 (async () => {
   await db.sync();
-  console.log("database sync");
+  console.log("development database synced");
 })();
