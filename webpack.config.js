@@ -33,6 +33,7 @@ module.exports = {
   output: {
     path: DIST_DIR,
     filename: '[name].bundle.js',
+    clean: true,
   },
   mode: isDev ? 'development' : 'production',
   devtool: isDev ? 'inline-source-map' : 'source-map',
@@ -43,7 +44,7 @@ module.exports = {
         // Creates a loading bar
         new WebpackBar(),
         // Generates bundle analyzer
-        new BundleAnalyzerPlugin(),
+        // new BundleAnalyzerPlugin(),
       ])
     : allPlugins,
 
@@ -59,7 +60,7 @@ module.exports = {
       },
       {
         //for typescript
-        test: /\.tsx?$/, //match the least number of files it needs to
+        test: /\.tsx?$/, //match the least number of chars it needs
         use: 'ts-loader',
         exclude: /node_modules/,
       },
