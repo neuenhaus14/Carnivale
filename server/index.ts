@@ -1,4 +1,4 @@
-import {server} from './app';
+import server from './app';
 
 // import express, { Request, Response, Router } from "express";
 // import path from "path";

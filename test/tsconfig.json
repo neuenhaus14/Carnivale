@@ -1,8 +1,0 @@
-{
-  "include": ["./index.test.ts"],
-  "exclude": ["../server/**/*", "../client/**/*", "../dist"],
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./",
-  },
-}

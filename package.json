@@ -7,6 +7,7 @@
     "build-prod": "webpack --config webpack.config.js",
     "compile-test": "tsc --project ./test",
     "test": "npx sequelize db:drop --env test && npx sequelize db:create --env test && mocha",
+    "mocha": "mocha",
     "build": "webpack --config webpack.config.js --watch",
     "start": "nodemon server/index.ts",
     "start-prod": "ts-node server/index.ts",
@@ -59,8 +60,11 @@
     "toastify": "^2.0.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.23.9",
     "@babel/core": "^7.23.5",
     "@babel/preset-env": "^7.23.5",
+    "@babel/preset-typescript": "^7.23.3",
+    "@babel/register": "^7.23.7",
     "@types/bootstrap": "^5.2.10",
     "@types/chai": "^4.3.12",
     "@types/express": "^4.17.21",
