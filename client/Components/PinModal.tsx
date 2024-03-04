@@ -3,7 +3,7 @@ import { Modal, Button, Form } from 'react-bootstrap'
 import axios from 'axios'
 import Photos from './Photos'
 import CreatePinMap from './CreatePinMap'
-import { ThemeContext } from './Context'
+import { ThemeContext, RunModeContext } from './Context'
 interface Props {
   setShowModal: any
   markers: any

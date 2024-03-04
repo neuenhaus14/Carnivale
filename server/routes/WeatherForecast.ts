@@ -1,12 +1,12 @@
-import { Router, Request, Response } from "express";
-import axios from "axios";
-import { WEATHER_API_KEY } from "../config";
+import { Router, Request, Response } from 'express';
+import axios from 'axios';
+import { WEATHER_API_KEY } from '../config';
 
 const WeatherForecastRoutes = Router();
 
-WeatherForecastRoutes.get("/:date", async (req: Request, res: Response) => {
+WeatherForecastRoutes.get('/:date', async (req: Request, res: Response) => {
   const { date } = req.params;
-  const location = "New Orleans";
+  const location = 'New Orleans';
 
   try {
     const { data } = await axios.get(

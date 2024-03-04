@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { Button, Form } from "react-bootstrap";
+import { RunModeContext } from "./Context";
+
+
 //capturing an image and sending via axios to my backend. on backend making another call to cloudinary to post or retrieve image. So if I need that photo on the front end
 //CHILD OF PINMODAL
 interface Props {
@@ -30,6 +33,8 @@ const Upload: React.FC<Props> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [file, setFile] = useState(null);
   const [description, setDescription] = useState<string>("");
+
+  const isDemoMode = useContext(RunModeContext) === 'demo'
 
   const handleDescInput = (e: any) => {
     const desc = e.target.value;
@@ -128,7 +133,6 @@ const Upload: React.FC<Props> = ({
         name="image"
         onChange={handleSelectFile}
         multiple={false}
-        disabled={true}
       />
       <br />
       <Form.Label>
@@ -146,8 +150,8 @@ const Upload: React.FC<Props> = ({
         <Button
           className="btn-success"
           size="lg"
-          //disabled={file === null || description === ''}
-          disabled={true}
+          disabled={isDemoMode || file === null || description === ''}
+
           onClick={uploadFile}
         >
           {loading ? "Saving..." : "Save"}

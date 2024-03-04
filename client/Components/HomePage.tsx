@@ -16,7 +16,7 @@ import { FaCamera } from '@react-icons/all-files/fa/FaCamera';
 import axios from 'axios';
 import HomeModal from './HomeModal';
 import PostCard from './PostCard';
-import { ThemeContext } from './Context';
+import { RunModeContext, ThemeContext } from './Context';
 
 //PARENT OF HOMEMODAL
 
@@ -33,6 +33,8 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
   const [key, setKey] = useState('posts');
   const [order, setOrder] = useState('upvotes');
   const theme = useContext(ThemeContext);
+
+  const isDemoMode = useContext(RunModeContext) === 'demo';
 
   const [showAboutModal, setShowAboutModal] = useState(true);
 
@@ -110,34 +112,44 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
     return () => clearTimeout(interval);
   }, [key, order]);
 
+  console.log;
   return (
     <Container className={`body-home ${theme}`}>
-      <Modal show={showAboutModal} onHide={toggleAboutModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>About the Home Page</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            Welcome to Pardi Gras! This is a demo version of the app, where you can explore its features. Please note that much of the app's core functionality is disabled in this version.<br/><br/>
-
-
-            After closing this modal window, you'll be on the Home page, which features content about Mardi Gras gossip, fun sightings, or interesting images! Take a picture, filter results, and send a
-            comment.
-          </p>
-          <p>
-            Take the{' '}
-            <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
-              Survey
-            </a>{' '}
-            and let us know what you think!
-          </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant='secondary' onClick={toggleAboutModal}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {isDemoMode && (
+        <Modal show={showAboutModal} onHide={toggleAboutModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>DEMO MODE: Home Page</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p className='fs-6 lh-sm'>
+              <b>Welcome to Pardi Gras!</b> <br />
+              <br />
+              This is a demo version of Pardi Gras. Feel free to explore the app&apos;s features, but please note that much of its core
+              functionality is disabled in this version.<br />
+              <br />
+              After closing this window you&apos;ll be on the Home page, which
+              features a crowd-sourced global content feed covering Mardi Gras
+              gossip, costumes and throws.<br />
+              <br />
+              Here you can discover the most recent or popular posts and create
+              your own content to share with the Mardi Gras community. Upvote a
+              post to send it up the ranks, or downvote it if it&apos;s not up to
+              snuff.<br />
+              <br />
+              <b>Got a sec?</b> Please take the{' '}
+              <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
+                Survey
+              </a>{' '}
+              and let us know what you think!
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant='secondary' onClick={toggleAboutModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
       <Row>
         <div
           key={'inline-radio'}
@@ -226,9 +238,9 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
           >
             <Form style={{ width: '100%' }}>
               <Form.Group>
-                <div className="d-flex flex-row">
+                <div className='d-flex flex-row'>
                   <Form.Control
-                    className="mx-1"
+                    className='mx-1'
                     placeholder='Post a comment or photo'
                     onChange={handleInput}
                     value={comment}
@@ -239,8 +251,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                   <Button
                     variant='primary'
                     onClick={handleSubmit}
-                    //disabled={comment.length <= 0}
-                    disabled={true}
+                    disabled={isDemoMode || comment.length <= 0}
                     className='comment-btn mx-1'
                   >
                     <FaCommentDots />

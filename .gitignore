@@ -1,4 +1,4 @@
 node_modules
 .env
-dist
-config/config.json
+/dist
+server/db/config/postgresConfig.json
