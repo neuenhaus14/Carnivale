@@ -1,17 +1,16 @@
 import express, { Request, Response, Router } from "express";
 import path from "path";
+import "./db"; //importing not using. so it does the same thing
+import "./db/mongoAtlas" // same as above to spin up mongoConnection
 import { auth } from "express-openid-connect";
+import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER, REDIRECT_URL } from "./config";
 import { Server } from "socket.io";
 // import { Model } from "sequelize";
-
+import PinRoutes from "./routes/Pins";
 import http from "http";
 import cors from "cors";
-
-// import "./db/index"; //importing not using. so it does the same thing
 //import Upload  from "./routes/PhotoUpload"
 // import cloudinary from "./utils/cloudinary_helpers"; //grabbing reference to an already configured cloudinary object
-
-import PinRoutes from "./routes/Pins";
 import FriendsRoutes from "./routes/Friends";
 import WeatherRoutes from "./routes/WeatherApi";
 import WeatherForecastRoutes from "./routes/WeatherForecast";
@@ -22,10 +21,7 @@ import ImageRouter from "./routes/PhotoUpload";
 import ParadesRoutes from "./routes/Parades";
 import GigsRoutes from "./routes/ScrapeEvents";
 import MailListRoutes from "./routes/MailList"
-
 import { User, } from "./db/index";
-import "./db/mongoAtlas" // spins up mongoConnection
-import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER, REDIRECT_URL } from "./config";
 
 // import { Sequelize } from "sequelize";
 // import { Socket } from "dgram";
@@ -36,7 +32,7 @@ import { AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, ISSUER, REDIRECT_URL } from "./co
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
-// const port = 4000;
+const port = 4000;
 
 const routeHandler = Router();
 const distPath = path.resolve(__dirname, "..", "dist");
@@ -101,6 +97,7 @@ io.on('connection', (socket: any) => {
        io.emit('userLoc response', userLoc)
        //socket.broadcast.emit('userLoc response', userLoc)
   });
+
 
   socket.on("disconnect", () => {
      console.log("a user disconnected");

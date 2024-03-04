@@ -58,19 +58,25 @@ module.exports = {
         test: /\.(gif|jpg|png|mp3|aac|ogg)$/,
         type: 'asset/resource',
       },
-      // {
-      //   //for typescript
-      //   test: /\.tsx?$/, //match the least number of chars it needs
-      //   use: 'ts-loader',
-      //   exclude: /node_modules/,
-      // },
+      {
+        //for typescript
+        test: /\.tsx?$/, //match the least number of chars it needs
+        use: 'ts-loader',
+        exclude: [/node_modules/, /test/],
+      },
       {
         // all js|x and ts|x files handled by babel, check babel.config.js
         // to check presets (typescript preset handles ts and js files)
-        test: /\.(js|jsx|ts|tsx)$/,
+        test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
+          options: {
+            presets: [
+              '@babel/preset-env',
+              ['@babel/preset-react', { runtime: 'automatic' }],
+            ],
+          },
         },
       },
       {

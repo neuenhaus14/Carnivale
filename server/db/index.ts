@@ -6,22 +6,25 @@ import {
   CreationOptional,
   DataTypes,
 } from 'sequelize';
-import { DATABASE_USERNAME, DATABASE_PASSWORD } from '../config';
 
-const HOST = 'localhost';
+import { NODE_ENV } from '../config';
 
-const db = new Sequelize({
-  host: HOST,
-  dialect: 'postgres',
-  username: DATABASE_USERNAME,
-  database: 'carnivale',
-  password: DATABASE_PASSWORD,
-  logging: false,
-});
+// Draw configs, set db connection string according to NODE_ENV, which is normally "development" but is "test" when running test script
+import * as fs from 'fs';
+import path from 'path';
+const postgresConfig = JSON.parse(
+  fs.readFileSync(
+    path.resolve('server', 'db', 'config', 'postgresConfig.json'),
+    'utf8'
+  )
+);
+const SEQUELIZE_OPTIONS = postgresConfig[NODE_ENV];
+const db = new Sequelize(SEQUELIZE_OPTIONS);
+
 
 db.authenticate()
   .then(() => {
-    console.log('Database connection has been established');
+    console.log('Database connection has been established with NODE_ENV', NODE_ENV);
   })
   .catch((err) => {
     console.error('Unable to connect to the database:', err);
@@ -448,6 +451,16 @@ const Join_shared_post = db.define(
   },
   { timestamps: true }
 );
+
+/*
+sync the db automatically if we're in test mode. The test script drops and recreates the db, so we need to sync it every time to run new tests for proper tables to be in carnivale_test database before tests run
+*/
+if (NODE_ENV === 'test') {
+  (async () => {
+    await db.sync();
+    console.log("Database synced with NODE_ENV", process.env.NODE_ENV);
+  })();
+}
 
 export {
   db,

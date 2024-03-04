@@ -213,4 +213,13 @@ and y’all had already opened the necessary ports to traffic (80, 443) in your 
 ## Webpack
 The output is CommonJS because ts-node does not support ECMAScript modules (ie, export.modules and require() syntax).
 
-Here's a link describing the Mocha set-up with typescript: https://typestrong.org/ts-node/docs/recipes/mocha/ running mocha from cli will run test files in ts-node land
+
+# Testing
+Here's a link describing the Mocha set-up with typescript: https://typestrong.org/ts-node/docs/recipes/mocha/ running mocha from cli will run test files in ts-node land.
+
+Run the "test" script to test. It
+1. drops and
+2. recreates the test database (carnivale_test) provided the configuration from postgresConfig.json. Then
+3. the NODE_ENV variable is set to 'test' (from 'development'), which tells sequelize to connect to the test db (carnivale_test), then
+4. ts-mocha runs, starting from test/index.test.ts
+

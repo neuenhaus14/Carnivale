@@ -1,5 +1,4 @@
 import server from './app';
-
 // import express, { Request, Response, Router } from "express";
 // import path from "path";
 // import "./db"; //importing not using. so it does the same thing
@@ -90,7 +89,6 @@ import server from './app';
 //   .catch((err) => console.error(err))
 // })
 
-
 // io.on('connection', (socket: any) => {
 //    console.log('a user connected');
 
@@ -99,7 +97,6 @@ import server from './app';
 //        io.emit('userLoc response', userLoc)
 //        //socket.broadcast.emit('userLoc response', userLoc)
 //   });
-
 
 //   socket.on("disconnect", () => {
 //      console.log("a user disconnected");

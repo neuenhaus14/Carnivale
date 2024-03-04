@@ -1,5 +1,4 @@
 node_modules
 .env
 /dist
-test/compiled
 server/db/config/postgresConfig.json
