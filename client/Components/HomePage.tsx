@@ -19,7 +19,6 @@ import PostCard from './PostCard';
 import { RunModeContext, ThemeContext } from './Context';
 import { useSearchParams } from 'react-router-dom';
 
-
 //PARENT OF HOMEMODAL
 
 interface HomePageProps {
@@ -28,7 +27,7 @@ interface HomePageProps {
   userId: number;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ lat, lng, /*userId*/ }) => {
+const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
   const [searchParams] = useSearchParams();
   const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [comment, setComment] = useState('');
@@ -128,17 +127,21 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, /*userId*/ }) => {
             <p className='fs-6 lh-sm'>
               <b>Welcome to Pardi Gras!</b> <br />
               <br />
-              This is a demo version of Pardi Gras. Feel free to explore the app&apos;s features, but please note that much of its core
-              functionality is disabled in this version.<br />
+              This is a demo version of Pardi Gras. Feel free to explore the
+              app&apos;s features, but please note that much of its core
+              functionality is disabled in this version.
+              <br />
               <br />
               After closing this window you&apos;ll be on the Home page, which
               features a crowd-sourced global content feed covering Mardi Gras
-              gossip, costumes and throws.<br />
+              gossip, costumes and throws.
+              <br />
               <br />
               Here you can discover the most recent or popular posts and create
               your own content to share with the Mardi Gras community. Upvote a
-              post to send it up the ranks, or downvote it if it&apos;s not up to
-              snuff.<br />
+              post to send it up the ranks, or downvote it if it&apos;s not up
+              to snuff.
+              <br />
               <br />
               <b>Got a sec?</b> Please take the{' '}
               <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
@@ -184,61 +187,63 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, /*userId*/ }) => {
       </Row>
 
       <Row>
-        <Tabs activeKey={key} onSelect={handleSelect}>
-          <Tab eventKey='posts' title='Gossip'>
-            {posts
-              ? posts.map((item: any, index: number) => (
-                  <PostCard
-                    key={`${item.id} + ${index}`}
-                    post={item}
-                    userId={userId}
-                    getPosts={getPosts}
-                    order={order}
-                    eventKey={'posts'}
-                  />
-                ))
-              : ''}
-          </Tab>
-          <Tab eventKey='costumes' title='Costumes'>
-            {posts
-              ? posts.map((item: any, index: number) => (
-                  <PostCard
-                    key={`${item.id} + ${index}`}
-                    post={item}
-                    userId={userId}
-                    getPosts={getPosts}
-                    order={order}
-                    eventKey={'costumes'}
-                  />
-                ))
-              : ''}
-          </Tab>
-          <Tab eventKey='throws' title='Throws'>
-            {posts
-              ? posts.map((item: any, index: number) => (
-                  <PostCard
-                    key={`${item.id} + ${index}`}
-                    post={item}
-                    userId={userId}
-                    getPosts={getPosts}
-                    order={order}
-                    eventKey={'throws'}
-                  />
-                ))
-              : ''}
-          </Tab>
-        </Tabs>
+        <div className='homePage-tabs'>
+          <Tabs activeKey={key} onSelect={handleSelect}>
+            <Tab eventKey='posts' title='Gossip'>
+              {posts
+                ? posts.map((item: any, index: number) => (
+                    <PostCard
+                      key={`${item.id} + ${index}`}
+                      post={item}
+                      userId={userId}
+                      getPosts={getPosts}
+                      order={order}
+                      eventKey={'posts'}
+                    />
+                  ))
+                : ''}
+            </Tab>
+            <Tab eventKey='costumes' title='Costumes'>
+              {posts
+                ? posts.map((item: any, index: number) => (
+                    <PostCard
+                      key={`${item.id} + ${index}`}
+                      post={item}
+                      userId={userId}
+                      getPosts={getPosts}
+                      order={order}
+                      eventKey={'costumes'}
+                    />
+                  ))
+                : ''}
+            </Tab>
+            <Tab eventKey='throws' title='Throws'>
+              {posts
+                ? posts.map((item: any, index: number) => (
+                    <PostCard
+                      key={`${item.id} + ${index}`}
+                      post={item}
+                      userId={userId}
+                      getPosts={getPosts}
+                      order={order}
+                      eventKey={'throws'}
+                    />
+                  ))
+                : ''}
+            </Tab>
+          </Tabs>
+        </div>
       </Row>
       {key === 'posts' ? (
         <Row>
           <div
-            className='comment-form'
-            style={{
-              position: 'fixed',
-              bottom: '11.4vh',
-              left: '0px',
-              right: '0px',
-            }}
+            className='make-post-form-container'
+            // style={{
+            //   position: 'fixed',
+            //   bottom: '11.4vh',
+            //   left: '0px',
+            //   right: '0px',
+            // }}
           >
             <Form style={{ width: '100%' }}>
               <Form.Group>

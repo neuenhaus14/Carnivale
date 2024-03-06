@@ -4,7 +4,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Card, Modal, Button } from 'react-bootstrap';
+import { Card, Modal, Button, Container } from 'react-bootstrap';
 import { ThemeContext, RunModeContext } from './Context';
 interface EventPageProps {
   lng: number;
@@ -87,11 +87,11 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
   }, [date]);
 
   return (
-    <div className={`body ${theme}`} onClick={toggleAboutModal}>
+    <Container className={`body ${theme}`} onClick={toggleAboutModal}>
       <div className='gig-body-calendar'>
-        <Card
-          className='comment-form'
-          style={{ position: 'fixed', bottom: '11.4vh', zIndex: 1 }}
+        <div
+          className='select-gig-date-container'
+          // style={{ position: 'fixed', bottom: '11.4vh', zIndex: 1 }}
         >
           <h3 className='date-picker-name'>Select the Date:</h3>
 
@@ -101,7 +101,7 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
             selected={date}
             onChange={(date: Date) => setDate(date)}
           />
-        </Card>
+        </div>
         {isDemoMode && <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
             <Modal.Title>DEMO MODE: Live Music</Modal.Title>
@@ -149,7 +149,7 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
           <a href='https://www.wwoz.org/calendar/livewire-music'>WWOZ</a>
         </footer>
       </div>
-    </div>
+    </Container>
   );
 };
 

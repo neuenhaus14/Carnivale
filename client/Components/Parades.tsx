@@ -186,16 +186,16 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
           </Modal>
         )}
         <Card
-          className='comment-form'
-          style={{
-            position: 'fixed',
-            bottom: '11.4vh',
-            left: '0',
-            right: '0',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            zIndex: 1,
-          }}
+          className='select-parade-container'
+          // style={{
+          //   position: 'fixed',
+          //   bottom: '11.4vh',
+          //   left: '0',
+          //   right: '0',
+          //   marginLeft: 'auto',
+          //   marginRight: 'auto',
+          //   zIndex: 1,
+          // }}
         >
           <label
             htmlFor='paradeSelect'

@@ -66,6 +66,24 @@ $cardBackground2: #fdf9f4;
 
 @import 'bootstrap';
 
+// used for the following components/divs: picking the date in gigs page, selecting the parade,
+@mixin page-bottom-panel {
+  border-radius: 0px;
+  display: flex;
+  flex-direction: row;
+  max-height: 14vh;
+  width: 100%;
+  margin: 3px auto;
+  background-color: $cardBackground;
+  border: 1px solid $secondaryColor;
+  padding: 15px;
+  position: fixed;
+  bottom: 11.4vh;
+  z-index: 1;
+  left: 0;
+  right: 0;
+}
+
 // background color for entire app
 #app {
   background-color: #fffcf8;
@@ -181,6 +199,7 @@ $cardBackground2: #fdf9f4;
   font-weight: 200;
 }
 
+//
 .body {
   padding-top: 10vh;
   padding-bottom: 15vh;
@@ -232,6 +251,9 @@ $cardBackground2: #fdf9f4;
   max-width: 450px;
 }
 
+/*
+Large breakpoint is 992 px wide. It's at this point that posts will switch to grid mode, as it's here that the tab component gets wide enough to justify a change in display
+*/
 @include media-breakpoint-up(lg) {
   .login-carousel-container {
     display: flex; // displays carousel for lg screen
@@ -246,7 +268,7 @@ $cardBackground2: #fdf9f4;
   }
 }
 
-@include media-breakpoint-up(md){
+@include media-breakpoint-up(md) {
   .confirm-action-modal .modal-dialog {
     width: 300px;
   }
@@ -350,7 +372,6 @@ body {
   margin-top: 6px;
 }
 
-// purple border for tab
 .nav-tabs {
   border-bottom: 1px solid $tabSelectedBorder;
 }
@@ -444,12 +465,10 @@ body {
 //HOMEPAGE
 
 .body-home {
-  padding-top: 10vh;
+  // padding-bottom larger on home page to account for .comment-form
+
+  @extend .body;
   padding-bottom: 26vh;
-  display: flex;
-  flex-direction: column;
-  background-color: $primaryColor;
-  min-height: 100vh;
 }
 
 .comment-btn {
@@ -466,7 +485,20 @@ body {
   margin-top: 5px;
 }
 
+.make-post-form-container {
+  @include page-bottom-panel;
+}
+
+.select-gig-date-container {
+  @include page-bottom-panel;
+}
+
+.select-parade-container {
+  @include page-bottom-panel;
+}
+
 .comment-form {
+  @extend .card;
   // border-top: 1px solid $secondaryColor;
   border-radius: 0px;
   display: flex;
@@ -536,7 +568,7 @@ body {
   }
 }
 
-//colorblind mode
+// colorblind mode
 .pg-theme-vis {
   .btn-primary {
     background-color: $offBlack !important;
@@ -612,7 +644,7 @@ body {
     color: black !important;
   }
 }
-
+// deep gras mode
 .pg-theme-deep {
   .btn-primary {
     background-color: $pinky !important;
