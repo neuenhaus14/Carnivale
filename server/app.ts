@@ -20,7 +20,8 @@ import FeedRoutes from "./routes/Feed";
 import ImageRouter from "./routes/PhotoUpload";
 import ParadesRoutes from "./routes/Parades";
 import GigsRoutes from "./routes/ScrapeEvents";
-import MailListRoutes from "./routes/MailList"
+import MailListRoutes from "./routes/MailList";
+import TestRoutes from './routes/Test';
 import { User, } from "./db/index";
 
 // import { Sequelize } from "sequelize";
@@ -53,7 +54,8 @@ app.use("/api/feed", FeedRoutes);
 app.use("/api/images", ImageRouter);
 app.use("/api/parades", ParadesRoutes);
 app.use("/api/gigs", GigsRoutes);
-app.use("/api/mail", MailListRoutes)
+app.use("/api/mail", MailListRoutes);
+app.use("/api/test", TestRoutes);
 app.use(
   cors({
     origin: ["http://localhost:4000"],
