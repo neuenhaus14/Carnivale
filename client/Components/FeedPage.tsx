@@ -16,6 +16,8 @@ import {
 } from 'react-bootstrap';
 import { ThemeContext, RunModeContext } from './Context';
 import ConfirmActionModal from './ConfirmActionModal';
+import PostCard from './PostCard';
+
 
 interface SharedPost {
   upvotes: number;
@@ -76,6 +78,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
+
   const fetchSenderName = async (userId: number) => {
     try {
       const response = await axios.get(`/api/feed/user/${userId}`);

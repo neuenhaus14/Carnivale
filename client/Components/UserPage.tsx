@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-// import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
@@ -37,9 +37,13 @@ import { ThemeContext, RunModeContext } from './Context';
 import { ToastContainer, toast } from 'react-toastify';
 import { truncate } from 'fs';
 
-const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
-  //  const [searchParams] = useSearchParams();
-  //  const [userId] = useState(Number(searchParams.get('userid')) || 1);
+const UserPage: React.FC<UserPageProps> = ({
+  /* userId, */ lng,
+  lat,
+  setTheme,
+}) => {
+  const [searchParams] = useSearchParams();
+  const [userId] = useState(Number(searchParams.get('userid')) || 1);
 
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
@@ -186,7 +190,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
                 );
                 await setShowConfirmActionModal(true);
               }}
-              disabled={true}
+              disabled={isDemoMode}
             >
               {/*'REMOVE '*/}{' '}
               <IoPersonRemoveSharp style={{ verticalAlign: '-2px' }} />
@@ -219,7 +223,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
                 );
                 await setShowConfirmActionModal(true);
               }}
-              disabled={true}
+              disabled={isDemoMode}
             >
               <MdCancel style={{ verticalAlign: '-2px' }} />
             </Button>
@@ -498,11 +502,20 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
           </Modal.Header>
           <Modal.Body>
             <p className='fs-6 lh-sm'>
-              <b>Welcome to the Krewe & Calendar page!</b><br/><br/>
-              Here you&apos;ll add friends to your Krewe and organize custom events. Navigate between the &apos;Krewe&apos; and &apos;Calendar&apos; tabs to display your connections or relevant events.
+              <b>Welcome to the Krewe & Calendar page!</b>
               <br />
               <br />
-              Click &apos;Make Plans&apos; to create an event from scratch, &apos;Live Music&apos; to view an up-to-date NOLA music calendar, and &apos;Parades&apos; to discover details about upcoming Mardi Gras parades.<br/>
+              Here you&apos;ll add friends to your Krewe and organize custom
+              events. Navigate between the &apos;Krewe&apos; and
+              &apos;Calendar&apos; tabs to display your connections or relevant
+              events.
+              <br />
+              <br />
+              Click &apos;Make Plans&apos; to create an event from scratch,
+              &apos;Live Music&apos; to view an up-to-date NOLA music calendar,
+              and &apos;Parades&apos; to discover details about upcoming Mardi
+              Gras parades.
+              <br />
               <br />
               <b>Before you go!</b> Please take the{' '}
               <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
@@ -607,7 +620,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
                       size='sm'
                       variant='success'
                       onClick={requestFriend}
-                      disabled={true}
+                      disabled={isDemoMode}
                     >
                       <FaEnvelope style={{ verticalAlign: '-2px' }} />
                     </Button>

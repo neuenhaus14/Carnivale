@@ -17,6 +17,8 @@ import axios from 'axios';
 import HomeModal from './HomeModal';
 import PostCard from './PostCard';
 import { RunModeContext, ThemeContext } from './Context';
+import { useSearchParams } from 'react-router-dom';
+
 
 //PARENT OF HOMEMODAL
 
@@ -26,7 +28,9 @@ interface HomePageProps {
   userId: number;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
+const HomePage: React.FC<HomePageProps> = ({ lat, lng, /*userId*/ }) => {
+  const [searchParams] = useSearchParams();
+  const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [comment, setComment] = useState('');
   const [posts, setPosts] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -227,7 +231,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
       </Row>
       {key === 'posts' ? (
         <Row>
-          <Card
+          <div
             className='comment-form'
             style={{
               position: 'fixed',
@@ -270,7 +274,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
                 </div>
               </Form.Group>
             </Form>
-          </Card>
+          </div>
         </Row>
       ) : (
         ''
