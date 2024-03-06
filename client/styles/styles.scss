@@ -66,14 +66,22 @@ $cardBackground2: #fdf9f4;
 
 @import 'bootstrap';
 
+@mixin btn-center-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 // used for the following components/divs: picking the date in gigs page, selecting the parade,
 @mixin page-bottom-panel {
   border-radius: 0px;
   display: flex;
   flex-direction: row;
-  max-height: 14vh;
+  justify-content: space-around;
+  align-items: center;
+  height: 9vh;
   width: 100%;
-  margin: 3px auto;
   background-color: $cardBackground;
   border: 1px solid $secondaryColor;
   padding: 15px;
@@ -173,14 +181,12 @@ $cardBackground2: #fdf9f4;
 }
 
 .bottom-nav-button {
+  @include btn-center-icon;
   height: 50px;
   width: 50px;
   background-color: $yeller;
   color: $dark;
-  font-size: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 28px;
 }
 
 .bottom-nav {
@@ -359,17 +365,9 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
-.date-picker-name {
-  text-align: left;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 6px;
-}
+
 .date-picker {
   text-align: center;
-  margin-left: auto;
-  margin-right: 10px;
-  margin-top: 6px;
 }
 
 .nav-tabs {
@@ -465,50 +463,23 @@ body {
 //HOMEPAGE
 
 .body-home {
-  // padding-bottom larger on home page to account for .comment-form
+  // padding-bottom larger on home page to account for page-bottom-panel
 
   @extend .body;
   padding-bottom: 26vh;
 }
 
-.comment-btn {
-  background-color: $purpley;
-  border-radius: 17px;
-  // padding: 3px 6px;
-  margin-top: 5px;
-  float: right;
+#create-post-form .btn {
+  @include btn-center-icon;
+  // border-radius: 25px;
 }
 
-.photo-btn {
-  border-radius: 17px;
-  // padding: 3px 6px;
-  margin-top: 5px;
-}
-
-.make-post-form-container {
+.page-bottom-panel {
   @include page-bottom-panel;
 }
 
-.select-gig-date-container {
-  @include page-bottom-panel;
-}
-
-.select-parade-container {
-  @include page-bottom-panel;
-}
-
-.comment-form {
-  @extend .card;
-  // border-top: 1px solid $secondaryColor;
-  border-radius: 0px;
-  display: flex;
-  flex-direction: row;
-  max-height: 14vh;
-  width: 100%;
-  margin: 3px auto;
-  background-color: $cardBackground;
-  border: 1px solid $secondaryColor;
-  padding: 15px;
+#parade-select {
+  max-width: 60%;
 }
 
 .form-check-input:checked {

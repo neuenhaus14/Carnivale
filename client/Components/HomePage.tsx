@@ -236,15 +236,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
       </Row>
       {key === 'posts' ? (
         <Row>
-          <div
-            className='make-post-form-container'
-            // style={{
-            //   position: 'fixed',
-            //   bottom: '11.4vh',
-            //   left: '0px',
-            //   right: '0px',
-            // }}
-          >
+          <div className='page-bottom-panel' id='create-post-form'>
             <Form style={{ width: '100%' }}>
               <Form.Group>
                 <div className='d-flex flex-row'>
@@ -261,11 +253,14 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
                     variant='primary'
                     onClick={handleSubmit}
                     disabled={isDemoMode || comment.length <= 0}
-                    className='comment-btn mx-1'
+                    className='btn-center-icon rounded-circle mx-1'
                   >
                     <FaCommentDots />
                   </Button>
-                  <Button onClick={modalTrigger} className='photo-btn mx-1'>
+                  <Button
+                    onClick={modalTrigger}
+                    className='btn-center-icon rounded-circle mx-1'
+                  >
                     <FaCamera />
                   </Button>
                   {showModal ? (
