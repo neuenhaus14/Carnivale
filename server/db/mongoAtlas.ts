@@ -9,7 +9,7 @@ const validateEmail = function (email: string) {
 
 mongoose
   .connect(ATLAS_URI)
-  .then(() => console.log('ATLAS database connected!'))
+  .then(() => {if (process.env.NODE_ENV !== 'test')console.log('ATLAS database connected!')})
   .catch((err) => console.log(err));
 
 const mailSubscriberSchema = new mongoose.Schema(

@@ -19,12 +19,17 @@ const postgresConfig = JSON.parse(
   )
 );
 const SEQUELIZE_OPTIONS = postgresConfig[NODE_ENV];
-const db = new Sequelize(SEQUELIZE_OPTIONS);
 
+const db = new Sequelize(SEQUELIZE_OPTIONS);
 
 db.authenticate()
   .then(() => {
-    console.log('Database connection has been established with NODE_ENV', NODE_ENV);
+    if (NODE_ENV !== 'test') {
+      console.log(
+        'Database connection has been established with NODE_ENV',
+        NODE_ENV
+      );
+    }
   })
   .catch((err) => {
     console.error('Unable to connect to the database:', err);
@@ -451,16 +456,6 @@ const Join_shared_post = db.define(
   },
   { timestamps: true }
 );
-
-/*
-sync the db automatically if we're in test mode. The test script drops and recreates the db, so we need to sync it every time to run new tests for proper tables to be in carnivale_test database before tests run
-*/
-if (NODE_ENV === 'test') {
-  (async () => {
-    await db.sync();
-    console.log("Database synced with NODE_ENV", process.env.NODE_ENV);
-  })();
-}
 
 export {
   db,
