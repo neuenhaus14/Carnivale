@@ -744,7 +744,7 @@ const UserPage: React.FC<UserPageProps> = ({
               Log Out
             </Button>
 
-            <DropdownButton
+            {/* <DropdownButton
               title='Select Theme'
               drop='up'
               id='theme-dropup'
@@ -759,7 +759,7 @@ const UserPage: React.FC<UserPageProps> = ({
               <Dropdown.Item onClick={handleDeepGrasMode}>
                 Deep Gras Mode
               </Dropdown.Item>
-            </DropdownButton>
+            </DropdownButton> */}
           </div>
         </div>
       </Row>

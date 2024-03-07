@@ -1,0 +1,12 @@
+// BUTTONS, "BODY" DIVS, OTHER BIG PICTURE THINGS
+
+@use "colors";
+@use "mixin_utils";
+
+#app {
+  background-color: colors.$primaryBG;
+}
+
+.btn {
+  border: none;
+}

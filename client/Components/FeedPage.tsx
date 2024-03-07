@@ -493,7 +493,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         {Array.isArray(sharedPosts) && sharedPosts.length > 0 ? (
           sharedPosts.map((post) => (
             <li key={post.id}>
-              <div className='card'>
+              <div className='post-card'>
                 <div style={{ display: 'flex', alignItems: 'right' }}>
                   <p
                     style={{

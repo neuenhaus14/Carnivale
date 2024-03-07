@@ -1,3 +1,17 @@
+@use 'colors';
+@use 'mixin_utils';
+
+@use 'navbars';
+@use 'base';
+
+// SET BOOTSTRAP DEFAULT COLORS
+$primary: colors.$primaryColor;
+$secondary: colors.$secondaryColor;
+$success: colors.$successColor;
+$danger: colors.$dangerColor;
+$warning: colors.$warningColor;
+$info: colors.$infoColor;
+
 @import '~bootstrap/scss/functions';
 @import '~bootstrap/scss/variables';
 @import '~bootstrap/scss/mixins';
@@ -26,77 +40,79 @@
 @import '~bootstrap/scss/popover';
 @import '~bootstrap/scss/carousel';
 
+@import "bootstrap";
+
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@100;200;400;500;700&family=Inter:wght@600;700&family=Shrikhand&family=Permanent+Marker&display=swap');
 
-$isFree: #53ca3c;
-$isToilet: #169873;
-$isFood: #fcc54e;
-$isPersonal: #ba37dd;
-$isPhoneCharger: #53e3d4;
-$isPoliceStation: #e7abff;
-$isEMTStation: #f27d52;
 
-$greeny: #169874;
-$lightGreeny: #53ca3c;
-$darkGreeny: #015d43;
-$pinky: #e7abff;
-$dark: #211234;
-$yeller: #fcc54e;
-$purpley: #8d3dad;
-$lightPinky: #fbf4fe;
+// $isFree: #53ca3c;
+// $isToilet: #169873;
+// $isFood: #fcc54e;
+// $isPersonal: #ba37dd;
+// $isPhoneCharger: #53e3d4;
+// $isPoliceStation: #e7abff;
+// $isEMTStation: #f27d52;
 
-$primaryColor: #fffcf8;
-$secondaryColor: $yeller;
-$ternaryColor: $purpley;
+// $greeny: #169874;
+// $lightGreeny: #53ca3c;
+// $darkGreeny: #015d43;
+// $pinky: #e7abff;
+// $dark: #211234;
+// $yeller: #fcc54e;
+// $purpley: #8d3dad;
+// $lightPinky: #fbf4fe;
 
-$cardBackground: #fdf4ea;
+// $primaryColor: #fffcf8;
+// $secondaryColor: $yeller;
+// $ternaryColor: $purpley;
 
-$tabSelected: $primaryColor;
-$tabSelectedBorder: $secondaryColor;
-$tabUnselected: $cardBackground;
-$tabUnselectedBorder: #e3e3e3;
+// $cardBackground: #fdf4ea;
 
-//colorblind friendly hues
-$tan: #d2b48c;
-$turq: #30d5c8;
+// $tabSelected: $primaryColor;
+// $tabSelectedBorder: $secondaryColor;
+// $tabUnselected: $cardBackground;
+// $tabUnselectedBorder: #e3e3e3;
 
-$offBlack: #291f1f;
-$offGrey: #aeaeae;
-$cardBackground2: #fdf9f4;
+// //colorblind friendly hues
+// $tan: #d2b48c;
+// $turq: #30d5c8;
 
-@import 'bootstrap';
+// $offBlack: #291f1f;
+// $offGrey: #aeaeae;
+// $cardBackground2: #fdf9f4;
 
-// quickly centers single-item content, like an icon in a button
-@mixin flex-col-center-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+
+// centers single-item content, like an icon in a button
+// @mixin flex-col-center-content {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+// }
 
 // used for the following components/divs: picking the date in gigs page, selecting the parade, creating a post
-@mixin page-bottom-panel {
-  border-radius: 0px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-  height: 9vh;
-  width: 100%;
-  background-color: $cardBackground;
-  border-top: 1px solid $secondaryColor;
-  padding: 15px;
-  position: fixed;
-  bottom: 12vh;
-  z-index: 1;
-  left: 0;
-  right: 0;
-}
+// @mixin page-bottom-panel {
+//   border-radius: 0px;
+//   display: flex;
+//   flex-direction: row;
+//   justify-content: space-evenly;
+//   align-items: center;
+//   height: 9vh;
+//   width: 100%;
+//   background-color: $cardBackground;
+//   border-top: 1px solid $secondaryColor;
+//   padding: 15px;
+//   position: fixed;
+//   bottom: 12vh;
+//   z-index: 1;
+//   left: 0;
+//   right: 0;
+// }
 
 // background color for entire app
-#app {
-  background-color: #fffcf8;
-}
+// #app {
+//   background-color: colors.$primaryColor;
+// }
 
 .alert {
   --bs-alert-padding-y: 0.5rem;
@@ -109,8 +125,8 @@ $cardBackground2: #fdf9f4;
   position: relative;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: 4px auto;
-  border: 1px solid $secondaryColor;
-  background-color: $cardBackground;
+  border: 1px solid colors.$secondaryColor;
+  background-color: colors.$cardBackground;
   max-width: 400px;
 }
 
@@ -136,7 +152,7 @@ $cardBackground2: #fdf9f4;
   max-width: 7rem;
   max-height: 10rem;
   margin: 10px;
-  background-color: $primaryColor;
+  background-color: colors.$primaryBG;
   padding: 6px;
 
   .card-body {
@@ -147,7 +163,7 @@ $cardBackground2: #fdf9f4;
 }
 
 #map-filter-container {
-  background-color: $primaryColor;
+  background-color: colors.$primaryBG;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -155,29 +171,30 @@ $cardBackground2: #fdf9f4;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
   margin-top: 10px;
-  border: 1px solid $secondaryColor;
-}
-
-.btn {
-  border: none;
+  border: 1px solid colors.$secondaryColor;
 }
 
 .btn-wide {
   width: 80vw;
   max-width: 400px;
   margin: 10px auto;
-  border: $secondaryColor solid 2px;
+  border: colors.$secondaryColor solid 2px;
 }
 
 .btn-success {
   // keep this
-  background-color: $yeller !important;
+  background-color: colors.$yeller !important;
   color: white;
 }
 
+// .btn-primary {
+//   // background-color: colors.$yeller !important;
+//   // color: white;
+// }
+
 .btn-secondary {
-  background-color: $ternaryColor !important;
-  color: white;
+  // background-color: colors.$ternaryColor !important;
+  color: colors.$lightText;
 }
 
 // buttons to put icons inside for
@@ -189,30 +206,30 @@ $cardBackground2: #fdf9f4;
   font-weight: bold;
 }
 
-.bottom-nav-button {
-  @include flex-col-center-content;
-  height: 50px;
-  width: 50px;
-  background-color: $yeller;
-  color: $dark;
-  font-size: 28px;
-}
+// .bottom-nav-button {
+//   @include flex-col-center-content;
+//   height: 50px;
+//   width: 50px;
+//   background-color: $yeller;
+//   color: $dark;
+//   font-size: 28px;
+// }
 
-.bottom-nav {
-  justify-content: space-evenly;
-  background-color: white;
-  height: 12vh;
-  border-top: $yeller solid 1px;
-}
+// .bottom-nav {
+//   justify-content: space-evenly;
+//   background-color: white;
+//   height: 12vh;
+//   border-top: colors.$yeller solid 1px;
+// }
 
-.top-nav {
-  justify-content: space-evenly;
-  background-color: $greeny;
-  height: 8vh;
-  color: white;
-  font-size: 1em;
-  font-weight: 200;
-}
+// .top-nav {
+//   justify-content: space-evenly;
+//   background-color: colors.$greeny;
+//   height: 8vh;
+//   color: white;
+//   font-size: 1em;
+//   font-weight: 200;
+// }
 
 //
 .body {
@@ -220,18 +237,18 @@ $cardBackground2: #fdf9f4;
   padding-bottom: 12vh;
   display: flex;
   flex-direction: column;
-  background-color: $primaryColor;
+  background-color: colors.$primaryBG;
   height: 100vh;
 }
 
 // USER PAGE
 
 #modal-header {
-  background-color: $greeny;
+  background-color: colors.$greeny;
 }
 
 #login {
-  background-image: linear-gradient($darkGreeny, $greeny);
+  background-image: linear-gradient(colors.$darkGreeny, colors.$greeny);
   min-height: 100vh;
   padding: 15px;
   display: flex;
@@ -249,7 +266,7 @@ $cardBackground2: #fdf9f4;
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: $primaryColor;
+  background-color: colors.$primaryBG;
   max-width: 475px;
 }
 
@@ -262,7 +279,7 @@ $cardBackground2: #fdf9f4;
   display: none;
   flex-direction: column;
   position: relative;
-  background-color: $primaryColor;
+  background-color: colors.$primaryBG;
   max-width: 450px;
 }
 
@@ -318,7 +335,7 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
 }
 
 .modal-body {
-  background-color: $primaryColor;
+  background-color: colors.$primaryBG;
 }
 
 .modal-title {
@@ -326,7 +343,7 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
 }
 
 #modal-footer {
-  background-color: $greeny;
+  background-color: colors.$greeny;
 }
 
 .confirm-action-modal {
@@ -342,20 +359,20 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
 
 h5 {
   text-align: left;
-  color: $greeny;
+  color: colors.$greeny;
   margin: 8px;
   font-weight: 400;
 }
 
 p {
   font-size: 20px;
-  color: $dark;
+  color: colors.$dark;
   margin: 0px 6px 6px;
 }
 
 // this is for the body tag, NOT the body class
 body {
-  color: $dark;
+  color: colors.$dark;
   font-family: 'Fredoka', sans-serif;
 }
 
@@ -364,9 +381,10 @@ body {
   padding-bottom: 14vh;
   display: flex;
   flex-direction: column;
-  background-color: $lightPinky;
+  background-color: colors.$lightPinky;
   min-height: 100vh;
 }
+
 .gig-body-calendar {
   padding-bottom: 5vh;
   display: flex;
@@ -379,16 +397,16 @@ body {
 }
 
 .nav-tabs {
-  border-bottom: 1px solid $tabSelectedBorder;
+  border-bottom: 1px solid colors.$tabSelectedBorder;
 }
 
 .nav-tabs .nav-item.show {
-  background-color: $tabSelected;
-  border-bottom: 1px solid $tabSelectedBorder;
+  background-color: colors.$tabSelected;
+  border-bottom: 1px solid colors.$tabSelectedBorder;
 }
 
 .tab-content {
-  background-color: $tabSelected;
+  background-color: colors.$tabSelected;
 }
 
 // HOME PAGE
@@ -426,13 +444,13 @@ body {
 }
 
 #share-modal-button {
-  background-color: $yeller;
+  background-color: colors.$yeller;
   margin: 0px 0px 0px 15px;
   color: black !important;
 }
 
 #share-modal-dropdown {
-  background-color: $yeller;
+  background-color: colors.$yeller;
   margin: 0px 0px 0px 15px;
   color: black !important;
 }
@@ -440,21 +458,21 @@ body {
 .nav-tabs .nav-link {
   color: rgb(86, 86, 86);
   font-family: 'Permanent Marker', serif;
-  background-color: $tabUnselected;
-  border-top: 1px solid $tabUnselectedBorder;
-  border-left: 1px solid $tabUnselectedBorder;
-  border-right: 1px solid $tabUnselectedBorder;
-  border-bottom: 1px solid $tabSelectedBorder;
+  background-color: colors.$tabUnselected;
+  border-top: 1px solid colors.$tabUnselectedBorder;
+  border-left: 1px solid colors.$tabUnselectedBorder;
+  border-right: 1px solid colors.$tabUnselectedBorder;
+  border-bottom: 1px solid colors.$tabSelectedBorder;
 }
 
 .nav-tabs .nav-link.active {
   font-family: 'Permanent Marker', serif;
-  background-color: $tabSelected;
+  background-color: colors.$tabSelected;
   color: $dark;
-  border-top: solid 1px $tabSelectedBorder;
-  border-left: solid 1px $tabSelectedBorder;
-  border-right: solid 1px $tabSelectedBorder;
-  border-bottom: solid 1px $tabSelected;
+  border-top: solid 1px colors.$tabSelectedBorder;
+  border-left: solid 1px colors.$tabSelectedBorder;
+  border-right: solid 1px colors.$tabSelectedBorder;
+  border-bottom: solid 1px colors.$tabSelected;
 }
 
 
@@ -478,12 +496,14 @@ body {
 }
 
 #create-post-form .btn {
-  @include flex-col-center-content;
+  @include mixin_utils.flex-col-center-content;
   height: 40px;
 }
 
 .page-bottom-panel {
-  @include page-bottom-panel;
+  @include mixin_utils.page-bottom-panel;
+  background-color: colors.$cardBackground;
+  border-top: 1px solid colors.$secondaryColor;
 }
 
 #parade-select {
@@ -491,8 +511,8 @@ body {
 }
 
 .form-check-input:checked {
-  background-color: $pinky;
-  border-color: $ternaryColor;
+  background-color: colors.$pinky;
+  // border-color: colors.$ternaryColor;
 }
 
 .form-check.form-switch {
@@ -531,94 +551,96 @@ body {
 }
 
 //regular mode
-.pg-theme-light {
-  .btn-primary {
-    background-color: $yeller !important;
-    color: $dark;
-  }
+// .pg-theme-light {
+//   .btn-primary {
+//     background-color: colors.$yeller !important;
+//     color: $dark;
+//   }
 
-  .top-nav {
-    justify-content: space-evenly;
-    background-color: $greeny;
-    height: 8vh;
-    color: white;
-    font-size: 1em;
-    font-weight: 200;
-  }
-}
+//   .top-nav {
+//     justify-content: space-evenly;
+//     background-color: colors.$greeny;
+//     height: 8vh;
+//     color: white;
+//     font-size: 1em;
+//     font-weight: 200;
+//   }
+// }
 
 // colorblind mode
 .pg-theme-vis {
   .btn-primary {
-    background-color: $offBlack !important;
-    color: white;
+    background-color: colors.$offBlack !important;
+    color: colors.$lightText;
     text-transform: uppercase;
   }
 
   .btn-success {
-    background-color: $offBlack !important;
-    color: white;
+    background-color: colors.$offBlack !important;
+    color: colors.$lightText;
     text-transform: uppercase;
   }
 
   .btn-danger {
-    background-color: $offBlack !important;
-    color: white;
+    background-color: colors.$offBlack !important;
+    color: colors.$lightText;
     text-transform: uppercase;
   }
 
   .dropdown-toggle {
-    background-color: $offBlack !important;
+    background-color: colors.$offBlack !important;
     color: white;
 
     text-transform: uppercase;
   }
 
   h5 {
-    color: $offBlack;
+    color: colors.$offBlack;
     text-transform: uppercase;
   }
 
   .top-nav {
-    background-color: $offBlack !important;
+    background-color: colors.$offBlack !important;
   }
 
   .card {
-    background-color: $cardBackground2 !important;
+    background-color: colors.$cardBackground2 !important;
   }
 
   * {
-    border-color: $offBlack !important;
+    border-color: colors.$offBlack !important;
   }
 
   .bottom-nav {
-    border-top-color: $offBlack !important;
+    border-top-color: colors.$offBlack !important;
   }
 
   .nav-tabs .nav-link {
-    background-color: $tabSelected;
+    background-color: colors.$tabSelected;
     color: gray;
   }
 
   .nav-tabs .nav-link.active {
-    background-color: $tabSelected;
-    color: $offBlack;
-    border-bottom: solid 1px $tabSelected !important;
+    background-color: colors.$tabSelected;
+    color: colors.$offBlack;
+    border-bottom: solid 1px colors.$tabSelected !important;
   }
 
   #modal-header {
     color: white !important;
     opacity: 1;
-    background-color: $offBlack !important;
+    background-color: colors.$offBlack !important;
   }
+
   #modal-footer {
     color: white !important;
-    background-color: $offBlack !important;
+    background-color: colors.$offBlack !important;
   }
 
   .btn-close {
     background-color: white !important;
   }
+
   .form-check-label {
     color: black !important;
   }
@@ -626,8 +648,8 @@ body {
 // deep gras mode
 .pg-theme-deep {
   .btn-primary {
-    background-color: $pinky !important;
-    color: $dark;
+    background-color: colors.$pinky !important;
+    color: colors.$dark;
     animation: funEffects 2s linear infinite, jiggle 0.3s ease-in-out infinite;
     transform-origin: center;
     z-index: 1;

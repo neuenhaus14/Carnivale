@@ -1,0 +1,27 @@
+@use 'colors';
+@use 'mixin_utils';
+
+.bottom-nav-button {
+  @include mixin_utils.flex-col-center-content;
+  height: 50px;
+  width: 50px;
+  //background-color: colors.$yeller !important;
+  //color: colors.$dark !important;
+  font-size: 28px !important;
+}
+
+.bottom-nav {
+  justify-content: space-evenly !important;
+  background-color: white;
+  height: 12vh;
+  border-top: colors.$yeller solid 1px;
+}
+
+.top-nav {
+  justify-content: space-evenly !important;
+  background-color: colors.$greeny;
+  height: 8vh;
+  color: white;
+  font-size: 1em;
+  font-weight: 200;
+}
