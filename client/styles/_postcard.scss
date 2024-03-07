@@ -1,0 +1,43 @@
+@use 'colors';
+@use 'mixin_utils';
+
+.post-card {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 4px auto;
+  border: 1px solid colors.$primaryColor !important;
+  background-color: colors.$cardBackground !important;
+  max-width: 400px;
+
+  .card-detail {
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 100;
+    margin-top: -5px;
+    margin-left: 0px;
+  }
+
+  .card-content {
+    font-weight: 500;
+    line-height: normal;
+    margin-left: 0px;
+  }
+
+  .postcard-image {
+    margin-bottom: 5px;
+  }
+
+  .postcard-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .vote-button {
+    width: 40px !important;
+  }
+}

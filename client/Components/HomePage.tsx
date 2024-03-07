@@ -18,6 +18,7 @@ import HomeModal from './HomeModal';
 import PostCard from './PostCard';
 import { RunModeContext, ThemeContext } from './Context';
 import { useSearchParams } from 'react-router-dom';
+import ShareModal from './ShareModal';
 
 //PARENT OF HOMEMODAL
 
@@ -32,21 +33,25 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
   const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [comment, setComment] = useState('');
   const [posts, setPosts] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+
+  const [showHomeModal, setShowHomeModal] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(true);
+  const [showShareModal, setShowShareModal] = useState(false);
+
+  const [postToShare, setPostToShare] = useState({ id: null, type: null });
+
   const [key, setKey] = useState('posts');
   const [order, setOrder] = useState('upvotes');
+
   const theme = useContext(ThemeContext);
-
   const isDemoMode = useContext(RunModeContext) === 'demo';
-
-  const [showAboutModal, setShowAboutModal] = useState(true);
 
   const toggleAboutModal = () => {
     setShowAboutModal(!showAboutModal);
   };
 
-  const modalTrigger = () => {
-    setShowModal(true);
+  const toggleHomeModal = () => {
+    setShowHomeModal(true);
   };
 
   function handleInput(e: any) {
@@ -115,9 +120,25 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
     return () => clearTimeout(interval);
   }, [key, order]);
 
-  console.log;
+  console.log('postToShare', postToShare);
   return (
     <Container className={`body-with-bottom-panel ${theme}`}>
+      <ShareModal
+        postId={postToShare.id}
+        userId={userId}
+        postType={postToShare.type}
+        setShowShareModal={setShowShareModal}
+        showShareModal={showShareModal}
+      />
+
+      {showHomeModal && (
+        <HomeModal
+          setShowHomeModal={setShowHomeModal}
+          lat={lat}
+          lng={lng}
+          userId={userId}
+        />
+      )}
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
@@ -174,7 +195,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
             checked={order === 'createdAt'}
           />
           <Form.Check
-          className='mb-0 mx-2'
+            className='mb-0 mx-2'
             type='radio'
             name='Sort'
             label='Upvotes'
@@ -197,6 +218,8 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
                       getPosts={getPosts}
                       order={order}
                       eventKey={'posts'}
+                      setPostToShare={setPostToShare}
+                      setShowShareModal={setShowShareModal}
                     />
                   ))
                 : ''}
@@ -211,6 +234,8 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
                       getPosts={getPosts}
                       order={order}
                       eventKey={'costumes'}
+                      setPostToShare={setPostToShare}
+                      setShowShareModal={setShowShareModal}
                     />
                   ))
                 : ''}
@@ -225,6 +250,8 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
                       getPosts={getPosts}
                       order={order}
                       eventKey={'throws'}
+                      setPostToShare={setPostToShare}
+                      setShowShareModal={setShowShareModal}
                     />
                   ))
                 : ''}
@@ -232,51 +259,40 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
           </Tabs>
         </div>
       </Row>
-      {key === 'posts' ? (
-        <Row>
-          <div className='page-bottom-panel' id='create-post-form'>
-            <Form style={{ width: '100%' }}>
-              <Form.Group>
-                <div className='d-flex flex-row'>
-                  <Form.Control
-                    className='mx-2'
-                    placeholder='Post a comment or photo'
-                    onChange={handleInput}
-                    value={comment}
-                    onKeyDown={(e) => {
-                      handleKeyDown(e);
-                    }}
-                  />
-                  <Button
-                    variant='primary'
-                    onClick={handleSubmit}
-                    disabled={isDemoMode || comment.length <= 0}
-                    className='btn-center-icon rounded-circle mx-1'
-                  >
-                    <FaCommentDots />
-                  </Button>
-                  <Button
-                    onClick={modalTrigger}
-                    className='btn-center-icon rounded-circle mx-1'
-                  >
-                    <FaCamera />
-                  </Button>
-                  {showModal ? (
-                    <HomeModal
-                      setShowModal={setShowModal}
-                      lat={lat}
-                      lng={lng}
-                      userId={userId}
-                    />
-                  ) : null}
-                </div>
-              </Form.Group>
-            </Form>
-          </div>
-        </Row>
-      ) : (
-        ''
-      )}
+
+      <Row>
+        <div className='page-bottom-panel' id='create-post-form'>
+          <Form style={{ width: '100%' }}>
+            <Form.Group>
+              <div className='d-flex flex-row'>
+                <Form.Control
+                  className='mx-2'
+                  placeholder='Post a comment or photo'
+                  onChange={handleInput}
+                  value={comment}
+                  onKeyDown={(e) => {
+                    handleKeyDown(e);
+                  }}
+                />
+                <Button
+                  variant='primary'
+                  onClick={handleSubmit}
+                  disabled={isDemoMode || comment.length <= 0}
+                  className='btn-center-icon rounded-circle mx-1'
+                >
+                  <FaCommentDots />
+                </Button>
+                <Button
+                  onClick={toggleHomeModal}
+                  className='btn-center-icon rounded-circle mx-1'
+                >
+                  <FaCamera />
+                </Button>
+              </div>
+            </Form.Group>
+          </Form>
+        </div>
+      </Row>
     </Container>
   );
 };

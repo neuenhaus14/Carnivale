@@ -1,12 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { ButtonGroup, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import {
+  Button,
+  ButtonGroup,
+  Card,
+  OverlayTrigger,
+  Tooltip,
+} from 'react-bootstrap';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaShareSquare } from '@react-icons/all-files/fa/FaShareSquare';
 
-import ShareModal from './ShareModal';
+// import ShareModal from './ShareModal';
 // import {IoMdArrowUp} from "@react-icons/all-files/io/IoMdArrowUp";
 // import {IoMdArrowDown} from "@react-icons/all-files/io/IoMdArrowDown";
 import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
@@ -31,6 +38,8 @@ interface PostCardProps {
   getPosts: any;
   order: string;
   eventKey: string;
+  setPostToShare: any;
+  setShowShareModal: any;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -39,6 +48,8 @@ const PostCard: React.FC<PostCardProps> = ({
   getPosts,
   order,
   eventKey,
+  setPostToShare,
+  setShowShareModal,
 }) => {
   const [owner, setOwner] = useState('');
   const [commentVotingStatus, setCommentVotingStatus] = useState<
@@ -166,16 +177,24 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   };
 
+  const handleInitPostShare = () => {
+    setPostToShare({
+      id: post.id,
+      type: post.photoURL ? 'photo' : 'comment',
+    });
+    setShowShareModal(true);
+  };
+
   return (
     <>
       <Card className='post-card'>
+        {/* posts that are text only have comments. Photo's have descriptions */}
         {post.comment ? (
           <Card.Body>
             <Card.Text as='div'>
-              <p className='card-content'>{post.comment}</p>
-              <p className='card-detail'>
-                {owner} posted
-                <br />
+              <div className='card-content'>{post.comment}</div>
+              <div className='card-detail'>
+                {owner} posted{' '}
                 <>
                   <OverlayTrigger
                     placement='top'
@@ -193,24 +212,13 @@ const PostCard: React.FC<PostCardProps> = ({
                   </OverlayTrigger>
                 </>
                 {/* {dayjs(post.createdAt.toString()).fromNow()} */}
-              </p>
+              </div>
             </Card.Text>
-            <ButtonGroup
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginLeft: '-6px',
-                position: 'relative',
-              }}
-            >
-              <button
-                style={{
-                  border: 'none',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: 'none',
-                  background: 'transparent',
-                }}
+            <div className='postcard-buttons'>
+              <div>
+              <Button
+                className='vote-button rounded-circle'
+                size='sm'
                 onClick={() => handleUpvote('comment')}
                 disabled={commentVotingStatus === 'upvoted'}
               >
@@ -221,16 +229,13 @@ const PostCard: React.FC<PostCardProps> = ({
                     fontSize: '30px',
                   }}
                 />
-              </button>
-              <span style={{ margin: '0 5px' }}>{post.upvotes}</span>
-              <button
-                style={{
-                  border: 'none',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: 'none',
-                  background: 'transparent',
-                }}
+              </Button>
+
+              <span className='mx-2'>{post.upvotes}</span>
+
+              <Button
+                className='vote-button rounded-circle'
+                size='sm'
                 onClick={() => handleDownvote('comment')}
                 disabled={commentVotingStatus === 'downvoted'}
               >
@@ -241,47 +246,38 @@ const PostCard: React.FC<PostCardProps> = ({
                     fontSize: '30px',
                   }}
                 />
-              </button>
-              {isOwner && (
-                <button
-                  style={{
-                    border: 'none',
-                    cursor: 'pointer',
-                    outline: 'none',
-                    boxShadow: 'none',
-                    background: 'transparent',
-                    color: 'red',
-                  }}
-                  onClick={() =>
-                    handleDeletePost(post.comment ? 'comment' : 'photo')
-                  }
-                >
-                  Delete
-                </button>
-              )}
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '0',
-                  right: '0',
-                }}
-              >
-                <ShareModal
-                  postId={post.id}
-                  userId={userId}
-                  postType={'comment'}
-                />
+              </Button>
               </div>
-            </ButtonGroup>
+              <div>
+                {isOwner && (
+                  <Button
+                  className='m-1'
+                  variant='danger'
+                    onClick={() =>
+                      handleDeletePost(post.comment ? 'comment' : 'photo')
+                    }
+                  >
+                    Delete
+                  </Button>
+                )}
+                <Button  className='m-1' onClick={handleInitPostShare}>
+                  <FaShareSquare />
+                </Button>
+              </div>
+            </div>
           </Card.Body>
         ) : (
           <Card.Body>
-            <Card.Img variant='top' src={post.photoURL} />
+            <Card.Img
+              className='postcard-image'
+              variant='top'
+              src={post.photoURL}
+            />
             <Card.Text as='div'>
-              <p className='card-content'>{post.description}</p>
+              <div className='card-content'>{post.description}</div>
               <div className='card-detail'>
-                {owner} posted
-                <div>
+                {owner} posted{' '}
+                <>
                   {/* {' '} */}
                   <OverlayTrigger
                     placement='top'
@@ -297,88 +293,59 @@ const PostCard: React.FC<PostCardProps> = ({
                       {dayjs(post.createdAt.toString()).fromNow()}
                     </span>
                   </OverlayTrigger>
-                </div>
-                {/* {dayjs(post.createdAt.toString()).fromNow()} */}
+                </>
               </div>
             </Card.Text>
-            <ButtonGroup
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginLeft: '-6px',
-                position: 'relative',
-              }}
-            >
-              <button
-                style={{
-                  border: 'none',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: 'none',
-                  background: 'transparent',
-                }}
-                onClick={() => handleUpvote('photo')}
-                disabled={commentVotingStatus === 'upvoted'}
-              >
-                <IoArrowUpCircle
-                  style={{
-                    color:
-                      commentVotingStatus === 'upvoted' ? 'green' : 'black',
-                    fontSize: '30px',
-                  }}
-                />
-              </button>
-              <span style={{ margin: '0 5px' }}>{post.upvotes}</span>
-              <button
-                style={{
-                  border: 'none',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: 'none',
-                  background: 'transparent',
-                }}
-                onClick={() => handleDownvote('photo')}
-                disabled={commentVotingStatus === 'downvoted'}
-              >
-                <IoArrowDownCircle
-                  style={{
-                    color:
-                      commentVotingStatus === 'downvoted' ? 'red' : 'black',
-                    fontSize: '30px',
-                  }}
-                />
-              </button>
-              {isOwner && (
-                <button
-                  style={{
-                    border: 'none',
-                    cursor: 'pointer',
-                    outline: 'none',
-                    boxShadow: 'none',
-                    background: 'transparent',
-                    color: 'red',
-                  }}
-                  onClick={() =>
-                    handleDeletePost(post.comment ? 'comment' : 'photo')
-                  }
+            <div className='postcard-buttons'>
+              <div>
+                <Button
+                  className='vote-button rounded-circle'
+                  size='sm'
+                  onClick={() => handleUpvote('photo')}
+                  disabled={commentVotingStatus === 'upvoted'}
                 >
-                  Delete
-                </button>
-              )}
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '0',
-                  right: '0',
-                }}
-              >
-                <ShareModal
-                  postId={post.id}
-                  userId={userId}
-                  postType={'photo'}
-                />
+                  <IoArrowUpCircle
+                    style={{
+                      color:
+                        commentVotingStatus === 'upvoted' ? 'green' : 'black',
+                      fontSize: '30px',
+                    }}
+                  />
+                </Button>
+                <span className='mx-2'>{post.upvotes}</span>
+                <Button
+                  className='vote-button rounded-circle'
+                  size='sm'
+                  onClick={() => handleDownvote('photo')}
+                  disabled={commentVotingStatus === 'downvoted'}
+                >
+                  <IoArrowDownCircle
+                    style={{
+                      color:
+                        commentVotingStatus === 'downvoted' ? 'red' : 'black',
+                      fontSize: '30px',
+                    }}
+                  />
+                </Button>
               </div>
-            </ButtonGroup>
+              <div>
+                {isOwner && (
+                  <Button
+                  className='m-1'
+                    variant='danger'
+                    onClick={() =>
+                      handleDeletePost(post.comment ? 'comment' : 'photo')
+                    }
+                  >
+                    Delete
+                  </Button>
+                )}
+
+                <Button className='m-1' onClick={handleInitPostShare}>
+                  <FaShareSquare />
+                </Button>
+              </div>
+            </div>
           </Card.Body>
         )}
       </Card>

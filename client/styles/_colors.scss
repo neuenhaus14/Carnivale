@@ -1,4 +1,3 @@
-
 // PINS ON MAP
 $isFree: #53ca3c;
 $isToilet: #169873;
@@ -17,7 +16,7 @@ $dark: #211234;
 $yeller: #fcc54e;
 $purpley: #8d3dad;
 $lightPinky: #fbf4fe;
-$darkRed: #90021e;
+$darkRed: #dc3545;
 
 // COLORBLIND FRIENDLY
 $tan: #d2b48c;
@@ -40,11 +39,10 @@ $infoColor: $turq;
 
 // TEXT
 $lightText: white;
+$darkText: $dark;
 
 // TABS
-$tabSelected: $primaryColor;
-$tabSelectedBorder: $secondaryColor;
+$tabSelected: $primaryBG;
+$tabSelectedBorder: $primaryColor;
 $tabUnselected: $cardBackground;
 $tabUnselectedBorder: #e3e3e3;
-
-

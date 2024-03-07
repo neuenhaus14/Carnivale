@@ -71,7 +71,7 @@ const LoginButton = () => {
 
   return (
     <div id='login'>
-      <Container className='login-info-container'>
+      <Container id='login-info-container'>
         <Row>
           <Col></Col>
           <Col xs={10} className='d-flex flex-row justify-content-around'>
@@ -170,7 +170,7 @@ const LoginButton = () => {
         </Row>
       </Container>
 
-      <Container className='login-carousel-container'>
+      <Container id='login-carousel-container'>
         <Carousel interval={7000} data-bs-theme='dark'>
           <Carousel.Item>
             <div className='login-carousel-item'>

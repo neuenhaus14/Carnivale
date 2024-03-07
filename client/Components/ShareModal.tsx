@@ -10,19 +10,21 @@ const ShareModal = (props: {
   postId: number;
   userId: number;
   postType: string;
+  showShareModal: boolean;
+  setShowShareModal: any;
 }) => {
-  const { postId, userId, postType } = props;
+  const { postId, userId, postType, showShareModal, setShowShareModal } = props;
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
 
-  const [show, setShow] = useState(false);
+  // const [show, setShow] = useState(false);
   const [friends, setFriends] = useState([]);
   const [shareId, setShareId] = useState(null);
   const [friendName, setFriendName] = useState(null);
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const toggleShowShareModal = () => setShowShareModal(!showShareModal);
+  // const handleShow = () => setShow(true);
 
   const getFriends = async () => {
     try {
@@ -62,55 +64,46 @@ const ShareModal = (props: {
     } catch (err) {
       console.error(err);
     } finally {
-      handleClose();
+      toggleShowShareModal();
     }
   };
 
   return (
-    <div className={theme}>
-      <Button onClick={handleShow} style={{ marginLeft: '150px' }}>
-        <FaShareSquare />
-      </Button>
+    <Modal className={theme} show={showShareModal} onHide={toggleShowShareModal}>
+      <Modal.Header closeButton>
+        <Modal.Title>Share Post</Modal.Title>
+      </Modal.Header>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Share Post</Modal.Title>
-        </Modal.Header>
+      <Form>
+        <DropdownButton id='share-modal-dropdown' title={friendName || 'Krewe'}>
+          {friends.map((friend, index) => {
+            const name = `${friend.firstName} ${friend.lastName}`;
+            return (
+              <Dropdown.Item
+                key={`${friend.lastName} + ${index}`}
+                onClick={() => {
+                  setShareId(friend.id);
+                  setFriendName(name);
+                }}
+              >
+                {name}
+              </Dropdown.Item>
+            );
+          })}
+        </DropdownButton>
+      </Form>
 
-        <Form>
-          <DropdownButton
-            id='share-modal-dropdown'
-            title={friendName || 'Krewe'}
-          >
-            {friends.map((friend, index) => {
-              const name = `${friend.firstName} ${friend.lastName}`;
-              return (
-                <Dropdown.Item
-                  key={`${friend.lastName} + ${index}`}
-                  onClick={() => {
-                    setShareId(friend.id);
-                    setFriendName(name);
-                  }}
-                >
-                  {name}
-                </Dropdown.Item>
-              );
-            })}
-          </DropdownButton>
-        </Form>
-
-        <Modal.Footer>
-          <Button
-            id='share-modal-button'
-            variant='primary'
-            onClick={() => sharePost(postType)}
-            disabled={!shareId}
-          >
-            Share
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+      <Modal.Footer>
+        <Button
+          id='share-modal-button'
+          variant='primary'
+          onClick={() => sharePost(postType)}
+          disabled={!shareId}
+        >
+          Share
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 

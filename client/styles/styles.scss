@@ -3,8 +3,13 @@
 
 @use 'navbars';
 @use 'base';
+@use 'tabs';
+@use 'login';
+@use 'postcard';
+@use 'map_page';
+@use 'modals';
 
-// SET BOOTSTRAP DEFAULT COLORS
+// SET BOOTSTRAP DEFAULT COLORS BEFORE IMPORTING BS SCSS FILE
 $primary: colors.$primaryColor;
 $secondary: colors.$secondaryColor;
 $success: colors.$successColor;
@@ -44,142 +49,73 @@ $info: colors.$infoColor;
 
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@100;200;400;500;700&family=Inter:wght@600;700&family=Shrikhand&family=Permanent+Marker&display=swap');
 
-
-// $isFree: #53ca3c;
-// $isToilet: #169873;
-// $isFood: #fcc54e;
-// $isPersonal: #ba37dd;
-// $isPhoneCharger: #53e3d4;
-// $isPoliceStation: #e7abff;
-// $isEMTStation: #f27d52;
-
-// $greeny: #169874;
-// $lightGreeny: #53ca3c;
-// $darkGreeny: #015d43;
-// $pinky: #e7abff;
-// $dark: #211234;
-// $yeller: #fcc54e;
-// $purpley: #8d3dad;
-// $lightPinky: #fbf4fe;
-
-// $primaryColor: #fffcf8;
-// $secondaryColor: $yeller;
-// $ternaryColor: $purpley;
-
-// $cardBackground: #fdf4ea;
-
-// $tabSelected: $primaryColor;
-// $tabSelectedBorder: $secondaryColor;
-// $tabUnselected: $cardBackground;
-// $tabUnselectedBorder: #e3e3e3;
-
-// //colorblind friendly hues
-// $tan: #d2b48c;
-// $turq: #30d5c8;
-
-// $offBlack: #291f1f;
-// $offGrey: #aeaeae;
-// $cardBackground2: #fdf9f4;
-
-
-// centers single-item content, like an icon in a button
-// @mixin flex-col-center-content {
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-//   justify-content: center;
-// }
-
-// used for the following components/divs: picking the date in gigs page, selecting the parade, creating a post
-// @mixin page-bottom-panel {
-//   border-radius: 0px;
-//   display: flex;
-//   flex-direction: row;
-//   justify-content: space-evenly;
-//   align-items: center;
-//   height: 9vh;
-//   width: 100%;
-//   background-color: $cardBackground;
-//   border-top: 1px solid $secondaryColor;
-//   padding: 15px;
-//   position: fixed;
-//   bottom: 12vh;
-//   z-index: 1;
-//   left: 0;
-//   right: 0;
-// }
-
-// background color for entire app
-// #app {
-//   background-color: colors.$primaryColor;
-// }
-
 .alert {
   --bs-alert-padding-y: 0.5rem;
 }
 
-.post-card {
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 4px auto;
-  border: 1px solid colors.$secondaryColor;
-  background-color: colors.$cardBackground;
-  max-width: 400px;
-}
+// .post-card {
+//   padding: 15px;
+//   display: flex;
+//   flex-direction: column;
+//   position: relative;
+//   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+//   margin: 4px auto;
+//   border: 1px solid colors.$primaryColor;
+//   background-color: colors.$cardBackground;
+//   max-width: 400px;
+// }
 
-.card-detail {
-  font-size: 16px;
-  font-style: italic;
-  font-weight: 100;
-  margin-top: -5px;
-  margin-left: 0px;
-}
+// .card-detail {
+//   font-size: 16px;
+//   font-style: italic;
+//   font-weight: 100;
+//   margin-top: -5px;
+//   margin-left: 0px;
+// }
 
-.card-content {
-  font-weight: 500;
-  line-height: normal;
-  margin-left: 0px;
-}
+// .card-content {
+//   font-weight: 500;
+//   line-height: normal;
+//   margin-left: 0px;
+// }
 
-.card-body {
-  padding: 0px;
-}
+// .card-body {
+//   padding: 0px;
+// }
 
-#map-direction-card {
-  max-width: 7rem;
-  max-height: 10rem;
-  margin: 10px;
-  background-color: colors.$primaryBG;
-  padding: 6px;
+// #map-direction-card {
+//   max-width: 7rem;
+//   max-height: 10rem;
+//   margin: 10px;
+//   background-color: colors.$primaryBG;
+//   padding: 6px;
 
-  .card-body {
-    p {
-      font-size: 15px;
-    }
-  }
-}
+//   .card-body {
+//     p {
+//       font-size: 15px;
+//       padding: 0px
+//     }
+//   }
+// }
 
-#map-filter-container {
-  background-color: colors.$primaryBG;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
-  margin-top: 10px;
-  border: 1px solid colors.$secondaryColor;
-}
+// #map-filter-container {
+//   background-color: colors.$primaryBG;
+//   padding: 10px;
+//   display: flex;
+//   flex-direction: column;
+//   position: relative;
+//   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+//   margin-bottom: 10px;
+//   margin-top: 10px;
+//   border: 1px solid colors.$secondaryColor;
+// }
 
-.btn-wide {
-  width: 80vw;
-  max-width: 400px;
-  margin: 10px auto;
-  border: colors.$secondaryColor solid 2px;
-}
+// .btn-wide {
+//   width: 80vw;
+//   max-width: 400px;
+//   margin: 10px auto;
+//   border: colors.$secondaryColor solid 2px;
+// }
 
 .btn-success {
   // keep this
@@ -199,12 +135,12 @@ $info: colors.$infoColor;
 
 // buttons to put icons inside for
 // friend management
-.btn-sm {
-  border-radius: 15px;
-  padding: 3px 6px;
-  font-size: small;
-  font-weight: bold;
-}
+// .btn-sm {
+//   border-radius: 15px;
+//   padding: 3px 6px;
+//   font-size: small;
+//   font-weight: bold;
+// }
 
 // .bottom-nav-button {
 //   @include flex-col-center-content;
@@ -232,66 +168,66 @@ $info: colors.$infoColor;
 // }
 
 //
-.body {
-  padding-top: 8vh;
-  padding-bottom: 12vh;
-  display: flex;
-  flex-direction: column;
-  background-color: colors.$primaryBG;
-  height: 100vh;
-}
+// .body {
+//   padding-top: 8vh;
+//   padding-bottom: 12vh;
+//   display: flex;
+//   flex-direction: column;
+//   background-color: colors.$primaryBG;
+//   height: 100vh;
+// }
 
 // USER PAGE
 
-#modal-header {
-  background-color: colors.$greeny;
-}
+// #modal-header {
+//   background-color: colors.$greeny;
+// }
 
-#login {
-  background-image: linear-gradient(colors.$darkGreeny, colors.$greeny);
-  min-height: 100vh;
-  padding: 15px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
+// #login {
+//   background-image: linear-gradient(colors.$darkGreeny, colors.$greeny);
+//   min-height: 100vh;
+//   padding: 15px;
+//   display: flex;
+//   flex-direction: row;
+//   justify-content: center;
+//   align-items: center;
+// }
 
-.login-info-container {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 15px;
-  margin: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  background-color: colors.$primaryBG;
-  max-width: 475px;
-}
+// .login-info-container {
+//   border: 1px solid #ccc;
+//   border-radius: 8px;
+//   padding: 15px;
+//   margin: auto;
+//   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+//   display: flex;
+//   flex-direction: column;
+//   position: relative;
+//   background-color: colors.$primaryBG;
+//   max-width: 475px;
+// }
 
-.login-carousel-container {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  margin: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: none;
-  flex-direction: column;
-  position: relative;
-  background-color: colors.$primaryBG;
-  max-width: 450px;
-}
+// .login-carousel-container {
+//   border: 1px solid #ccc;
+//   border-radius: 8px;
+//   padding: 10px;
+//   margin: auto;
+//   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+//   display: none;
+//   flex-direction: column;
+//   position: relative;
+//   background-color: colors.$primaryBG;
+//   max-width: 450px;
+// }
 
 /*
 Large breakpoint is 992 px wide. It's at this point that posts will switch to grid mode, as it's here that the tab component gets wide enough to justify a change in display
 */
 @include media-breakpoint-up(lg) {
-  .login-carousel-container {
+  #login-carousel-container {
     display: flex; // displays carousel for lg screen
     margin-left: 2vw;
   }
-  .login-info-container {
+  #login-info-container {
     margin-right: 2vw;
   }
   #login {
@@ -306,69 +242,69 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
   }
 }
 
-.login-carousel-item {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 50px;
-}
+// .login-carousel-item {
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   padding-bottom: 50px;
+// }
 
-.login-carousel-img {
-  width: 70%;
-  height: auto;
-}
+// .login-carousel-img {
+//   width: 70%;
+//   height: auto;
+// }
 
-#login-info-icon {
-  display: block;
-  margin: 0 auto;
-  width: 80px;
-  height: auto;
-}
+// #login-info-icon {
+//   display: block;
+//   margin: 0 auto;
+//   width: 80px;
+//   height: auto;
+// }
 
-.login-text {
-  font-size: medium;
-}
+// .login-text {
+//   font-size: medium;
+// }
 
-.mail-list-form-items > * {
-  margin: 2px;
-}
+// .mail-list-form-items > * {
+//   margin: 2px;
+// }
 
-.modal-body {
-  background-color: colors.$primaryBG;
-}
+// .modal-body {
+//   background-color: colors.$primaryBG;
+// }
 
-.modal-title {
-  font-family: 'Permanent Marker', serif;
-}
+// .modal-title {
+//   font-family: 'Permanent Marker', serif;
+// }
 
-#modal-footer {
-  background-color: colors.$greeny;
-}
+// #modal-footer {
+//   background-color: colors.$greeny;
+// }
 
-.confirm-action-modal {
-  display: flex !important;
-  background-color: rgb(0 0 0 / 25%);
-}
+// .confirm-action-modal {
+//   display: flex !important;
+//   background-color: rgb(0 0 0 / 25%);
+// }
 
-.confirm-action-modal .modal-dialog {
-  margin: auto;
-  max-height: 100vh;
-  width: 90vw;
-}
+// .confirm-action-modal .modal-dialog {
+//   margin: auto;
+//   max-height: 100vh;
+//   width: 90vw;
+// }
 
-h5 {
-  text-align: left;
-  color: colors.$greeny;
-  margin: 8px;
-  font-weight: 400;
-}
+// h5 {
+//   text-align: left;
+//   color: colors.$greeny;
+//   margin: 8px;
+//   font-weight: 400;
+// }
 
-p {
-  font-size: 20px;
-  color: colors.$dark;
-  margin: 0px 6px 6px;
-}
+// p {
+//   font-size: 20px;
+//   color: colors.$dark;
+//   margin: 0px 6px 6px;
+// }
 
 // this is for the body tag, NOT the body class
 body {
@@ -396,36 +332,36 @@ body {
   text-align: center;
 }
 
-.nav-tabs {
-  border-bottom: 1px solid colors.$tabSelectedBorder;
-}
+// .nav-tabs {
+//   border-bottom: 1px solid colors.$tabSelectedBorder;
+// }
 
-.nav-tabs .nav-item.show {
-  background-color: colors.$tabSelected;
-  border-bottom: 1px solid colors.$tabSelectedBorder;
-}
+// .nav-tabs .nav-item.show {
+//   background-color: colors.$tabSelected;
+//   border-bottom: 1px solid colors.$tabSelectedBorder;
+// }
 
-.tab-content {
-  background-color: colors.$tabSelected;
-}
+// .tab-content {
+//   background-color: colors.$tabSelected;
+// }
 
-// HOME PAGE
-.homePage-tabs .tab-content .tab-pane {
-  padding-top: 5px;
-  overflow: scroll;
-  // tab height is 42px
-  height: calc(64vh - 42px);
-  padding-bottom: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+// // HOME PAGE
+// .homePage-tabs .tab-content .tab-pane {
+//   padding-top: 5px;
+//   overflow: scroll;
+//   // tab height is 42px
+//   height: calc(64vh - 42px);
+//   padding-bottom: 5px;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+// }
 
-// USER PAGE
-.userPage-tabs .tab-content .tab-pane {
-  height: 62vh;
-  overflow: scroll;
-}
+// // USER PAGE
+// .userPage-tabs .tab-content .tab-pane {
+//   height: 62vh;
+//   overflow: scroll;
+// }
 
 .userPage-buttons-container {
   height: 15vh;
@@ -443,37 +379,37 @@ body {
   margin: auto;
 }
 
-#share-modal-button {
-  background-color: colors.$yeller;
-  margin: 0px 0px 0px 15px;
-  color: black !important;
-}
+// #share-modal-button {
+//   background-color: colors.$yeller;
+//   margin: 0px 0px 0px 15px;
+//   color: black !important;
+// }
 
-#share-modal-dropdown {
-  background-color: colors.$yeller;
-  margin: 0px 0px 0px 15px;
-  color: black !important;
-}
+// #share-modal-dropdown {
+//   background-color: colors.$yeller;
+//   margin: 0px 0px 0px 15px;
+//   color: black !important;
+// }
 
-.nav-tabs .nav-link {
-  color: rgb(86, 86, 86);
-  font-family: 'Permanent Marker', serif;
-  background-color: colors.$tabUnselected;
-  border-top: 1px solid colors.$tabUnselectedBorder;
-  border-left: 1px solid colors.$tabUnselectedBorder;
-  border-right: 1px solid colors.$tabUnselectedBorder;
-  border-bottom: 1px solid colors.$tabSelectedBorder;
-}
+// .nav-tabs .nav-link {
+//   color: rgb(86, 86, 86);
+//   font-family: 'Permanent Marker', serif;
+//   background-color: colors.$tabUnselected;
+//   border-top: 1px solid colors.$tabUnselectedBorder;
+//   border-left: 1px solid colors.$tabUnselectedBorder;
+//   border-right: 1px solid colors.$tabUnselectedBorder;
+//   border-bottom: 1px solid colors.$tabSelectedBorder;
+// }
 
-.nav-tabs .nav-link.active {
-  font-family: 'Permanent Marker', serif;
-  background-color: colors.$tabSelected;
-  color: $dark;
-  border-top: solid 1px colors.$tabSelectedBorder;
-  border-left: solid 1px colors.$tabSelectedBorder;
-  border-right: solid 1px colors.$tabSelectedBorder;
-  border-bottom: solid 1px colors.$tabSelected;
-}
+// .nav-tabs .nav-link.active {
+//   font-family: 'Permanent Marker', serif;
+//   background-color: colors.$tabSelected;
+//   color: $dark;
+//   border-top: solid 1px colors.$tabSelectedBorder;
+//   border-left: solid 1px colors.$tabSelectedBorder;
+//   border-right: solid 1px colors.$tabSelectedBorder;
+//   border-bottom: solid 1px colors.$tabSelected;
+// }
 
 
 
@@ -488,22 +424,20 @@ body {
 }
 
 //HOMEPAGE
-.body-with-bottom-panel {
-  // padding-bottom larger on home page to account for page-bottom-panel
-
-  @extend .body;
-  padding-bottom: 21vh;
-}
+// .body-with-bottom-panel {
+//   // padding-bottom larger on home page to account for page-bottom-panel
+//   @extend .body;
+//   padding-bottom: 21vh;
+// }
 
 #create-post-form .btn {
   @include mixin_utils.flex-col-center-content;
-  height: 40px;
 }
 
 .page-bottom-panel {
   @include mixin_utils.page-bottom-panel;
   background-color: colors.$cardBackground;
-  border-top: 1px solid colors.$secondaryColor;
+  border-top: 1px solid colors.$primaryColor;
 }
 
 #parade-select {

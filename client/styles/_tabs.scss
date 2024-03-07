@@ -1,0 +1,51 @@
+@use 'colors';
+
+// ALL TABS
+.nav-tabs {
+  border-bottom: 1px solid colors.$primaryColor !important;
+}
+
+.nav-tabs .nav-item.show {
+  background-color: colors.$tabSelected !important;
+  border-bottom: 1px solid colors.$tabSelectedBorder !important;
+}
+
+.tab-content {
+  background-color: colors.$tabSelected !important;
+}
+
+.nav-tabs .nav-link {
+  color: rgb(86, 86, 86) !important;
+  font-family: 'Permanent Marker', serif !important;
+  background-color: colors.$tabUnselected !important;
+  border-top: 1px solid colors.$tabUnselectedBorder !important;
+  border-left: 1px solid colors.$tabUnselectedBorder !important;
+  border-right: 1px solid colors.$tabUnselectedBorder !important;
+  border-bottom: 1px solid colors.$tabSelectedBorder !important;
+}
+
+.nav-tabs .nav-link.active {
+  font-family: 'Permanent Marker', serif;
+  background-color: colors.$tabSelected !important;
+  color: colors.$darkText !important;
+  border-top: solid 1px colors.$tabSelectedBorder !important;
+  border-left: solid 1px colors.$tabSelectedBorder !important;
+  border-right: solid 1px colors.$tabSelectedBorder !important;
+  border-bottom: solid 1px colors.$tabSelected !important;
+}
+
+// HOME PAGE TABS
+.homePage-tabs .tab-content .tab-pane {
+  padding-top: 5px;
+  overflow: scroll;
+  // tab height is 42px
+  height: calc(64vh - 42px);
+  padding-bottom: 5px;
+  align-items: center;
+}
+
+// USER PAGE TABS
+.userPage-tabs .tab-content .tab-pane {
+  height: 62vh;
+  overflow: scroll;
+}

@@ -1,12 +1,62 @@
 // BUTTONS, "BODY" DIVS, OTHER BIG PICTURE THINGS
 
-@use "colors";
-@use "mixin_utils";
+@use 'colors';
+@use 'mixin_utils';
 
 #app {
   background-color: colors.$primaryBG;
 }
 
+// No padding for cards so more stuff fits in mobile
+.card-body {
+  padding: 0px !important;
+}
+
+// BUTTONS
 .btn {
-  border: none;
+  border: none !important;
+}
+
+.btn-wide {
+  width: 80vw;
+  max-width: 400px;
+  margin: 10px auto;
+  border: colors.$secondaryColor solid 2px;
+}
+
+.btn-sm {
+  border-radius: 15px !important;
+  padding: 3px 6px !important;
+  font-size: small !important;
+  font-weight: bold !important;
+}
+
+// BODY classes: where content fits on page
+.body {
+  padding-top: 8vh;
+  padding-bottom: 12vh;
+  display: flex;
+  flex-direction: column;
+  background-color: colors.$primaryBG;
+  height: 100vh;
+}
+
+.body-with-bottom-panel {
+  // padding-bottom larger on home page to account for page-bottom-panel
+  @extend .body;
+  padding-bottom: 21vh;
+}
+
+// TEXTS
+h5 {
+  text-align: left !important;
+  color: colors.$greeny !important;
+  margin: 8px !important;
+  font-weight: 400 !important;
+}
+
+p {
+  font-size: 20px !important;
+  color: colors.$dark !important;
+  margin: 0px 6px 6px !important;
 }
