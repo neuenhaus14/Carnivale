@@ -158,32 +158,30 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
         </Modal>
       )}
       <Row>
-        <div
-          key={'inline-radio'}
+        <Form
+          className='d-flex flex-row justify-content-center align-items-center'
           style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
             height: '7vh',
           }}
         >
-          Sort by:
+          <Form.Label className='mb-0 mx-2'>Sort by:</Form.Label>
           <Form.Check
-            style={{ marginLeft: '20px' }}
+            className='mb-0 mx-2'
             type='radio'
             name='Sort'
             label='Newest'
-            inline
             onClick={() => setOrder('createdAt')}
+            checked={order === 'createdAt'}
           />
           <Form.Check
+          className='mb-0 mx-2'
             type='radio'
             name='Sort'
             label='Upvotes'
-            inline
             onClick={() => setOrder('upvotes')}
+            checked={order === 'upvotes'}
           />
-        </div>
+        </Form>
       </Row>
 
       <Row>
@@ -241,7 +239,6 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
               <Form.Group>
                 <div className='d-flex flex-row'>
                   <Form.Control
-
                     className='mx-2'
                     placeholder='Post a comment or photo'
                     onChange={handleInput}
