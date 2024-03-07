@@ -431,14 +431,21 @@ const MapPage: React.FC<MapProps> = ({
               <b>Welcome to the Map page!</b>
               <br />
               <br />
-              The map displays pins indicating points of interest like food stalls, bathrooms, EMT&apos;s and police personnel. All pins are added by Pardi Gras users, and each pin is accompanied by an image to verify the pin&apos;s contents.
+              The map displays pins indicating points of interest like food
+              stalls, bathrooms, EMT&apos;s and police personnel. All pins are
+              added by Pardi Gras users, and each pin is accompanied by an image
+              to verify the pin&apos;s contents.
               <br />
               <br />
-              Users can also add supplemental pictures to a pin to document how a point of interest has changed since the original pin was dropped. Clicking on a pin displays any photos tied to it, after which walking directions to the pin and an estimated travel duration are drawn on the map.
+              Users can also add supplemental pictures to a pin to document how
+              a point of interest has changed since the original pin was
+              dropped. Clicking on a pin displays any photos tied to it, after
+              which walking directions to the pin and an estimated travel
+              duration are drawn on the map.
               <br />
               <br />
-              Your Krewe members will also appear on the map if they opt in to location
-              sharing.
+              Your Krewe members will also appear on the map if they opt in to
+              location sharing.
               <br />
               <br />
               <b>We&apos;d love your feedback!</b> Take the{' '}
@@ -587,45 +594,38 @@ const MapPage: React.FC<MapProps> = ({
             </b>
           </Popup>
         ) : null}
-        {showDirections ? (
-          <div
-            id='map-direction-card'
-            className='card w-35'
-            style={{ backgroundColor: '#fffcf8', padding: '1px' }}
-          >
-            <div
-              className='card-body'
-              style={{ backgroundColor: '#fffcf8', padding: '1px' }}
-            >
-              <p style={{ fontSize: '15px' }}>
-                <b>{humanizedDuration(duration)}</b> away
+        {showDirections && (
+          <Card id='map-direction-card'>
+            <Card.Body className='text-center'>
+              <p>
+                <b>{humanizedDuration(duration)}</b>
               </p>
-              <p style={{ fontSize: '15px' }}>
-                {' '}
-                <b>{distance}</b> miles
+              <p>
+                {distance} miles
               </p>
-              <button
-                type='button'
-                className='btn btn-primary btn-sm'
-                onClick={() => {
-                  setShowDirections(false);
-                  setShowRouteDirections(false);
-                }}
-              >
-                Close
-              </button>
-              <FaWalking
-                style={{
-                  color: '#cf40f5',
-                  float: 'right',
-                  width: '25px',
-                  height: '30px',
-                  paddingBottom: '6px',
-                }}
-              />
-            </div>
-          </div>
-        ) : null}
+              <div className='d-flex flex-row justify-content-between align-items-center mx-2'>
+                <FaWalking
+                  style={{
+                    color: '#cf40f5',
+                    width: '25px',
+                    height: '30px',
+                  }}
+                />
+                <Button
+                  size='sm'
+                  variant='primary'
+                  className='btn-sm'
+                  onClick={() => {
+                    setShowDirections(false);
+                    setShowRouteDirections(false);
+                  }}
+                >
+                  Close
+                </Button>
+              </div>
+            </Card.Body>
+          </Card>
+        )}
         <button
           onClick={(e) => {
             dropPin(e);

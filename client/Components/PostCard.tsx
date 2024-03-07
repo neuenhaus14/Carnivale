@@ -168,7 +168,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
   return (
     <>
-      <Card>
+      <Card className='post-card'>
         {post.comment ? (
           <Card.Body>
             <Card.Text as='div'>

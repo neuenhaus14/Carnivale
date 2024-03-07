@@ -66,14 +66,15 @@ $cardBackground2: #fdf9f4;
 
 @import 'bootstrap';
 
-@mixin btn-center-icon {
+// quickly centers single-item content, like an icon in a button
+@mixin flex-col-center-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-// used for the following components/divs: picking the date in gigs page, selecting the parade,
+// used for the following components/divs: picking the date in gigs page, selecting the parade, creating a post
 @mixin page-bottom-panel {
   border-radius: 0px;
   display: flex;
@@ -101,18 +102,30 @@ $cardBackground2: #fdf9f4;
   --bs-alert-padding-y: 0.5rem;
 }
 
-.card {
+.post-card {
   padding: 15px;
   display: flex;
   flex-direction: column;
   position: relative;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  // margin-bottom: 10px;
-  // margin-top: 10px;
-  margin: 4px 10px;
+  margin: 4px auto;
   border: 1px solid $secondaryColor;
   background-color: $cardBackground;
-  // max-width: 300px;
+  max-width: 400px;
+}
+
+.card-detail {
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 100;
+  margin-top: -5px;
+  margin-left: 0px;
+}
+
+.card-content {
+  font-weight: 500;
+  line-height: normal;
+  margin-left: 0px;
 }
 
 .card-body {
@@ -122,13 +135,14 @@ $cardBackground2: #fdf9f4;
 #map-direction-card {
   max-width: 7rem;
   max-height: 10rem;
-  margin-left: 10px;
+  margin: 10px;
+  background-color: $primaryColor;
+  padding: 6px;
 
   .card-body {
-    padding-top: 1px;
-    padding-right: 1px;
-    padding-bottom: 1px;
-    padding-left: 1px;
+    p {
+      font-size: 15px;
+    }
   }
 }
 
@@ -171,17 +185,12 @@ $cardBackground2: #fdf9f4;
 .btn-sm {
   border-radius: 15px;
   padding: 3px 6px;
-  font-size: x-small;
+  font-size: small;
   font-weight: bold;
 }
 
-.userPage-tabs .btn-sm {
-  font-size: small !important;
-  padding: 3px 6px !important;
-}
-
 .bottom-nav-button {
-  @include btn-center-icon;
+  @include flex-col-center-content;
   height: 50px;
   width: 50px;
   background-color: $yeller;
@@ -315,6 +324,7 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
 .modal-title {
   font-family: 'Permanent Marker', serif;
 }
+
 #modal-footer {
   background-color: $greeny;
 }
@@ -388,6 +398,9 @@ body {
   // tab height is 42px
   height: calc(64vh - 42px);
   padding-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 // USER PAGE
@@ -444,19 +457,7 @@ body {
   border-bottom: solid 1px $tabSelected;
 }
 
-.card-detail {
-  font-size: 16px;
-  font-style: italic;
-  font-weight: 100;
-  margin-top: -5px;
-  margin-left: 0px;
-}
 
-.card-content {
-  font-weight: 500;
-  line-height: normal;
-  margin-left: 0px;
-}
 
 .ep-card-detail {
   font-size: 16px;
@@ -477,7 +478,7 @@ body {
 }
 
 #create-post-form .btn {
-  @include btn-center-icon;
+  @include flex-col-center-content;
   height: 40px;
 }
 
