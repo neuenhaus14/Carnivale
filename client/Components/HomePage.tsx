@@ -117,7 +117,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
 
   console.log;
   return (
-    <Container className={`body-home ${theme}`}>
+    <Container className={`body-with-bottom-panel ${theme}`}>
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
@@ -164,7 +164,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            paddingBottom: '15px',
+            height: '7vh',
           }}
         >
           Sort by:
@@ -241,7 +241,8 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
               <Form.Group>
                 <div className='d-flex flex-row'>
                   <Form.Control
-                    className='mx-1'
+
+                    className='mx-2'
                     placeholder='Post a comment or photo'
                     onChange={handleInput}
                     value={comment}

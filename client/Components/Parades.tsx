@@ -151,7 +151,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   }, [userId]);
 
   return (
-    <Container className={`body ${theme}`} style={{ paddingBottom: '170px' }}>
+    <Container className={`body-with-bottom-panel ${theme}`} style={{ paddingBottom: '170px' }}>
       <div className='gig-body-calendar'>
         {isDemoMode && (
           <Modal show={showAboutModal} onHide={toggleAboutModal}>
@@ -189,26 +189,26 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
           </Modal>
         )}
         <div id='select-parade-container' className='page-bottom-panel'>
-          {selectedParade && (
-            <Button
-              variant='primary'
-              onClick={async () => {
-                await setIsNewEvent(true);
-                await setShowCreateModal(true);
-                await setSelectedEvent({
-                  ...paradeInfo,
-                  latitude: 0,
-                  longitude: 0,
-                  endTime: null,
-                  startTime: null,
-                });
-              }}
-            >
-              Make Plans
-            </Button>
-          )}
+          <Button
+            disabled={!selectedParade}
+            variant='primary'
+            onClick={async () => {
+              await setIsNewEvent(true);
+              await setShowCreateModal(true);
+              await setSelectedEvent({
+                ...paradeInfo,
+                latitude: 0,
+                longitude: 0,
+                endTime: null,
+                startTime: null,
+              });
+            }}
+          >
+            Make Plans
+          </Button>
 
           <Form.Select
+            className='mx-2'
             id='parade-select'
             onChange={handleParadeChange}
             value={selectedParade || ''}

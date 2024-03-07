@@ -91,7 +91,7 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
       <div className='gig-body-calendar'>
 
         <div id='select-gig-date-container' className='page-bottom-panel'>
-          <label htmlFor='gig-date-picker'>Select the Date</label>
+          <label htmlFor='gig-date-picker'>Select a date</label>
           <DatePicker
             id='gig-date-picker'
             className='date-picker'
