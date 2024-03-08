@@ -12,28 +12,26 @@
   background-color: colors.$cardBackground !important;
   max-width: 400px;
 
-  .post-card-comment {
+  .comment-post-card {
     display: flex;
     flex-direction: column;
   }
 
-  .post-card-photo {
+  .photo-post-card {
     display: flex;
     flex-direction: column;
   }
 
-  .card-detail {
+  .post-card-detail {
     font-size: 16px;
     font-style: italic;
     font-weight: 100;
-    margin-top: -5px;
-    margin-left: 0px;
   }
 
-  .card-content {
+  .post-card-content {
+    font-size: 20px;
     font-weight: 500;
     line-height: normal;
-    margin-left: 0px;
   }
 
   .post-card-image {
