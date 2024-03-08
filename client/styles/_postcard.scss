@@ -4,13 +4,23 @@
 .post-card {
   padding: 15px;
   display: flex;
-  flex-direction: column;
-  position: relative;
+  // flex-direction: column;
+  // position: relative;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: 4px auto;
   border: 1px solid colors.$primaryColor !important;
   background-color: colors.$cardBackground !important;
   max-width: 400px;
+
+  .post-card-comment {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .post-card-photo {
+    display: flex;
+    flex-direction: column;
+  }
 
   .card-detail {
     font-size: 16px;
@@ -26,11 +36,11 @@
     margin-left: 0px;
   }
 
-  .postcard-image {
+  .post-card-image {
     margin-bottom: 5px;
   }
 
-  .postcard-buttons {
+  .post-card-buttons {
     display: flex;
     flex-direction: row;
     justify-content: space-between;

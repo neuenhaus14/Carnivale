@@ -177,18 +177,29 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   };
 
+  const postType = post.photoURL ? 'photo' : 'comment';
+
+  const postText = postType === 'photo' ? post.description : post.comment;
+
   const handleInitPostShare = () => {
     setPostToShare({
       id: post.id,
-      type: post.photoURL ? 'photo' : 'comment',
+      type: postType,
     });
     setShowShareModal(true);
   };
 
+  // posts that are text only have comments. Photo's have descriptions
+
   return (
     <>
-      <Card className='post-card'>
-        {/* posts that are text only have comments. Photo's have descriptions */}
+      <Card className={`post-card post-card-${postType}`}>
+        {postType === 'photo' && (
+          <Card.Img
+            className='post-card-image'
+            src={post.photoURL}
+          />
+        )}
         {post.comment ? (
           <Card.Body>
             <Card.Text as='div'>
@@ -214,45 +225,43 @@ const PostCard: React.FC<PostCardProps> = ({
                 {/* {dayjs(post.createdAt.toString()).fromNow()} */}
               </div>
             </Card.Text>
-            <div className='postcard-buttons'>
+            <div className='post-card-buttons'>
               <div>
-              <Button
-                className='vote-button rounded-circle'
-                size='sm'
-                onClick={() => handleUpvote('comment')}
-                disabled={commentVotingStatus === 'upvoted'}
-              >
-                <IoArrowUpCircle
-                  style={{
-                    color:
-                      commentVotingStatus === 'upvoted' ? 'green' : 'black',
-                    fontSize: '30px',
-                  }}
-                />
-              </Button>
-
-              <span className='mx-2'>{post.upvotes}</span>
-
-              <Button
-                className='vote-button rounded-circle'
-                size='sm'
-                onClick={() => handleDownvote('comment')}
-                disabled={commentVotingStatus === 'downvoted'}
-              >
-                <IoArrowDownCircle
-                  style={{
-                    color:
-                      commentVotingStatus === 'downvoted' ? 'red' : 'black',
-                    fontSize: '30px',
-                  }}
-                />
-              </Button>
+                <Button
+                  className='vote-button rounded-circle'
+                  size='sm'
+                  onClick={() => handleUpvote('comment')}
+                  disabled={commentVotingStatus === 'upvoted'}
+                >
+                  <IoArrowUpCircle
+                    style={{
+                      color:
+                        commentVotingStatus === 'upvoted' ? 'green' : 'black',
+                      fontSize: '30px',
+                    }}
+                  />
+                </Button>
+                <span className='mx-2'>{post.upvotes}</span>
+                <Button
+                  className='vote-button rounded-circle'
+                  size='sm'
+                  onClick={() => handleDownvote('comment')}
+                  disabled={commentVotingStatus === 'downvoted'}
+                >
+                  <IoArrowDownCircle
+                    style={{
+                      color:
+                        commentVotingStatus === 'downvoted' ? 'red' : 'black',
+                      fontSize: '30px',
+                    }}
+                  />
+                </Button>
               </div>
               <div>
                 {isOwner && (
                   <Button
-                  className='m-1'
-                  variant='danger'
+                    className='m-1'
+                    variant='danger'
                     onClick={() =>
                       handleDeletePost(post.comment ? 'comment' : 'photo')
                     }
@@ -260,16 +269,16 @@ const PostCard: React.FC<PostCardProps> = ({
                     Delete
                   </Button>
                 )}
-                <Button  className='m-1' onClick={handleInitPostShare}>
+                <Button className='m-1' onClick={handleInitPostShare}>
                   <FaShareSquare />
                 </Button>
               </div>
             </div>
           </Card.Body>
         ) : (
-          <Card.Body>
+          <Card.Body className='post-card-photo'>
             <Card.Img
-              className='postcard-image'
+              className='post-card-image'
               variant='top'
               src={post.photoURL}
             />
@@ -296,7 +305,7 @@ const PostCard: React.FC<PostCardProps> = ({
                 </>
               </div>
             </Card.Text>
-            <div className='postcard-buttons'>
+            <div className='post-card-buttons'>
               <div>
                 <Button
                   className='vote-button rounded-circle'
@@ -331,7 +340,7 @@ const PostCard: React.FC<PostCardProps> = ({
               <div>
                 {isOwner && (
                   <Button
-                  className='m-1'
+                    className='m-1'
                     variant='danger'
                     onClick={() =>
                       handleDeletePost(post.comment ? 'comment' : 'photo')

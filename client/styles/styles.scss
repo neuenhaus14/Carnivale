@@ -227,13 +227,20 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
     display: flex; // displays carousel for lg screen
     margin-left: 2vw;
   }
+
   #login-info-container {
     margin-right: 2vw;
   }
+
   #login {
     padding-left: calc(15px + 10vw);
     padding-right: calc(15px + 10vw);
   }
+
+  .post-card-photo {
+    flex-direction: row;
+  }
+
 }
 
 @include media-breakpoint-up(md) {
