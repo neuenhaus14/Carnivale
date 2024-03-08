@@ -6,16 +6,18 @@ import {
   OverlayTrigger,
   Tooltip,
 } from 'react-bootstrap';
+
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaShareSquare } from '@react-icons/all-files/fa/FaShareSquare';
-import { getImageSize } from 'react-image-size';
+
 // import ShareModal from './ShareModal';
 // import {IoMdArrowUp} from "@react-icons/all-files/io/IoMdArrowUp";
 // import {IoMdArrowDown} from "@react-icons/all-files/io/IoMdArrowDown";
+
 import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
 import { IoArrowUpCircle } from '@react-icons/all-files/io5/IoArrowUpCircle';
 import { RunModeContext } from './Context';
@@ -66,7 +68,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const postType = post.photoURL ? 'photo' : 'comment';
   const postText = postType === 'photo' ? post.description : post.comment;
 
-  const [photoDimensions, setPhotoDimensions] = useState({
+  const [imgDimensions, setImgDimensions] = useState({
     width: null,
     height: null,
   });
@@ -80,6 +82,7 @@ const PostCard: React.FC<PostCardProps> = ({
       console.error(err);
     }
   };
+
 
   const handleUpvote = async () => {
     // if demo mode, display toast
@@ -144,21 +147,25 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   };
 
-  const getPhotoDimensions = async () => {
-    try {
-      const dimensions = await getImageSize(post.photoURL);
-      setPhotoDimensions(dimensions);
-    } catch (err) {
-      console.error(
-        'CLIENT ERROR: failed to get photo dimensions for post',
-        err
-      );
-    }
+  const configurePhotoPost = () => {
+    // load image into the browser before
+    // rendering the image, so as to orient the
+    // card properly
+    const postImg = new Image();
+    postImg.src = post.photoURL;
+    postImg.onload = async () => {
+      await setImgDimensions({
+        height: postImg.height,
+        width: postImg.width,
+      });
+    };
+
+
   };
 
   useEffect(() => {
     if (postType === 'photo') {
-      getPhotoDimensions();
+      configurePhotoPost();
     }
     getOwner();
   }, []);
@@ -195,13 +202,28 @@ const PostCard: React.FC<PostCardProps> = ({
     setShowShareModal(true);
   };
 
+  const createClassName = () => {
+    let className = `post-card ${postType}-post-card`;
+
+    if (postType === 'photo') {
+      if (imgDimensions.height >= imgDimensions.width) {
+        className += ' portrait-photo-post-card';
+      } else {
+        className += ' landscape-photo-post-card';
+      }
+    }
+    return className;
+  };
+
   return (
     <>
-      <Card className={`post-card ${postType}-post-card`}>
+      <Card className={createClassName()}>
         {postType === 'photo' && (
-          <Card.Img className='post-card-image' src={post.photoURL} />
+          <>
+            <Card.Img className='post-card-image' src={post.photoURL} />
+          </>
         )}
-        <Card.Body>
+        <Card.Body className='post-card-body'>
           <Card.Text className='post-card-text' as='div'>
             <div className='post-card-content'>{postText}</div>
             <div className='post-card-detail'>

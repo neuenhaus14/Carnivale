@@ -120,7 +120,6 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
     return () => clearTimeout(interval);
   }, [key, order]);
 
-  console.log('postToShare', postToShare);
   return (
     <Container className={`body-with-bottom-panel ${theme}`}>
       <ShareModal
@@ -191,7 +190,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
             type='radio'
             name='Sort'
             label='Newest'
-            onClick={() => setOrder('createdAt')}
+            onChange={() => setOrder('createdAt')}
             checked={order === 'createdAt'}
           />
           <Form.Check
@@ -199,7 +198,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
             type='radio'
             name='Sort'
             label='Upvotes'
-            onClick={() => setOrder('upvotes')}
+            onChange={() => setOrder('upvotes')}
             checked={order === 'upvotes'}
           />
         </Form>

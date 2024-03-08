@@ -45,7 +45,7 @@ $info: colors.$infoColor;
 @import '~bootstrap/scss/popover';
 @import '~bootstrap/scss/carousel';
 
-@import "bootstrap";
+@import 'bootstrap';
 
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@100;200;400;500;700&family=Inter:wght@600;700&family=Shrikhand&family=Permanent+Marker&display=swap');
 
@@ -223,6 +223,7 @@ $info: colors.$infoColor;
 Large breakpoint is 992 px wide. It's at this point that posts will switch to grid mode, as it's here that the tab component gets wide enough to justify a change in display
 */
 @include media-breakpoint-up(lg) {
+  // login
   #login-carousel-container {
     display: flex; // displays carousel for lg screen
     margin-left: 2vw;
@@ -237,6 +238,38 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
     padding-right: calc(15px + 10vw);
   }
 
+  // post-cards
+  .photo-post-card {
+    height: 400px;
+  }
+
+  .comment-post-card {
+    height: 400px;
+    padding: 40px;
+    .post-card-content {
+      font-size: 40px;
+    }
+  }
+
+  .portrait-photo-post-card {
+    flex-direction: row;
+    align-items: center;
+
+    .post-card-image {
+      height: 80%;
+      width: auto;
+    }
+    .post-card-buttons {
+      flex-direction: column;
+    }
+    .post-card-content {
+      text-align: center;
+    }
+    // .post-card-detail {
+    //   display: flex;
+    //   flex-direction: column;
+    // }
+  }
 }
 
 @include media-breakpoint-up(md) {
@@ -413,8 +446,6 @@ body {
 //   border-right: solid 1px colors.$tabSelectedBorder;
 //   border-bottom: solid 1px colors.$tabSelected;
 // }
-
-
 
 .ep-card-detail {
   font-size: 16px;

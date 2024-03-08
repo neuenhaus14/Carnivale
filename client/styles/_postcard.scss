@@ -1,51 +1,52 @@
 @use 'colors';
 @use 'mixin_utils';
 
+// all cards
 .post-card {
   padding: 15px;
-  display: flex;
-  // flex-direction: column;
-  // position: relative;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: 4px auto;
   border: 1px solid colors.$primaryColor !important;
   background-color: colors.$cardBackground !important;
   max-width: 400px;
+}
 
-  .comment-post-card {
-    display: flex;
-    flex-direction: column;
-  }
+// comment card
+.comment-post-card {
+  // positions card.body in center
+  flex-direction: row !important;
+  align-items: center;
+}
 
-  .photo-post-card {
-    display: flex;
-    flex-direction: column;
-  }
 
-  .post-card-detail {
-    font-size: 16px;
-    font-style: italic;
-    font-weight: 100;
-  }
+// fonts
+.post-card-detail {
+  display: flex;
+  flex-direction: row;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 100;
+}
 
-  .post-card-content {
-    font-size: 20px;
-    font-weight: 500;
-    line-height: normal;
-  }
+.post-card-content {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+}
 
-  .post-card-image {
-    margin-bottom: 5px;
-  }
+// image
+.post-card-image {
+  margin-bottom: 5px;
+}
 
-  .post-card-buttons {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
+// buttons
+.post-card-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .vote-button {
-    width: 40px !important;
-  }
+.vote-button {
+  width: 40px !important;
 }
