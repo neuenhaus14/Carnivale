@@ -238,38 +238,75 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
     padding-right: calc(15px + 10vw);
   }
 
-  // post-cards
-  .photo-post-card {
-    height: 400px;
+  // ALL CARDS
+  // post-cards stretch sideways to fit photos of most dimensions (no panoramas)
+  .post-card {
+    max-width: none;
+    height: 300px !important;
+
+
   }
 
+  // COMMENT CARDS
   .comment-post-card {
-    height: 400px;
-    padding: 40px;
+    width: 300px;
+    padding: 25px;
+    justify-content: space-between;
     .post-card-content {
-      font-size: 40px;
+      font-size: 24px;
     }
   }
 
-  .portrait-photo-post-card {
+  // PHOTO CARDS
+  .photo-post-card {
     flex-direction: row;
     align-items: center;
 
-    .post-card-image {
-      height: 80%;
-      width: auto;
+    .post-card-body {
+      display:flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100%;
+      min-width: 140px;
+      margin-left: 15px;
     }
     .post-card-buttons {
       flex-direction: column;
+      align-items: end;
+      // margin-top: 10px !important;
+      margin-bottom: 10px;
+      .post-card-share-button, .post-card-delete-button {
+        margin-top: 10px;
+      }
     }
+
     .post-card-content {
-      text-align: center;
+      text-align: right;
     }
-    // .post-card-detail {
-    //   display: flex;
-    //   flex-direction: column;
-    // }
+    .post-card-detail {
+      display: flex;
+      flex-direction: column;
+      text-align: right;
+    }
+
+    // IMAGES IN ALL CARDS
+    .post-card-image {
+      height: 100%;
+      max-width: 350px;
+      object-fit: cover;
+    }
   }
+
+  // TAB NAV PANE FOR HOME PAGE
+  // GRID
+  .homePage-tabs {
+    .tab-content {
+      .active {
+        display: grid;
+      }
+    }
+  }
+
 }
 
 @include media-breakpoint-up(md) {

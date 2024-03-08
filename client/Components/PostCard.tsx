@@ -83,7 +83,6 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   };
 
-
   const handleUpvote = async () => {
     // if demo mode, display toast
     if (isDemoMode) {
@@ -159,8 +158,6 @@ const PostCard: React.FC<PostCardProps> = ({
         width: postImg.width,
       });
     };
-
-
   };
 
   useEffect(() => {
@@ -227,7 +224,7 @@ const PostCard: React.FC<PostCardProps> = ({
           <Card.Text className='post-card-text' as='div'>
             <div className='post-card-content'>{postText}</div>
             <div className='post-card-detail'>
-              {owner} posted{' '}
+              {owner}
               <>
                 <OverlayTrigger
                   placement='top'
@@ -239,14 +236,14 @@ const PostCard: React.FC<PostCardProps> = ({
                     </Tooltip>
                   }
                 >
-                  <span style={{ cursor: 'pointer' }}>
-                    {dayjs(post.createdAt.toString()).fromNow()}
-                  </span>
+                  <div style={{ cursor: 'pointer' }}>
+                  posted {dayjs(post.createdAt.toString()).fromNow()}
+                  </div>
                 </OverlayTrigger>
               </>
             </div>
           </Card.Text>
-          <div className='post-card-buttons mt-1'>
+          <div className='post-card-buttons mt-2'>
             <div>
               <Button
                 className='vote-button rounded-circle'
@@ -281,14 +278,14 @@ const PostCard: React.FC<PostCardProps> = ({
             <div>
               {isOwner && (
                 <Button
-                  className='m-1'
+                  className='post-card-delete-button'
                   variant='danger'
                   onClick={() => handleDeletePost()}
                 >
-                  Delete
+                  X
                 </Button>
               )}
-              <Button className='m-1' onClick={handleInitPostShare}>
+              <Button className='post-card-share-button' onClick={handleInitPostShare}>
                 <FaShareSquare />
               </Button>
             </div>

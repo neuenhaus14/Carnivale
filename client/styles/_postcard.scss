@@ -45,6 +45,9 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  .post-card-share-button, .post-card-delete-button {
+    margin-left: 10px;
+  }
 }
 
 .vote-button {
