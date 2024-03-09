@@ -242,16 +242,31 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
   // post-cards stretch sideways to fit photos of most dimensions (no panoramas)
   .post-card {
     max-width: none;
-    height: 300px !important;
+    height: 250px !important;
+    flex-grow: 1;
   }
 
   // COMMENT CARDS
   .comment-post-card {
-    width: 300px;
+    width: 250px;
     padding: 25px;
-    justify-content: space-between;
-    .post-card-content {
-      font-size: 24px;
+    .post-card-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .post-card-text {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        .post-card-content {
+          font-size: 16px;
+        }
+        .post-card-detail {
+          flex-direction: column;
+        }
+      }
     }
   }
 
@@ -265,17 +280,18 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
       flex-direction: column;
       justify-content: flex-end;
       height: 100%;
-      min-width: 140px;
+      max-width: 180px;
       margin-left: 15px;
     }
+
     .post-card-buttons {
       flex-direction: column;
       align-items: end;
-      // margin-top: 10px !important;
-      margin-bottom: 10px;
-      .post-card-share-button,
-      .post-card-delete-button {
+      .share-delete-buttons-container {
         margin-top: 10px;
+      }
+      .post-card-delete-button {
+        margin-right: 25px;
       }
     }
 
@@ -291,8 +307,9 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
     // IMAGES IN ALL CARDS
     .post-card-image {
       height: 100%;
-      max-width: 350px;
+      max-width: 300px;
       object-fit: cover;
+      margin-bottom: 0px;
     }
   }
 
@@ -301,11 +318,9 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
   .homePage-tabs {
     .tab-content {
       .active {
-        display: grid;
-        grid-auto-rows: 300px;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 5px;
-        grid-auto-flow: dense;
       }
     }
   }

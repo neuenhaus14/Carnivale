@@ -11,17 +11,11 @@
   max-width: 400px;
 }
 
-// comment card
-.comment-post-card {
-  // positions card.body in center
-  flex-direction: row !important;
-  align-items: center;
-}
-
 // fonts
 .post-card-detail {
-  display: flex;
+  display: flex !important;
   flex-direction: row;
+  justify-content: space-between;
   font-size: 16px;
   font-style: italic;
   font-weight: 100;
@@ -44,13 +38,13 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  .post-card-share-button,
   .post-card-delete-button {
-    margin-left: 10px;
+    margin-right: 10px;
   }
 }
 
-.vote-button {
+.vote-button, .post-card-delete-button, .post-card-share-button  {
   @include mixin_utils.flex-col-center-content;
-  width: 40px !important;
+  width: 35px !important;
 }
+

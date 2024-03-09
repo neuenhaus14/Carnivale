@@ -13,6 +13,7 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaShareSquare } from '@react-icons/all-files/fa/FaShareSquare';
+import { MdDelete } from "@react-icons/all-files/md/MdDelete";
 
 // import ShareModal from './ShareModal';
 // import {IoMdArrowUp} from "@react-icons/all-files/io/IoMdArrowUp";
@@ -224,7 +225,7 @@ const PostCard: React.FC<PostCardProps> = ({
           <Card.Text className='post-card-text' as='div'>
             <div className='post-card-content'>{postText}</div>
             <div className='post-card-detail'>
-              {owner}
+              <div className='post-card-user-name'>{owner}</div>
               <>
                 <OverlayTrigger
                   placement='top'
@@ -236,15 +237,15 @@ const PostCard: React.FC<PostCardProps> = ({
                     </Tooltip>
                   }
                 >
-                  <div style={{ cursor: 'pointer' }}>
-                  posted {dayjs(post.createdAt.toString()).fromNow()}
+                  <div className='post-card-created-at-text' style={{ cursor: 'pointer' }}>
+                    {dayjs(post.createdAt.toString()).fromNow()}
                   </div>
                 </OverlayTrigger>
               </>
             </div>
           </Card.Text>
           <div className='post-card-buttons mt-3'>
-            <div className='d-flex flex-row align-items-center'>
+            <div className='vote-buttons-container d-flex flex-row align-items-center'>
               <Button
                 className='vote-button rounded-circle'
                 onClick={() => handleUpvote()}
@@ -254,7 +255,7 @@ const PostCard: React.FC<PostCardProps> = ({
                   style={{
                     color:
                       commentVotingStatus === 'upvoted' ? 'green' : 'black',
-                    fontSize: '30px',
+                    fontSize: '25px',
                   }}
                 />
               </Button>
@@ -268,22 +269,26 @@ const PostCard: React.FC<PostCardProps> = ({
                   style={{
                     color:
                       commentVotingStatus === 'downvoted' ? 'red' : 'black',
-                    fontSize: '30px',
+                    fontSize: '25px',
                   }}
                 />
               </Button>
             </div>
-            <div>
+            <div className='share-delete-buttons-container d-flex flex-row'>
               {isOwner && (
                 <Button
                   className='post-card-delete-button'
                   variant='danger'
                   onClick={() => handleDeletePost()}
                 >
-                  X
+                  <MdDelete/>
                 </Button>
               )}
-              <Button variant='secondary' className='post-card-share-button' onClick={handleInitPostShare}>
+              <Button
+                variant='primary'
+                className='post-card-share-button'
+                onClick={handleInitPostShare}
+              >
                 <FaShareSquare />
               </Button>
             </div>
