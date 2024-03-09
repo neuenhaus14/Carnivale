@@ -1,4 +1,5 @@
-@use 'colors';
+// @use 'colors';
+@use 'colors2' as colors;
 
 #share-modal-button {
   background-color: colors.$yeller;
