@@ -243,11 +243,10 @@ const PostCard: React.FC<PostCardProps> = ({
               </>
             </div>
           </Card.Text>
-          <div className='post-card-buttons mt-2'>
-            <div>
+          <div className='post-card-buttons mt-3'>
+            <div className='d-flex flex-row align-items-center'>
               <Button
                 className='vote-button rounded-circle'
-                size='sm'
                 onClick={() => handleUpvote()}
                 disabled={commentVotingStatus === 'upvoted'}
               >
@@ -262,7 +261,6 @@ const PostCard: React.FC<PostCardProps> = ({
               <span className='mx-2'>{post.upvotes}</span>
               <Button
                 className='vote-button rounded-circle'
-                size='sm'
                 onClick={() => handleDownvote()}
                 disabled={commentVotingStatus === 'downvoted'}
               >
@@ -285,7 +283,7 @@ const PostCard: React.FC<PostCardProps> = ({
                   X
                 </Button>
               )}
-              <Button className='post-card-share-button' onClick={handleInitPostShare}>
+              <Button variant='secondary' className='post-card-share-button' onClick={handleInitPostShare}>
                 <FaShareSquare />
               </Button>
             </div>
@@ -374,7 +372,7 @@ const PostCard: React.FC<PostCardProps> = ({
       </Card>
 
       {/* Toast containers */}
-      <ToastContainer
+      {/* <ToastContainer
         position='top-right'
         autoClose={5000}
         hideProgressBar={false}
@@ -385,7 +383,7 @@ const PostCard: React.FC<PostCardProps> = ({
         draggable
         pauseOnHover={false}
         theme='light'
-      />
+      /> */}
     </>
   );
 };
