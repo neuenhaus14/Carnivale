@@ -552,8 +552,8 @@ body {
 
 .page-bottom-panel {
   @include mixin_utils.page-bottom-panel;
-  background-color: colors.$lightGreeny;
-  // border-top: 1px solid colors.$primaryColor;
+  background-color: colors.$primaryBG;
+  border-top: 1px solid colors.$primaryColor;
 }
 
 #parade-select {
