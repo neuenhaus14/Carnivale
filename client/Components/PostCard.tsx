@@ -13,7 +13,7 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaShareSquare } from '@react-icons/all-files/fa/FaShareSquare';
-import { MdDelete } from "@react-icons/all-files/md/MdDelete";
+import { MdDelete } from '@react-icons/all-files/md/MdDelete';
 
 // import ShareModal from './ShareModal';
 // import {IoMdArrowUp} from "@react-icons/all-files/io/IoMdArrowUp";
@@ -237,7 +237,10 @@ const PostCard: React.FC<PostCardProps> = ({
                     </Tooltip>
                   }
                 >
-                  <div className='post-card-created-at-text' style={{ cursor: 'pointer' }}>
+                  <div
+                    className='post-card-created-at-text'
+                    style={{ cursor: 'pointer' }}
+                  >
                     {dayjs(post.createdAt.toString()).fromNow()}
                   </div>
                 </OverlayTrigger>
@@ -247,6 +250,7 @@ const PostCard: React.FC<PostCardProps> = ({
           <div className='post-card-buttons mt-3'>
             <div className='vote-buttons-container d-flex flex-row align-items-center'>
               <Button
+                variant='outline-success'
                 className='vote-button rounded-circle'
                 onClick={() => handleUpvote()}
                 disabled={commentVotingStatus === 'upvoted'}
@@ -261,6 +265,7 @@ const PostCard: React.FC<PostCardProps> = ({
               </Button>
               <span className='mx-2'>{post.upvotes}</span>
               <Button
+                variant='outline-danger'
                 className='vote-button rounded-circle'
                 onClick={() => handleDownvote()}
                 disabled={commentVotingStatus === 'downvoted'}
@@ -281,11 +286,11 @@ const PostCard: React.FC<PostCardProps> = ({
                   variant='danger'
                   onClick={() => handleDeletePost()}
                 >
-                  <MdDelete/>
+                  <MdDelete />
                 </Button>
               )}
               <Button
-                variant='primary'
+                variant='info'
                 className='post-card-share-button'
                 onClick={handleInitPostShare}
               >

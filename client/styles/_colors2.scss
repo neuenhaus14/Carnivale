@@ -9,14 +9,15 @@ $isEMTStation: #f27d52;
 
 // PG COLORS
 $greeny: #169874;
-$lightGreeny: #53ca3c;
+$lightGreeny: #74af91;
 $darkGreeny: #015d43;
 $pinky: #e7abff;
-$dark: #211234;
+$dark: #322345;
 $yeller: #fcc54e;
-$purpley: #8d3dad;
+$purpley: #6f4976;
 $lightPinky: #fbf4fe;
-$darkRed: #dc3545;
+$darkRed: #d23847;
+$lightRed: #bd4450;
 
 // COLORBLIND FRIENDLY
 $tan: #d2b48c;
@@ -25,17 +26,20 @@ $offBlack: #291f1f;
 $offGrey: #aeaeae;
 
 // BACKGROUNDS
-$primaryBG: #fffcf8;
-$cardBackground: #fdf4ea;
-$cardBackground2: #fdf9f4;
+$primaryBG: #fafafa; // whitesmoke
+$cardBackground: #fcfcfc;
+$cardBackground2: #dbdbdb;
+
+// BORDERS
+$cardBorder: #ededed;
 
 // BOOTSTRAP DEFAULT OVERRIDES
 $primaryColor: $yeller;
 $secondaryColor: $purpley;
-$successColor: $greeny;
-$dangerColor: $darkRed;
+$successColor: $lightGreeny;
+$dangerColor: $lightRed;
 $warningColor: $pinky;
-$infoColor: $turq;
+$infoColor: #645082;
 
 // TEXT
 $lightText: white;
@@ -44,5 +48,5 @@ $darkText: $dark;
 // TABS
 $tabSelected: $primaryBG;
 $tabSelectedBorder: $primaryColor;
-$tabUnselected: $cardBackground;
+$tabUnselected: $primaryBG;
 $tabUnselectedBorder: #e3e3e3;
