@@ -38,13 +38,23 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  .post-card-delete-button {
-    margin-right: 10px;
+  // .post-card-delete-button {
+  //   margin-right: 10px;
+  // }
+  .share-delete-buttons-container {
+    width: 80px;
+    justify-content: space-between;
+    .post-card-share-button:only-child {
+      margin-left: auto;
+    }
+  }
+  .btn {
+    @include mixin_utils.flex-col-center-content;
+  width: 35px !important;
   }
 }
 
-.vote-button, .post-card-delete-button, .post-card-share-button  {
-  @include mixin_utils.flex-col-center-content;
-  width: 35px !important;
-}
+// .vote-button, .post-card-delete-button, .post-card-share-button  {
+
+// }
 
