@@ -15,7 +15,7 @@ import { FaCamera } from '@react-icons/all-files/fa/FaCamera';
 
 import axios from 'axios';
 import HomeModal from './HomeModal';
-import PostCard from './PostCard';
+import {PostCard} from './PostCard';
 import { RunModeContext, ThemeContext } from './Context';
 import { useSearchParams } from 'react-router-dom';
 import ShareModal from './ShareModal';
@@ -69,10 +69,10 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
     // }
   }
 
-  //when tab is changed, set tab key and getPost for that tab
-  function handleSelect(k: string) {
-    setKey(k);
-    getPosts(k);
+  // when tab is changed, set tab key and getPost for that tab
+  function handleSelect(key: string) {
+    setKey(key);
+    getPosts(key);
   }
 
   const handleSubmit = async () => {
@@ -86,9 +86,10 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
     }
   };
 
-  const getPosts = async (e: string) => {
+  // fetches all
+  const getPosts = async (contentType: string) => {
     try {
-      const { data } = await axios.get(`/api/home/${e}`);
+      const { data } = await axios.get(`/api/home/${contentType}`);
       if (order === 'upvotes') {
         setPosts(
           data.sort(
@@ -209,10 +210,10 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
           <Tabs activeKey={key} onSelect={handleSelect}>
             <Tab eventKey='posts' title='Gossip'>
               {posts
-                ? posts.map((item: any, index: number) => (
+                ? posts.map((post: any, index: number) => (
                     <PostCard
-                      key={`${item.id} + ${index}`}
-                      post={item}
+                      key={`${post.id} + ${index}`}
+                      post={post}
                       userId={userId}
                       getPosts={getPosts}
                       order={order}

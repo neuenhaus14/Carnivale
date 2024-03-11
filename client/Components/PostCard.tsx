@@ -25,22 +25,39 @@ import { RunModeContext } from './Context';
 
 dayjs.extend(relativeTime);
 
-interface Post {
+/*
+A post is whatever goes into a PostCard. RN it is a record from the 'comments' or 'photos' tables in the DB, excluding the type of content it is (eg, isPin, isCostume, isThrow). The posts are fetched server-side according to those content type filters, with the request for the content type stipulated by client-side state (ie, when the costume tab is selected, go get costumes). Once we have content client side we don't need to know what kind they are RN (maybe eventually; should also refactor for enums in database tables), so those filtering booleans don't make it into the interface.
+*/
+export interface Post {
   id: number;
-  comment?: string;
   ownerId: number;
+  createdAt: string;
+  updatedAt?: string;
+  upvotes: number;
+
+  /*
+  photos have 'description' and 'photoURL', comments have 'comment'
+  */
+  comment?: string;
   photoURL?: string;
   description?: string;
-  createdAt: string;
-  upvotes: number;
+
+  /*
+  for feed page
+  */
+  senderName?: string
 }
 
 interface PostCardProps {
   post: Post;
   userId: number;
+  /* getPosts will be different depending on what page we're fetching posts from. On home page, we get all posts and then sort them according to the tab (key) that's active. On feed page, only those shared with user are fetched. This is used to reload posts after upvotes/downvotes -- which doesn't seem SUPER necessary */
   getPosts: any;
-  order: string;
-  eventKey: string;
+  /* Order is not being used */
+  order?: string;
+  /* used to fetch specific content on home page because of content tabs (gos, costumes, throws), not used on feed page rn */
+  eventKey?: string;
+  /* 2 share modal functions: only on home page rn */
   setPostToShare: any;
   setShowShareModal: any;
 }
@@ -398,4 +415,4 @@ const PostCard: React.FC<PostCardProps> = ({
   );
 };
 
-export default PostCard;
+export {PostCard};

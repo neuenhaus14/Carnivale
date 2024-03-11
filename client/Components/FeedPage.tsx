@@ -13,14 +13,18 @@ import {
   Tooltip,
   Card,
   Modal,
+  Row,
+  Col,
 } from 'react-bootstrap';
 import { ThemeContext, RunModeContext } from './Context';
 import ConfirmActionModal from './ConfirmActionModal';
-import PostCard from './PostCard';
 
+import { PostCard, Post } from './PostCard';
 
+/*
+A SharedPost is just the record from the join_shared_posts table PLUS upvotes to enable upvote downvote functionality for now
+*/
 interface SharedPost {
-  upvotes: number;
   id: number;
   sender_userId: number;
   recipient_userId: number;
@@ -29,6 +33,7 @@ interface SharedPost {
   shared_photoId: number | null;
   createdAt: string;
   updatedAt: string;
+  upvotes: number;
 }
 
 interface User {
@@ -40,9 +45,12 @@ interface User {
 }
 
 interface Comment {
+  id: number;
   comment: string;
   ownerId: number;
   upvotes: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // interface Pin {
@@ -53,11 +61,17 @@ interface Comment {
 //   upvotes: number;
 // }
 
+/*
+This Photo interface does not include filtering booleans because we don't need it for displaying the content (similar to Post interface from PostCard.jsx)
+*/
 interface Photo {
+  id: number;
   description: string;
   ownerId: number;
   upvotes: number;
-  url: string;
+  photoUrl: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface FeedPageProps {
@@ -66,7 +80,7 @@ interface FeedPageProps {
 
 const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   const [sharedPosts, setSharedPosts] = useState<SharedPost[]>([]);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  // const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userNames, setUserNames] = useState<{ [userId: number]: string }>({});
   const [commentDetails, setCommentDetails] = useState<{
     [postId: number]: Comment;
@@ -76,18 +90,9 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     {}
   );
   const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
+
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
-
-  const fetchSenderName = async (userId: number) => {
-    try {
-      const response = await axios.get(`/api/feed/user/${userId}`);
-      const senderName = `${response.data.firstName} ${response.data.lastName}`;
-      setUserNames((prevNames) => ({ ...prevNames, [userId]: senderName }));
-    } catch (error) {
-      console.error(`Error fetching sender ${userId} information:`, error);
-    }
-  };
 
   const [commentVotingStatus, setCommentVotingStatus] = useState<{
     [commentId: number]: 'upvoted' | 'downvoted' | 'none';
@@ -109,32 +114,49 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     setShowAboutModal(!showAboutModal);
   };
 
+  const fetchData = async () => {
+
+    try {
+      const [postsResponse, userResponse] = await Promise.all([
+        axios.get(`/api/feed/shared-posts/${userId}`),
+        axios.get(`/api/feed/user/${userId}`),
+        // Swap top and bottom comments for testing
+        // axios.get(`/api/feed/shared-posts/1`),
+        // axios.get(`/api/feed/user/1`),
+      ]);
+
+      setSharedPosts(postsResponse.data);
+      // setCurrentUser(userResponse.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const fetchSenderName = async (userId: number) => {
+    try {
+      const response = await axios.get(`/api/feed/user/${userId}`);
+      const senderName = `${response.data.firstName} ${response.data.lastName}`;
+      setUserNames((prevNames) => ({ ...prevNames, [userId]: senderName }));
+    } catch (error) {
+      console.error(`Error fetching sender ${userId} information:`, error);
+    }
+  };
+
+  // When userId changes (ie, when user logs in), fetch user info (why?) and all posts that have been shared with that user, setting shared posts state.
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [postsResponse, userResponse] = await Promise.all([
-          axios.get(`/api/feed/shared-posts/${userId}`),
-          axios.get(`/api/feed/user/${userId}`),
-          // Swap top and bottom comments for testing
-          // axios.get(`/api/feed/shared-posts/1`),
-          // axios.get(`/api/feed/user/1`),
-        ]);
-
-        setSharedPosts(postsResponse.data);
-        setCurrentUser(userResponse.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
+    if (userId !== null) {
+      fetchData();
+    }
   }, [userId]);
 
+  // After shared posts are fetched (see useEffect above), then for each post fetch who shared it with user and the posts content
   useEffect(() => {
+    // fetch details for a post, will run this on all posts shared with user
     const fetchDetails = async (postId: number, type: string) => {
       try {
         const response = await axios.get(`/api/feed/shared-${type}/${postId}`);
 
+        // Checking if the post has been deleted since being originally loaded.
         if (response.data === null) {
           if (type === 'comment') {
             setCommentDetails((prevDetails) => ({
@@ -164,9 +186,12 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
 
         const details = {
           comment: {
+            id: response.data.id,
             comment: response.data.comment,
             ownerId: response.data.ownerId,
             upvotes: response.data.upvotes,
+            createdAt: response.data.createdAt,
+            updatedAt: response.data.updatedAt,
           },
           // pin: {
           //   ownerId: response.data.ownerId,
@@ -176,13 +201,17 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           //   upvotes: response.data.upvotes,
           // },
           photo: {
+            id: response.data.id,
             description: response.data.description,
             ownerId: response.data.ownerId,
             upvotes: response.data.upvotes,
-            url: response.data.photoURL,
+            photoUrl: response.data.photoURL,
+            createdAt: response.data.createdAt,
+            updatedAt: response.data.updatedAt,
           },
         };
 
+        // adding each posts details to objects in state to keep track of posts on this page
         if (type === 'comment') {
           setCommentDetails((prevDetails) => ({
             ...prevDetails,
@@ -200,7 +229,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           }));
         }
 
-        // Fetch user details if not already fetched
+        // Fetch sharing user first name & last name if not already fetched
         if (!userNames[response.data.ownerId]) {
           const userResponse = await axios.get(
             `/api/feed/user/${response.data.ownerId}`
@@ -215,6 +244,8 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         console.error(`Error fetching ${type} details:`, error);
       }
     };
+
+    // this function aggs all async requests for comment and photo content and sharer's name into one promiseAll
     const fetchDataDetails = async () => {
       const fetchPromises: Promise<void>[] = [];
 
@@ -244,9 +275,9 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     };
 
     fetchDataDetails();
-  }, [sharedPosts, userNames, userNames]);
+  }, [sharedPosts, userNames]);
 
-  const handleUpvote = async (postId: number, type: string) => {
+  /* const handleUpvote = async (postId: number, type: string) => {
     if (isDemoMode) {
       toast('🎭Upvote post!🎭', {
         position: 'top-right',
@@ -298,8 +329,9 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
       }
     }
   };
+  */
 
-  const handleDownvote = async (postId: number, type: string) => {
+  /* const handleDownvote = async (postId: number, type: string) => {
     if (isDemoMode) {
       toast('Downvote post!🎭', {
         position: 'top-right',
@@ -371,6 +403,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
       }
     }
   };
+*/
 
   const fetchPostDetails = async (postId: number, type: string) => {
     try {
@@ -385,9 +418,12 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           setCommentDetails((prevDetails) => ({
             ...prevDetails,
             [postId]: {
+              id: response.data.id,
               comment: response.data.comment,
               ownerId: response.data.ownerId,
               upvotes: response.data.upvotes,
+              createdAt: response.data.createdAt,
+              updatedAt: response.data.updatedAt,
             },
           }));
         } else {
@@ -410,10 +446,13 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         setPhotoDetails((prevDetails) => ({
           ...prevDetails,
           [postId]: {
-            description: null,
-            ownerId: null,
-            upvotes: null,
-            url: null,
+            id: response.data.id,
+            description: response.data.description,
+            ownerId: response.data.ownerId,
+            upvotes: response.data.upvotes,
+            photoUrl: response.data.photoUrl,
+            createdAt: response.data.createdAt,
+            updatedAt: response.data.updatedAt,
           },
         }));
       }
@@ -455,6 +494,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     setShowDeleteModal(true);
   };
 
+  console.log('Bottom of Feed Page. sharedPosts:', sharedPosts, 'commentDetails', commentDetails, 'photoDetails', photoDetails, 'userNames', userNames)
   return (
     <Container className={`body ${theme} feed-page-container`}>
       {isDemoMode && (
@@ -464,8 +504,12 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           </Modal.Header>
           <Modal.Body>
             <p className='fs-6 lh-sm'>
-              <b>Welcome to the Feed page!</b><br/><br/>
-              Here you&apos;ll discover a private feed of content sent directly to you from your friends. This content can be upvoted, downvoted or removed from your private feed altogether.
+              <b>Welcome to the Feed page!</b>
+              <br />
+              <br />
+              Here you&apos;ll discover a private feed of content sent directly
+              to you from your friends. This content can be upvoted, downvoted
+              or removed from your private feed altogether.
               <br />
               <br />
               Take the{' '}
@@ -482,7 +526,68 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           </Modal.Footer>
         </Modal>
       )}
-      <ul style={{ padding: 0, listStyle: 'none' }}>
+
+      <Row>
+        <Col>
+          {sharedPosts.length ===
+            (Object.keys(photoDetails).length +
+              Object.keys(commentDetails).length) && Object.keys(userNames).length > 0 &&
+            sharedPosts.map((sharedPost, index) => {
+              // only accounts for comments and photo types, no pins yet
+              const sharedPostType = sharedPost.shared_commentId
+                ? 'comment'
+                : 'photo';
+
+              let post: Post;
+
+              if (sharedPostType === 'comment') {
+                post = {
+                  id: commentDetails[sharedPost.shared_commentId]?.id,
+                  ownerId: commentDetails[sharedPost.shared_commentId]?.ownerId,
+                  createdAt: commentDetails[sharedPost.shared_commentId]?.createdAt,
+                  updatedAt: commentDetails[sharedPost.shared_commentId]?.updatedAt,
+                  upvotes: commentDetails[sharedPost.shared_commentId]?.upvotes,
+                  comment: commentDetails[sharedPost.shared_commentId].comment,
+                  senderName: userNames[
+                    commentDetails[sharedPost.shared_commentId].ownerId
+                  ]
+                }
+              } else if (sharedPostType === 'photo') {
+                post = {
+                  id: photoDetails[sharedPost.shared_photoId].id,
+                  ownerId: photoDetails[sharedPost.shared_photoId].ownerId,
+                  createdAt: photoDetails[sharedPost.shared_photoId].createdAt,
+                  updatedAt: photoDetails[sharedPost.shared_photoId].updatedAt,
+                  upvotes: photoDetails[sharedPost.shared_photoId].upvotes,
+                  photoURL: photoDetails[sharedPost.shared_photoId].photoUrl,
+                  description: photoDetails[sharedPost.shared_photoId].description,
+                  senderName: userNames[
+                    photoDetails[sharedPost.shared_photoId].ownerId
+                  ]
+                }
+              }
+
+              return (
+                <PostCard
+                  key={`${post.id} + ${index}`}
+                  post={post}
+                  userId={userId}
+                  getPosts={() => console.log('getPosts')}
+                  setPostToShare={() => console.log('setPostToShare')}
+                  setShowShareModal={() => console.log('setShowShareModal')}
+                />
+              );
+
+              return <h1 key={index}>return</h1>;
+            })}
+        </Col>
+      </Row>
+
+      <br />
+      <hr></hr>
+      <br />
+
+      {/* <ul style={{ padding: 0, listStyle: 'none' }}>
         {Array.isArray(sharedPosts) && sharedPosts.length > 0 ? (
           sharedPosts.map((post) => (
             <li key={post.id}>
@@ -501,6 +606,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
 
                 {post.shared_commentId && (
                   <div style={{ marginTop: '5px' }}>
+
                     {commentDetails[post.shared_commentId] ? (
                       <Card.Body>
                         <Card.Text as='div'>
@@ -638,7 +744,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                         <Card.Text as='div'>
                           <div>
                             <img
-                              src={photoDetails[post.shared_photoId].url}
+                              src={photoDetails[post.shared_photoId].photoUrl}
                               alt='Shared Photo'
                               style={{
                                 maxWidth: '100%',
@@ -769,7 +875,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         ) : (
           <p>No shared posts available.</p>
         )}
-      </ul>
+      </ul> */}
 
       <ToastContainer
         position='top-right'
