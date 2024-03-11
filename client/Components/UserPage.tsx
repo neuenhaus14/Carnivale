@@ -480,7 +480,7 @@ const UserPage: React.FC<UserPageProps> = ({
   };
 
   return (
-    <Container className={`body ${theme}`}>
+    <Container className={`body ${theme} user-page-container`}>
       {showGif && (
         <img
           src='/img/mardi-gras.gif'
@@ -587,7 +587,7 @@ const UserPage: React.FC<UserPageProps> = ({
           className='d-flex flex-column justify-content-between'
           style={{ height: '75vh' }}
         >
-          <div className='userPage-tabs'>
+          <div className='userPage-tabs my-3'>
             <Tabs defaultActiveKey='krewe'>
               <Tab eventKey='krewe' title='Krewe'>
                 <h5> Krewe </h5>
@@ -616,9 +616,8 @@ const UserPage: React.FC<UserPageProps> = ({
                     <div className='mx-1'>Invite to Krewe</div>
                     <Button
                       className='mx-1'
-                      // style={{ width: '23px' }}
                       size='sm'
-                      variant='success'
+                      variant='primary'
                       onClick={requestFriend}
                       disabled={isDemoMode}
                     >

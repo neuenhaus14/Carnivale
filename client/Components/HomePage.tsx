@@ -121,7 +121,7 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
   }, [key, order]);
 
   return (
-    <Container className={`body-with-bottom-panel ${theme}`}>
+    <Container className={`body-with-bottom-panel ${theme} home-page-container`}>
       <ShareModal
         postId={postToShare.id}
         userId={userId}

@@ -1,7 +1,7 @@
 // BUTTONS, "BODY" DIVS, OTHER BIG PICTURE THINGS
 
-// @use 'colors';
-@use 'colors2' as colors;
+@use 'colors';
+//@use 'colors2' as colors;
 @use 'mixin_utils';
 
 #app {
@@ -19,10 +19,10 @@
 }
 
 .btn-wide {
-  width: 80vw;
+  width: 90%;
   max-width: 400px;
   margin: 10px auto;
-  border: colors.$secondaryColor solid 2px;
+  // border: colors.$secondaryColor solid 2px !important;
 }
 
 .btn-sm {

@@ -420,7 +420,7 @@ const MapPage: React.FC<MapProps> = ({
   };
 
   return (
-    <Container className={`body ${theme}`}>
+    <Container className={`body ${theme} map-page-container`}>
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
@@ -484,7 +484,7 @@ const MapPage: React.FC<MapProps> = ({
         }
         onClick={() => toggleShareLoc()}
         defaultChecked={shareLoc}
-        style={{ paddingBottom: '1em' }}
+        className = 'my-3'
         disabled={isDemoMode}
       />
       <Map
@@ -729,7 +729,7 @@ const MapPage: React.FC<MapProps> = ({
             EMT Station
           </button>
         </div>
-        <button
+        <Button
           type='button'
           value='clearFilters'
           className='btn btn-wide'
@@ -739,7 +739,7 @@ const MapPage: React.FC<MapProps> = ({
           }}
         >
           Clear Filter
-        </button>
+        </Button>
       </div>
     </Container>
   );

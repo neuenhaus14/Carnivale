@@ -382,7 +382,7 @@ const PostCard: React.FC<PostCardProps> = ({
       </Card>
 
       {/* Toast containers */}
-      {/* <ToastContainer
+      <ToastContainer
         position='top-right'
         autoClose={5000}
         hideProgressBar={false}
@@ -393,7 +393,7 @@ const PostCard: React.FC<PostCardProps> = ({
         draggable
         pauseOnHover={false}
         theme='light'
-      /> */}
+      />
     </>
   );
 };

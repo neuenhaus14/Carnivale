@@ -151,7 +151,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   }, [userId]);
 
   return (
-    <Container className={`body-with-bottom-panel ${theme}`} style={{ paddingBottom: '170px' }}>
+    <Container className={`body-with-bottom-panel ${theme} parade-page-container`} style={{ paddingBottom: '170px' }}>
       <div className='gig-body-calendar'>
         {isDemoMode && (
           <Modal show={showAboutModal} onHide={toggleAboutModal}>

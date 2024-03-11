@@ -456,14 +456,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   };
 
   return (
-    <Container className={`body ${theme}`}>
-      {/* <h1>
-        Welcome,{' '}
-        {currentUser
-          ? `${currentUser.firstName} ${currentUser.lastName}`
-          : 'User'}
-        !
-      </h1> */}
+    <Container className={`body ${theme} feed-page-container`}>
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>

@@ -1,5 +1,5 @@
-// @use 'colors';
-@use 'colors2' as colors;
+@use 'colors';
+// @use 'colors2' as colors;
 @use 'mixin_utils';
 
 @use 'navbars';
@@ -245,6 +245,7 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
     max-width: none;
     height: 250px !important;
     flex-grow: 1;
+    margin: 0px auto;
   }
 
   // COMMENT CARDS
@@ -348,7 +349,7 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
       .active {
         display: flex;
         flex-wrap: wrap;
-        gap: 5px;
+        gap: 12px;
       }
     }
   }

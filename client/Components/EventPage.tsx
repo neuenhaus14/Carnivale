@@ -87,7 +87,7 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
   }, [date]);
 
   return (
-    <Container className={`body ${theme}`}>
+    <Container className={`body ${theme} event-page-container`}>
       <div className='gig-body-calendar'>
 
         <div id='select-gig-date-container' className='page-bottom-panel'>
