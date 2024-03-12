@@ -1,0 +1,6 @@
+@use 'mixin_utils';
+
+#create-post-form .btn {
+  @include mixin_utils.flex-col-center-content;
+}
+

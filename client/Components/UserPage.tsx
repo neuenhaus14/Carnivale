@@ -15,6 +15,7 @@ import {
   DropdownButton,
   Card,
   Modal,
+  Alert
 } from 'react-bootstrap';
 
 // import { MdCancel } from "react-icons/md";
@@ -653,15 +654,10 @@ const UserPage: React.FC<UserPageProps> = ({
                   eventsOwned.length === 0 &&
                     eventsInvited.length === 0 &&
                     eventsParticipating.length === 0 && (
-                      <>
-                        <p className='ep-card-content text-center mt-3'>
-                          Nothing going on in here!
-                        </p>
-                        <p className='ep-card-detail text-center'>
-                          Make plans or connect with your Krewe to beef up your
-                          calendar.
-                        </p>
-                      </>
+                      <Alert variant='danger' className='mt-3 text-center'>
+                        <Alert.Heading >Nothing going on here!</Alert.Heading>
+                        <p>Make plans or connect with your krewe to beef up your calendar.</p>
+                      </Alert>
                     )
                 }
 

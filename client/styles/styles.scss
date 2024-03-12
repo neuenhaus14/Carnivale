@@ -2,13 +2,20 @@
 // @use 'colors2' as colors;
 @use 'mixin_utils';
 
-@use 'navbars';
 @use 'base';
+
+@use 'navbars';
 @use 'tabs';
-@use 'login';
 @use 'postcard';
-@use 'map_page';
 @use 'modals';
+
+@use 'login';
+@use 'loading';
+@use 'map_page';
+@use 'user_page';
+@use 'event_page';
+@use 'parade_page';
+@use 'home_page';
 
 // SET BOOTSTRAP DEFAULT COLORS BEFORE IMPORTING BS SCSS FILE
 $primary: colors.$primaryColor;
@@ -50,9 +57,9 @@ $info: colors.$infoColor;
 
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@100;200;400;500;700&family=Inter:wght@600;700&family=Shrikhand&family=Permanent+Marker&display=swap');
 
-.alert {
-  --bs-alert-padding-y: 0.5rem;
-}
+// .alert {
+//   --bs-alert-padding-y: 0.5rem;
+// }
 
 // .post-card {
 //   padding: 15px;
@@ -129,10 +136,10 @@ $info: colors.$infoColor;
 //   // color: white;
 // }
 
-.btn-secondary {
-  // background-color: colors.$ternaryColor !important;
-  color: colors.$lightText;
-}
+// .btn-secondary {
+//   // background-color: colors.$ternaryColor !important;
+//   color: colors.$lightText;
+// }
 
 // buttons to put icons inside for
 // friend management
@@ -432,30 +439,30 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
 // }
 
 // this is for the body tag, NOT the body class
-body {
-  color: colors.$dark;
-  font-family: 'Fredoka', sans-serif;
-}
+// body {
+//   color: colors.$dark;
+//   font-family: 'Fredoka', sans-serif;
+// }
 
-.gig-body {
-  padding-top: 10vh;
-  padding-bottom: 14vh;
-  display: flex;
-  flex-direction: column;
-  background-color: colors.$lightPinky;
-  min-height: 100vh;
-}
+// .gig-body {
+//   padding-top: 10vh;
+//   padding-bottom: 14vh;
+//   display: flex;
+//   flex-direction: column;
+//   background-color: colors.$lightPinky;
+//   min-height: 100vh;
+// }
 
-.gig-body-calendar {
-  padding-bottom: 5vh;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
+// .gig-body-calendar {
+//   padding-bottom: 5vh;
+//   display: flex;
+//   flex-direction: column;
+//   min-height: 100vh;
+// }
 
-.date-picker {
-  text-align: center;
-}
+// .date-picker {
+//   text-align: center;
+// }
 
 // .nav-tabs {
 //   border-bottom: 1px solid colors.$tabSelectedBorder;
@@ -488,21 +495,21 @@ body {
 //   overflow: scroll;
 // }
 
-.userPage-buttons-container {
-  height: 15vh;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-  padding: 0px 30px;
-}
+// .userPage-buttons-container {
+//   height: 15vh;
+//   display: flex;
+//   flex-flow: row wrap;
+//   justify-content: space-between;
+//   padding: 0px 30px;
+// }
 
-.userPage-buttons-container .btn {
-  margin: auto;
-}
+// .userPage-buttons-container .btn {
+//   margin: auto;
+// }
 
-.userPage-buttons-container .dropup {
-  margin: auto;
-}
+// .userPage-buttons-container .dropup {
+//   margin: auto;
+// }
 
 // #share-modal-button {
 //   background-color: colors.$yeller;
@@ -536,16 +543,6 @@ body {
 //   border-bottom: solid 1px colors.$tabSelected;
 // }
 
-.ep-card-detail {
-  font-size: 16px;
-  font-style: italic;
-  font-weight: 100;
-}
-
-.ep-card-content {
-  font-weight: 500;
-}
-
 //HOMEPAGE
 // .body-with-bottom-panel {
 //   // padding-bottom larger on home page to account for page-bottom-panel
@@ -553,59 +550,60 @@ body {
 //   padding-bottom: 21vh;
 // }
 
-#create-post-form .btn {
-  @include mixin_utils.flex-col-center-content;
-}
+// #create-post-form .btn {
+//   @include mixin_utils.flex-col-center-content;
+// }
 
-.page-bottom-panel {
-  @include mixin_utils.page-bottom-panel;
-  background-color: colors.$primaryBG;
-  border-top: 1px solid colors.$primaryColor;
-}
+// .page-bottom-panel {
+//   @include mixin_utils.page-bottom-panel;
+//   background-color: colors.$primaryBG;
+//   border-top: 1px solid colors.$primaryColor;
+// }
 
-#parade-select {
-  max-width: 60%;
-}
+// #parade-select {
+//   max-width: 60%;
+// }
 
-.form-check-input:checked {
-  background-color: colors.$pinky;
-  // border-color: colors.$ternaryColor;
-}
+// .form-check-input:checked {
+//   background-color: colors.$pinky;
+//   // border-color: colors.$ternaryColor;
+// }
 
-.form-check.form-switch {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-evenly;
-}
+// .form-check.form-switch {
+//   display: flex;
+//   flex-direction: row;
+//   flex-wrap: nowrap;
+//   justify-content: space-evenly;
+// }
 
-.form-check-input:focus {
-  border-color: #cc86fe;
-  outline: 0;
-  box-shadow: 0 0 0 0.25rem rgba(149, 13, 253, 0.25);
-}
+// .form-check-input:focus {
+//   border-color: #cc86fe;
+//   outline: 0;
+//   box-shadow: 0 0 0 0.25rem rgba(149, 13, 253, 0.25);
+// }
 
-.footer {
-  text-align: center;
-}
+// .footer {
+//   text-align: center;
+// }
 
-.loader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-  position: relative;
-  margin-top: 100px;
-  text-align: center;
-  font-size: 3em;
-  flex-direction: column;
+// .loader {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   align-content: center;
+//   position: relative;
+//   margin-top: 100px;
+//   text-align: center;
+//   font-size: 3em;
+//   flex-direction: column;
 
-  // width: 100%;
-  // height: auto;
-}
-.disclaimer {
-  font-size: smaller;
-}
+//   // width: 100%;
+//   // height: auto;
+// }
+
+// .disclaimer {
+//   font-size: smaller;
+// }
 
 //regular mode
 // .pg-theme-light {

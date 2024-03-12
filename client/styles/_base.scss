@@ -4,8 +4,13 @@
 //@use 'colors2' as colors;
 @use 'mixin_utils';
 
+
 #app {
-  background-color: colors.$primaryBG;
+  background-color: colors.$primaryBG !important;
+}
+
+.alert {
+  --bs-alert-padding-y: 0.5rem !important;
 }
 
 // No padding for cards so more stuff fits in mobile
@@ -13,9 +18,15 @@
   padding: 0px !important;
 }
 
+
 // BUTTONS
 .btn {
   border: none !important;
+}
+
+.btn-secondary {
+  // background-color: colors.$ternaryColor !important;
+  color: colors.$lightText;
 }
 
 .btn-wide {
@@ -30,6 +41,15 @@
   padding: 3px 6px !important;
   font-size: small !important;
   font-weight: bold !important;
+}
+
+
+// PAGE FORMATTING
+
+// this is for the body tag, NOT the body class
+body {
+  color: colors.$dark !important;
+  font-family: 'Fredoka', sans-serif !important;
 }
 
 // BODY classes: where content fits on page
@@ -48,6 +68,23 @@
   padding-bottom: 21vh;
 }
 
+.page-bottom-panel {
+  @include mixin_utils.page-bottom-panel;
+  background-color: colors.$primaryBG;
+  border-top: 1px solid colors.$primaryColor;
+}
+
+// this should apply to both modals and any other uses of footer tags
+.footer {
+  text-align: center;
+}
+
+.disclaimer {
+  font-size: smaller;
+}
+
+
+
 // TEXTS
 h5 {
   text-align: left !important;
@@ -60,4 +97,24 @@ p {
   font-size: 20px !important;
   color: colors.$dark !important;
   margin: 0px 6px 6px !important;
+}
+
+
+// FORMS
+.form-check-input:checked {
+  background-color: colors.$pinky;
+  // border-color: colors.$ternaryColor;
+}
+
+.form-check.form-switch {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+}
+
+.form-check-input:focus {
+  border-color: #cc86fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(149, 13, 253, 0.25);
 }
