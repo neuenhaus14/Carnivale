@@ -3,36 +3,36 @@
 
 // ALL TABS
 .nav-tabs {
-  border-bottom: 1px solid colors.$primaryColor !important;
+  border-bottom: 1px solid colors.$primaryColor;
 }
 
 .nav-tabs .nav-item.show {
-  background-color: colors.$tabSelected !important;
-  border-bottom: 1px solid colors.$tabSelectedBorder !important;
+  background-color: colors.$tabSelected;
+  border-bottom: 1px solid colors.$tabSelectedBorder;
 }
 
 .tab-content {
-  background-color: colors.$tabSelected !important;
+  background-color: colors.$tabSelected;
 }
 
 .nav-tabs .nav-link {
-  color: rgb(121, 120, 120) !important;
-  font-family: 'Permanent Marker', serif !important;
-  background-color: colors.$tabUnselected !important;
-  border-top: 1px solid colors.$tabUnselectedBorder !important;
-  border-left: 1px solid colors.$tabUnselectedBorder !important;
-  border-right: 1px solid colors.$tabUnselectedBorder !important;
-  border-bottom: 1px solid colors.$tabSelectedBorder !important;
+  color: rgb(121, 120, 120);
+  font-family: 'Permanent Marker', serif;
+  background-color: colors.$tabUnselected;
+  border-top: 1px solid colors.$tabUnselectedBorder;
+  border-left: 1px solid colors.$tabUnselectedBorder;
+  border-right: 1px solid colors.$tabUnselectedBorder;
+  border-bottom: 1px solid colors.$tabSelectedBorder;
 }
 
 .nav-tabs .nav-link.active {
   font-family: 'Permanent Marker', serif;
-  background-color: colors.$tabSelected !important;
-  color: colors.$darkText !important;
-  border-top: solid 1px colors.$tabSelectedBorder !important;
-  border-left: solid 1px colors.$tabSelectedBorder !important;
-  border-right: solid 1px colors.$tabSelectedBorder !important;
-  border-bottom: solid 1px colors.$tabSelected !important;
+  background-color: colors.$tabSelected;
+  color: colors.$darkText;
+  border-top: solid 1px colors.$tabSelectedBorder;
+  border-left: solid 1px colors.$tabSelectedBorder;
+  border-right: solid 1px colors.$tabSelectedBorder;
+  border-bottom: solid 1px colors.$tabSelected;
 }
 
 // HOME PAGE TABS

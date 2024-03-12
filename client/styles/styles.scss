@@ -2,21 +2,6 @@
 // @use 'colors2' as colors;
 @use 'mixin_utils';
 
-@use 'base';
-
-@use 'navbars';
-@use 'tabs';
-@use 'postcard';
-@use 'modals';
-
-@use 'login';
-@use 'loading';
-@use 'map_page';
-@use 'user_page';
-@use 'event_page';
-@use 'parade_page';
-@use 'home_page';
-
 // SET BOOTSTRAP DEFAULT COLORS BEFORE IMPORTING BS SCSS FILE
 $primary: colors.$primaryColor;
 $secondary: colors.$secondaryColor;
@@ -25,6 +10,7 @@ $danger: colors.$dangerColor;
 $warning: colors.$warningColor;
 $info: colors.$infoColor;
 
+/** APPARENTLY DON'T NEED TO IMPORT ALL BOOTSTRAP STYLES INDEPENDENTLY
 @import '~bootstrap/scss/functions';
 @import '~bootstrap/scss/variables';
 @import '~bootstrap/scss/mixins';
@@ -52,10 +38,183 @@ $info: colors.$infoColor;
 @import '~bootstrap/scss/tooltip';
 @import '~bootstrap/scss/popover';
 @import '~bootstrap/scss/carousel';
+*/
 
+// IMPORT ALL BOOTSTRAP
 @import 'bootstrap';
 
+
+// IMPORT THESE LOCALLY DEFINED STYLES
+@import 'base';
+
+@import 'navbars';
+@import 'tabs';
+@import 'postcard';
+@import 'modals';
+
+@import 'login';
+@import 'loading';
+@import 'map_page';
+@import 'user_page';
+@import 'event_page';
+@import 'parade_page';
+@import 'home_page';
+
+
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@100;200;400;500;700&family=Inter:wght@600;700&family=Shrikhand&family=Permanent+Marker&display=swap');
+
+
+
+/* BREAKPOINT CHANGES FOR DESKTOP vs. MOBILE
+Large breakpoint is 992 px wide. It's at this point that posts will switch to grid mode, as it's here that the tab component gets wide enough to justify a change in display
+*/
+@include media-breakpoint-up(lg) {
+  // login
+  #login-carousel-container {
+    display: flex; // displays carousel for lg screen
+    margin-left: 2vw;
+  }
+
+  #login-info-container {
+    margin-right: 2vw;
+  }
+
+  #login {
+    padding-left: calc(15px + 10vw);
+    padding-right: calc(15px + 10vw);
+  }
+
+  // ALL CARDS
+  // post-cards stretch sideways to fit photos of most dimensions (no panoramas)
+  .post-card {
+    max-width: none;
+    height: 250px !important;
+    flex-grow: 1;
+    margin: 0px auto;
+  }
+
+  // COMMENT CARDS
+  .comment-post-card {
+    width: 250px;
+    max-width: 350px;
+    padding: 15px;
+    .post-card-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .post-card-text {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        .post-card-content {
+          font-size: 20px;
+        }
+        .post-card-detail {
+          flex-direction: column;
+          text-align: end;
+        }
+      }
+    }
+  }
+
+  // PHOTO CARDS
+  .photo-post-card {
+    flex-direction: row;
+    align-items: center;
+
+    .post-card-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      max-width: 180px;
+      margin-left: 15px;
+    }
+
+    .post-card-buttons {
+      flex-direction: column;
+      align-items: end;
+      .share-delete-buttons-container {
+        width: 94px;
+        margin-top: 10px;
+        justify-content: space-around;
+        .post-card-share-button:only-child {
+          margin-left: auto;
+        }
+        .post-card-delete-button {
+          margin-right: 0px;
+        }
+      }
+    }
+
+    .post-card-text {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .post-card-content {
+        text-align: right;
+      }
+      .post-card-detail {
+        display: flex;
+        flex-direction: column;
+        text-align: right;
+      }
+    }
+
+    // IMAGES IN ALL CARDS
+    .post-card-image {
+      height: 100%;
+      // max-width: 300px;
+      object-fit: cover;
+      margin-bottom: 0px;
+    }
+  }
+
+  // PORTRAIT PHOTO CARDS HAVE RESTRICTED WIDTHS
+  .portrait-photo-post-card {
+    max-width: 400px;
+    .post-card-image {
+      max-width: 200px;
+    }
+  }
+
+  // TODO: figure out idea max-width for
+  // landscape photos
+  .landscape-photo-post-card {
+    max-width: 500px;
+  }
+
+  // TAB NAV PANE FOR HOME PAGE
+  .homePage-tabs {
+    .tab-content {
+      .active {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+    }
+  }
+
+  .feed-page-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+@include media-breakpoint-up(md) {
+  .confirm-action-modal .modal-dialog {
+    width: 300px;
+  }
+}
+
+
+
+/** ALL THESE STYLES ARE NOW IN SEPARATE FILES, EXCEPT THEMED STYLING
 
 // .alert {
 //   --bs-alert-padding-y: 0.5rem;
@@ -227,152 +386,6 @@ $info: colors.$infoColor;
 //   max-width: 450px;
 // }
 
-/*
-Large breakpoint is 992 px wide. It's at this point that posts will switch to grid mode, as it's here that the tab component gets wide enough to justify a change in display
-*/
-@include media-breakpoint-up(lg) {
-  // login
-  #login-carousel-container {
-    display: flex; // displays carousel for lg screen
-    margin-left: 2vw;
-  }
-
-  #login-info-container {
-    margin-right: 2vw;
-  }
-
-  #login {
-    padding-left: calc(15px + 10vw);
-    padding-right: calc(15px + 10vw);
-  }
-
-  // ALL CARDS
-  // post-cards stretch sideways to fit photos of most dimensions (no panoramas)
-  .post-card {
-    max-width: none;
-    height: 250px !important;
-    flex-grow: 1;
-    margin: 0px auto;
-  }
-
-  // COMMENT CARDS
-  .comment-post-card {
-    width: 250px;
-    max-width: 350px;
-    padding: 15px;
-    .post-card-body {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-
-      .post-card-text {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        .post-card-content {
-          font-size: 20px;
-        }
-        .post-card-detail {
-          flex-direction: column;
-          text-align: end;
-        }
-      }
-    }
-  }
-
-  // PHOTO CARDS
-  .photo-post-card {
-    flex-direction: row;
-    align-items: center;
-
-    .post-card-body {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 100%;
-      max-width: 180px;
-      margin-left: 15px;
-    }
-
-    .post-card-buttons {
-      flex-direction: column;
-      align-items: end;
-      .share-delete-buttons-container {
-        width: 94px;
-        margin-top: 10px;
-        justify-content: space-around;
-        .post-card-share-button:only-child {
-          margin-left: auto;
-        }
-        .post-card-delete-button {
-          margin-right: 0px;
-        }
-      }
-    }
-
-    .post-card-text {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-
-      .post-card-content {
-        text-align: right;
-      }
-      .post-card-detail {
-        display: flex;
-        flex-direction: column;
-        text-align: right;
-      }
-    }
-
-    // IMAGES IN ALL CARDS
-    .post-card-image {
-      height: 100%;
-      // max-width: 300px;
-      object-fit: cover;
-      margin-bottom: 0px;
-    }
-  }
-
-  // PORTRAIT PHOTO CARDS HAVE RESTRICTED WIDTHS
-  .portrait-photo-post-card {
-    max-width: 400px;
-    .post-card-image {
-      max-width: 200px;
-    }
-  }
-
-  // TODO: figure out idea max-width for
-  // landscape photos
-  .landscape-photo-post-card {
-    max-width: 500px;
-  }
-
-  // TAB NAV PANE FOR HOME PAGE
-  .homePage-tabs {
-    .tab-content {
-      .active {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-    }
-  }
-
-  .feed-page-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-}
-
-@include media-breakpoint-up(md) {
-  .confirm-action-modal .modal-dialog {
-    width: 300px;
-  }
-}
 
 // .login-carousel-item {
 //   display: flex;
@@ -726,3 +739,5 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
     }
   }
 }
+
+*/

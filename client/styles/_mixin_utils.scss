@@ -17,8 +17,8 @@
 
 // centers single-item content, like an icon in a button
 @mixin flex-col-center-content {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }

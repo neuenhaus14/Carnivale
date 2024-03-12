@@ -7,15 +7,15 @@
   padding: 15px;
   box-shadow: 0.6px 1.1px 1.1px hsl(0deg 0% 0% / 0.48);;
   margin: 4px auto;
-  border: 1.5px solid colors.$cardBorder !important;
-  // border: none !important;
-  background-color: colors.$cardBackground !important;
+  border: 1.5px solid colors.$cardBorder;
+  // border: none;
+  background-color: colors.$cardBackground;
   max-width: 400px;
 }
 
 // fonts
 .post-card-detail {
-  display: flex !important;
+  display: flex;
   flex-direction: row;
   justify-content: space-between;
   font-size: 16px;
@@ -58,11 +58,8 @@
   }
   .btn {
     @include mixin_utils.flex-col-center-content;
-  width: 35px !important;
+  width: 35px ;
   }
 }
 
-// .vote-button, .post-card-delete-button, .post-card-share-button  {
-
-// }
 

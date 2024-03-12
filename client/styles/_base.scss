@@ -6,22 +6,22 @@
 
 
 #app {
-  background-color: colors.$primaryBG !important;
+  background-color: colors.$primaryBG;
 }
 
 .alert {
-  --bs-alert-padding-y: 0.5rem !important;
+  --bs-alert-padding-y: 0.5rem;
 }
 
 // No padding for cards so more stuff fits in mobile
 .card-body {
-  padding: 0px !important;
+  padding: 0px;
 }
 
 
 // BUTTONS
 .btn {
-  border: none !important;
+  border: none;
 }
 
 .btn-secondary {
@@ -37,10 +37,10 @@
 }
 
 .btn-sm {
-  border-radius: 15px !important;
-  padding: 3px 6px !important;
-  font-size: small !important;
-  font-weight: bold !important;
+  border-radius: 15px;
+  padding: 3px 6px;
+  font-size: small;
+  font-weight: bold;
 }
 
 
@@ -48,8 +48,8 @@
 
 // this is for the body tag, NOT the body class
 body {
-  color: colors.$dark !important;
-  font-family: 'Fredoka', sans-serif !important;
+  color: colors.$dark;
+  font-family: 'Fredoka', sans-serif;
 }
 
 // BODY classes: where content fits on page
@@ -87,23 +87,22 @@ body {
 
 // TEXTS
 h5 {
-  text-align: left !important;
-  color: colors.$greeny !important;
-  margin: 8px !important;
-  font-weight: 400 !important;
+  text-align: left;
+  color: colors.$greeny;
+  margin: 8px;
+  font-weight: 400;
 }
 
 p {
-  font-size: 20px !important;
-  color: colors.$dark !important;
-  margin: 0px 6px 6px !important;
+  font-size: 20px;
+  color: colors.$dark;
+  margin: 0px 6px 6px;
 }
 
 
 // FORMS
 .form-check-input:checked {
   background-color: colors.$pinky;
-  // border-color: colors.$ternaryColor;
 }
 
 .form-check.form-switch {
