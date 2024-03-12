@@ -78,11 +78,13 @@ interface Photo {
 
 interface FeedPageProps {
   userId: number;
+  setConfirmActionBundle: object;
 }
 
-const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
+const FeedPage: React.FC<FeedPageProps> = ({ userId, setConfirmActionBundle }) => {
   const [sharedPosts, setSharedPosts] = useState<SharedPost[]>([]);
   // const [currentUser, setCurrentUser] = useState<User | null>(null);
+
   const [userNames, setUserNames] = useState<{ [userId: number]: string }>({});
   const [commentDetails, setCommentDetails] = useState<{
     [postId: number]: Comment;
@@ -91,6 +93,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   const [photoDetails, setPhotoDetails] = useState<{ [postId: number]: Photo }>(
     {}
   );
+
   const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
 
   const theme = useContext(ThemeContext);
@@ -108,8 +111,9 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     [pinId: number]: 'upvoted' | 'downvoted' | 'none';
   }>({});
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deletePostId, setDeletePostId] = useState<number | null>(null);
+  // Attempting to add Confirm Action Modal to App
+  // const [showDeleteModal, setShowDeleteModal] = useState(false);
+  // const [deletePostId, setDeletePostId] = useState<number | null>(null);
 
   const [showAboutModal, setShowAboutModal] = useState(true);
 
@@ -118,6 +122,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   };
 
   const fetchData = async () => {
+    console.log('fetching data!')
     try {
       const [postsResponse, userResponse] = await Promise.all([
         axios.get(`/api/feed/shared-posts/${userId}`),
@@ -491,10 +496,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     }
   };
 
-  const handleShowDeleteModal = (postId: number) => {
-    setDeletePostId(postId);
-    setShowDeleteModal(true);
-  };
+  // ADDING CONFIRM ACTION MODAL TO APP
+  // const handleShowDeleteModal = (postId: number) => {
+  //   setDeletePostId(postId);
+  //   setShowDeleteModal(true);
+  // };
 
   console.log(
     'Bottom of Feed Page. sharedPosts:',
@@ -544,8 +550,8 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
             <Tabs activeKey='shared'>
               <Tab eventKey='shared' title='Shared With Me'>
                 {
-                  // Conditional check for rendering post cards. TODO: set to render after all promises have been returned
-                  sharedPosts.length ===
+                  /* Conditional check for rendering post cards. Accounts for a sharedPost getting removed, as deleting a post does not get rid of the photo/comment details record TODO: set to render after all promises have been returned */
+                  sharedPosts.length <=
                     Object.keys(photoDetails).length +
                       Object.keys(commentDetails).length &&
                     Object.keys(userNames).length > 0 &&
@@ -604,6 +610,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                           setPostToShare={() => console.log('setPostToShare')}
                           setShowShareModal={() =>
                             console.log('setShowShareModal')
+                          }
+                          setConfirmActionBundle={setConfirmActionBundle}
+                          confirmFunctions = {
+                            {handleDelete: () => handleDelete(sharedPost.id),
+                            }
                           }
                         />
                       );
@@ -917,6 +928,10 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         pauseOnHover
         theme='light'
       />
+
+      {/*  ADDING CONFIRM ACTION MODAL AT APP LEVEL
+
+
       <ConfirmActionModal
         confirmActionFunction={() => handleDelete(deletePostId)}
         setConfirmActionFunction={setDeletePostId}
@@ -924,7 +939,8 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         setConfirmActionText={setShowDeleteModal}
         showConfirmActionModal={showDeleteModal}
         setShowConfirmActionModal={setShowDeleteModal}
-      />
+      /> */}
+
     </Container>
   );
 };

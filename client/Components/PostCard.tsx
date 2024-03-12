@@ -44,7 +44,7 @@ export interface Post {
   description?: string;
 
   /*
-  for feed page
+  for feed page posts, which have a sender
   */
   senderName?: string;
 }
@@ -61,6 +61,12 @@ interface PostCardProps {
   /* 2 share modal functions: only on home page rn */
   setPostToShare: any;
   setShowShareModal: any;
+
+  /*
+  to hook confirmActionModal into PostCard. setConfirmActionBundle comes from App. confirmFunctions are an object of functions passed from a page into its postCards that will be passed up to App that will run after a confirmation is made (eg, removing a shared post from a feed).
+  */
+  setConfirmActionBundle?: any;
+  confirmFunctions?: any;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -71,6 +77,8 @@ const PostCard: React.FC<PostCardProps> = ({
   eventKey,
   setPostToShare,
   setShowShareModal,
+  setConfirmActionBundle,
+  confirmFunctions,
 }) => {
   // THE UPVOTE/DOWNVOTE FUNCTIONALITY WORKS BUT THE COLORING OF THE VOTE BUTTONS DOES NOT WORK -- AFTER UPVOTING/DOWNVOTING, WE GET THE POSTS IN A FINALLY BLOCK, RELOADING EVERYTHING, SO ALL POSTS' commentVotingStatus ARE RESET TO 'NONE'. DOES IT MAKE SENSE TO RELOAD AFTER EVERY UPVOTE OR DOWNVOTE? THE CONTENT MOVES AROUND AFTER DOING SO PROVIDED NEW VOTE COUNT.
 
@@ -304,7 +312,23 @@ const PostCard: React.FC<PostCardProps> = ({
             <div className='share-delete-buttons-container d-flex flex-row'>
               {/* TODO: add remove share functionality through the ConfirmActionModal */}
               {isSharedPost && (
-                <Button className='post-card-remove-shared-post-button' variant='secondary'>
+                <Button
+                  className='post-card-remove-shared-post-button'
+                  variant='secondary'
+                  onClick={async () => {
+                    await setConfirmActionBundle.setConfirmActionFunction(
+                      () => async () => {
+                        await confirmFunctions.handleDelete();
+                      }
+                    );
+                    await setConfirmActionBundle.setConfirmActionText(
+                      'remove the post form your feed.'
+                    );
+                    await setConfirmActionBundle.setShowConfirmActionModal(
+                      true
+                    );
+                  }}
+                >
                   <BiHide />
                 </Button>
               )}

@@ -69,14 +69,19 @@ const UserPage: React.FC<UserPageProps> = ({
     startTime: null,
     endTime: null,
   }); // default to make modals happy
+
   const [isUserAttending, setIsUserAttending] = useState(false); // this gets passed to basic modal to expose invite functionality
   const [showBasicModal, setShowBasicModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+
 
   const [showConfirmActionModal, setShowConfirmActionModal] = useState(false);
   const [confirmActionFunction, setConfirmActionFunction] = useState(null);
   const [confirmActionText, setConfirmActionText] = useState('');
 
+
+  
   const [isNewEvent, setIsNewEvent] = useState(false);
 
   const [showGif, setShowGif] = useState(false);

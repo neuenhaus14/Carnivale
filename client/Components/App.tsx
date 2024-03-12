@@ -27,11 +27,26 @@ import EventPage from './EventPage';
 import NavBar from './NavBar';
 import Loading from './Loading';
 import Parades from './Parades';
-import { ThemeContext, RunModeContext } from './Context';
 import TopNavBar from './TopNavBar';
+
+import ConfirmActionModal from './ConfirmActionModal';
+
+import { ThemeContext, RunModeContext } from './Context';
 
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
+
+
+  // CONFIRM ACTION MODAL STATE
+  const [confirmActionFunction, setConfirmActionFunction] = useState(null);
+  const [showConfirmActionModal, setShowConfirmActionModal] = useState(false);
+  const [confirmActionText, setConfirmActionText] = useState('');
+  // Object that bundles confirm action functionality. Pass this to each page, so we don't need to have a unique modal sitting on each page.
+  const setConfirmActionBundle = {
+    setConfirmActionFunction,
+    setShowConfirmActionModal,
+    setConfirmActionText,
+  };
 
   // WHAT DOES userData DO?
   const [userData, setUserData] = useState(null);
@@ -202,7 +217,7 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <FeedPage userId={userId} /> <NavBar />
+                <FeedPage userId={userId} setConfirmActionBundle={setConfirmActionBundle}/> <NavBar />
               </div>
             }
           />
@@ -266,6 +281,14 @@ const App = () => {
     <RunModeContext.Provider value={process.env.RUN_MODE}>
       <ThemeContext.Provider value={theme}>
         <RouterProvider router={router} />
+        <ConfirmActionModal
+          showConfirmActionModal={showConfirmActionModal}
+          setShowConfirmActionModal={setShowConfirmActionModal}
+          confirmActionFunction={confirmActionFunction}
+          setConfirmActionFunction={setConfirmActionFunction}
+          confirmActionText={confirmActionText}
+          setConfirmActionText={setConfirmActionText}
+        />
       </ThemeContext.Provider>
     </RunModeContext.Provider>
   );

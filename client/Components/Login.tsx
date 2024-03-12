@@ -134,7 +134,7 @@ const LoginButton = () => {
                   placeholder='Email'
                   value={subscriberEmail}
                 />
-                <Button variant='success' onClick={addToMailingList}>
+                <Button variant='primary' onClick={addToMailingList}>
                   Subscribe
                 </Button>
               </div>
