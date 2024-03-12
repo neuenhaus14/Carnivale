@@ -43,7 +43,6 @@ $info: colors.$infoColor;
 // IMPORT ALL BOOTSTRAP
 @import 'bootstrap';
 
-
 // IMPORT THESE LOCALLY DEFINED STYLES
 @import 'base';
 
@@ -60,10 +59,7 @@ $info: colors.$infoColor;
 @import 'parade_page';
 @import 'home_page';
 
-
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@100;200;400;500;700&family=Inter:wght@600;700&family=Shrikhand&family=Permanent+Marker&display=swap');
-
-
 
 /* BREAKPOINT CHANGES FOR DESKTOP vs. MOBILE
 Large breakpoint is 992 px wide. It's at this point that posts will switch to grid mode, as it's here that the tab component gets wide enough to justify a change in display
@@ -189,7 +185,7 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
   }
 
   // TAB NAV PANE FOR HOME PAGE
-  .homePage-tabs {
+  .home-page-tabs {
     .tab-content {
       .active {
         display: flex;
@@ -199,10 +195,14 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
     }
   }
 
-  .feed-page-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+  .feed-page-tabs {
+    .tab-content {
+      .active {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+    }
   }
 }
 
@@ -211,8 +211,6 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
     width: 300px;
   }
 }
-
-
 
 /** ALL THESE STYLES ARE NOW IN SEPARATE FILES, EXCEPT THEMED STYLING
 

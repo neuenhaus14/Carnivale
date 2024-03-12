@@ -15,6 +15,8 @@ import {
   Modal,
   Row,
   Col,
+  Tabs,
+  Tab,
 } from 'react-bootstrap';
 import { ThemeContext, RunModeContext } from './Context';
 import ConfirmActionModal from './ConfirmActionModal';
@@ -537,58 +539,79 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
       )}
 
       <Row>
-        <Col className='feed-page-grid my-3'>
-          {sharedPosts.length ===
-            Object.keys(photoDetails).length +
-              Object.keys(commentDetails).length &&
-            Object.keys(userNames).length > 0 &&
-            sharedPosts.map((sharedPost, index) => {
-              // only accounts for comments and photo types, no pins yet
-              const sharedPostType = sharedPost.shared_commentId
-                ? 'comment'
-                : 'photo';
+        <Col>
+          <div className='feed-page-tabs my-3'>
+            <Tabs activeKey='shared'>
+              <Tab eventKey='shared' title='Shared With Me'>
+                {
+                  // Conditional check for rendering post cards. TODO: set to render after all promises have been returned
+                  sharedPosts.length ===
+                    Object.keys(photoDetails).length +
+                      Object.keys(commentDetails).length &&
+                    Object.keys(userNames).length > 0 &&
+                    sharedPosts.map((sharedPost, index) => {
+                      // only accounts for comments and photo types, no pins yet
+                      const sharedPostType = sharedPost.shared_commentId
+                        ? 'comment'
+                        : 'photo';
 
-              let post: Post;
+                      let post: Post;
 
-              if (sharedPostType === 'comment') {
-                post = {
-                  id: commentDetails[sharedPost.shared_commentId]?.id,
-                  ownerId: commentDetails[sharedPost.shared_commentId]?.ownerId,
-                  createdAt:
-                    commentDetails[sharedPost.shared_commentId]?.createdAt,
-                  updatedAt:
-                    commentDetails[sharedPost.shared_commentId]?.updatedAt,
-                  upvotes: commentDetails[sharedPost.shared_commentId]?.upvotes,
-                  comment: commentDetails[sharedPost.shared_commentId].comment,
-                  senderName: userNames[sharedPost.sender_userId]
-                    ,
-                };
-              } else if (sharedPostType === 'photo') {
-                post = {
-                  id: photoDetails[sharedPost.shared_photoId].id,
-                  ownerId: photoDetails[sharedPost.shared_photoId].ownerId,
-                  createdAt: photoDetails[sharedPost.shared_photoId].createdAt,
-                  updatedAt: photoDetails[sharedPost.shared_photoId].updatedAt,
-                  upvotes: photoDetails[sharedPost.shared_photoId].upvotes,
-                  photoURL: photoDetails[sharedPost.shared_photoId].photoUrl,
-                  description:
-                    photoDetails[sharedPost.shared_photoId].description,
-                  senderName:
-                  userNames[sharedPost.sender_userId],
-                };
-              }
+                      if (sharedPostType === 'comment') {
+                        post = {
+                          id: commentDetails[sharedPost.shared_commentId]?.id,
+                          ownerId:
+                            commentDetails[sharedPost.shared_commentId]
+                              ?.ownerId,
+                          createdAt:
+                            commentDetails[sharedPost.shared_commentId]
+                              ?.createdAt,
+                          updatedAt:
+                            commentDetails[sharedPost.shared_commentId]
+                              ?.updatedAt,
+                          upvotes:
+                            commentDetails[sharedPost.shared_commentId]
+                              ?.upvotes,
+                          comment:
+                            commentDetails[sharedPost.shared_commentId].comment,
+                          senderName: userNames[sharedPost.sender_userId],
+                        };
+                      } else if (sharedPostType === 'photo') {
+                        post = {
+                          id: photoDetails[sharedPost.shared_photoId].id,
+                          ownerId:
+                            photoDetails[sharedPost.shared_photoId].ownerId,
+                          createdAt:
+                            photoDetails[sharedPost.shared_photoId].createdAt,
+                          updatedAt:
+                            photoDetails[sharedPost.shared_photoId].updatedAt,
+                          upvotes:
+                            photoDetails[sharedPost.shared_photoId].upvotes,
+                          photoURL:
+                            photoDetails[sharedPost.shared_photoId].photoUrl,
+                          description:
+                            photoDetails[sharedPost.shared_photoId].description,
+                          senderName: userNames[sharedPost.sender_userId],
+                        };
+                      }
 
-              return (
-                <PostCard
-                  key={`${post.id} + ${index}`}
-                  post={post}
-                  userId={userId}
-                  getPosts={() => console.log('getPosts')}
-                  setPostToShare={() => console.log('setPostToShare')}
-                  setShowShareModal={() => console.log('setShowShareModal')}
-                />
-              );
-            })}
+                      return (
+                        <PostCard
+                          key={`${post.id} + ${index}`}
+                          post={post}
+                          userId={userId}
+                          getPosts={() => console.log('getPosts')}
+                          setPostToShare={() => console.log('setPostToShare')}
+                          setShowShareModal={() =>
+                            console.log('setShowShareModal')
+                          }
+                        />
+                      );
+                    })
+                }
+              </Tab>
+            </Tabs>
+          </div>
         </Col>
       </Row>
 

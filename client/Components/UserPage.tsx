@@ -588,7 +588,7 @@ const UserPage: React.FC<UserPageProps> = ({
           className='d-flex flex-column justify-content-between'
           style={{ height: '75vh' }}
         >
-          <div className='userPage-tabs my-3'>
+          <div className='user-page-tabs my-3'>
             <Tabs defaultActiveKey='krewe'>
               <Tab eventKey='krewe' title='Krewe'>
                 <h5> Krewe </h5>
@@ -632,7 +632,7 @@ const UserPage: React.FC<UserPageProps> = ({
                   friendRequestsMade.length > 0 && (
                     <>
                       <h5> Waiting on... </h5>
-                      <div>{requestsMadeItems}</div>
+                      <div className='m-2'>{requestsMadeItems}</div>
                     </>
                   )
                 }
@@ -642,7 +642,7 @@ const UserPage: React.FC<UserPageProps> = ({
                   friendRequestsReceived.length > 0 && (
                     <>
                       <h5> Respond to... </h5>
-                      <div>{requestsReceivedItems}</div>
+                      <div className='m-2'>{requestsReceivedItems}</div>
                     </>
                   )
                 }

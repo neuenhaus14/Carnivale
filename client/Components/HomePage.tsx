@@ -8,6 +8,7 @@ import {
   Tab,
   Tabs,
   Modal,
+  Col,
 } from 'react-bootstrap';
 import { FaCommentDots } from '@react-icons/all-files/fa/FaCommentDots';
 
@@ -15,7 +16,7 @@ import { FaCamera } from '@react-icons/all-files/fa/FaCamera';
 
 import axios from 'axios';
 import HomeModal from './HomeModal';
-import {PostCard} from './PostCard';
+import { PostCard } from './PostCard';
 import { RunModeContext, ThemeContext } from './Context';
 import { useSearchParams } from 'react-router-dom';
 import ShareModal from './ShareModal';
@@ -122,7 +123,9 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
   }, [key, order]);
 
   return (
-    <Container className={`body-with-bottom-panel ${theme} home-page-container`}>
+    <Container
+      className={`body-with-bottom-panel ${theme} home-page-container`}
+    >
       <ShareModal
         postId={postToShare.id}
         userId={userId}
@@ -179,85 +182,89 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
         </Modal>
       )}
       <Row>
-        <Form
-          className='d-flex flex-row justify-content-center align-items-center'
-          style={{
-            height: '7vh',
-          }}
-        >
-          <Form.Label className='mb-0 mx-2'>Sort by:</Form.Label>
-          <Form.Check
-            className='mb-0 mx-2'
-            type='radio'
-            name='Sort'
-            label='Newest'
-            onChange={() => setOrder('createdAt')}
-            checked={order === 'createdAt'}
-          />
-          <Form.Check
-            className='mb-0 mx-2'
-            type='radio'
-            name='Sort'
-            label='Upvotes'
-            onChange={() => setOrder('upvotes')}
-            checked={order === 'upvotes'}
-          />
-        </Form>
+        <Col>
+          <Form
+            className='d-flex flex-row justify-content-center align-items-center'
+            style={{
+              height: '7vh',
+            }}
+          >
+            <Form.Label className='mb-0 mx-2'>Sort by:</Form.Label>
+            <Form.Check
+              className='mb-0 mx-2'
+              type='radio'
+              name='Sort'
+              label='Newest'
+              onChange={() => setOrder('createdAt')}
+              checked={order === 'createdAt'}
+            />
+            <Form.Check
+              className='mb-0 mx-2'
+              type='radio'
+              name='Sort'
+              label='Upvotes'
+              onChange={() => setOrder('upvotes')}
+              checked={order === 'upvotes'}
+            />
+          </Form>
+        </Col>
       </Row>
 
       <Row>
-        <div className='homePage-tabs'>
-          <Tabs activeKey={key} onSelect={handleSelect}>
-            <Tab eventKey='posts' title='Gossip'>
-              {posts
-                ? posts.map((post: any, index: number) => (
-                    <PostCard
-                      key={`${post.id} + ${index}`}
-                      post={post}
-                      userId={userId}
-                      getPosts={getPosts}
-                      order={order}
-                      eventKey={'posts'}
-                      setPostToShare={setPostToShare}
-                      setShowShareModal={setShowShareModal}
-                    />
-                  ))
-                : ''}
-            </Tab>
-            <Tab eventKey='costumes' title='Costumes'>
-              {posts
-                ? posts.map((item: any, index: number) => (
-                    <PostCard
-                      key={`${item.id} + ${index}`}
-                      post={item}
-                      userId={userId}
-                      getPosts={getPosts}
-                      order={order}
-                      eventKey={'costumes'}
-                      setPostToShare={setPostToShare}
-                      setShowShareModal={setShowShareModal}
-                    />
-                  ))
-                : ''}
-            </Tab>
-            <Tab eventKey='throws' title='Throws'>
-              {posts
-                ? posts.map((item: any, index: number) => (
-                    <PostCard
-                      key={`${item.id} + ${index}`}
-                      post={item}
-                      userId={userId}
-                      getPosts={getPosts}
-                      order={order}
-                      eventKey={'throws'}
-                      setPostToShare={setPostToShare}
-                      setShowShareModal={setShowShareModal}
-                    />
-                  ))
-                : ''}
-            </Tab>
-          </Tabs>
-        </div>
+        <Col>
+          <div className='home-page-tabs'>
+            <Tabs activeKey={key} onSelect={handleSelect}>
+              <Tab eventKey='posts' title='Gossip'>
+                {posts
+                  ? posts.map((post: any, index: number) => (
+                      <PostCard
+                        key={`${post.id} + ${index}`}
+                        post={post}
+                        userId={userId}
+                        getPosts={getPosts}
+                        order={order}
+                        eventKey={'posts'}
+                        setPostToShare={setPostToShare}
+                        setShowShareModal={setShowShareModal}
+                      />
+                    ))
+                  : ''}
+              </Tab>
+              <Tab eventKey='costumes' title='Costumes'>
+                {posts
+                  ? posts.map((item: any, index: number) => (
+                      <PostCard
+                        key={`${item.id} + ${index}`}
+                        post={item}
+                        userId={userId}
+                        getPosts={getPosts}
+                        order={order}
+                        eventKey={'costumes'}
+                        setPostToShare={setPostToShare}
+                        setShowShareModal={setShowShareModal}
+                      />
+                    ))
+                  : ''}
+              </Tab>
+              <Tab eventKey='throws' title='Throws'>
+                {posts
+                  ? posts.map((item: any, index: number) => (
+                      <PostCard
+                        key={`${item.id} + ${index}`}
+                        post={item}
+                        userId={userId}
+                        getPosts={getPosts}
+                        order={order}
+                        eventKey={'throws'}
+                        setPostToShare={setPostToShare}
+                        setShowShareModal={setShowShareModal}
+                      />
+                    ))
+                  : ''}
+              </Tab>
+            </Tabs>
+          </div>
+        </Col>
       </Row>
 
       <Row>
