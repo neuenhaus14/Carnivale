@@ -14,6 +14,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaShareSquare } from '@react-icons/all-files/fa/FaShareSquare';
 import { MdDelete } from '@react-icons/all-files/md/MdDelete';
+import { BiHide } from '@react-icons/all-files/bi/BiHide';
 
 // import ShareModal from './ShareModal';
 // import {IoMdArrowUp} from "@react-icons/all-files/io/IoMdArrowUp";
@@ -26,7 +27,7 @@ import { RunModeContext } from './Context';
 dayjs.extend(relativeTime);
 
 /*
-A post is whatever goes into a PostCard. RN it is a record from the 'comments' or 'photos' tables in the DB, excluding the type of content it is (eg, isPin, isCostume, isThrow). The posts are fetched server-side according to those content type filters, with the request for the content type stipulated by client-side state (ie, when the costume tab is selected, go get costumes). Once we have content client side we don't need to know what kind they are RN (maybe eventually; should also refactor for enums in database tables), so those filtering booleans don't make it into the interface.
+A post is whatever goes into a PostCard. RN it is a record from the 'comments' or 'photos' tables in the DB, excluding the type of content it is (eg, isPin, isCostume, isThrow), plus optional extras for shared posts (senderName, remove). The posts are fetched server-side according to those content type filters, with the request for the content type stipulated by client-side state (ie, when the costume tab is selected, go get costumes). Once we have content client side we don't need to know what kind they are RN (maybe eventually; should also refactor for enums in database tables), so those filtering booleans don't make it into the interface.
 */
 export interface Post {
   id: number;
@@ -45,7 +46,7 @@ export interface Post {
   /*
   for feed page
   */
-  senderName?: string
+  senderName?: string;
 }
 
 interface PostCardProps {
@@ -85,6 +86,7 @@ const PostCard: React.FC<PostCardProps> = ({
   // posts that are text-only have comments. Photo's have descriptions
   const postType = post.photoURL ? 'photo' : 'comment';
   const postText = postType === 'photo' ? post.description : post.comment;
+  const isSharedPost = post.senderName ? true : false;
 
   const [imgDimensions, setImgDimensions] = useState({
     width: null,
@@ -240,6 +242,9 @@ const PostCard: React.FC<PostCardProps> = ({
         )}
         <Card.Body className='post-card-body'>
           <Card.Text className='post-card-text' as='div'>
+            {isSharedPost && (
+              <div className='post-card-sender'>via {post.senderName}</div>
+            )}
             <div className='post-card-content'>{postText}</div>
             <div className='post-card-detail'>
               <div className='post-card-user-name'>{owner}</div>
@@ -297,6 +302,13 @@ const PostCard: React.FC<PostCardProps> = ({
               </Button>
             </div>
             <div className='share-delete-buttons-container d-flex flex-row'>
+              {/* TODO: add remove share functionality through the ConfirmActionModal */}
+              {isSharedPost && (
+                <Button className='post-card-remove-shared-post-button' variant='secondary'>
+                  <BiHide />
+                </Button>
+              )}
+
               {isOwner && (
                 <Button
                   className='post-card-delete-button'
@@ -415,4 +427,4 @@ const PostCard: React.FC<PostCardProps> = ({
   );
 };
 
-export {PostCard};
+export { PostCard };

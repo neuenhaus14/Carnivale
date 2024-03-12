@@ -268,6 +268,7 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
         }
         .post-card-detail {
           flex-direction: column;
+          text-align: end;
         }
       }
     }
@@ -343,7 +344,6 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
   }
 
   // TAB NAV PANE FOR HOME PAGE
-  // GRID
   .homePage-tabs {
     .tab-content {
       .active {
@@ -352,6 +352,12 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
         gap: 12px;
       }
     }
+  }
+
+  .feed-page-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
   }
 }
 

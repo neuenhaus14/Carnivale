@@ -105,6 +105,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   const [pinVotingStatus, setPinVotingStatus] = useState<{
     [pinId: number]: 'upvoted' | 'downvoted' | 'none';
   }>({});
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePostId, setDeletePostId] = useState<number | null>(null);
 
@@ -115,7 +116,6 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   };
 
   const fetchData = async () => {
-
     try {
       const [postsResponse, userResponse] = await Promise.all([
         axios.get(`/api/feed/shared-posts/${userId}`),
@@ -135,7 +135,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   const fetchSenderName = async (userId: number) => {
     try {
       const response = await axios.get(`/api/feed/user/${userId}`);
-      const senderName = `${response.data.firstName} ${response.data.lastName}`;
+      const senderName = `${response.data.firstName} ${response.data.lastName[0]}.`;
       setUserNames((prevNames) => ({ ...prevNames, [userId]: senderName }));
     } catch (error) {
       console.error(`Error fetching sender ${userId} information:`, error);
@@ -494,7 +494,16 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     setShowDeleteModal(true);
   };
 
-  console.log('Bottom of Feed Page. sharedPosts:', sharedPosts, 'commentDetails', commentDetails, 'photoDetails', photoDetails, 'userNames', userNames)
+  console.log(
+    'Bottom of Feed Page. sharedPosts:',
+    sharedPosts,
+    'commentDetails',
+    commentDetails,
+    'photoDetails',
+    photoDetails,
+    'userNames',
+    userNames
+  );
   return (
     <Container className={`body ${theme} feed-page-container`}>
       {isDemoMode && (
@@ -528,10 +537,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
       )}
 
       <Row>
-        <Col>
+        <Col className='feed-page-grid my-3'>
           {sharedPosts.length ===
-            (Object.keys(photoDetails).length +
-              Object.keys(commentDetails).length) && Object.keys(userNames).length > 0 &&
+            Object.keys(photoDetails).length +
+              Object.keys(commentDetails).length &&
+            Object.keys(userNames).length > 0 &&
             sharedPosts.map((sharedPost, index) => {
               // only accounts for comments and photo types, no pins yet
               const sharedPostType = sharedPost.shared_commentId
@@ -544,14 +554,15 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                 post = {
                   id: commentDetails[sharedPost.shared_commentId]?.id,
                   ownerId: commentDetails[sharedPost.shared_commentId]?.ownerId,
-                  createdAt: commentDetails[sharedPost.shared_commentId]?.createdAt,
-                  updatedAt: commentDetails[sharedPost.shared_commentId]?.updatedAt,
+                  createdAt:
+                    commentDetails[sharedPost.shared_commentId]?.createdAt,
+                  updatedAt:
+                    commentDetails[sharedPost.shared_commentId]?.updatedAt,
                   upvotes: commentDetails[sharedPost.shared_commentId]?.upvotes,
                   comment: commentDetails[sharedPost.shared_commentId].comment,
-                  senderName: userNames[
-                    commentDetails[sharedPost.shared_commentId].ownerId
-                  ]
-                }
+                  senderName: userNames[sharedPost.sender_userId]
+                    ,
+                };
               } else if (sharedPostType === 'photo') {
                 post = {
                   id: photoDetails[sharedPost.shared_photoId].id,
@@ -560,11 +571,11 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                   updatedAt: photoDetails[sharedPost.shared_photoId].updatedAt,
                   upvotes: photoDetails[sharedPost.shared_photoId].upvotes,
                   photoURL: photoDetails[sharedPost.shared_photoId].photoUrl,
-                  description: photoDetails[sharedPost.shared_photoId].description,
-                  senderName: userNames[
-                    photoDetails[sharedPost.shared_photoId].ownerId
-                  ]
-                }
+                  description:
+                    photoDetails[sharedPost.shared_photoId].description,
+                  senderName:
+                  userNames[sharedPost.sender_userId],
+                };
               }
 
               return (
@@ -577,15 +588,9 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
                   setShowShareModal={() => console.log('setShowShareModal')}
                 />
               );
-
-              return <h1 key={index}>return</h1>;
             })}
         </Col>
       </Row>
-
-      <br />
-      <hr></hr>
-      <br />
 
       {/* <ul style={{ padding: 0, listStyle: 'none' }}>
         {Array.isArray(sharedPosts) && sharedPosts.length > 0 ? (
