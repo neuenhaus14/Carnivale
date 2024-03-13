@@ -13,14 +13,11 @@ import {
   Tabs,
   Dropdown,
   DropdownButton,
-  Card,
   Modal,
   Alert
 } from 'react-bootstrap';
 
-// import { MdCancel } from "react-icons/md";
 import { MdCancel } from '@react-icons/all-files/md/MdCancel';
-//import { IoPersonRemoveSharp } from "react-icons/io5/";
 import { IoPersonRemoveSharp } from '@react-icons/all-files/io5/IoPersonRemoveSharp';
 
 import { FaThumbsUp } from '@react-icons/all-files/fa/FaThumbsUp';
@@ -36,15 +33,15 @@ dayjs.extend(isBetween);
 import { useAuth0 } from '@auth0/auth0-react';
 import { ThemeContext, RunModeContext } from './Context';
 import { ToastContainer, toast } from 'react-toastify';
-import { truncate } from 'fs';
 
 const UserPage: React.FC<UserPageProps> = ({
-  /* userId, */ lng,
+  userId, lng,
   lat,
   setTheme,
+  setConfirmActionBundle
 }) => {
-  const [searchParams] = useSearchParams();
-  const [userId] = useState(Number(searchParams.get('userid')) || 1);
+  // const [searchParams] = useSearchParams();
+  // const [userId] = useState(Number(searchParams.get('userid')) || 1);
 
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
@@ -74,14 +71,6 @@ const UserPage: React.FC<UserPageProps> = ({
   const [showBasicModal, setShowBasicModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-
-
-  const [showConfirmActionModal, setShowConfirmActionModal] = useState(false);
-  const [confirmActionFunction, setConfirmActionFunction] = useState(null);
-  const [confirmActionText, setConfirmActionText] = useState('');
-
-
-  
   const [isNewEvent, setIsNewEvent] = useState(false);
 
   const [showGif, setShowGif] = useState(false);
@@ -190,11 +179,11 @@ const UserPage: React.FC<UserPageProps> = ({
               size='sm'
               variant='danger'
               onClick={async () => {
-                await setConfirmActionFunction(() => () => unfriend(friend.id));
-                await setConfirmActionText(
+                await setConfirmActionBundle.setConfirmActionFunction(() => () => unfriend(friend.id));
+                await setConfirmActionBundle.setConfirmActionText(
                   `remove ${friend.firstName} from your krewe.`
                 );
-                await setShowConfirmActionModal(true);
+                await setConfirmActionBundle.setShowConfirmActionModal(true);
               }}
               disabled={isDemoMode}
             >
@@ -221,13 +210,13 @@ const UserPage: React.FC<UserPageProps> = ({
               size='sm'
               // onClick={() => cancelFriendRequest(requestee.id)}
               onClick={async () => {
-                await setConfirmActionFunction(
+                await setConfirmActionBundle.setConfirmActionFunction(
                   () => () => cancelFriendRequest(requestee.id)
                 );
-                await setConfirmActionText(
-                  `revoke your krewe invitation from ${requestee.firstName}.`
+                await setConfirmActionBundle.setConfirmActionText(
+                  `revoke your krewe invitation to ${requestee.firstName}.`
                 );
-                await setShowConfirmActionModal(true);
+                await setConfirmActionBundle.setShowConfirmActionModal(true);
               }}
               disabled={isDemoMode}
             >
@@ -262,13 +251,13 @@ const UserPage: React.FC<UserPageProps> = ({
               variant='danger'
               // onClick={() => answerFriendRequest(requester.id, false)}
               onClick={async () => {
-                await setConfirmActionFunction(
+                await setConfirmActionBundle.setConfirmActionFunction(
                   () => () => answerFriendRequest(requester.id, false)
                 );
-                await setConfirmActionText(
+                await setConfirmActionBundle.setConfirmActionText(
                   `reject ${requester.firstName}'s krewe invitation.`
                 );
-                await setShowConfirmActionModal(true);
+                await setConfirmActionBundle.setShowConfirmActionModal(true);
               }}
             >
               <FaThumbsDown style={{ verticalAlign: '-2px' }} />
@@ -551,15 +540,6 @@ const UserPage: React.FC<UserPageProps> = ({
         theme='light'
       />
 
-      <ConfirmActionModal
-        confirmActionFunction={confirmActionFunction}
-        setConfirmActionFunction={setConfirmActionFunction}
-        confirmActionText={confirmActionText}
-        setConfirmActionText={setConfirmActionText}
-        showConfirmActionModal={showConfirmActionModal}
-        setShowConfirmActionModal={setShowConfirmActionModal}
-      />
-
       <EventBasicModal
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
@@ -730,14 +710,14 @@ const UserPage: React.FC<UserPageProps> = ({
               variant='danger'
               className='btn-danger'
               onClick={async () => {
-                await setConfirmActionFunction(
+                await setConfirmActionBundle.setConfirmActionFunction(
                   () => () =>
                     logout({
                       logoutParams: { returnTo: window.location.origin },
                     })
                 );
-                await setConfirmActionText(`log your butt out.`);
-                await setShowConfirmActionModal(true);
+                await setConfirmActionBundle.setConfirmActionText(`log your butt out.`);
+                await setConfirmActionBundle.setShowConfirmActionModal(true);
               }}
               disabled={isDemoMode}
             >
@@ -772,6 +752,7 @@ interface UserPageProps {
   lat: number;
   userId: number;
   setTheme: any;
+  setConfirmActionBundle: any;
 }
 
 export default UserPage;

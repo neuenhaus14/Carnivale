@@ -19,7 +19,6 @@ import HomeModal from './HomeModal';
 import { PostCard } from './PostCard';
 import { RunModeContext, ThemeContext } from './Context';
 import { useSearchParams } from 'react-router-dom';
-import ShareModal from './ShareModal';
 
 //PARENT OF HOMEMODAL
 
@@ -27,19 +26,18 @@ interface HomePageProps {
   lat: number;
   lng: number;
   userId: number;
+  setShareModalBundle: any;
+  setConfirmActionBundle: any;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
-  const [searchParams] = useSearchParams();
-  const [userId] = useState(Number(searchParams.get('userid')) || 1);
+const HomePage: React.FC<HomePageProps> = ({setConfirmActionBundle, setShareModalBundle, lat, lng, userId }) => {
+  // const [searchParams] = useSearchParams();
+  // const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [comment, setComment] = useState('');
   const [posts, setPosts] = useState(null);
 
   const [showHomeModal, setShowHomeModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(true);
-  const [showShareModal, setShowShareModal] = useState(false);
-
-  const [postToShare, setPostToShare] = useState({ id: null, type: null });
 
   const [key, setKey] = useState('posts');
   const [order, setOrder] = useState('upvotes');
@@ -122,17 +120,11 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
     return () => clearTimeout(interval);
   }, [key, order]);
 
+
   return (
     <Container
       className={`body-with-bottom-panel ${theme} home-page-container`}
     >
-      <ShareModal
-        postId={postToShare.id}
-        userId={userId}
-        postType={postToShare.type}
-        setShowShareModal={setShowShareModal}
-        showShareModal={showShareModal}
-      />
 
       {showHomeModal && (
         <HomeModal
@@ -221,11 +213,14 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
                         key={`${post.id} + ${index}`}
                         post={post}
                         userId={userId}
-                        getPosts={getPosts}
-                        order={order}
+
                         eventKey={'posts'}
-                        setPostToShare={setPostToShare}
-                        setShowShareModal={setShowShareModal}
+
+                        setShareModalBundle = {setShareModalBundle}
+                        childFunctions = {{
+                          getPosts,
+                        }}
+                        setConfirmActionBundle={setConfirmActionBundle}
                       />
                     ))
                   : ''}
@@ -237,11 +232,14 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
                         key={`${item.id} + ${index}`}
                         post={item}
                         userId={userId}
-                        getPosts={getPosts}
-                        order={order}
+
                         eventKey={'costumes'}
-                        setPostToShare={setPostToShare}
-                        setShowShareModal={setShowShareModal}
+
+                        childFunctions = {{
+                          getPosts,
+                        }}
+                        setShareModalBundle={setShareModalBundle}
+                        setConfirmActionBundle={setConfirmActionBundle}
                       />
                     ))
                   : ''}
@@ -253,11 +251,14 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng /*userId*/ }) => {
                         key={`${item.id} + ${index}`}
                         post={item}
                         userId={userId}
-                        getPosts={getPosts}
-                        order={order}
+
                         eventKey={'throws'}
-                        setPostToShare={setPostToShare}
-                        setShowShareModal={setShowShareModal}
+                       
+                        childFunctions = {{
+                          getPosts
+                        }}
+                        setShareModalBundle={setShareModalBundle}
+                        setConfirmActionBundle={setConfirmActionBundle}
                       />
                     ))
                   : ''}

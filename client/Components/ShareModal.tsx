@@ -7,24 +7,23 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ThemeContext, RunModeContext } from './Context';
 
 const ShareModal = (props: {
-  postId: number;
+  postIdToShare: number;
   userId: number;
-  postType: string;
+  postTypeToShare: string;
   showShareModal: boolean;
   setShowShareModal: any;
+
 }) => {
-  const { postId, userId, postType, showShareModal, setShowShareModal } = props;
+  const { postIdToShare, userId, postTypeToShare, showShareModal, setShowShareModal } = props;
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
 
-  // const [show, setShow] = useState(false);
   const [friends, setFriends] = useState([]);
   const [shareId, setShareId] = useState(null);
   const [friendName, setFriendName] = useState(null);
 
   const toggleShowShareModal = () => setShowShareModal(!showShareModal);
-  // const handleShow = () => setShow(true);
 
   const getFriends = async () => {
     try {
@@ -58,7 +57,7 @@ const ShareModal = (props: {
         await axios.post(`api/home/share/${share}`, {
           recipient_userId: shareId,
           sender_userId: userId,
-          id: postId,
+          id: postIdToShare,
         });
       }
     } catch (err) {
@@ -97,7 +96,7 @@ const ShareModal = (props: {
         <Button
           id='share-modal-button'
           variant='primary'
-          onClick={() => sharePost(postType)}
+          onClick={() => sharePost(postTypeToShare)}
           disabled={!shareId}
         >
           Share

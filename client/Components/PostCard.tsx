@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
   Button,
-  ButtonGroup,
   Card,
   OverlayTrigger,
   Tooltip,
@@ -12,13 +11,10 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import { FaShareSquare } from '@react-icons/all-files/fa/FaShareSquare';
 import { MdDelete } from '@react-icons/all-files/md/MdDelete';
 import { BiHide } from '@react-icons/all-files/bi/BiHide';
-
-// import ShareModal from './ShareModal';
-// import {IoMdArrowUp} from "@react-icons/all-files/io/IoMdArrowUp";
-// import {IoMdArrowDown} from "@react-icons/all-files/io/IoMdArrowDown";
 
 import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
 import { IoArrowUpCircle } from '@react-icons/all-files/io5/IoArrowUpCircle';
@@ -53,35 +49,43 @@ interface PostCardProps {
   post: Post;
   userId: number;
   /* getPosts will be different depending on what page we're fetching posts from. On home page, we get all posts and then sort them according to the tab (key) that's active. On feed page, only those shared with user are fetched. This is used to reload posts after upvotes/downvotes -- which doesn't seem SUPER necessary */
-  getPosts: any;
+  // getPosts: any;
+
   /* Order is not being used */
-  order?: string;
+  // order?: string;
+
   /* used to fetch specific content on home page because of content tabs (gos, costumes, throws), not used on feed page rn */
   eventKey?: string;
+
   /* 2 share modal functions: only on home page rn */
-  setPostToShare: any;
-  setShowShareModal: any;
+  //setPostToShare: any;
+  //setShowShareModal: any;
+  setShareModalBundle: any;
 
   /*
-  to hook confirmActionModal into PostCard. setConfirmActionBundle comes from App. confirmFunctions are an object of functions passed from a page into its postCards that will be passed up to App that will run after a confirmation is made (eg, removing a shared post from a feed).
+  Hooks confirmActionModal into PostCard. setConfirmActionBundle comes from App. confirmFunctions are an object of functions passed from a page into its postCards that will be passed up to App that will run after a confirmation is made (eg, removing a shared post from a feed).
   */
   setConfirmActionBundle?: any;
-  confirmFunctions?: any;
+  // confirmFunctions?: any;
+
+  /*
+  childFunctions is an object that contains any functions that get passed from some page into the posts on that page. These include functions passed into the confirm action modal: for instance from the feed page, we'll pass "handleRemovePostFromFeed" into each post card that is shared (but won't bother to pass this function through for the home page feed)
+  */
+  childFunctions?: any;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
   post,
   userId,
-  getPosts,
-  order,
-  eventKey,
-  setPostToShare,
-  setShowShareModal,
-  setConfirmActionBundle,
-  confirmFunctions,
-}) => {
-  // THE UPVOTE/DOWNVOTE FUNCTIONALITY WORKS BUT THE COLORING OF THE VOTE BUTTONS DOES NOT WORK -- AFTER UPVOTING/DOWNVOTING, WE GET THE POSTS IN A FINALLY BLOCK, RELOADING EVERYTHING, SO ALL POSTS' commentVotingStatus ARE RESET TO 'NONE'. DOES IT MAKE SENSE TO RELOAD AFTER EVERY UPVOTE OR DOWNVOTE? THE CONTENT MOVES AROUND AFTER DOING SO PROVIDED NEW VOTE COUNT.
 
+  eventKey,
+  setConfirmActionBundle,
+  setShareModalBundle,
+  childFunctions,
+}) => {
+  /*
+  THE UPVOTE/DOWNVOTE FUNCTIONALITY WORKS BUT THE COLORING OF THE VOTE BUTTONS DOES NOT WORK AFTER RELOAD. ORIGINALLY WE'D getPosts AFTER VOTING, BUT THIS WOULD MOVE THE POST AROUND AFTER VOTING PROVIDED THE NEW ORDER WHEN SORTING BY VOTES, SO THE POST WOULD DISAPPEAR FROM VIEW (WHICH I DON'T THINK WE WANT). THE getPosts FUNCTIONALITY IS COMMENTED OUT IN THE handleVotes FUNCTIONS
+*/
   const [owner, setOwner] = useState('');
 
   const [commentVotingStatus, setCommentVotingStatus] = useState<
@@ -135,7 +139,8 @@ const PostCard: React.FC<PostCardProps> = ({
       } catch (err) {
         toast.warning("You've already upvoted this post!");
       } finally {
-        getPosts(eventKey);
+        // Don't getPosts after upvote or downvote
+        // childFunctions.getPosts(eventKey);
       }
     }
   };
@@ -169,7 +174,8 @@ const PostCard: React.FC<PostCardProps> = ({
       } catch (err) {
         toast.warning("You've already downvoted this post!");
       } finally {
-        getPosts(eventKey);
+        // Don't getPosts after upvote or downvote
+        // childFunctions.getPosts(eventKey);
       }
     }
   };
@@ -214,20 +220,20 @@ const PostCard: React.FC<PostCardProps> = ({
         console.error('Error deleting post:', error);
         toast.error('Error deleting post. Please try again.');
       } finally {
-        getPosts(eventKey);
+        childFunctions.getPosts(eventKey);
       }
     }
   };
 
   const handleInitPostShare = () => {
-    setPostToShare({
+    setShareModalBundle.setPostToShare({
       id: post.id,
       type: postType,
     });
-    setShowShareModal(true);
+    setShareModalBundle.setShowShareModal(true);
   };
 
-  const createClassName = () => {
+  const createCardClassName = () => {
     let className = `post-card ${postType}-post-card`;
 
     if (postType === 'photo') {
@@ -242,7 +248,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
   return (
     <>
-      <Card className={createClassName()}>
+      <Card className={createCardClassName()}>
         {postType === 'photo' && (
           <>
             <Card.Img className='post-card-image' src={post.photoURL} />
@@ -310,7 +316,6 @@ const PostCard: React.FC<PostCardProps> = ({
               </Button>
             </div>
             <div className='share-delete-buttons-container d-flex flex-row'>
-              {/* TODO: add remove share functionality through the ConfirmActionModal */}
               {isSharedPost && (
                 <Button
                   className='post-card-remove-shared-post-button'
@@ -318,7 +323,7 @@ const PostCard: React.FC<PostCardProps> = ({
                   onClick={async () => {
                     await setConfirmActionBundle.setConfirmActionFunction(
                       () => async () => {
-                        await confirmFunctions.handleDelete();
+                        await childFunctions.handleRemovePostFromFeed();
                       }
                     );
                     await setConfirmActionBundle.setConfirmActionText(
@@ -337,7 +342,19 @@ const PostCard: React.FC<PostCardProps> = ({
                 <Button
                   className='post-card-delete-button'
                   variant='danger'
-                  onClick={() => handleDeletePost()}
+                  onClick={async () => {
+                    await setConfirmActionBundle.setConfirmActionFunction(
+                      () => async () => {
+                        await handleDeletePost();
+                      }
+                    );
+                    await setConfirmActionBundle.setConfirmActionText(
+                      'delete your post'
+                    );
+                    await setConfirmActionBundle.setShowConfirmActionModal(
+                      true
+                    );
+                  }}
                 >
                   <MdDelete />
                 </Button>
@@ -352,86 +369,6 @@ const PostCard: React.FC<PostCardProps> = ({
             </div>
           </div>
         </Card.Body>
-
-        {/* <Card.Body className='post-card-photo'>
-            <Card.Img
-              className='post-card-image'
-              variant='top'
-              src={post.photoURL}
-            />
-            <Card.Text as='div'>
-              <div className='card-content'>{post.description}</div>
-              <div className='card-detail'>
-                {owner} posted{' '}
-                <>
-                  <OverlayTrigger
-                    placement='top'
-                    overlay={
-                      <Tooltip id={`tooltip-${post.id}`}>
-                        {dayjs(post.createdAt.toString()).format(
-                          'dddd [at] h:mm A'
-                        )}
-                      </Tooltip>
-                    }
-                  >
-                    <span style={{ cursor: 'pointer' }}>
-                      {dayjs(post.createdAt.toString()).fromNow()}
-                    </span>
-                  </OverlayTrigger>
-                </>
-              </div>
-            </Card.Text>
-            <div className='post-card-buttons'>
-              <div>
-                <Button
-                  className='vote-button rounded-circle'
-                  size='sm'
-                  onClick={() => handleUpvote('photo')}
-                  disabled={commentVotingStatus === 'upvoted'}
-                >
-                  <IoArrowUpCircle
-                    style={{
-                      color:
-                        commentVotingStatus === 'upvoted' ? 'green' : 'black',
-                      fontSize: '30px',
-                    }}
-                  />
-                </Button>
-                <span className='mx-2'>{post.upvotes}</span>
-                <Button
-                  className='vote-button rounded-circle'
-                  size='sm'
-                  onClick={() => handleDownvote('photo')}
-                  disabled={commentVotingStatus === 'downvoted'}
-                >
-                  <IoArrowDownCircle
-                    style={{
-                      color:
-                        commentVotingStatus === 'downvoted' ? 'red' : 'black',
-                      fontSize: '30px',
-                    }}
-                  />
-                </Button>
-              </div>
-              <div>
-                {isOwner && (
-                  <Button
-                    className='m-1'
-                    variant='danger'
-                    onClick={() =>
-                      handleDeletePost(post.comment ? 'comment' : 'photo')
-                    }
-                  >
-                    Delete
-                  </Button>
-                )}
-
-                <Button className='m-1' onClick={handleInitPostShare}>
-                  <FaShareSquare />
-                </Button>
-              </div>
-            </div>
-          </Card.Body> */}
       </Card>
 
       {/* Toast containers */}

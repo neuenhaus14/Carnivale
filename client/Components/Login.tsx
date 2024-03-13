@@ -24,14 +24,11 @@ const LoginButton = () => {
   });
   const isDemoMode = useContext(RunModeContext) === 'demo'
 
-
-
   const { loginWithRedirect } = useAuth0();
   const navigate = useNavigate();
   const handleNavigation = (path: To) => {
     navigate(path);
   };
-
 
   const validateEmail = function (email: string) {
     const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -119,7 +116,7 @@ const LoginButton = () => {
                 Take our survey
               </a>{' '}
               or <a href='mailto:pardigrasinfo@gmail.com'>shoot us an email</a>{' '}
-              with comments or questions - we'd love your feedback! Or stay in
+              with comments or questions - we&apos;d love your feedback! Or stay in
               the loop by subscribing to the mailing list:
             </p>
 
@@ -188,7 +185,7 @@ const LoginButton = () => {
             <div className='login-carousel-item'>
               <h5 className='text-center'>Find Your Bearings</h5>
               <p className='mx-5 mb-3 lh-sm login-text text-center'>
-                Map pins mark points of interest and your friends' real time
+                Map pins mark points of interest and your friends&apos; real time
                 locations.
               </p>
               <Image
