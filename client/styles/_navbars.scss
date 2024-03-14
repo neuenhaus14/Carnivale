@@ -23,4 +23,7 @@
   color: white;
   font-size: 1em;
   font-weight: 200;
+  .nav-link{
+    color: colors.$lightText
+  }
 }
