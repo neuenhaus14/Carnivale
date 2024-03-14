@@ -1,0 +1,122 @@
+// BUTTONS, "BODY" DIVS, OTHER BIG PICTURE THINGS
+
+@use 'colors';
+//@use 'colors2' as colors;
+@use 'mixin_utils';
+
+
+#app {
+  background-color: colors.$primaryBG;
+}
+
+.alert {
+  --bs-alert-padding-y: 0.5rem;
+}
+
+// No padding for cards so more stuff fits in mobile
+.card-body {
+  padding: 0px;
+}
+
+
+// BUTTONS
+.btn {
+  border: none;
+}
+
+.btn-secondary {
+  // background-color: colors.$ternaryColor !important;
+  color: colors.$lightText;
+}
+
+.btn-wide {
+  width: 90%;
+  max-width: 400px;
+  margin: 10px auto;
+  // border: colors.$secondaryColor solid 2px !important;
+}
+
+.btn-sm {
+  border-radius: 15px;
+  padding: 3px 6px;
+  font-size: small;
+  font-weight: bold;
+}
+
+
+// PAGE FORMATTING
+
+// this is for the body tag, NOT the body class
+body {
+  color: colors.$dark;
+  font-family: 'Fredoka', sans-serif;
+}
+
+// BODY classes: where content fits on page
+.body {
+  padding-top: 8vh;
+  padding-bottom: 12vh;
+  display: flex;
+  flex-direction: column;
+  background-color: colors.$primaryBG;
+  height: 100vh;
+}
+
+.body-with-bottom-panel {
+  // padding-bottom larger on home page to account for page-bottom-panel
+  @extend .body;
+  padding-bottom: 21vh;
+}
+
+.page-bottom-panel {
+  @include mixin_utils.page-bottom-panel;
+  background-color: colors.$primaryBG;
+  border-top: 1px solid colors.$primaryColor;
+}
+
+// this should apply to both modals and any other uses of footer tags
+.footer {
+  text-align: center;
+}
+
+.disclaimer {
+  font-size: smaller;
+}
+
+
+
+// TEXTS
+h5 {
+  text-align: left;
+  color: colors.$greeny;
+  margin: 8px;
+  font-weight: 400;
+}
+
+p {
+  font-size: 20px;
+  color: colors.$dark;
+  margin: 0px 6px 6px;
+}
+
+a {
+  color: #0d6efd;
+}
+
+// FORMS
+.form-check-input:checked {
+  background-color: colors.$pinky;
+}
+
+.form-check.form-switch {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+}
+
+.form-check-input:focus {
+  border-color: #cc86fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(149, 13, 253, 0.25);
+}

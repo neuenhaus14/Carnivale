@@ -1,0 +1,29 @@
+@use 'colors';
+// @use 'colors2' as colors;
+
+#map-filter-container {
+  background-color: colors.$primaryBG;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  margin-top: 10px;
+  border: 1px solid colors.$secondaryColor;
+}
+
+#map-direction-card {
+  max-width: 7rem;
+  max-height: 10rem;
+  margin: 10px;
+  background-color: colors.$primaryBG;
+  padding: 6px;
+
+  .card-body {
+    p {
+      font-size: 15px;
+      padding: 0px
+    }
+  }
+}

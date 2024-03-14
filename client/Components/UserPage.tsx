@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-// import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import EventBasicModal from './EventBasicModal';
@@ -13,13 +13,11 @@ import {
   Tabs,
   Dropdown,
   DropdownButton,
-  Card,
   Modal,
+  Alert
 } from 'react-bootstrap';
 
-// import { MdCancel } from "react-icons/md";
 import { MdCancel } from '@react-icons/all-files/md/MdCancel';
-//import { IoPersonRemoveSharp } from "react-icons/io5/";
 import { IoPersonRemoveSharp } from '@react-icons/all-files/io5/IoPersonRemoveSharp';
 
 import { FaThumbsUp } from '@react-icons/all-files/fa/FaThumbsUp';
@@ -35,11 +33,15 @@ dayjs.extend(isBetween);
 import { useAuth0 } from '@auth0/auth0-react';
 import { ThemeContext, RunModeContext } from './Context';
 import { ToastContainer, toast } from 'react-toastify';
-import { truncate } from 'fs';
 
-const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
-  //  const [searchParams] = useSearchParams();
-  //  const [userId] = useState(Number(searchParams.get('userid')) || 1);
+const UserPage: React.FC<UserPageProps> = ({
+  userId, lng,
+  lat,
+  setTheme,
+  setConfirmActionBundle
+}) => {
+  // const [searchParams] = useSearchParams();
+  // const [userId] = useState(Number(searchParams.get('userid')) || 1);
 
   const [friends, setFriends] = useState([]); // array of user id's
   const [friendRequestsMade, setFriendRequestsMade] = useState([]);
@@ -64,13 +66,10 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
     startTime: null,
     endTime: null,
   }); // default to make modals happy
+
   const [isUserAttending, setIsUserAttending] = useState(false); // this gets passed to basic modal to expose invite functionality
   const [showBasicModal, setShowBasicModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-
-  const [showConfirmActionModal, setShowConfirmActionModal] = useState(false);
-  const [confirmActionFunction, setConfirmActionFunction] = useState(null);
-  const [confirmActionText, setConfirmActionText] = useState('');
 
   const [isNewEvent, setIsNewEvent] = useState(false);
 
@@ -180,13 +179,13 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
               size='sm'
               variant='danger'
               onClick={async () => {
-                await setConfirmActionFunction(() => () => unfriend(friend.id));
-                await setConfirmActionText(
+                await setConfirmActionBundle.setConfirmActionFunction(() => () => unfriend(friend.id));
+                await setConfirmActionBundle.setConfirmActionText(
                   `remove ${friend.firstName} from your krewe.`
                 );
-                await setShowConfirmActionModal(true);
+                await setConfirmActionBundle.setShowConfirmActionModal(true);
               }}
-              disabled={true}
+              disabled={isDemoMode}
             >
               {/*'REMOVE '*/}{' '}
               <IoPersonRemoveSharp style={{ verticalAlign: '-2px' }} />
@@ -211,15 +210,15 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
               size='sm'
               // onClick={() => cancelFriendRequest(requestee.id)}
               onClick={async () => {
-                await setConfirmActionFunction(
+                await setConfirmActionBundle.setConfirmActionFunction(
                   () => () => cancelFriendRequest(requestee.id)
                 );
-                await setConfirmActionText(
-                  `revoke your krewe invitation from ${requestee.firstName}.`
+                await setConfirmActionBundle.setConfirmActionText(
+                  `revoke your krewe invitation to ${requestee.firstName}.`
                 );
-                await setShowConfirmActionModal(true);
+                await setConfirmActionBundle.setShowConfirmActionModal(true);
               }}
-              disabled={true}
+              disabled={isDemoMode}
             >
               <MdCancel style={{ verticalAlign: '-2px' }} />
             </Button>
@@ -252,13 +251,13 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
               variant='danger'
               // onClick={() => answerFriendRequest(requester.id, false)}
               onClick={async () => {
-                await setConfirmActionFunction(
+                await setConfirmActionBundle.setConfirmActionFunction(
                   () => () => answerFriendRequest(requester.id, false)
                 );
-                await setConfirmActionText(
+                await setConfirmActionBundle.setConfirmActionText(
                   `reject ${requester.firstName}'s krewe invitation.`
                 );
-                await setShowConfirmActionModal(true);
+                await setConfirmActionBundle.setShowConfirmActionModal(true);
               }}
             >
               <FaThumbsDown style={{ verticalAlign: '-2px' }} />
@@ -476,7 +475,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
   };
 
   return (
-    <Container className={`body ${theme}`}>
+    <Container className={`body ${theme} user-page-container`}>
       {showGif && (
         <img
           src='/img/mardi-gras.gif'
@@ -498,11 +497,20 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
           </Modal.Header>
           <Modal.Body>
             <p className='fs-6 lh-sm'>
-              <b>Welcome to the Krewe & Calendar page!</b><br/><br/>
-              Here you&apos;ll add friends to your Krewe and organize custom events. Navigate between the &apos;Krewe&apos; and &apos;Calendar&apos; tabs to display your connections or relevant events.
+              <b>Welcome to the Krewe & Calendar page!</b>
               <br />
               <br />
-              Click &apos;Make Plans&apos; to create an event from scratch, &apos;Live Music&apos; to view an up-to-date NOLA music calendar, and &apos;Parades&apos; to discover details about upcoming Mardi Gras parades.<br/>
+              Here you&apos;ll add friends to your Krewe and organize custom
+              events. Navigate between the &apos;Krewe&apos; and
+              &apos;Calendar&apos; tabs to display your connections or relevant
+              events.
+              <br />
+              <br />
+              Click &apos;Make Plans&apos; to create an event from scratch,
+              &apos;Live Music&apos; to view an up-to-date NOLA music calendar,
+              and &apos;Parades&apos; to discover details about upcoming Mardi
+              Gras parades.
+              <br />
               <br />
               <b>Before you go!</b> Please take the{' '}
               <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
@@ -530,15 +538,6 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
         draggable
         pauseOnHover
         theme='light'
-      />
-
-      <ConfirmActionModal
-        confirmActionFunction={confirmActionFunction}
-        setConfirmActionFunction={setConfirmActionFunction}
-        confirmActionText={confirmActionText}
-        setConfirmActionText={setConfirmActionText}
-        showConfirmActionModal={showConfirmActionModal}
-        setShowConfirmActionModal={setShowConfirmActionModal}
       />
 
       <EventBasicModal
@@ -574,7 +573,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
           className='d-flex flex-column justify-content-between'
           style={{ height: '75vh' }}
         >
-          <div className='userPage-tabs'>
+          <div className='user-page-tabs my-3'>
             <Tabs defaultActiveKey='krewe'>
               <Tab eventKey='krewe' title='Krewe'>
                 <h5> Krewe </h5>
@@ -603,11 +602,10 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
                     <div className='mx-1'>Invite to Krewe</div>
                     <Button
                       className='mx-1'
-                      // style={{ width: '23px' }}
                       size='sm'
-                      variant='success'
+                      variant='primary'
                       onClick={requestFriend}
-                      disabled={true}
+                      disabled={isDemoMode}
                     >
                       <FaEnvelope style={{ verticalAlign: '-2px' }} />
                     </Button>
@@ -619,7 +617,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
                   friendRequestsMade.length > 0 && (
                     <>
                       <h5> Waiting on... </h5>
-                      <div>{requestsMadeItems}</div>
+                      <div className='m-2'>{requestsMadeItems}</div>
                     </>
                   )
                 }
@@ -629,7 +627,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
                   friendRequestsReceived.length > 0 && (
                     <>
                       <h5> Respond to... </h5>
-                      <div>{requestsReceivedItems}</div>
+                      <div className='m-2'>{requestsReceivedItems}</div>
                     </>
                   )
                 }
@@ -641,15 +639,10 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
                   eventsOwned.length === 0 &&
                     eventsInvited.length === 0 &&
                     eventsParticipating.length === 0 && (
-                      <>
-                        <p className='ep-card-content text-center mt-3'>
-                          Nothing going on in here!
-                        </p>
-                        <p className='ep-card-detail text-center'>
-                          Make plans or connect with your Krewe to beef up your
-                          calendar.
-                        </p>
-                      </>
+                      <Alert variant='danger' className='mt-3 text-center'>
+                        <Alert.Heading >Nothing going on here!</Alert.Heading>
+                        <p>Make plans or connect with your krewe to beef up your calendar.</p>
+                      </Alert>
                     )
                 }
 
@@ -717,21 +710,21 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
               variant='danger'
               className='btn-danger'
               onClick={async () => {
-                await setConfirmActionFunction(
+                await setConfirmActionBundle.setConfirmActionFunction(
                   () => () =>
                     logout({
                       logoutParams: { returnTo: window.location.origin },
                     })
                 );
-                await setConfirmActionText(`log your butt out.`);
-                await setShowConfirmActionModal(true);
+                await setConfirmActionBundle.setConfirmActionText(`log your butt out.`);
+                await setConfirmActionBundle.setShowConfirmActionModal(true);
               }}
               disabled={isDemoMode}
             >
               Log Out
             </Button>
 
-            <DropdownButton
+            {/* <DropdownButton
               title='Select Theme'
               drop='up'
               id='theme-dropup'
@@ -746,7 +739,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId, lng, lat, setTheme }) => {
               <Dropdown.Item onClick={handleDeepGrasMode}>
                 Deep Gras Mode
               </Dropdown.Item>
-            </DropdownButton>
+            </DropdownButton> */}
           </div>
         </div>
       </Row>
@@ -759,6 +752,7 @@ interface UserPageProps {
   lat: number;
   userId: number;
   setTheme: any;
+  setConfirmActionBundle: any;
 }
 
 export default UserPage;

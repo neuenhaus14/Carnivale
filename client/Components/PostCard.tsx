@@ -1,51 +1,109 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { ButtonGroup, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import {
+  Button,
+  Card,
+  OverlayTrigger,
+  Tooltip,
+} from 'react-bootstrap';
+
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import ShareModal from './ShareModal';
-// import {IoMdArrowUp} from "@react-icons/all-files/io/IoMdArrowUp";
-// import {IoMdArrowDown} from "@react-icons/all-files/io/IoMdArrowDown";
+import { FaShareSquare } from '@react-icons/all-files/fa/FaShareSquare';
+import { MdDelete } from '@react-icons/all-files/md/MdDelete';
+import { BiHide } from '@react-icons/all-files/bi/BiHide';
+
 import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
 import { IoArrowUpCircle } from '@react-icons/all-files/io5/IoArrowUpCircle';
 import { RunModeContext } from './Context';
 
 dayjs.extend(relativeTime);
 
-interface Post {
+/*
+A post is whatever goes into a PostCard. RN it is a record from the 'comments' or 'photos' tables in the DB, excluding the type of content it is (eg, isPin, isCostume, isThrow), plus optional extras for shared posts (senderName, remove). The posts are fetched server-side according to those content type filters, with the request for the content type stipulated by client-side state (ie, when the costume tab is selected, go get costumes). Once we have content client side we don't need to know what kind they are RN (maybe eventually; should also refactor for enums in database tables), so those filtering booleans don't make it into the interface.
+*/
+export interface Post {
   id: number;
-  comment?: string;
   ownerId: number;
+  createdAt: string;
+  updatedAt?: string;
+  upvotes: number;
+
+  /*
+  photos have 'description' and 'photoURL', comments have 'comment'
+  */
+  comment?: string;
   photoURL?: string;
   description?: string;
-  createdAt: string;
-  upvotes: number;
+
+  /*
+  for feed page posts, which have a sender
+  */
+  senderName?: string;
 }
 
 interface PostCardProps {
   post: Post;
   userId: number;
-  getPosts: any;
-  order: string;
-  eventKey: string;
+  /* getPosts will be different depending on what page we're fetching posts from. On home page, we get all posts and then sort them according to the tab (key) that's active. On feed page, only those shared with user are fetched. This is used to reload posts after upvotes/downvotes -- which doesn't seem SUPER necessary */
+  // getPosts: any;
+
+  /* Order is not being used */
+  // order?: string;
+
+  /* used to fetch specific content on home page because of content tabs (gos, costumes, throws), not used on feed page rn */
+  eventKey?: string;
+
+  /* 2 share modal functions: only on home page rn */
+  //setPostToShare: any;
+  //setShowShareModal: any;
+  setShareModalBundle: any;
+
+  /*
+  Hooks confirmActionModal into PostCard. setConfirmActionBundle comes from App. confirmFunctions are an object of functions passed from a page into its postCards that will be passed up to App that will run after a confirmation is made (eg, removing a shared post from a feed).
+  */
+  setConfirmActionBundle?: any;
+  // confirmFunctions?: any;
+
+  /*
+  childFunctions is an object that contains any functions that get passed from some page into the posts on that page. These include functions passed into the confirm action modal: for instance from the feed page, we'll pass "handleRemovePostFromFeed" into each post card that is shared (but won't bother to pass this function through for the home page feed)
+  */
+  childFunctions?: any;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
   post,
   userId,
-  getPosts,
-  order,
+
   eventKey,
+  setConfirmActionBundle,
+  setShareModalBundle,
+  childFunctions,
 }) => {
+  /*
+  THE UPVOTE/DOWNVOTE FUNCTIONALITY WORKS BUT THE COLORING OF THE VOTE BUTTONS DOES NOT WORK AFTER RELOAD. ORIGINALLY WE'D getPosts AFTER VOTING, BUT THIS WOULD MOVE THE POST AROUND AFTER VOTING PROVIDED THE NEW ORDER WHEN SORTING BY VOTES, SO THE POST WOULD DISAPPEAR FROM VIEW (WHICH I DON'T THINK WE WANT). THE getPosts FUNCTIONALITY IS COMMENTED OUT IN THE handleVotes FUNCTIONS
+*/
   const [owner, setOwner] = useState('');
+
   const [commentVotingStatus, setCommentVotingStatus] = useState<
     'upvoted' | 'downvoted' | 'none'
   >('none');
+
   const [isOwner, setIsOwner] = useState(false);
   const isDemoMode = useContext(RunModeContext) === 'demo';
+
+  // posts that are text-only have comments. Photo's have descriptions
+  const postType = post.photoURL ? 'photo' : 'comment';
+  const postText = postType === 'photo' ? post.description : post.comment;
+  const isSharedPost = post.senderName ? true : false;
+
+  const [imgDimensions, setImgDimensions] = useState({
+    width: null,
+    height: null,
+  });
 
   const getOwner = async () => {
     try {
@@ -57,7 +115,7 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   };
 
-  const handleUpvote = async (type: string) => {
+  const handleUpvote = async () => {
     // if demo mode, display toast
     if (isDemoMode) {
       toast('🎭 Post upvoted! 🎭', {
@@ -74,25 +132,20 @@ const PostCard: React.FC<PostCardProps> = ({
     // else run upvote logic
     else {
       try {
-        await axios.post(
-          `/api/feed/${
-            type === 'comment'
-              ? `upvote-comment/${userId}/${post.id}`
-              : `upvote-photo/${userId}/${post.id}`
-          }`
-        );
+        await axios.post(`/api/feed/upvote-${postType}/${userId}/${post.id}`);
         if (commentVotingStatus !== 'upvoted') {
           setCommentVotingStatus('upvoted');
         }
       } catch (err) {
         toast.warning("You've already upvoted this post!");
       } finally {
-        getPosts(eventKey);
+        // Don't getPosts after upvote or downvote
+        // childFunctions.getPosts(eventKey);
       }
     }
   };
 
-  const handleDownvote = async (type: string) => {
+  const handleDownvote = async () => {
     // if demo mode, display toast
     if (isDemoMode) {
       toast('🎭 Post downvoted! 🎭', {
@@ -109,13 +162,7 @@ const PostCard: React.FC<PostCardProps> = ({
     // if not demo mode, run downvote logic
     else {
       try {
-        await axios.post(
-          `/api/feed/${
-            type === 'comment'
-              ? `downvote-comment/${userId}/${post.id}`
-              : `downvote-photo/${userId}/${post.id}`
-          }`
-        );
+        await axios.post(`/api/feed/downvote-${postType}/${userId}/${post.id}`);
 
         if (commentVotingStatus !== 'downvoted') {
           setCommentVotingStatus('downvoted');
@@ -127,30 +174,42 @@ const PostCard: React.FC<PostCardProps> = ({
       } catch (err) {
         toast.warning("You've already downvoted this post!");
       } finally {
-        getPosts(eventKey);
+        // Don't getPosts after upvote or downvote
+        // childFunctions.getPosts(eventKey);
       }
     }
   };
 
+  const configurePhotoPost = () => {
+    // load image into the browser before
+    // rendering the image, so as to orient the
+    // card properly
+    const postImg = new Image();
+    postImg.src = post.photoURL;
+    postImg.onload = async () => {
+      await setImgDimensions({
+        height: postImg.height,
+        width: postImg.width,
+      });
+    };
+  };
+
   useEffect(() => {
+    if (postType === 'photo') {
+      configurePhotoPost();
+    }
     getOwner();
   }, []);
 
-  const handleDeletePost = async (type: string) => {
+  const handleDeletePost = async () => {
     if (isDemoMode) {
       toast.success('Delete your post!');
     } else {
       try {
         if (isOwner) {
-          await axios.delete(
-            `/api/home/${
-              type === 'comment'
-                ? `delete-comment/${post.id}`
-                : `delete-photo/${post.id}`
-            }`,
-            { data: { userId } }
-          );
-
+          await axios.delete(`/api/home/delete-${postType}/${post.id}`, {
+            data: { userId },
+          });
           toast.success('Post deleted successfully!');
         } else {
           toast.error(
@@ -161,226 +220,155 @@ const PostCard: React.FC<PostCardProps> = ({
         console.error('Error deleting post:', error);
         toast.error('Error deleting post. Please try again.');
       } finally {
-        getPosts(eventKey);
+        childFunctions.getPosts(eventKey);
       }
     }
   };
 
+  const handleInitPostShare = () => {
+    setShareModalBundle.setPostToShare({
+      id: post.id,
+      type: postType,
+    });
+    setShareModalBundle.setShowShareModal(true);
+  };
+
+  const createCardClassName = () => {
+    let className = `post-card ${postType}-post-card`;
+
+    if (postType === 'photo') {
+      if (imgDimensions.height >= imgDimensions.width) {
+        className += ' portrait-photo-post-card';
+      } else {
+        className += ' landscape-photo-post-card';
+      }
+    }
+    return className;
+  };
+
   return (
     <>
-      <Card>
-        {post.comment ? (
-          <Card.Body>
-            <Card.Text as='div'>
-              <p className='card-content'>{post.comment}</p>
-              <p className='card-detail'>
-                {owner} posted
-                <br />
-                <>
-                  <OverlayTrigger
-                    placement='top'
-                    overlay={
-                      <Tooltip id={`tooltip-${post.id}`}>
-                        {dayjs(post.createdAt.toString()).format(
-                          'dddd [at] h:mm A'
-                        )}
-                      </Tooltip>
-                    }
-                  >
-                    <span style={{ cursor: 'pointer' }}>
-                      {dayjs(post.createdAt.toString()).fromNow()}
-                    </span>
-                  </OverlayTrigger>
-                </>
-                {/* {dayjs(post.createdAt.toString()).fromNow()} */}
-              </p>
-            </Card.Text>
-            <ButtonGroup
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginLeft: '-6px',
-                position: 'relative',
-              }}
-            >
-              <button
-                style={{
-                  border: 'none',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: 'none',
-                  background: 'transparent',
-                }}
-                onClick={() => handleUpvote('comment')}
-                disabled={commentVotingStatus === 'upvoted'}
-              >
-                <IoArrowUpCircle
-                  style={{
-                    color:
-                      commentVotingStatus === 'upvoted' ? 'green' : 'black',
-                    fontSize: '30px',
-                  }}
-                />
-              </button>
-              <span style={{ margin: '0 5px' }}>{post.upvotes}</span>
-              <button
-                style={{
-                  border: 'none',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: 'none',
-                  background: 'transparent',
-                }}
-                onClick={() => handleDownvote('comment')}
-                disabled={commentVotingStatus === 'downvoted'}
-              >
-                <IoArrowDownCircle
-                  style={{
-                    color:
-                      commentVotingStatus === 'downvoted' ? 'red' : 'black',
-                    fontSize: '30px',
-                  }}
-                />
-              </button>
-              {isOwner && (
-                <button
-                  style={{
-                    border: 'none',
-                    cursor: 'pointer',
-                    outline: 'none',
-                    boxShadow: 'none',
-                    background: 'transparent',
-                    color: 'red',
-                  }}
-                  onClick={() =>
-                    handleDeletePost(post.comment ? 'comment' : 'photo')
-                  }
-                >
-                  Delete
-                </button>
-              )}
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '0',
-                  right: '0',
-                }}
-              >
-                <ShareModal
-                  postId={post.id}
-                  userId={userId}
-                  postType={'comment'}
-                />
-              </div>
-            </ButtonGroup>
-          </Card.Body>
-        ) : (
-          <Card.Body>
-            <Card.Img variant='top' src={post.photoURL} />
-            <Card.Text as='div'>
-              <p className='card-content'>{post.description}</p>
-              <div className='card-detail'>
-                {owner} posted
-                <div>
-                  {/* {' '} */}
-                  <OverlayTrigger
-                    placement='top'
-                    overlay={
-                      <Tooltip id={`tooltip-${post.id}`}>
-                        {dayjs(post.createdAt.toString()).format(
-                          'dddd [at] h:mm A'
-                        )}
-                      </Tooltip>
-                    }
-                  >
-                    <span style={{ cursor: 'pointer' }}>
-                      {dayjs(post.createdAt.toString()).fromNow()}
-                    </span>
-                  </OverlayTrigger>
-                </div>
-                {/* {dayjs(post.createdAt.toString()).fromNow()} */}
-              </div>
-            </Card.Text>
-            <ButtonGroup
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginLeft: '-6px',
-                position: 'relative',
-              }}
-            >
-              <button
-                style={{
-                  border: 'none',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: 'none',
-                  background: 'transparent',
-                }}
-                onClick={() => handleUpvote('photo')}
-                disabled={commentVotingStatus === 'upvoted'}
-              >
-                <IoArrowUpCircle
-                  style={{
-                    color:
-                      commentVotingStatus === 'upvoted' ? 'green' : 'black',
-                    fontSize: '30px',
-                  }}
-                />
-              </button>
-              <span style={{ margin: '0 5px' }}>{post.upvotes}</span>
-              <button
-                style={{
-                  border: 'none',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: 'none',
-                  background: 'transparent',
-                }}
-                onClick={() => handleDownvote('photo')}
-                disabled={commentVotingStatus === 'downvoted'}
-              >
-                <IoArrowDownCircle
-                  style={{
-                    color:
-                      commentVotingStatus === 'downvoted' ? 'red' : 'black',
-                    fontSize: '30px',
-                  }}
-                />
-              </button>
-              {isOwner && (
-                <button
-                  style={{
-                    border: 'none',
-                    cursor: 'pointer',
-                    outline: 'none',
-                    boxShadow: 'none',
-                    background: 'transparent',
-                    color: 'red',
-                  }}
-                  onClick={() =>
-                    handleDeletePost(post.comment ? 'comment' : 'photo')
-                  }
-                >
-                  Delete
-                </button>
-              )}
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '0',
-                  right: '0',
-                }}
-              >
-                <ShareModal
-                  postId={post.id}
-                  userId={userId}
-                  postType={'photo'}
-                />
-              </div>
-            </ButtonGroup>
-          </Card.Body>
+      <Card className={createCardClassName()}>
+        {postType === 'photo' && (
+          <>
+            <Card.Img className='post-card-image' src={post.photoURL} />
+          </>
         )}
+        <Card.Body className='post-card-body'>
+          <Card.Text className='post-card-text' as='div'>
+            {isSharedPost && (
+              <div className='post-card-sender'>via {post.senderName}</div>
+            )}
+            <div className='post-card-content'>{postText}</div>
+            <div className='post-card-detail'>
+              <div className='post-card-user-name'>{owner}</div>
+              <>
+                <OverlayTrigger
+                  placement='top'
+                  overlay={
+                    <Tooltip id={`tooltip-${post.id}`}>
+                      {dayjs(post.createdAt.toString()).format(
+                        'dddd [at] h:mm A'
+                      )}
+                    </Tooltip>
+                  }
+                >
+                  <div
+                    className='post-card-created-at-text'
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {dayjs(post.createdAt.toString()).fromNow()}
+                  </div>
+                </OverlayTrigger>
+              </>
+            </div>
+          </Card.Text>
+          <div className='post-card-buttons mt-3'>
+            <div className='vote-buttons-container d-flex flex-row align-items-center'>
+              <Button
+                variant='outline-success'
+                className='vote-button rounded-circle'
+                onClick={() => handleUpvote()}
+                disabled={commentVotingStatus === 'upvoted'}
+              >
+                <IoArrowUpCircle
+                  style={{
+                    color:
+                      commentVotingStatus === 'upvoted' ? 'green' : 'black',
+                    fontSize: '25px',
+                  }}
+                />
+              </Button>
+              <span className='mx-2'>{post.upvotes}</span>
+              <Button
+                variant='outline-danger'
+                className='vote-button rounded-circle'
+                onClick={() => handleDownvote()}
+                disabled={commentVotingStatus === 'downvoted'}
+              >
+                <IoArrowDownCircle
+                  style={{
+                    color:
+                      commentVotingStatus === 'downvoted' ? 'red' : 'black',
+                    fontSize: '25px',
+                  }}
+                />
+              </Button>
+            </div>
+            <div className='share-delete-buttons-container d-flex flex-row'>
+              {isSharedPost && (
+                <Button
+                  className='post-card-remove-shared-post-button'
+                  variant='secondary'
+                  onClick={async () => {
+                    await setConfirmActionBundle.setConfirmActionFunction(
+                      () => async () => {
+                        await childFunctions.handleRemovePostFromFeed();
+                      }
+                    );
+                    await setConfirmActionBundle.setConfirmActionText(
+                      'remove the post form your feed.'
+                    );
+                    await setConfirmActionBundle.setShowConfirmActionModal(
+                      true
+                    );
+                  }}
+                >
+                  <BiHide />
+                </Button>
+              )}
+
+              {isOwner && (
+                <Button
+                  className='post-card-delete-button'
+                  variant='danger'
+                  onClick={async () => {
+                    await setConfirmActionBundle.setConfirmActionFunction(
+                      () => async () => {
+                        await handleDeletePost();
+                      }
+                    );
+                    await setConfirmActionBundle.setConfirmActionText(
+                      'delete your post'
+                    );
+                    await setConfirmActionBundle.setShowConfirmActionModal(
+                      true
+                    );
+                  }}
+                >
+                  <MdDelete />
+                </Button>
+              )}
+              <Button
+                variant='info'
+                className='post-card-share-button'
+                onClick={handleInitPostShare}
+              >
+                <FaShareSquare />
+              </Button>
+            </div>
+          </div>
+        </Card.Body>
       </Card>
 
       {/* Toast containers */}
@@ -400,4 +388,4 @@ const PostCard: React.FC<PostCardProps> = ({
   );
 };
 
-export default PostCard;
+export { PostCard };

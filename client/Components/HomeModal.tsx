@@ -5,13 +5,13 @@ import { ThemeContext } from './Context';
 
 //CHILD OF HOMEPAGE
 interface Props {
-  setShowModal: any;
+  setShowHomeModal: any;
   lat: number;
   lng: number;
   userId: number;
 }
 
-const HomeModal: React.FC<Props> = ({ setShowModal, lat, lng, userId }) => {
+const HomeModal: React.FC<Props> = ({ setShowHomeModal, lat, lng, userId }) => {
   const theme = useContext(ThemeContext);
   const [isShow, setIsShow] = useState(true);
   const [isThrow, setIsThrow] = useState(false);
@@ -26,7 +26,7 @@ const HomeModal: React.FC<Props> = ({ setShowModal, lat, lng, userId }) => {
   //function for init modal
   const initModal = () => {
     setIsShow(!isShow);
-    setShowModal(!isShow);
+    setShowHomeModal(!isShow);
   };
 
   const createPhoto = async () => {

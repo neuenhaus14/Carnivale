@@ -1,0 +1,65 @@
+@use 'colors';
+// @use 'colors2' as colors;
+@use 'mixin_utils';
+
+// all cards
+.post-card {
+  padding: 15px;
+  box-shadow: 0.6px 1.1px 1.1px hsl(0deg 0% 0% / 0.48);;
+  margin: 4px auto;
+  border: 1.5px solid colors.$cardBorder;
+  // border: none;
+  background-color: colors.$cardBackground;
+  max-width: 400px;
+}
+
+// fonts
+.post-card-detail {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 100;
+}
+
+.post-card-content {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.post-card-sender {
+  font-size: 14px;
+  font-weight: 100;
+  text-align: end;
+}
+
+// image
+.post-card-image {
+  margin-bottom: 5px;
+}
+
+// buttons
+.post-card-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  // .post-card-delete-button {
+  //   margin-right: 10px;
+  // }
+  .share-delete-buttons-container {
+    width: 80px;
+    justify-content: space-between;
+    .post-card-share-button:only-child {
+      margin-left: auto;
+    }
+  }
+  .btn {
+    @include mixin_utils.flex-col-center-content;
+  width: 35px ;
+  }
+}
+
+

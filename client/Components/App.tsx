@@ -27,11 +27,36 @@ import EventPage from './EventPage';
 import NavBar from './NavBar';
 import Loading from './Loading';
 import Parades from './Parades';
-import { ThemeContext, RunModeContext } from './Context';
 import TopNavBar from './TopNavBar';
+
+import ConfirmActionModal from './ConfirmActionModal';
+import ShareModal from './ShareModal';
+
+import { ThemeContext, RunModeContext } from './Context';
 
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
+
+
+  // CONFIRM ACTION MODAL STATE
+  const [confirmActionFunction, setConfirmActionFunction] = useState(null);
+  const [showConfirmActionModal, setShowConfirmActionModal] = useState<boolean>(false);
+  const [confirmActionText, setConfirmActionText] = useState<null | string>(null);
+  // Object that bundles confirm action functionality. Pass this to each page, so we don't need to have a unique modal sitting on each page.
+  const setConfirmActionBundle = {
+    setConfirmActionFunction,
+    setShowConfirmActionModal,
+    setConfirmActionText,
+  };
+
+  // SHARE MODAL STATE
+  const [postToShare, setPostToShare] = useState({id: null, type: null});
+  const [showShareModal, setShowShareModal] = useState<boolean>(false);
+
+  const setShareModalBundle = {
+    setPostToShare,
+    setShowShareModal,
+  }
 
   // WHAT DOES userData DO?
   const [userData, setUserData] = useState(null);
@@ -166,7 +191,7 @@ const App = () => {
                   currWeather={currWeather}
                   currTemp={currTemp}
                 />
-                <HomePage userId={userId} lat={lat} lng={lng} /> <NavBar />
+                <HomePage userId={userId} lat={lat} lng={lng} setConfirmActionBundle={setConfirmActionBundle} setShareModalBundle={setShareModalBundle}/> <NavBar />
               </div>
             }
           />
@@ -202,7 +227,7 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <FeedPage userId={userId} /> <NavBar />
+                <FeedPage userId={userId} setConfirmActionBundle={setConfirmActionBundle} setShareModalBundle={setShareModalBundle}/> <NavBar />
               </div>
             }
           />
@@ -252,6 +277,7 @@ const App = () => {
                   lng={lng}
                   lat={lat}
                   setTheme={setTheme}
+                  setConfirmActionBundle={setConfirmActionBundle} 
                 />{' '}
                 <NavBar />
               </div>
@@ -266,6 +292,15 @@ const App = () => {
     <RunModeContext.Provider value={process.env.RUN_MODE}>
       <ThemeContext.Provider value={theme}>
         <RouterProvider router={router} />
+        <ConfirmActionModal
+          showConfirmActionModal={showConfirmActionModal}
+          setShowConfirmActionModal={setShowConfirmActionModal}
+          confirmActionFunction={confirmActionFunction}
+          setConfirmActionFunction={setConfirmActionFunction}
+          confirmActionText={confirmActionText}
+          setConfirmActionText={setConfirmActionText}
+        />
+        <ShareModal postIdToShare={postToShare.id} userId={userId} postTypeToShare={postToShare.type} showShareModal={showShareModal} setShowShareModal={setShowShareModal} />
       </ThemeContext.Provider>
     </RunModeContext.Provider>
   );

@@ -1,0 +1,21 @@
+@use 'colors';
+
+.gig-body {
+  padding-top: 10vh;
+  padding-bottom: 14vh;
+  display: flex;
+  flex-direction: column;
+  background-color: colors.$lightPinky;
+  min-height: 100vh;
+}
+
+.gig-body-calendar {
+  padding-bottom: 5vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.date-picker {
+  text-align: center;
+}

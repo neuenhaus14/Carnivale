@@ -8,6 +8,7 @@ import {
   Tab,
   Tabs,
   Modal,
+  Col,
 } from 'react-bootstrap';
 import { FaCommentDots } from '@react-icons/all-files/fa/FaCommentDots';
 
@@ -15,8 +16,9 @@ import { FaCamera } from '@react-icons/all-files/fa/FaCamera';
 
 import axios from 'axios';
 import HomeModal from './HomeModal';
-import PostCard from './PostCard';
+import { PostCard } from './PostCard';
 import { RunModeContext, ThemeContext } from './Context';
+import { useSearchParams } from 'react-router-dom';
 
 //PARENT OF HOMEMODAL
 
@@ -24,26 +26,31 @@ interface HomePageProps {
   lat: number;
   lng: number;
   userId: number;
+  setShareModalBundle: any;
+  setConfirmActionBundle: any;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
+const HomePage: React.FC<HomePageProps> = ({setConfirmActionBundle, setShareModalBundle, lat, lng, userId }) => {
+  // const [searchParams] = useSearchParams();
+  // const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [comment, setComment] = useState('');
   const [posts, setPosts] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+
+  const [showHomeModal, setShowHomeModal] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(true);
+
   const [key, setKey] = useState('posts');
   const [order, setOrder] = useState('upvotes');
+
   const theme = useContext(ThemeContext);
-
   const isDemoMode = useContext(RunModeContext) === 'demo';
-
-  const [showAboutModal, setShowAboutModal] = useState(true);
 
   const toggleAboutModal = () => {
     setShowAboutModal(!showAboutModal);
   };
 
-  const modalTrigger = () => {
-    setShowModal(true);
+  const toggleHomeModal = () => {
+    setShowHomeModal(true);
   };
 
   function handleInput(e: any) {
@@ -61,10 +68,10 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
     // }
   }
 
-  //when tab is changed, set tab key and getPost for that tab
-  function handleSelect(k: string) {
-    setKey(k);
-    getPosts(k);
+  // when tab is changed, set tab key and getPost for that tab
+  function handleSelect(key: string) {
+    setKey(key);
+    getPosts(key);
   }
 
   const handleSubmit = async () => {
@@ -78,9 +85,10 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
     }
   };
 
-  const getPosts = async (e: string) => {
+  // fetches all
+  const getPosts = async (contentType: string) => {
     try {
-      const { data } = await axios.get(`/api/home/${e}`);
+      const { data } = await axios.get(`/api/home/${contentType}`);
       if (order === 'upvotes') {
         setPosts(
           data.sort(
@@ -112,9 +120,20 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
     return () => clearTimeout(interval);
   }, [key, order]);
 
-  console.log;
+
   return (
-    <Container className={`body-home ${theme}`}>
+    <Container
+      className={`body-with-bottom-panel ${theme} home-page-container`}
+    >
+
+      {showHomeModal && (
+        <HomeModal
+          setShowHomeModal={setShowHomeModal}
+          lat={lat}
+          lng={lng}
+          userId={userId}
+        />
+      )}
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
@@ -124,17 +143,21 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
             <p className='fs-6 lh-sm'>
               <b>Welcome to Pardi Gras!</b> <br />
               <br />
-              This is a demo version of Pardi Gras. Feel free to explore the app&apos;s features, but please note that much of its core
-              functionality is disabled in this version.<br />
+              This is a demo version of Pardi Gras. Feel free to explore the
+              app&apos;s features, but please note that much of its core
+              functionality is disabled in this version.
+              <br />
               <br />
               After closing this window you&apos;ll be on the Home page, which
               features a crowd-sourced global content feed covering Mardi Gras
-              gossip, costumes and throws.<br />
+              gossip, costumes and throws.
+              <br />
               <br />
               Here you can discover the most recent or popular posts and create
               your own content to share with the Mardi Gras community. Upvote a
-              post to send it up the ranks, or downvote it if it&apos;s not up to
-              snuff.<br />
+              post to send it up the ranks, or downvote it if it&apos;s not up
+              to snuff.
+              <br />
               <br />
               <b>Got a sec?</b> Please take the{' '}
               <a href='https://docs.google.com/forms/d/e/1FAIpQLSfSGLNva3elpadLqpXw1WuD9b4H39lBuX6YMiKT5_o2DNQ7Gg/viewform'>
@@ -151,130 +174,133 @@ const HomePage: React.FC<HomePageProps> = ({ lat, lng, userId }) => {
         </Modal>
       )}
       <Row>
-        <div
-          key={'inline-radio'}
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingBottom: '15px',
-          }}
-        >
-          Sort by:
-          <Form.Check
-            style={{ marginLeft: '20px' }}
-            type='radio'
-            name='Sort'
-            label='Newest'
-            inline
-            onClick={() => setOrder('createdAt')}
-          />
-          <Form.Check
-            type='radio'
-            name='Sort'
-            label='Upvotes'
-            inline
-            onClick={() => setOrder('upvotes')}
-          />
-        </div>
+        <Col>
+          <Form
+            className='d-flex flex-row justify-content-center align-items-center'
+            style={{
+              height: '7vh',
+            }}
+          >
+            <Form.Label className='mb-0 mx-2'>Sort by:</Form.Label>
+            <Form.Check
+              className='mb-0 mx-2'
+              type='radio'
+              name='Sort'
+              label='Newest'
+              onChange={() => setOrder('createdAt')}
+              checked={order === 'createdAt'}
+            />
+            <Form.Check
+              className='mb-0 mx-2'
+              type='radio'
+              name='Sort'
+              label='Upvotes'
+              onChange={() => setOrder('upvotes')}
+              checked={order === 'upvotes'}
+            />
+          </Form>
+        </Col>
       </Row>
 
       <Row>
-        <Tabs activeKey={key} onSelect={handleSelect}>
-          <Tab eventKey='posts' title='Gossip'>
-            {posts
-              ? posts.map((item: any, index: number) => (
-                  <PostCard
-                    key={`${item.id} + ${index}`}
-                    post={item}
-                    userId={userId}
-                    getPosts={getPosts}
-                    order={order}
-                    eventKey={'posts'}
-                  />
-                ))
-              : ''}
-          </Tab>
-          <Tab eventKey='costumes' title='Costumes'>
-            {posts
-              ? posts.map((item: any, index: number) => (
-                  <PostCard
-                    key={`${item.id} + ${index}`}
-                    post={item}
-                    userId={userId}
-                    getPosts={getPosts}
-                    order={order}
-                    eventKey={'costumes'}
-                  />
-                ))
-              : ''}
-          </Tab>
-          <Tab eventKey='throws' title='Throws'>
-            {posts
-              ? posts.map((item: any, index: number) => (
-                  <PostCard
-                    key={`${item.id} + ${index}`}
-                    post={item}
-                    userId={userId}
-                    getPosts={getPosts}
-                    order={order}
-                    eventKey={'throws'}
-                  />
-                ))
-              : ''}
-          </Tab>
-        </Tabs>
+        <Col>
+          <div className='home-page-tabs'>
+            <Tabs activeKey={key} onSelect={handleSelect}>
+              <Tab eventKey='posts' title='Gossip'>
+                {posts
+                  ? posts.map((post: any, index: number) => (
+                      <PostCard
+                        key={`${post.id} + ${index}`}
+                        post={post}
+                        userId={userId}
+
+                        eventKey={'posts'}
+
+                        setShareModalBundle = {setShareModalBundle}
+                        childFunctions = {{
+                          getPosts,
+                        }}
+                        setConfirmActionBundle={setConfirmActionBundle}
+                      />
+                    ))
+                  : ''}
+              </Tab>
+              <Tab eventKey='costumes' title='Costumes'>
+                {posts
+                  ? posts.map((item: any, index: number) => (
+                      <PostCard
+                        key={`${item.id} + ${index}`}
+                        post={item}
+                        userId={userId}
+
+                        eventKey={'costumes'}
+
+                        childFunctions = {{
+                          getPosts,
+                        }}
+                        setShareModalBundle={setShareModalBundle}
+                        setConfirmActionBundle={setConfirmActionBundle}
+                      />
+                    ))
+                  : ''}
+              </Tab>
+              <Tab eventKey='throws' title='Throws'>
+                {posts
+                  ? posts.map((item: any, index: number) => (
+                      <PostCard
+                        key={`${item.id} + ${index}`}
+                        post={item}
+                        userId={userId}
+
+                        eventKey={'throws'}
+                       
+                        childFunctions = {{
+                          getPosts
+                        }}
+                        setShareModalBundle={setShareModalBundle}
+                        setConfirmActionBundle={setConfirmActionBundle}
+                      />
+                    ))
+                  : ''}
+              </Tab>
+            </Tabs>
+          </div>
+        </Col>
       </Row>
-      {key === 'posts' ? (
-        <Row>
-          <Card
-            className='comment-form'
-            style={{
-              position: 'fixed',
-              bottom: '11.4vh',
-              left: '0px',
-              right: '0px',
-            }}
-          >
-            <Form style={{ width: '100%' }}>
-              <Form.Group>
-                <div className='d-flex flex-row'>
-                  <Form.Control
-                    className='mx-1'
-                    placeholder='Post a comment or photo'
-                    onChange={handleInput}
-                    value={comment}
-                    onKeyDown={(e) => {
-                      handleKeyDown(e);
-                    }}
-                  />
-                  <Button
-                    variant='primary'
-                    onClick={handleSubmit}
-                    disabled={isDemoMode || comment.length <= 0}
-                    className='comment-btn mx-1'
-                  >
-                    <FaCommentDots />
-                  </Button>
-                  <Button onClick={modalTrigger} className='photo-btn mx-1'>
-                    <FaCamera />
-                  </Button>
-                  {showModal ? (
-                    <HomeModal
-                      setShowModal={setShowModal}
-                      lat={lat}
-                      lng={lng}
-                      userId={userId}
-                    />
-                  ) : null}
-                </div>
-              </Form.Group>
-            </Form>
-          </Card>
-        </Row>
-      ) : (
-        ''
-      )}
+
+      <Row>
+        <div className='page-bottom-panel' id='create-post-form'>
+          <Form style={{ width: '100%' }}>
+            <Form.Group>
+              <div className='d-flex flex-row'>
+                <Form.Control
+                  className='mx-2'
+                  placeholder='Post a comment or photo'
+                  onChange={handleInput}
+                  value={comment}
+                  onKeyDown={(e) => {
+                    handleKeyDown(e);
+                  }}
+                />
+                <Button
+                  variant='primary'
+                  onClick={handleSubmit}
+                  disabled={isDemoMode || comment.length <= 0}
+                  className='btn-center-icon rounded-circle mx-1'
+                >
+                  <FaCommentDots />
+                </Button>
+                <Button
+                  onClick={toggleHomeModal}
+                  className='btn-center-icon rounded-circle mx-1'
+                >
+                  <FaCamera />
+                </Button>
+              </div>
+            </Form.Group>
+          </Form>
+        </div>
+      </Row>
     </Container>
   );
 };

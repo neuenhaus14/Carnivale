@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import EventCreateModal from './EventCreateModal';
-import { Card, Button, Container, Modal } from 'react-bootstrap';
+import { Card, Button, Container, Modal, Form } from 'react-bootstrap';
 import { FaPlusCircle } from '@react-icons/all-files/fa/FaPlusCircle';
 import { FaRoute } from '@react-icons/all-files/fa/FaRoute';
 
@@ -151,7 +151,7 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
   }, [userId]);
 
   return (
-    <Container className={`body ${theme}`} style={{ paddingBottom: '170px' }}>
+    <Container className={`body-with-bottom-panel ${theme} parade-page-container`} style={{ paddingBottom: '170px' }}>
       <div className='gig-body-calendar'>
         {isDemoMode && (
           <Modal show={showAboutModal} onHide={toggleAboutModal}>
@@ -160,15 +160,18 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
             </Modal.Header>
             <Modal.Body>
               <p className='fs-6 lh-sm'>
-                <b>Welcome to the Parades page!</b><br/><br/>
+                <b>Welcome to the Parades page!</b>
+                <br />
+                <br />
                 Here you&apos;ll find all the details about upcoming parades to
-                help you coordinate your Mardi Gras. <br/><br/>Select a parade from the
-                options dropdown to see the time, date, route, history, and
-                weather forecast for the selection, and discover which parades
-                roll on the same day at the bottom of the listing. Then click
-                the &apos;⊕&apos; button to create an custom event - the parade&apos;s
-                details will prepopulate the form, but can be changed if
-                desired.
+                help you coordinate your Mardi Gras. <br />
+                <br />
+                Select a parade from the options dropdown to see the time, date,
+                route, history, and weather forecast for the selection, and
+                discover which parades roll on the same day at the bottom of the
+                listing. Then click the &apos;⊕&apos; button to create an custom
+                event - the parade&apos;s details will prepopulate the form, but
+                can be changed if desired.
                 <br />
                 <br />
                 <b>One last thing!</b> Take the{' '}
@@ -185,32 +188,30 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
             </Modal.Footer>
           </Modal>
         )}
-        <Card
-          className='comment-form'
-          style={{
-            position: 'fixed',
-            bottom: '11.4vh',
-            left: '0',
-            right: '0',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            zIndex: 1,
-          }}
-        >
-          <label
-            htmlFor='paradeSelect'
-            style={{
-              display: selectedParade ? 'none' : 'block',
-              margin: 'auto',
+        <div id='select-parade-container' className='page-bottom-panel'>
+          <Button
+            disabled={!selectedParade}
+            variant='primary'
+            onClick={async () => {
+              await setIsNewEvent(true);
+              await setShowCreateModal(true);
+              await setSelectedEvent({
+                ...paradeInfo,
+                latitude: 0,
+                longitude: 0,
+                endTime: null,
+                startTime: null,
+              });
             }}
           >
-            Select a Parade:
-          </label>
-          <select
-            id='paradeSelect'
+            Make Plans
+          </Button>
+
+          <Form.Select
+            className='mx-2'
+            id='parade-select'
             onChange={handleParadeChange}
             value={selectedParade || ''}
-            style={{ width: 'auto', height: '35px', margin: '20px' }}
           >
             <option
               value=''
@@ -225,41 +226,8 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
                 {paradeName}
               </option>
             ))}
-          </select>
-          {selectedParade && (
-            <button
-              onClick={async () => {
-                await setIsNewEvent(true);
-                await setShowCreateModal(true);
-                await setSelectedEvent({
-                  ...paradeInfo,
-                  latitude: 0,
-                  longitude: 0,
-                  endTime: null,
-                  startTime: null,
-                });
-              }}
-              style={{
-                backgroundColor: 'transparent',
-                border: 'none',
-                outline: 'none',
-                cursor: 'pointer',
-                marginTop: '10px',
-              }}
-            >
-              <FaPlusCircle
-                style={{
-                  color: theme === 'pg-theme-vis' ? '#291F1F' : '#cf40f5',
-                  width: '60px',
-                  height: '60px',
-                  border: '5px solid #E7ABFF',
-                  borderRadius: '50%',
-                  alignContent: 'center',
-                }}
-              />
-            </button>
-          )}
-        </Card>
+          </Form.Select>
+        </div>
 
         {paradeInfo && (
           <div style={{ textAlign: 'center', marginTop: '20px' }}>

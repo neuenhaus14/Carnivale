@@ -1,24 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import dayjs from 'dayjs';
-import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
-import { IoArrowUpCircle } from '@react-icons/all-files/io5/IoArrowUpCircle';
-import { BiHide } from '@react-icons/all-files/bi/BiHide';
+
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {
-  Button,
-  Container,
-  OverlayTrigger,
-  Tooltip,
-  Card,
-  Modal,
-} from 'react-bootstrap';
+import { Button, Container, Modal, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import { ThemeContext, RunModeContext } from './Context';
-import ConfirmActionModal from './ConfirmActionModal';
 
+import { PostCard, Post } from './PostCard';
+
+/*
+A SharedPost is just the record from the join_shared_posts table PLUS upvotes to enable upvote downvote functionality for now
+*/
 interface SharedPost {
-  upvotes: number;
   id: number;
   sender_userId: number;
   recipient_userId: number;
@@ -27,6 +20,7 @@ interface SharedPost {
   shared_photoId: number | null;
   createdAt: string;
   updatedAt: string;
+  upvotes: number;
 }
 
 interface User {
@@ -38,9 +32,12 @@ interface User {
 }
 
 interface Comment {
+  id: number;
   comment: string;
   ownerId: number;
   upvotes: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // interface Pin {
@@ -51,20 +48,33 @@ interface Comment {
 //   upvotes: number;
 // }
 
+/*
+This Photo interface does not include filtering booleans because we don't need it for displaying the content (similar to Post interface from PostCard.jsx)
+*/
 interface Photo {
+  id: number;
   description: string;
   ownerId: number;
   upvotes: number;
-  url: string;
+  photoUrl: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface FeedPageProps {
   userId: number;
+  setConfirmActionBundle: any;
+  setShareModalBundle: any;
 }
 
-const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
+const FeedPage: React.FC<FeedPageProps> = ({
+  userId,
+  setConfirmActionBundle,
+  setShareModalBundle,
+}) => {
   const [sharedPosts, setSharedPosts] = useState<SharedPost[]>([]);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  // const [currentUser, setCurrentUser] = useState<User | null>(null);
+
   const [userNames, setUserNames] = useState<{ [userId: number]: string }>({});
   const [commentDetails, setCommentDetails] = useState<{
     [postId: number]: Comment;
@@ -73,19 +83,12 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   const [photoDetails, setPhotoDetails] = useState<{ [postId: number]: Photo }>(
     {}
   );
-  const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
+
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
-  const fetchSenderName = async (userId: number) => {
-    try {
-      const response = await axios.get(`/api/feed/user/${userId}`);
-      const senderName = `${response.data.firstName} ${response.data.lastName}`;
-      setUserNames((prevNames) => ({ ...prevNames, [userId]: senderName }));
-    } catch (error) {
-      console.error(`Error fetching sender ${userId} information:`, error);
-    }
-  };
 
+  /* THIS FUNCTIONALITY IS NOT USED BECAUSE ALL UPVOTING/DOWNVOTING HAPPENS IN POSTCARD
+  const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
   const [commentVotingStatus, setCommentVotingStatus] = useState<{
     [commentId: number]: 'upvoted' | 'downvoted' | 'none';
   }>({});
@@ -97,8 +100,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
   const [pinVotingStatus, setPinVotingStatus] = useState<{
     [pinId: number]: 'upvoted' | 'downvoted' | 'none';
   }>({});
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deletePostId, setDeletePostId] = useState<number | null>(null);
+*/
 
   const [showAboutModal, setShowAboutModal] = useState(true);
 
@@ -106,32 +108,49 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     setShowAboutModal(!showAboutModal);
   };
 
+  const fetchData = async () => {
+    console.log('fetching data!');
+    try {
+      const [postsResponse, userResponse] = await Promise.all([
+        axios.get(`/api/feed/shared-posts/${userId}`),
+        axios.get(`/api/feed/user/${userId}`),
+        // Swap top and bottom comments for testing
+        // axios.get(`/api/feed/shared-posts/1`),
+        // axios.get(`/api/feed/user/1`),
+      ]);
+
+      setSharedPosts(postsResponse.data);
+      // setCurrentUser(userResponse.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const fetchSenderName = async (userId: number) => {
+    try {
+      const response = await axios.get(`/api/feed/user/${userId}`);
+      const senderName = `${response.data.firstName} ${response.data.lastName[0]}.`;
+      setUserNames((prevNames) => ({ ...prevNames, [userId]: senderName }));
+    } catch (error) {
+      console.error(`Error fetching sender ${userId} information:`, error);
+    }
+  };
+
+  // When userId changes (ie, when user logs in), fetch user info (why?) and all posts that have been shared with that user, setting shared posts state.
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [postsResponse, userResponse] = await Promise.all([
-          axios.get(`/api/feed/shared-posts/${userId}`),
-          axios.get(`/api/feed/user/${userId}`),
-          // Swap top and bottom comments for testing
-          // axios.get(`/api/feed/shared-posts/1`),
-          // axios.get(`/api/feed/user/1`),
-        ]);
-
-        setSharedPosts(postsResponse.data);
-        setCurrentUser(userResponse.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
+    if (userId !== null) {
+      fetchData();
+    }
   }, [userId]);
 
+  // After shared posts are fetched (see useEffect above), then for each post fetch who shared it with user and the posts content
   useEffect(() => {
+    // fetch details for a post, will run this on all posts shared with user
     const fetchDetails = async (postId: number, type: string) => {
       try {
         const response = await axios.get(`/api/feed/shared-${type}/${postId}`);
 
+        // Checking if the post has been deleted since being originally loaded.
         if (response.data === null) {
           if (type === 'comment') {
             setCommentDetails((prevDetails) => ({
@@ -161,9 +180,12 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
 
         const details = {
           comment: {
+            id: response.data.id,
             comment: response.data.comment,
             ownerId: response.data.ownerId,
             upvotes: response.data.upvotes,
+            createdAt: response.data.createdAt,
+            updatedAt: response.data.updatedAt,
           },
           // pin: {
           //   ownerId: response.data.ownerId,
@@ -173,13 +195,17 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           //   upvotes: response.data.upvotes,
           // },
           photo: {
+            id: response.data.id,
             description: response.data.description,
             ownerId: response.data.ownerId,
             upvotes: response.data.upvotes,
-            url: response.data.photoURL,
+            photoUrl: response.data.photoURL,
+            createdAt: response.data.createdAt,
+            updatedAt: response.data.updatedAt,
           },
         };
 
+        // adding each posts details to objects in state to keep track of posts on this page
         if (type === 'comment') {
           setCommentDetails((prevDetails) => ({
             ...prevDetails,
@@ -197,7 +223,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           }));
         }
 
-        // Fetch user details if not already fetched
+        // Fetch sharing user first name & last name if not already fetched
         if (!userNames[response.data.ownerId]) {
           const userResponse = await axios.get(
             `/api/feed/user/${response.data.ownerId}`
@@ -212,6 +238,8 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         console.error(`Error fetching ${type} details:`, error);
       }
     };
+
+    // this function aggs all async requests for comment and photo content and sharer's name into one promiseAll
     const fetchDataDetails = async () => {
       const fetchPromises: Promise<void>[] = [];
 
@@ -241,7 +269,10 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     };
 
     fetchDataDetails();
-  }, [sharedPosts, userNames, userNames]);
+  }, [sharedPosts, userNames]);
+
+  /*
+  NEXT THREE FUNCTIONS NOT USED FROM FEED PAGE; UPVOTING/DOWNVOTING TAKES PLACE IN POST-CARD
 
   const handleUpvote = async (postId: number, type: string) => {
     if (isDemoMode) {
@@ -295,6 +326,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
       }
     }
   };
+
 
   const handleDownvote = async (postId: number, type: string) => {
     if (isDemoMode) {
@@ -369,6 +401,7 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     }
   };
 
+
   const fetchPostDetails = async (postId: number, type: string) => {
     try {
       if (!sharedPosts.some((post) => post.id === postId)) {
@@ -382,9 +415,12 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           setCommentDetails((prevDetails) => ({
             ...prevDetails,
             [postId]: {
+              id: response.data.id,
               comment: response.data.comment,
               ownerId: response.data.ownerId,
               upvotes: response.data.upvotes,
+              createdAt: response.data.createdAt,
+              updatedAt: response.data.updatedAt,
             },
           }));
         } else {
@@ -407,10 +443,13 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         setPhotoDetails((prevDetails) => ({
           ...prevDetails,
           [postId]: {
-            description: null,
-            ownerId: null,
-            upvotes: null,
-            url: null,
+            id: response.data.id,
+            description: response.data.description,
+            ownerId: response.data.ownerId,
+            upvotes: response.data.upvotes,
+            photoUrl: response.data.photoUrl,
+            createdAt: response.data.createdAt,
+            updatedAt: response.data.updatedAt,
           },
         }));
       }
@@ -421,8 +460,9 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
       );
     }
   };
+  */
 
-  const handleDelete = async (postId: number) => {
+  const handleRemovePostFromFeed = async (postId: number) => {
     if (isDemoMode) {
       toast('🎭Hide post from your feed!🎭', {
         position: 'top-right',
@@ -447,20 +487,8 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
     }
   };
 
-  const handleShowDeleteModal = (postId: number) => {
-    setDeletePostId(postId);
-    setShowDeleteModal(true);
-  };
-
   return (
-    <Container className={`body ${theme}`}>
-      {/* <h1>
-        Welcome,{' '}
-        {currentUser
-          ? `${currentUser.firstName} ${currentUser.lastName}`
-          : 'User'}
-        !
-      </h1> */}
+    <Container className={`body ${theme} feed-page-container`}>
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
           <Modal.Header closeButton>
@@ -468,8 +496,12 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           </Modal.Header>
           <Modal.Body>
             <p className='fs-6 lh-sm'>
-              <b>Welcome to the Feed page!</b><br/><br/>
-              Here you&apos;ll discover a private feed of content sent directly to you from your friends. This content can be upvoted, downvoted or removed from your private feed altogether.
+              <b>Welcome to the Feed page!</b>
+              <br />
+              <br />
+              Here you&apos;ll discover a private feed of content sent directly
+              to you from your friends. This content can be upvoted, downvoted
+              or removed from your private feed altogether.
               <br />
               <br />
               Take the{' '}
@@ -486,294 +518,84 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
           </Modal.Footer>
         </Modal>
       )}
-      <ul style={{ padding: 0, listStyle: 'none' }}>
-        {Array.isArray(sharedPosts) && sharedPosts.length > 0 ? (
-          sharedPosts.map((post) => (
-            <li key={post.id}>
-              <div className='card'>
-                <div style={{ display: 'flex', alignItems: 'right' }}>
-                  <p
-                    style={{
-                      marginLeft: 'auto',
-                      lineHeight: '.5',
-                      fontSize: '1rem',
-                    }}
-                  >
-                    {userNames[post.sender_userId]} sent you
-                  </p>
-                </div>
 
-                {post.shared_commentId && (
-                  <div style={{ marginTop: '5px' }}>
-                    {commentDetails[post.shared_commentId] ? (
-                      <Card.Body>
-                        <Card.Text as='div'>
-                          <p className='card-content'>
-                            {commentDetails[post.shared_commentId].comment}
-                          </p>
+      <Row>
+        <Col>
+          <div className='feed-page-tabs my-3'>
+            <Tabs activeKey='shared'>
+              <Tab eventKey='shared' title='Shared With Me'>
+                {
+                  /* Conditional check for rendering post cards. Accounts for a sharedPost getting removed, as deleting a post does not get rid of the photo/comment details record TODO: set to render after all promises have been returned */
+                  sharedPosts.length <=
+                    Object.keys(photoDetails).length +
+                      Object.keys(commentDetails).length &&
+                    Object.keys(userNames).length > 0 &&
+                    sharedPosts.map((sharedPost, index) => {
+                      // only accounts for comments and photo types, no pins yet
+                      const sharedPostType = sharedPost.shared_commentId
+                        ? 'comment'
+                        : 'photo';
 
-                          <p className='card-detail'>
-                            {
-                              userNames[
-                                commentDetails[post.shared_commentId].ownerId
-                              ]
-                            }{' '}
-                            posted
-                            <br />
-                            <>
-                              <OverlayTrigger
-                                placement='top'
-                                overlay={
-                                  <Tooltip id={`tooltip-${post.id}`}>
-                                    {dayjs(post.createdAt.toString()).format(
-                                      'dddd [at] h:mm A'
-                                    )}
-                                  </Tooltip>
-                                }
-                              >
-                                <span style={{ cursor: 'pointer' }}>
-                                  {dayjs(post.createdAt.toString()).fromNow()}
-                                </span>
-                              </OverlayTrigger>
-                            </>
-                          </p>
+                      let post: Post;
 
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              marginLeft: '-10px',
-                            }}
-                          >
-                            <button
-                              style={{
-                                border: 'none',
-                                cursor: 'pointer',
-                                outline: 'none',
-                                boxShadow: 'none',
-                                background: 'transparent',
-                              }}
-                              onClick={() => {
-                                handleUpvote(post.shared_commentId, 'comment');
-                              }}
-                              disabled={
-                                commentVotingStatus[post.shared_commentId] ===
-                                'upvoted'
-                              }
-                            >
-                              <IoArrowUpCircle
-                                style={{
-                                  color:
-                                    commentVotingStatus[
-                                      post.shared_commentId
-                                    ] === 'upvoted'
-                                      ? 'green'
-                                      : 'black',
-                                  fontSize: '30px',
-                                }}
-                              />
-                            </button>
-                            <div style={{ margin: '0 5px', fontSize: '16px' }}>
-                              {commentDetails[post.shared_commentId]?.upvotes}
-                            </div>
-                            <button
-                              style={{
-                                border: 'none',
-                                cursor: 'pointer',
-                                outline: 'none',
-                                boxShadow: 'none',
-                                background: 'transparent',
-                              }}
-                              onClick={() => {
-                                handleDownvote(
-                                  post.shared_commentId,
-                                  'comment'
-                                );
-                              }}
-                              disabled={
-                                commentVotingStatus[post.shared_commentId] ===
-                                'downvoted'
-                              }
-                            >
-                              <IoArrowDownCircle
-                                style={{
-                                  color:
-                                    commentVotingStatus[
-                                      post.shared_commentId
-                                    ] === 'downvoted'
-                                      ? 'red'
-                                      : 'black',
-                                  fontSize: '30px',
-                                }}
-                              />
-                            </button>
-                            <Button
-                              style={{
-                                border: 'none',
-                                cursor: 'pointer',
-                                outline: 'none',
-                                boxShadow: 'none',
-                                background: 'transparent',
-                                marginLeft: 'auto',
-                              }}
-                              onClick={() => handleShowDeleteModal(post.id)}
-                            >
-                              <BiHide />
-                            </Button>
-                          </div>
-                        </Card.Text>
-                      </Card.Body>
-                    ) : (
-                      post.upvotes <= -5 && (
-                        <div>
-                          {toast.error(
-                            'Post deleted due to too many downvotes!'
-                          )}
-                        </div>
-                      )
-                    )}
-                  </div>
-                )}
+                      if (sharedPostType === 'comment') {
+                        post = {
+                          id: commentDetails[sharedPost.shared_commentId]?.id,
+                          ownerId:
+                            commentDetails[sharedPost.shared_commentId]
+                              ?.ownerId,
+                          createdAt:
+                            commentDetails[sharedPost.shared_commentId]
+                              ?.createdAt,
+                          updatedAt:
+                            commentDetails[sharedPost.shared_commentId]
+                              ?.updatedAt,
+                          upvotes:
+                            commentDetails[sharedPost.shared_commentId]
+                              ?.upvotes,
+                          comment:
+                            commentDetails[sharedPost.shared_commentId].comment,
+                          senderName: userNames[sharedPost.sender_userId],
+                        };
+                      } else if (sharedPostType === 'photo') {
+                        post = {
+                          id: photoDetails[sharedPost.shared_photoId].id,
+                          ownerId:
+                            photoDetails[sharedPost.shared_photoId].ownerId,
+                          createdAt:
+                            photoDetails[sharedPost.shared_photoId].createdAt,
+                          updatedAt:
+                            photoDetails[sharedPost.shared_photoId].updatedAt,
+                          upvotes:
+                            photoDetails[sharedPost.shared_photoId].upvotes,
+                          photoURL:
+                            photoDetails[sharedPost.shared_photoId].photoUrl,
+                          description:
+                            photoDetails[sharedPost.shared_photoId].description,
+                          senderName: userNames[sharedPost.sender_userId],
+                        };
+                      }
 
-                {post.shared_photoId && (
-                  <div style={{ marginTop: '5px' }}>
-                    {photoDetails[post.shared_photoId] ? (
-                      <Card.Body>
-                        <Card.Text as='div'>
-                          <div>
-                            <img
-                              src={photoDetails[post.shared_photoId].url}
-                              alt='Shared Photo'
-                              style={{
-                                maxWidth: '100%',
-                                height: 'auto',
-                                marginTop: '10px',
-                              }}
-                            />
-
-                            <p className='card-content'>
-                              {photoDetails[post.shared_photoId].description}
-                            </p>
-
-                            <p className='card-detail'>
-                              {
-                                userNames[
-                                  photoDetails[post.shared_photoId].ownerId
-                                ]
-                              }{' '}
-                              posted
-                              <br />
-                              <>
-                                <OverlayTrigger
-                                  placement='top'
-                                  overlay={
-                                    <Tooltip id={`tooltip-${post.id}`}>
-                                      {dayjs(post.createdAt.toString()).format(
-                                        'dddd [at] h:mm A'
-                                      )}
-                                    </Tooltip>
-                                  }
-                                >
-                                  <span style={{ cursor: 'pointer' }}>
-                                    {dayjs(post.createdAt.toString()).fromNow()}
-                                  </span>
-                                </OverlayTrigger>
-                              </>
-                            </p>
-
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                marginLeft: '-10px',
-                              }}
-                            >
-                              <button
-                                style={{
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  outline: 'none',
-                                  boxShadow: 'none',
-                                  background: 'transparent',
-                                }}
-                                onClick={() => {
-                                  handleUpvote(post.shared_photoId, 'photo');
-                                }}
-                                disabled={
-                                  photoVotingStatus[post.shared_photoId] ===
-                                  'upvoted'
-                                }
-                              >
-                                <IoArrowUpCircle
-                                  style={{
-                                    color:
-                                      photoVotingStatus[post.shared_photoId] ===
-                                      'upvoted'
-                                        ? 'green'
-                                        : 'black',
-                                    fontSize: '30px',
-                                  }}
-                                />
-                              </button>
-                              <span
-                                style={{ margin: '0 5px', fontSize: '16px' }}
-                              >
-                                {photoDetails[post.shared_photoId]?.upvotes}
-                              </span>
-                              <button
-                                style={{
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  outline: 'none',
-                                  boxShadow: 'none',
-                                  background: 'transparent',
-                                }}
-                                onClick={() => {
-                                  handleDownvote(post.shared_photoId, 'photo');
-                                }}
-                                disabled={
-                                  photoVotingStatus[post.shared_photoId] ===
-                                  'downvoted'
-                                }
-                              >
-                                <IoArrowDownCircle
-                                  style={{
-                                    color:
-                                      photoVotingStatus[post.shared_photoId] ===
-                                      'downvoted'
-                                        ? 'red'
-                                        : 'black',
-                                    fontSize: '30px',
-                                  }}
-                                />
-                              </button>
-                              <Button
-                                style={{
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  outline: 'none',
-                                  boxShadow: 'none',
-                                  background: 'transparent',
-                                  marginLeft: 'auto',
-                                }}
-                                onClick={() => handleShowDeleteModal(post.id)}
-                              >
-                                <BiHide />
-                              </Button>
-                            </div>
-                          </div>
-                        </Card.Text>
-                      </Card.Body>
-                    ) : null}
-                  </div>
-                )}
-              </div>
-            </li>
-          ))
-        ) : (
-          <p>No shared posts available.</p>
-        )}
-      </ul>
+                      return (
+                        <PostCard
+                          key={`${post.id} + ${index}`}
+                          post={post}
+                          userId={userId}
+                          setShareModalBundle={setShareModalBundle}
+                          setConfirmActionBundle={setConfirmActionBundle}
+                          childFunctions={{
+                            handleRemovePostFromFeed: () =>
+                              handleRemovePostFromFeed(sharedPost.id),
+                          }}
+                        />
+                      );
+                    })
+                }
+              </Tab>
+            </Tabs>
+          </div>
+        </Col>
+      </Row>
 
       <ToastContainer
         position='top-right'
@@ -786,23 +608,307 @@ const FeedPage: React.FC<FeedPageProps> = ({ userId }) => {
         draggable
         pauseOnHover
         theme='light'
-      />
-      <ConfirmActionModal
-        confirmActionFunction={() => handleDelete(deletePostId)}
-        setConfirmActionFunction={setDeletePostId}
-        confirmActionText='remove from your feed'
-        setConfirmActionText={setShowDeleteModal}
-        showConfirmActionModal={showDeleteModal}
-        setShowConfirmActionModal={setShowDeleteModal}
-      />
+        />
     </Container>
   );
 };
 
 export default FeedPage;
 
+/* PREVIOUS STYLING FOR FEED PAGE CARDS
+
+<ul style={{ padding: 0, listStyle: 'none' }}>
+  {Array.isArray(sharedPosts) && sharedPosts.length > 0 ? (
+    sharedPosts.map((post) => (
+      <li key={post.id}>
+        <div className='post-card'>
+          <div style={{ display: 'flex', alignItems: 'right' }}>
+            <p
+              style={{
+                marginLeft: 'auto',
+                lineHeight: '.5',
+                fontSize: '1rem',
+              }}
+            >
+              {userNames[post.sender_userId]} sent you
+            </p>
+          </div>
+
+          {post.shared_commentId && (
+            <div style={{ marginTop: '5px' }}>
+
+              {commentDetails[post.shared_commentId] ? (
+                <Card.Body>
+                  <Card.Text as='div'>
+                    <p className='card-content'>
+                      {commentDetails[post.shared_commentId].comment}
+                    </p>
+
+                    <p className='card-detail'>
+                      {
+                        userNames[
+                          commentDetails[post.shared_commentId].ownerId
+                        ]
+                      }{' '}
+                      posted
+                      <br />
+                      <>
+                        <OverlayTrigger
+                          placement='top'
+                          overlay={
+                            <Tooltip id={`tooltip-${post.id}`}>
+                              {dayjs(post.createdAt.toString()).format(
+                                'dddd [at] h:mm A'
+                              )}
+                            </Tooltip>
+                          }
+                        >
+                          <span style={{ cursor: 'pointer' }}>
+                            {dayjs(post.createdAt.toString()).fromNow()}
+                          </span>
+                        </OverlayTrigger>
+                      </>
+                    </p>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginLeft: '-10px',
+                      }}
+                    >
+                      <button
+                        style={{
+                          border: 'none',
+                          cursor: 'pointer',
+                          outline: 'none',
+                          boxShadow: 'none',
+                          background: 'transparent',
+                        }}
+                        onClick={() => {
+                          handleUpvote(post.shared_commentId, 'comment');
+                        }}
+                        disabled={
+                          commentVotingStatus[post.shared_commentId] ===
+                          'upvoted'
+                        }
+                      >
+                        <IoArrowUpCircle
+                          style={{
+                            color:
+                              commentVotingStatus[
+                                post.shared_commentId
+                              ] === 'upvoted'
+                                ? 'green'
+                                : 'black',
+                            fontSize: '30px',
+                          }}
+                        />
+                      </button>
+                      <div style={{ margin: '0 5px', fontSize: '16px' }}>
+                        {commentDetails[post.shared_commentId]?.upvotes}
+                      </div>
+                      <button
+                        style={{
+                          border: 'none',
+                          cursor: 'pointer',
+                          outline: 'none',
+                          boxShadow: 'none',
+                          background: 'transparent',
+                        }}
+                        onClick={() => {
+                          handleDownvote(
+                            post.shared_commentId,
+                            'comment'
+                          );
+                        }}
+                        disabled={
+                          commentVotingStatus[post.shared_commentId] ===
+                          'downvoted'
+                        }
+                      >
+                        <IoArrowDownCircle
+                          style={{
+                            color:
+                              commentVotingStatus[
+                                post.shared_commentId
+                              ] === 'downvoted'
+                                ? 'red'
+                                : 'black',
+                            fontSize: '30px',
+                          }}
+                        />
+                      </button>
+                      <Button
+                        style={{
+                          border: 'none',
+                          cursor: 'pointer',
+                          outline: 'none',
+                          boxShadow: 'none',
+                          background: 'transparent',
+                          marginLeft: 'auto',
+                        }}
+                        onClick={() => handleShowDeleteModal(post.id)}
+                      >
+                        <BiHide />
+                      </Button>
+                    </div>
+                  </Card.Text>
+                </Card.Body>
+              ) : (
+                post.upvotes <= -5 && (
+                  <div>
+                    {toast.error(
+                      'Post deleted due to too many downvotes!'
+                    )}
+                  </div>
+                )
+              )}
+            </div>
+          )}
+
+          {post.shared_photoId && (
+            <div style={{ marginTop: '5px' }}>
+              {photoDetails[post.shared_photoId] ? (
+                <Card.Body>
+                  <Card.Text as='div'>
+                    <div>
+                      <img
+                        src={photoDetails[post.shared_photoId].photoUrl}
+                        alt='Shared Photo'
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                          marginTop: '10px',
+                        }}
+                      />
+
+                      <p className='card-content'>
+                        {photoDetails[post.shared_photoId].description}
+                      </p>
+
+                      <p className='card-detail'>
+                        {
+                          userNames[
+                            photoDetails[post.shared_photoId].ownerId
+                          ]
+                        }{' '}
+                        posted
+                        <br />
+                        <>
+                          <OverlayTrigger
+                            placement='top'
+                            overlay={
+                              <Tooltip id={`tooltip-${post.id}`}>
+                                {dayjs(post.createdAt.toString()).format(
+                                  'dddd [at] h:mm A'
+                                )}
+                              </Tooltip>
+                            }
+                          >
+                            <span style={{ cursor: 'pointer' }}>
+                              {dayjs(post.createdAt.toString()).fromNow()}
+                            </span>
+                          </OverlayTrigger>
+                        </>
+                      </p>
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          marginLeft: '-10px',
+                        }}
+                      >
+                        <button
+                          style={{
+                            border: 'none',
+                            cursor: 'pointer',
+                            outline: 'none',
+                            boxShadow: 'none',
+                            background: 'transparent',
+                          }}
+                          onClick={() => {
+                            handleUpvote(post.shared_photoId, 'photo');
+                          }}
+                          disabled={
+                            photoVotingStatus[post.shared_photoId] ===
+                            'upvoted'
+                          }
+                        >
+                          <IoArrowUpCircle
+                            style={{
+                              color:
+                                photoVotingStatus[post.shared_photoId] ===
+                                'upvoted'
+                                  ? 'green'
+                                  : 'black',
+                              fontSize: '30px',
+                            }}
+                          />
+                        </button>
+                        <span
+                          style={{ margin: '0 5px', fontSize: '16px' }}
+                        >
+                          {photoDetails[post.shared_photoId]?.upvotes}
+                        </span>
+                        <button
+                          style={{
+                            border: 'none',
+                            cursor: 'pointer',
+                            outline: 'none',
+                            boxShadow: 'none',
+                            background: 'transparent',
+                          }}
+                          onClick={() => {
+                            handleDownvote(post.shared_photoId, 'photo');
+                          }}
+                          disabled={
+                            photoVotingStatus[post.shared_photoId] ===
+                            'downvoted'
+                          }
+                        >
+                          <IoArrowDownCircle
+                            style={{
+                              color:
+                                photoVotingStatus[post.shared_photoId] ===
+                                'downvoted'
+                                  ? 'red'
+                                  : 'black',
+                              fontSize: '30px',
+                            }}
+                          />
+                        </button>
+                        <Button
+                          style={{
+                            border: 'none',
+                            cursor: 'pointer',
+                            outline: 'none',
+                            boxShadow: 'none',
+                            background: 'transparent',
+                            marginLeft: 'auto',
+                          }}
+                          onClick={() => handleShowDeleteModal(post.id)}
+                        >
+                          <BiHide />
+                        </Button>
+                      </div>
+                    </div>
+                  </Card.Text>
+                </Card.Body>
+              ) : null}
+            </div>
+          )}
+        </div>
+      </li>
+    ))
+  ) : (
+    <p>No shared posts available.</p>
+  )}
+</ul>
+
 //styling for pins
-{
+
   /* {post.shared_pinId && (
   <div style={{ marginTop: "5px" }}>
     <p style={{ margin: 0 }}>
@@ -899,7 +1005,7 @@ export default FeedPage;
               background: "transparent",
               marginLeft: "auto",
             }}
-            onClick={() => handleDelete(post.id)}
+            onClick={() => handleRemovePostFromFeed(post.id)}
           >
             <BsTrash
               style={{
@@ -915,5 +1021,6 @@ export default FeedPage;
       </div>
     ) : null}
   </div>
-)} */
+)}
 }
+*/

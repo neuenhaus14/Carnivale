@@ -1,0 +1,51 @@
+// PINS ON MAP
+$isFree: #53ca3c;
+$isToilet: #169873;
+$isFood: #fcc54e;
+$isPersonal: #ba37dd;
+$isPhoneCharger: #53e3d4;
+$isPoliceStation: #e7abff;
+$isEMTStation: #f27d52;
+
+// PG COLORS
+$greeny: #169874;
+$lightGreeny: #53ca3c;
+$darkGreeny: #015d43;
+$pinky: #e7abff;
+$dark: #211234;
+$yeller: #fcc54e;
+$purpley: #8d3dad;
+$lightPinky: #fbf4fe;
+$darkRed: #dc3545;
+
+// COLORBLIND FRIENDLY
+$tan: #d2b48c;
+$turq: #30d5c8;
+$offBlack: #291f1f;
+$offGrey: #aeaeae;
+
+// BACKGROUNDS
+$primaryBG: #fffcf8;
+$cardBackground: #fdf4ea;
+$cardBackground2: #fdf9f4;
+
+// BORDERS
+$cardBorder: $yeller;
+
+// BOOTSTRAP DEFAULT OVERRIDES
+$primaryColor: $yeller;
+$secondaryColor: $purpley;
+$successColor: $greeny;
+$dangerColor: $darkRed;
+$warningColor: $pinky;
+$infoColor: $yeller;
+
+// TEXT
+$lightText: white;
+$darkText: $dark;
+
+// TABS
+$tabSelected: $primaryBG;
+$tabSelectedBorder: $primaryColor;
+$tabUnselected: $cardBackground;
+$tabUnselectedBorder: #e3e3e3;

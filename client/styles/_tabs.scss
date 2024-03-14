@@ -1,0 +1,58 @@
+@use 'colors';
+// @use 'colors2' as colors;
+
+// ALL TABS
+.nav-tabs {
+  border-bottom: 1px solid colors.$primaryColor;
+}
+
+.nav-tabs .nav-item.show {
+  background-color: colors.$tabSelected;
+  border-bottom: 1px solid colors.$tabSelectedBorder;
+}
+
+.tab-content {
+  background-color: colors.$tabSelected;
+}
+
+.nav-tabs .nav-link {
+  color: rgb(121, 120, 120);
+  font-family: 'Permanent Marker', serif;
+  background-color: colors.$tabUnselected;
+  border-top: 1px solid colors.$tabUnselectedBorder;
+  border-left: 1px solid colors.$tabUnselectedBorder;
+  border-right: 1px solid colors.$tabUnselectedBorder;
+  border-bottom: 1px solid colors.$tabSelectedBorder;
+}
+
+.nav-tabs .nav-link.active {
+  font-family: 'Permanent Marker', serif;
+  background-color: colors.$tabSelected;
+  color: colors.$darkText;
+  border-top: solid 1px colors.$tabSelectedBorder;
+  border-left: solid 1px colors.$tabSelectedBorder;
+  border-right: solid 1px colors.$tabSelectedBorder;
+  border-bottom: solid 1px colors.$tabSelected;
+}
+
+// HOME PAGE TABS
+.home-page-tabs .tab-content .active {
+  padding: 5px;
+  overflow: scroll;
+  // tab height is 42px
+  max-height: calc(64vh - 42px);
+}
+
+// USER PAGE TABS
+.user-page-tabs .tab-content .tab-pane {
+  height: 62vh;
+  overflow: scroll;
+}
+
+// FEED PAGE TABS
+.feed-page-tabs .tab-content .active {
+  padding: 5px;
+  overflow: scroll;
+  // tab height is 42px
+  max-height: calc(78vh - 42px);
+}
