@@ -30,7 +30,13 @@ interface HomePageProps {
   setConfirmActionBundle: any;
 }
 
-const HomePage: React.FC<HomePageProps> = ({setConfirmActionBundle, setShareModalBundle, lat, lng, userId }) => {
+const HomePage: React.FC<HomePageProps> = ({
+  setConfirmActionBundle,
+  setShareModalBundle,
+  lat,
+  lng,
+  userId,
+}) => {
   // const [searchParams] = useSearchParams();
   // const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [comment, setComment] = useState('');
@@ -120,12 +126,44 @@ const HomePage: React.FC<HomePageProps> = ({setConfirmActionBundle, setShareModa
     return () => clearTimeout(interval);
   }, [key, order]);
 
+  const CreateContentForm: React.FC = () => {
+    return (
+      <Form style={{ width: '100%' }}>
+        <Form.Group>
+          <div className='d-flex flex-row'>
+            <Form.Control
+              className='mx-2'
+              placeholder='Post a comment or photo'
+              onChange={handleInput}
+              value={comment}
+              onKeyDown={(e) => {
+                handleKeyDown(e);
+              }}
+            />
+            <Button
+              variant='primary'
+              onClick={handleSubmit}
+              disabled={isDemoMode || comment.length <= 0}
+              className='btn-center-icon rounded-circle mx-1'
+            >
+              <FaCommentDots />
+            </Button>
+            <Button
+              onClick={toggleHomeModal}
+              className='btn-center-icon rounded-circle mx-1'
+            >
+              <FaCamera />
+            </Button>
+          </div>
+        </Form.Group>
+      </Form>
+    );
+  };
 
   return (
     <Container
       className={`body-with-bottom-panel ${theme} home-page-container`}
     >
-
       {showHomeModal && (
         <HomeModal
           setShowHomeModal={setShowHomeModal}
@@ -175,30 +213,35 @@ const HomePage: React.FC<HomePageProps> = ({setConfirmActionBundle, setShareModa
       )}
       <Row>
         <Col>
-          <Form
-            className='d-flex flex-row justify-content-center align-items-center'
+          <div
             style={{
               height: '7vh',
             }}
+            className='d-flex flex-row justify-content-around align-items-center'
           >
-            <Form.Label className='mb-0 mx-2'>Sort by:</Form.Label>
-            <Form.Check
-              className='mb-0 mx-2'
-              type='radio'
-              name='Sort'
-              label='Newest'
-              onChange={() => setOrder('createdAt')}
-              checked={order === 'createdAt'}
-            />
-            <Form.Check
-              className='mb-0 mx-2'
-              type='radio'
-              name='Sort'
-              label='Upvotes'
-              onChange={() => setOrder('upvotes')}
-              checked={order === 'upvotes'}
-            />
-          </Form>
+            <Form className='d-flex flex-row justify-content-center align-items-center'>
+              <Form.Label className='mb-0 mx-2'>Sort posts by:</Form.Label>
+              <Form.Check
+                className='mb-0 mx-2'
+                type='radio'
+                name='Sort'
+                label='Newest'
+                onChange={() => setOrder('createdAt')}
+                checked={order === 'createdAt'}
+              />
+              <Form.Check
+                className='mb-0 mx-2'
+                type='radio'
+                name='Sort'
+                label='Upvotes'
+                onChange={() => setOrder('upvotes')}
+                checked={order === 'upvotes'}
+              />
+            </Form>
+            <div className='d-none d-lg-flex d-xl-flex d-xxl-flex w-50'>
+              <CreateContentForm />
+            </div>
+          </div>
         </Col>
       </Row>
 
@@ -213,11 +256,9 @@ const HomePage: React.FC<HomePageProps> = ({setConfirmActionBundle, setShareModa
                         key={`${post.id} + ${index}`}
                         post={post}
                         userId={userId}
-
                         eventKey={'posts'}
-
-                        setShareModalBundle = {setShareModalBundle}
-                        childFunctions = {{
+                        setShareModalBundle={setShareModalBundle}
+                        childFunctions={{
                           getPosts,
                         }}
                         setConfirmActionBundle={setConfirmActionBundle}
@@ -232,10 +273,8 @@ const HomePage: React.FC<HomePageProps> = ({setConfirmActionBundle, setShareModa
                         key={`${item.id} + ${index}`}
                         post={item}
                         userId={userId}
-
                         eventKey={'costumes'}
-
-                        childFunctions = {{
+                        childFunctions={{
                           getPosts,
                         }}
                         setShareModalBundle={setShareModalBundle}
@@ -251,11 +290,9 @@ const HomePage: React.FC<HomePageProps> = ({setConfirmActionBundle, setShareModa
                         key={`${item.id} + ${index}`}
                         post={item}
                         userId={userId}
-
                         eventKey={'throws'}
-                       
-                        childFunctions = {{
-                          getPosts
+                        childFunctions={{
+                          getPosts,
                         }}
                         setShareModalBundle={setShareModalBundle}
                         setConfirmActionBundle={setConfirmActionBundle}
@@ -270,7 +307,8 @@ const HomePage: React.FC<HomePageProps> = ({setConfirmActionBundle, setShareModa
 
       <Row>
         <div className='page-bottom-panel' id='create-post-form'>
-          <Form style={{ width: '100%' }}>
+          <CreateContentForm />
+          {/* <Form style={{ width: '100%' }}>
             <Form.Group>
               <div className='d-flex flex-row'>
                 <Form.Control
@@ -298,7 +336,7 @@ const HomePage: React.FC<HomePageProps> = ({setConfirmActionBundle, setShareModa
                 </Button>
               </div>
             </Form.Group>
-          </Form>
+          </Form> */}
         </div>
       </Row>
     </Container>
