@@ -84,7 +84,9 @@ body {
 }
 
 .page-top-panel {
-  height: 9vh;
+  height: 7vh;
+  margin-bottom: 1vh;
+  margin-top: 1vh;
   display: none;
   flex-direction: row;
   justify-content: space-evenly;
@@ -92,7 +94,7 @@ body {
   width: 100%;
 }
 
-// this should apply to both modals and any other uses of footer tags
+// this should apply to both modals and any other uses of footer tags (gigs page, parades page)
 .footer {
   text-align: center;
 }

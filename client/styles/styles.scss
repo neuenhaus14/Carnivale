@@ -228,8 +228,9 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
     }
   }
 
-  #gig-items-container{
-    max-height:77vh;
+  #gig-items-container, #parade-info-container {
+    max-height:74vh;
+    height: 74vh;
   }
 }
 

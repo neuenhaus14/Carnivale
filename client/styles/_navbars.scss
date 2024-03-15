@@ -26,4 +26,12 @@
   .nav-link{
     color: colors.$lightText
   }
+  .nav-bar-brand-image {
+    height: 6vh;
+    width: auto;
+  }
+  .nav-bar-brand-text {
+    color: colors.$lightText;
+    font-size: 3vh;
+  }
 }

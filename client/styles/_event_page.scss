@@ -21,7 +21,8 @@
 }
 
 #gig-items-container {
-  max-height: 66vh;
+  max-height: 63vh;
+  height: 63vh;
   display: flex;
   flex-direction: column;
   overflow: scroll;
@@ -46,4 +47,9 @@
   font-weight: 100;
   margin-bottom: 0px;
 }
+}
+
+#event-page-footer {
+  margin-top: 1vh;
+  margin-bottom: 1vh;
 }

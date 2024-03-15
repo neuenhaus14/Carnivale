@@ -29,6 +29,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
       >
         <Container>
           <Image
+            className='nav-bar-brand-image'
             src='img/pgLogo.png'
             style={{ height: '6vh', width: 'auto' }}
           />
@@ -47,16 +48,15 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
       >
         <Container>
           <Navbar.Brand
-            href='/homepage'
             className='d-flex flex-row align-items-center'
           >
             <Image
               alt=''
               src='img/pgLogo.png'
-              className='d-inline-block align-top'
+              className='d-inline-block align-top nav-bar-brand-image'
               style={{ height: '6vh', width: 'auto' }}
             />{' '}
-            <h2 className='mb-0 text-light'>Pardi Gras</h2>
+            <div className='nav-bar-brand-text ms-1'>Pardi Gras</div>
           </Navbar.Brand>
           <Nav className='m-auto'>
             <Nav.Link
@@ -68,17 +68,8 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
             <Nav.Link role='button' onClick={() => handleNavigation('/mappage')}>Map</Nav.Link>
             <Nav.Link role='button' onClick={() => handleNavigation('/feedpage')}>Feed</Nav.Link>
             <Nav.Link role='button' onClick={() => handleNavigation('/userpage')}>User</Nav.Link>
-            {/* <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-              <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="#action/3.4">
-                Separated link
-              </NavDropdown.Item>
-            </NavDropdown> */}
+            <Nav.Link role='button' onClick={() => handleNavigation('/eventpage')}>Live Music</Nav.Link>
+            <Nav.Link role='button' onClick={() => handleNavigation('/parades')}>Parades</Nav.Link>
           </Nav>
           <div style={{ display: 'inline-block' }}>
             <Image src={currWeather} style={{ height: '6vh', width: 'auto' }} />

@@ -2,7 +2,16 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import EventCreateModal from './EventCreateModal';
-import { Card, Button, Container, Modal, Form } from 'react-bootstrap';
+import {
+  Card,
+  Button,
+  Container,
+  Modal,
+  Form,
+  Row,
+  Col,
+  Alert
+} from 'react-bootstrap';
 import { FaPlusCircle } from '@react-icons/all-files/fa/FaPlusCircle';
 import { FaRoute } from '@react-icons/all-files/fa/FaRoute';
 
@@ -150,8 +159,269 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
     userId && getFriends();
   }, [userId]);
 
+  const ParadeSelector: React.FC = () => {
+    return (
+      <>
+        <Button
+          disabled={!selectedParade}
+          variant='primary'
+          onClick={async () => {
+            await setIsNewEvent(true);
+            await setShowCreateModal(true);
+            await setSelectedEvent({
+              ...paradeInfo,
+              latitude: 0,
+              longitude: 0,
+              endTime: null,
+              startTime: null,
+            });
+          }}
+        >
+          Make Plans
+        </Button>
+
+        <Form.Select
+          className='mx-2'
+          id='parade-select'
+          onChange={handleParadeChange}
+          value={selectedParade || ''}
+        >
+          <option
+            value=''
+            disabled
+            style={{ display: selectedParade ? 'none' : 'block' }}
+          >
+            Select a parade
+          </option>
+
+          {paradeList.map((paradeName) => (
+            <option key={paradeName} value={paradeName}>
+              {paradeName}
+            </option>
+          ))}
+        </Form.Select>
+      </>
+    );
+  };
+
   return (
-    <Container className={`body-with-bottom-panel ${theme} parade-page-container`} style={{ paddingBottom: '170px' }}>
+    <Container
+      className={`body-with-bottom-panel ${theme} parade-page-container`}
+      // style={{ paddingBottom: '170px' }}
+    >
+      <Row>
+        <Col>
+          <div id='select-parade-container' className='page-bottom-panel'>
+            <ParadeSelector />
+          </div>
+
+          <div className='page-top-panel'>
+            <ParadeSelector />
+          </div>
+
+          <div id='parade-info-container'>
+
+            {paradeInfo ? (
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <h2>{paradeInfo.title}</h2>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginBottom: '10px',
+                  }}
+                >
+                  {paradeInfo.imageParade ? (
+                    <img
+                      src={`https://www.mardigrasneworleans.com${paradeInfo.imageParade}`}
+                      alt='Parade Logo'
+                      style={{
+                        height: '150px',
+                        width: '150px',
+                        marginRight: '10px',
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src='img/jesterPin.png'
+                      alt='Default Parade Logo'
+                      style={{
+                        height: '150px',
+                        width: '150px',
+                        marginRight: '10px',
+                      }}
+                    />
+                  )}
+                  <div style={{ textAlign: 'left' }}>
+                    <h4>Start Time: </h4>
+                    <p
+                      style={{
+                        margin: '-2px',
+                        marginTop: '-10px',
+                        marginBottom: '5px',
+                      }}
+                    >
+                      {dayjs(paradeInfo.startDate).format(
+                        'MMMM D YYYY, h:mm A'
+                      )}
+                    </p>
+                    <h4>Parade Location:</h4>
+                    <p
+                      style={{
+                        margin: '-2px',
+                        marginTop: '-10px',
+                        marginBottom: '5px',
+                      }}
+                    >
+                      {' '}
+                      {paradeInfo.location}
+                    </p>
+                  </div>
+                </div>
+
+                <img
+                  src={`https://www.mardigrasneworleans.com${paradeInfo.imageSrc}`}
+                  alt='Parade Map'
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                    marginTop: '10px',
+                    display: 'block',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                  }}
+                />
+                {weatherForecast &&
+                weatherForecast.forecast &&
+                weatherForecast.forecast.forecastday.length > 0 ? (
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      marginTop: '30px',
+                      marginBottom: '20px',
+                    }}
+                  >
+                    <h3>Weather Forecast</h3>
+                    {weatherForecast?.forecast?.forecastday.map(
+                      (forecastDay: WeatherDay) => (
+                        <div
+                          key={forecastDay.date}
+                          style={{ textAlign: 'center', marginBottom: '5px' }}
+                        >
+                          <div
+                            style={{
+                              margin: '3px 0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <img
+                              src={`https:${forecastDay.day.condition.icon}`}
+                              alt={`Weather Icon for ${forecastDay.date}`}
+                              style={{ marginRight: '5px' }}
+                            />
+                            {forecastDay.day.condition.text}
+                          </div>
+                          <div
+                            style={{
+                              margin: '1px 0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <span style={{ marginRight: '5px' }}>
+                              High: {forecastDay.day.maxtemp_f} °F
+                            </span>
+                            <span>Low: {forecastDay.day.mintemp_f} °F</span>
+                          </div>
+                          <p style={{ margin: '1px 0', fontSize: '1rem' }}>
+                            Chance of Rain:{' '}
+                            {forecastDay.day.daily_chance_of_rain}%
+                          </p>
+                        </div>
+                      )
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <h3>Weather Forecast</h3>
+                    <p>No Weather Data Available</p>
+                  </div>
+                )}
+
+                <h3>Parade History</h3>
+                <p>
+                  {paradeInfo.paradeInfo
+                    .replace(/(Year founded:)/g, ', $1')
+                    .replace(/(Membership:)/g, ', $1')
+                    .replace(/(Number of floats:)/g, ', $1')
+                    .replace(/(Floats by Kern Studios »)/g, ', $1')}
+                </p>
+                <h3>Parade Directions</h3>
+                <p>{paradeInfo.directionsText}</p>
+                <h3>
+                  Other Parades on{' '}
+                  {dayjs(paradeInfo.startDate).format('MMMM D YYYY')}
+                </h3>
+                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                  {paradeInfo.otherParades
+                    .split('\n')
+                    .filter(
+                      (parade) =>
+                        !parade.includes(
+                          `Parades On ${dayjs(paradeInfo.startDate).format(
+                            'MMM D'
+                          )}`
+                        )
+                    )
+                    .map((parade) => (
+                      <Button
+                        key={parade}
+                        onClick={() =>
+                          fetchParadeInfo(
+                            parade.replace(/\s+/g, '-').toLowerCase()
+                          )
+                        }
+                        style={{ marginRight: '10px', marginBottom: '10px' }}
+                      >
+                        {parade}
+                      </Button>
+                    ))}
+                </div>
+
+                <p>
+                  <FaRoute />
+                  <a
+                    href={paradeInfo.mapLink}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    style={{ marginLeft: '5px', marginRight: '5px' }}
+                  >
+                    View Parade Route
+                  </a>
+                  <FaRoute style={{ transform: 'scaleX(-1)' }} />
+                </p>
+              </div>) : (
+                      <Alert variant='danger' className='mt-3 text-center'>
+                        <Alert.Heading>Nothing going on here!</Alert.Heading>
+                        <p>Select a parade to display info.</p>
+                      </Alert>
+            )}
+          </div>
+          <hr />
+          <footer className='footer' id='parade-page-footer'>
+            Parade info courtesy of{' '}
+            <a href='https://www.mardigrasneworleans.com/parades/'>
+              Mardi Gras New Orleans
+            </a>
+          </footer>
+        </Col>
+      </Row>
+
       <div className='gig-body-calendar'>
         {isDemoMode && (
           <Modal show={showAboutModal} onHide={toggleAboutModal}>
@@ -188,228 +458,6 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
             </Modal.Footer>
           </Modal>
         )}
-        <div id='select-parade-container' className='page-bottom-panel'>
-          <Button
-            disabled={!selectedParade}
-            variant='primary'
-            onClick={async () => {
-              await setIsNewEvent(true);
-              await setShowCreateModal(true);
-              await setSelectedEvent({
-                ...paradeInfo,
-                latitude: 0,
-                longitude: 0,
-                endTime: null,
-                startTime: null,
-              });
-            }}
-          >
-            Make Plans
-          </Button>
-
-          <Form.Select
-            className='mx-2'
-            id='parade-select'
-            onChange={handleParadeChange}
-            value={selectedParade || ''}
-          >
-            <option
-              value=''
-              disabled
-              style={{ display: selectedParade ? 'none' : 'block' }}
-            >
-              Select a parade
-            </option>
-
-            {paradeList.map((paradeName) => (
-              <option key={paradeName} value={paradeName}>
-                {paradeName}
-              </option>
-            ))}
-          </Form.Select>
-        </div>
-
-        {paradeInfo && (
-          <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            <h2>{paradeInfo.title}</h2>
-
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginBottom: '10px',
-              }}
-            >
-              {paradeInfo.imageParade ? (
-                <img
-                  src={`https://www.mardigrasneworleans.com${paradeInfo.imageParade}`}
-                  alt='Parade Logo'
-                  style={{
-                    height: '150px',
-                    width: '150px',
-                    marginRight: '10px',
-                  }}
-                />
-              ) : (
-                <img
-                  src='img/jesterPin.png'
-                  alt='Default Parade Logo'
-                  style={{
-                    height: '150px',
-                    width: '150px',
-                    marginRight: '10px',
-                  }}
-                />
-              )}
-              <div style={{ textAlign: 'left' }}>
-                <h4>Start Time: </h4>
-                <p
-                  style={{
-                    margin: '-2px',
-                    marginTop: '-10px',
-                    marginBottom: '5px',
-                  }}
-                >
-                  {dayjs(paradeInfo.startDate).format('MMMM D YYYY, h:mm A')}
-                </p>
-                <h4>Parade Location:</h4>
-                <p
-                  style={{
-                    margin: '-2px',
-                    marginTop: '-10px',
-                    marginBottom: '5px',
-                  }}
-                >
-                  {' '}
-                  {paradeInfo.location}
-                </p>
-              </div>
-            </div>
-
-            <img
-              src={`https://www.mardigrasneworleans.com${paradeInfo.imageSrc}`}
-              alt='Parade Map'
-              style={{
-                maxWidth: '100%',
-                height: 'auto',
-                marginTop: '10px',
-                display: 'block',
-                marginLeft: 'auto',
-                marginRight: 'auto',
-              }}
-            />
-            {weatherForecast &&
-            weatherForecast.forecast &&
-            weatherForecast.forecast.forecastday.length > 0 ? (
-              <div
-                style={{
-                  textAlign: 'center',
-                  marginTop: '30px',
-                  marginBottom: '20px',
-                }}
-              >
-                <h3>Weather Forecast</h3>
-                {weatherForecast?.forecast?.forecastday.map(
-                  (forecastDay: WeatherDay) => (
-                    <div
-                      key={forecastDay.date}
-                      style={{ textAlign: 'center', marginBottom: '5px' }}
-                    >
-                      <div
-                        style={{
-                          margin: '3px 0',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <img
-                          src={`https:${forecastDay.day.condition.icon}`}
-                          alt={`Weather Icon for ${forecastDay.date}`}
-                          style={{ marginRight: '5px' }}
-                        />
-                        {forecastDay.day.condition.text}
-                      </div>
-                      <div
-                        style={{
-                          margin: '1px 0',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <span style={{ marginRight: '5px' }}>
-                          High: {forecastDay.day.maxtemp_f} °F
-                        </span>
-                        <span>Low: {forecastDay.day.mintemp_f} °F</span>
-                      </div>
-                      <p style={{ margin: '1px 0', fontSize: '1rem' }}>
-                        Chance of Rain: {forecastDay.day.daily_chance_of_rain}%
-                      </p>
-                    </div>
-                  )
-                )}
-              </div>
-            ) : (
-              <div>
-                <h3>Weather Forecast</h3>
-                <p>No Weather Data Available</p>
-              </div>
-            )}
-
-            <h3>Parade History</h3>
-            <p>
-              {paradeInfo.paradeInfo
-                .replace(/(Year founded:)/g, ', $1')
-                .replace(/(Membership:)/g, ', $1')
-                .replace(/(Number of floats:)/g, ', $1')
-                .replace(/(Floats by Kern Studios »)/g, ', $1')}
-            </p>
-            <h3>Parade Directions</h3>
-            <p>{paradeInfo.directionsText}</p>
-            <h3>
-              Other Parades on{' '}
-              {dayjs(paradeInfo.startDate).format('MMMM D YYYY')}
-            </h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-              {paradeInfo.otherParades
-                .split('\n')
-                .filter(
-                  (parade) =>
-                    !parade.includes(
-                      `Parades On ${dayjs(paradeInfo.startDate).format(
-                        'MMM D'
-                      )}`
-                    )
-                )
-                .map((parade) => (
-                  <Button
-                    key={parade}
-                    onClick={() =>
-                      fetchParadeInfo(parade.replace(/\s+/g, '-').toLowerCase())
-                    }
-                    style={{ marginRight: '10px', marginBottom: '10px' }}
-                  >
-                    {parade}
-                  </Button>
-                ))}
-            </div>
-
-            <p>
-              <FaRoute />
-              <a
-                href={paradeInfo.mapLink}
-                target='_blank'
-                rel='noopener noreferrer'
-                style={{ marginLeft: '5px', marginRight: '5px' }}
-              >
-                View Parade Route
-              </a>
-              <FaRoute style={{ transform: 'scaleX(-1)' }} />
-            </p>
-          </div>
-        )}
 
         <EventCreateModal
           selectedEvent={selectedEvent}
@@ -418,24 +466,13 @@ const Parade: React.FC<ParadeProps> = ({ userId, lng, lat }) => {
           showCreateModal={showCreateModal}
           friends={friends}
           userId={userId}
-          // isUserAttending={isUserAttending}
-          // setIsUserAttending={setIsUserAttending}
-          // getEventsInvited={getEventsInvited}
-          // getEventsParticipating={getEventsParticipating}
           isNewEvent={isNewEvent}
           setIsNewEvent={setIsNewEvent}
           lat={lat}
           lng={lng}
-          //getLocation={getLocation}
           eventType={'parade'}
           getEventsOwned={() => {}} // not needed for parades
         />
-        <footer className='footer'>
-          Parade info courtesy of{' '}
-          <a href='https://www.mardigrasneworleans.com/parades/'>
-            Mardi Gras New Orleans
-          </a>
-        </footer>
       </div>
     </Container>
   );

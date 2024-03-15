@@ -160,10 +160,9 @@ const EventPage: React.FC<EventPageProps> = ({ lng, lat, userId }) => {
           <div className='page-top-panel'>
             <DateSelector />
           </div>
-
           <div id='gig-items-container'>{allGigItems}</div>
-
-          <footer className='footer' style={{ padding: 15 }}>
+          <hr />
+          <footer className='footer' id='event-page-footer'>
             Live music info courtesy of{' '}
             <a href='https://www.wwoz.org/calendar/livewire-music'>WWOZ</a>
           </footer>

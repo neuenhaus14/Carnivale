@@ -144,13 +144,13 @@ const HomePage: React.FC<HomePageProps> = ({
               variant='primary'
               onClick={handleSubmit}
               disabled={isDemoMode || comment.length <= 0}
-              className='btn-center-icon rounded-circle mx-1'
+              className='mx-1'
             >
               <FaCommentDots />
             </Button>
             <Button
               onClick={toggleHomeModal}
-              className='btn-center-icon rounded-circle mx-1'
+              className='mx-1'
             >
               <FaCamera />
             </Button>
@@ -214,13 +214,11 @@ const HomePage: React.FC<HomePageProps> = ({
       <Row>
         <Col>
           <div
-            style={{
-              height: '9vh',
-            }}
+            id='home-page-top-panel'
             className='d-flex flex-row justify-content-around align-items-center'
           >
             <Form className='d-flex flex-row justify-content-center align-items-center'>
-              <Form.Label className='mb-0 mx-2'>Sort posts by:</Form.Label>
+              <Form.Label className='mb-0 mx-2'>Sort posts: </Form.Label>
               <Form.Check
                 className='mb-0 mx-2'
                 type='radio'
@@ -238,7 +236,7 @@ const HomePage: React.FC<HomePageProps> = ({
                 checked={order === 'upvotes'}
               />
             </Form>
-            <div className='d-none d-lg-flex d-xl-flex d-xxl-flex w-50'>
+            <div id='create-post-form' className='d-none d-lg-flex d-xl-flex d-xxl-flex w-50'>
               <CreateContentForm />
             </div>
           </div>
@@ -308,35 +306,6 @@ const HomePage: React.FC<HomePageProps> = ({
       <Row>
         <div className='page-bottom-panel' id='create-post-form'>
           <CreateContentForm />
-          {/* <Form style={{ width: '100%' }}>
-            <Form.Group>
-              <div className='d-flex flex-row'>
-                <Form.Control
-                  className='mx-2'
-                  placeholder='Post a comment or photo'
-                  onChange={handleInput}
-                  value={comment}
-                  onKeyDown={(e) => {
-                    handleKeyDown(e);
-                  }}
-                />
-                <Button
-                  variant='primary'
-                  onClick={handleSubmit}
-                  disabled={isDemoMode || comment.length <= 0}
-                  className='btn-center-icon rounded-circle mx-1'
-                >
-                  <FaCommentDots />
-                </Button>
-                <Button
-                  onClick={toggleHomeModal}
-                  className='btn-center-icon rounded-circle mx-1'
-                >
-                  <FaCamera />
-                </Button>
-              </div>
-            </Form.Group>
-          </Form> */}
         </div>
       </Row>
     </Container>
