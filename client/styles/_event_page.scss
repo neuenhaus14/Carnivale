@@ -1,21 +1,49 @@
 @use 'colors';
 
-.gig-body {
-  padding-top: 10vh;
-  padding-bottom: 14vh;
-  display: flex;
-  flex-direction: column;
-  background-color: colors.$lightPinky;
-  min-height: 100vh;
-}
+// .gig-body {
+//   padding-top: 10vh;
+//   padding-bottom: 14vh;
+//   display: flex;
+//   flex-direction: column;
+//   background-color: colors.$lightPinky;
+//   min-height: 100vh;
+// }
 
-.gig-body-calendar {
-  padding-bottom: 5vh;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
+// .gig-body-calendar {
+//   padding-bottom: 5vh;
+//   display: flex;
+//   flex-direction: column;
+//   min-height: 100vh;
+// }
 
 .date-picker {
   text-align: center;
+}
+
+#gig-items-container {
+  max-height: 66vh;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+  padding: 5px;
+}
+
+.gig-card {
+  padding: 15px;
+  margin: 2px;
+  .gig-card-content {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+  margin-bottom: 0px;
+}
+  .gig-card-detail {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 100;
+  margin-bottom: 0px;
+}
 }

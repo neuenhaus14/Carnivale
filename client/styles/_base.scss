@@ -4,7 +4,6 @@
 //@use 'colors2' as colors;
 @use 'mixin_utils';
 
-
 #app {
   background-color: colors.$primaryBG;
 }
@@ -17,7 +16,6 @@
 .card-body {
   padding: 0px;
 }
-
 
 // BUTTONS
 .btn {
@@ -42,7 +40,6 @@
   font-size: small;
   font-weight: bold;
 }
-
 
 // PAGE FORMATTING
 
@@ -82,9 +79,17 @@ body {
   z-index: 1;
   left: 0;
   right: 0;
-  
   background-color: colors.$primaryBG;
   border-top: 1px solid colors.$primaryColor;
+}
+
+.page-top-panel {
+  height: 9vh;
+  display: none;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
 }
 
 // this should apply to both modals and any other uses of footer tags
@@ -95,8 +100,6 @@ body {
 .disclaimer {
   font-size: smaller;
 }
-
-
 
 // TEXTS
 h5 {

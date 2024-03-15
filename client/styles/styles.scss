@@ -89,6 +89,10 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
     display: none;
   }
 
+  .page-top-panel {
+    display: flex;
+  }
+
   .body-with-bottom-panel {
     padding-bottom: 5px;
   }
@@ -222,6 +226,10 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
         gap: 12px;
       }
     }
+  }
+
+  #gig-items-container{
+    max-height:77vh;
   }
 }
 

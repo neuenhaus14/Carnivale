@@ -215,7 +215,7 @@ const HomePage: React.FC<HomePageProps> = ({
         <Col>
           <div
             style={{
-              height: '7vh',
+              height: '9vh',
             }}
             className='d-flex flex-row justify-content-around align-items-center'
           >
