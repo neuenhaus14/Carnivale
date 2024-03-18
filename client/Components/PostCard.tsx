@@ -319,7 +319,7 @@ const PostCard: React.FC<PostCardProps> = ({
               {isSharedPost && (
                 <Button
                   className='post-card-remove-shared-post-button'
-                  variant='secondary'
+                  variant='danger'
                   onClick={async () => {
                     await setConfirmActionBundle.setConfirmActionFunction(
                       () => async () => {
