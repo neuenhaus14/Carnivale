@@ -26,7 +26,7 @@ $offBlack: #291f1f;
 $offGrey: #aeaeae;
 
 // BACKGROUNDS
-$primaryBG: #fafafa; // whitesmoke
+$primaryBG: #F4F2EE; // linkedIn background
 $cardBackground: #fcfcfc;
 $cardBackground2: #dbdbdb;
 
@@ -39,7 +39,7 @@ $secondaryColor: $purpley;
 $successColor: $lightGreeny;
 $dangerColor: $lightRed;
 $warningColor: $pinky;
-$infoColor: #645082;
+$infoColor: $purpley;
 
 // TEXT
 $lightText: white;
@@ -47,6 +47,6 @@ $darkText: $dark;
 
 // TABS
 $tabSelected: $primaryBG;
-$tabSelectedBorder: $primaryColor;
+$tabSelectedBorder: $purpley;
 $tabUnselected: $primaryBG;
 $tabUnselectedBorder: #e3e3e3;

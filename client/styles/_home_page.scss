@@ -1,6 +1,16 @@
 @use 'mixin_utils';
+// @use 'colors';
+@use 'colors2' as colors;
 
 #create-post-form .btn {
   @include mixin_utils.flex-col-center-content;
 }
 
+#home-page-top-panel {
+  height: 7vh;
+  //border: 1px solid colors.$cardBorder;
+  // background-color: colors.$cardBackground;
+  margin-bottom: 1vh;
+  margin-top: 1vh;
+  font-size: large;
+}

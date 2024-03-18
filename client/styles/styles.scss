@@ -1,5 +1,5 @@
-@use 'colors';
-// @use 'colors2' as colors;
+// @use 'colors';
+@use 'colors2' as colors;
 @use 'mixin_utils';
 
 // SET BOOTSTRAP DEFAULT COLORS BEFORE IMPORTING BS SCSS FILE
@@ -80,7 +80,30 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
     padding-right: calc(15px + 10vw);
   }
 
-  // ALL CARDS
+  // Remove bottom nav and panel for desktop
+  .bottom-nav{
+    display: none;
+  }
+
+  .page-bottom-panel {
+    display: none;
+  }
+
+  .page-top-panel {
+    display: flex;
+  }
+
+  .body-with-bottom-panel {
+    padding-bottom: 5px;
+  }
+
+  .home-page-tabs .tab-content .active {
+    max-height: calc(82vh - 42px)
+  }
+  /*
+  GRID DISPLAY FOR CONTENT FEEDS FOR DESKTOP
+  */
+  // All Cards
   // post-cards stretch sideways to fit photos of most dimensions (no panoramas)
   .post-card {
     max-width: none;
@@ -190,7 +213,7 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
       .active {
         display: flex;
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 5px;
       }
     }
   }
@@ -200,9 +223,14 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
       .active {
         display: flex;
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 5px;
       }
     }
+  }
+
+  #gig-items-container, #parade-info-container {
+    max-height:74vh;
+    height: 74vh;
   }
 }
 

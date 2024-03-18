@@ -1,9 +1,7 @@
 import React, { useContext } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
 import { To, useNavigate } from 'react-router-dom';
 import { Navbar, Button } from 'react-bootstrap/';
-//import { MdDynamicFeed } from 'react-icons/md';
-// import { MdDynamicFeed } from 'react-icons/md/index'
+
 import { MdShare } from '@react-icons/all-files/md/MdShare';
 import { FaMapMarkedAlt } from '@react-icons/all-files/fa/FaMapMarkedAlt';
 import { IoHomeOutline } from '@react-icons/all-files/io5/IoHomeOutline';
@@ -16,7 +14,6 @@ const NavBar = () => {
     navigate(path);
   };
   const theme = useContext(ThemeContext);
-  const { logout } = useAuth0();
 
   return (
     <div className={theme}>

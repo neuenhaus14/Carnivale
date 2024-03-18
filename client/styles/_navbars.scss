@@ -1,5 +1,5 @@
-@use 'colors';
-// @use 'colors2' as colors;
+// @use 'colors';
+@use 'colors2' as colors;
 @use 'mixin_utils';
 
 .bottom-nav-button {
@@ -23,4 +23,15 @@
   color: white;
   font-size: 1em;
   font-weight: 200;
+  .nav-link{
+    color: colors.$lightText
+  }
+  .nav-bar-brand-image {
+    height: 6vh;
+    width: auto;
+  }
+  .nav-bar-brand-text {
+    color: colors.$lightText;
+    font-size: 3vh;
+  }
 }

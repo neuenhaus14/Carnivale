@@ -1,3 +1,17 @@
 #parade-select {
   max-width: 60%;
 }
+
+#parade-info-container {
+  height: 63vh;
+  max-height: 63vh;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+  padding: 5px;
+}
+
+#parade-page-footer {
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+}
