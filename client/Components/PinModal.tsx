@@ -1,5 +1,6 @@
 import React, {useState, useContext, useEffect} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
+import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios'
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -7,6 +8,8 @@ dayjs.extend(relativeTime);
 import Photos from './Photos'
 import CreatePinMap from './CreatePinMap'
 import { MdDelete } from '@react-icons/all-files/md/MdDelete';
+import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
+import { IoArrowUpCircle } from '@react-icons/all-files/io5/IoArrowUpCircle';
 import { ThemeContext, RunModeContext } from './Context'
 
 interface Props {
@@ -33,7 +36,11 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
   const [isEMTStation, setIsEMTStation] =useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [showPhoto, setShowPhoto] = useState(true);
+  const [commentVotingStatus, setCommentVotingStatus] = useState<
+  'upvoted' | 'downvoted' | 'none'
+>('none');
 
+  const isDemoMode = useContext(RunModeContext) === 'demo';
 
   const urlSearchParams = new URLSearchParams(window.location.search);
   const params = Object.fromEntries(urlSearchParams.entries());
@@ -97,6 +104,83 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     return categoryMapping[category]
   }
 
+  const handleDeletePinPic = async (pin) => {
+    if (isDemoMode) {
+      toast.success('Delete your post!');
+    } else {
+      try {
+        await axios.delete(`/api/home/delete-photo/${pin.id}`, {
+          data: { userId },
+        });
+        toast.success('Post deleted successfully!');
+       
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        toast.error('Error deleting post. Please try again.');
+      }
+    }
+  }
+
+  const handleUpvote = async (pin) => {
+    // if demo mode, display toast
+    if (isDemoMode) {
+      toast('🎭 Post upvoted! 🎭', {
+        position: 'top-right',
+        autoClose: 2500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+    }
+    // else run upvote logic
+    else {
+      try {
+        await axios.post(`/api/feed/upvote-pin/${userId}/${pin.id}`);
+        if (commentVotingStatus !== 'upvoted') {
+          setCommentVotingStatus('upvoted');
+        }
+      } catch (err) {
+        toast.warning("You've already upvoted this post!");
+      } 
+    }
+  };
+
+  const handleDownvote = async (pin) => {
+    // if demo mode, display toast
+    if (isDemoMode) {
+      toast('🎭 Post downvoted! 🎭', {
+        position: 'top-right',
+        autoClose: 2500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+    }
+    // if not demo mode, run downvote logic
+    else {
+      try {
+        await axios.post(`/api/feed/downvote-pin}/${userId}/${pin.id}`);
+
+        if (commentVotingStatus !== 'downvoted') {
+          setCommentVotingStatus('downvoted');
+
+          if (pin.upvotes - 1 <= -5) {
+            toast.error('Post deleted due to too many downvotes!');
+          }
+        }
+      } catch (err) {
+        toast.warning("You've already downvoted this post!");
+      } 
+    }
+  };
+
+
 
   return (
     <>
@@ -110,10 +194,11 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
           <div>
           <Modal.Body>
             <div id="pin-photos">
+              {console.log(selectedPin)}
                 {
                   selectedPin.map((pin: any) => (
                     <div key={pin.id} className="post-card">
-                      <div className="post-card-sender">Submitted by: {pin.firstName} {pin.lastName}<br/>
+                      <div className="post-card-sender">Via {pin.firstName} {pin.lastName}<br/>
                       <i>{dayjs(pin.createdAt.toString()).format('ddd, MMM D, YYYY h:mm A')}</i></div>
                       <div className="post-card-image"><img src={pin.photoURL} alt="Pin Photo" style={{ maxWidth: "100%", height: "auto",  marginTop: "10px"}}/></div>
                       <div className="post-card-buttons">
@@ -123,22 +208,45 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
                           className='post-card-delete-button'
                           variant='danger'
                           onClick={async () => {
-                            await setConfirmActionBundle.setConfirmActionFunction(
-                              () => async () => {
-                                // await handleDeletePost();
-                              }
-                            );
-                            await setConfirmActionBundle.setConfirmActionText(
-                              'delete your post'
-                            );
-                            await setConfirmActionBundle.setShowConfirmActionModal(
-                              true
-                            );
+                            await setConfirmActionBundle.setConfirmActionFunction(() => {handleDeletePinPic(pin);});
+                            await setConfirmActionBundle.setConfirmActionText('delete your contribution');
+                            await setConfirmActionBundle.setShowConfirmActionModal(true);
                           }}
                         >
                           <MdDelete />
                         </Button>
                       )}
+                      <div className='vote-buttons-container d-flex flex-row align-items-center'>
+                        <Button
+                          variant='outline-success'
+                          className='vote-button rounded-circle'
+                          onClick={() => handleUpvote(pin)}
+                          disabled={commentVotingStatus === 'upvoted'}
+                        >
+                          <IoArrowUpCircle
+                            style={{
+                              color:
+                                commentVotingStatus === 'upvoted' ? 'green' : 'black',
+                              fontSize: '25px',
+                            }}
+                          />
+                        </Button>
+                        <span className='mx-2'>{pin.upvotes}</span>
+                        <Button
+                          variant='outline-danger'
+                          className='vote-button rounded-circle'
+                          onClick={() => handleDownvote(pin)}
+                          disabled={commentVotingStatus === 'downvoted'}
+                        >
+                          <IoArrowDownCircle
+                            style={{
+                              color:
+                                commentVotingStatus === 'downvoted' ? 'red' : 'black',
+                              fontSize: '25px',
+                            }}
+                          />
+                        </Button>
+                      </div>
                       </div>
                     </div>
                   ))
