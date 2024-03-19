@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react'
+import React, {useState, useContext, useEffect} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import axios from 'axios'
 import dayjs from 'dayjs';
@@ -6,6 +6,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 import Photos from './Photos'
 import CreatePinMap from './CreatePinMap'
+import { MdDelete } from '@react-icons/all-files/md/MdDelete';
 import { ThemeContext, RunModeContext } from './Context'
 
 interface Props {
@@ -17,9 +18,10 @@ interface Props {
   selectedPin: any
   userId: number
   userLocation: [number, number]
+  setConfirmActionBundle: any
 }
 
-const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected, userLocation} ) => {
+const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected, userLocation, setConfirmActionBundle} ) => {
   const theme = useContext(ThemeContext)
   const [isShow, setShow] = useState(true);
   const [isToilet, setIsToilet] =useState(false);
@@ -31,7 +33,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
   const [isEMTStation, setIsEMTStation] =useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [showPhoto, setShowPhoto] = useState(true);
-  //const [marker, setMarkers] = useState([markers]);
+
 
   const urlSearchParams = new URLSearchParams(window.location.search);
   const params = Object.fromEntries(urlSearchParams.entries());
@@ -110,11 +112,34 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
             <div id="pin-photos">
                 {
                   selectedPin.map((pin: any) => (
-                    <div key={pin.id}>
-                      <p><b>Submitted by: </b>{pin.firstName} {pin.lastName}</p>
-                      <p><i>{dayjs(pin.createdAt.toString()).format('ddd, MMM D, YYYY h:mm A')}</i></p>
-                      <img src={pin.photoURL} alt="Pin Photo" style={{ maxWidth: "100%", height: "auto",  marginTop: "10px"}}/>
-                      <br /><p>{pin.description}</p>
+                    <div key={pin.id} className="post-card">
+                      <div className="post-card-sender">Submitted by: {pin.firstName} {pin.lastName}<br/>
+                      <i>{dayjs(pin.createdAt.toString()).format('ddd, MMM D, YYYY h:mm A')}</i></div>
+                      <div className="post-card-image"><img src={pin.photoURL} alt="Pin Photo" style={{ maxWidth: "100%", height: "auto",  marginTop: "10px"}}/></div>
+                      <div className="post-card-buttons">
+                      <div className="post-card-content">{pin.description}</div>
+                      {pin.ownerId === userId && (
+                        <Button
+                          className='post-card-delete-button'
+                          variant='danger'
+                          onClick={async () => {
+                            await setConfirmActionBundle.setConfirmActionFunction(
+                              () => async () => {
+                                // await handleDeletePost();
+                              }
+                            );
+                            await setConfirmActionBundle.setConfirmActionText(
+                              'delete your post'
+                            );
+                            await setConfirmActionBundle.setShowConfirmActionModal(
+                              true
+                            );
+                          }}
+                        >
+                          <MdDelete />
+                        </Button>
+                      )}
+                      </div>
                     </div>
                   ))
                 }

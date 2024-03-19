@@ -211,6 +211,7 @@ const App = () => {
                   userLng={lng}
                   userId={userId}
                   getLocation={getLocation}
+                  setConfirmActionBundle={setConfirmActionBundle}
                 />{' '}
                 <NavBar />
               </div>

@@ -27,6 +27,7 @@ interface MapProps {
   userLng: number;
   userId: number;
   getLocation: any;
+  setConfirmActionBundle: any;
 }
 
 const MapPage: React.FC<MapProps> = ({
@@ -34,6 +35,7 @@ const MapPage: React.FC<MapProps> = ({
   userLng,
   getLocation,
   userId,
+  setConfirmActionBundle,
 }) => {
   // ADD userId BACK TO PROPS
 
@@ -468,6 +470,7 @@ const MapPage: React.FC<MapProps> = ({
           selectedPin={selectedPin}
           setIsPinSelected={setIsPinSelected}
           userLocation={userLocation}
+          setConfirmActionBundle={setConfirmActionBundle}
         />
       ) : null}
       <Form.Switch
