@@ -283,8 +283,8 @@ const MapPage: React.FC<MapProps> = ({
   // handles the route line creation by making the response from the directions API into a geoJSON
   // which is the only way to use it in the <Source> tag (displays the "route/line")
   const createRouterLine = async (routeProfile: string): Promise<void> => {
-    // const startCoords = `${userLocation[0]},${userLocation[1]}`;
-    const startCoords = `-90.0546585,29.9631183`;
+    let startCoords : string;
+    isDemoMode ? startCoords = `-90.0546585,29.9631183` : startCoords = `${userLocation[0]},${userLocation[1]}`
     const endCoords = `${clickedPinCoords[0]},${clickedPinCoords[1]}`;
     const geometries = 'geojson';
     const url = `https://api.mapbox.com/directions/v5/mapbox/${routeProfile}/${startCoords};${endCoords}?alternatives=true&geometries=${geometries}&steps=true&banner_instructions=true&overview=full&voice_instructions=true&access_token=pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw`;
