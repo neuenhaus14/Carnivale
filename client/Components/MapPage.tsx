@@ -65,7 +65,6 @@ const MapPage: React.FC<MapProps> = ({
   const [showRouteDirections, setShowRouteDirections] =
     useState<boolean>(false);
   const [isFriendSelected, setIsFriendSelected] = useState<boolean>(false);
-  // const [friends, setFriends] = useState([]);
   const [friends, setFriends] = useState([]);
 
   const theme = useContext(ThemeContext);
@@ -85,6 +84,8 @@ const MapPage: React.FC<MapProps> = ({
   const toggleAboutModal = () => {
     setShowAboutModal(!showAboutModal);
   };
+
+
 
   // determines which path to take on route render ie walk, cycle, or drive
   const routeProfiles = [
@@ -115,10 +116,11 @@ const MapPage: React.FC<MapProps> = ({
   }, [friends]);
 
   // in tandem, these load the userLoc marker immediately
-  // const geoControlRef = useRef<mapboxgl.GeolocateControl>();
-  // useEffect(() => {
-  //   geoControlRef.current?.trigger();
-  // }, [geoControlRef.current]);
+  const geoControlRef = useRef<mapboxgl.GeolocateControl>();
+    useEffect(() => {
+      geoControlRef.current?.trigger();
+    }, [geoControlRef.current]);
+  
 
   //gets pins from database then removes all personal pins that don't match userId
   const getPins = async () => {
@@ -141,7 +143,6 @@ const MapPage: React.FC<MapProps> = ({
   const getFriends = async () => {
     try {
       const { data } = await axios.get(`/api/friends/getFriends/${userId}`);
-      // setFriends(data)
       const friends = data.filter((friend: any) => friend.shareLoc === true);
       setFriends(friends);
     } catch (err) {
@@ -173,8 +174,6 @@ const MapPage: React.FC<MapProps> = ({
     } catch (err) {
       console.error(err);
     }
-    //setShareLoc(!shareLoc)
-    //getFriends();
     isSharingLoc();
   };
 
@@ -191,7 +190,6 @@ const MapPage: React.FC<MapProps> = ({
           }
         });
         setFriends((prevFriends) => [...prevFriends]); // assuming everytime state is set there is a new render with updated friend loc
-        // setFriends(friends)
       }
     });
   });
@@ -201,8 +199,6 @@ const MapPage: React.FC<MapProps> = ({
     if (isPinSelected === false && isFriendSelected === false) {
       setShowModal(true);
     }
-    //I really don't think I need this (below)
-    //setSearchParams({lng:`${e.lngLat.lng.toString().slice(0,10)}` , lat:`${e.lngLat.lat.toString().slice(0,9)}`})
   };
 
   //finds clicked marker/pin and friend pin from database
@@ -491,7 +487,6 @@ const MapPage: React.FC<MapProps> = ({
         ref={mapRef}
         {...viewState}
         onMove={(e) => setViewState(e.viewState)}
-        //onClick={(e) => {dropPin(e)}}
         mapboxAccessToken='pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNsb3hkaDFmZTBjeHgycXBpNTkzdWdzOXkifQ.BawBATEi0mOBIdI6TknOIw'
         style={{
           position: 'relative',
@@ -501,18 +496,19 @@ const MapPage: React.FC<MapProps> = ({
         }}
         mapStyle='mapbox://styles/mapbox/streets-v9'
       >
-        {/* <GeolocateControl
-          positionOptions={{ enableHighAccuracy: true }}
-          trackUserLocation={true}
-          showUserHeading={true}
-          showUserLocation={true}
-          showAccuracyCircle={false}
-          ref={geoControlRef}
-        /> */}
+      {isDemoMode ?  
         <Marker longitude={-90.0546585} latitude={29.9631183} anchor='bottom'>
           BOB
-        </Marker>
-
+        </Marker> : 
+        <GeolocateControl
+        positionOptions={{ enableHighAccuracy: true }}
+        trackUserLocation={true}
+        showUserHeading={true}
+        showUserLocation={true}
+        showAccuracyCircle={false}
+        ref={geoControlRef}
+        /> 
+      }
         <div id='map-markers'>
           {renderMarkers.map((marker) => (
             <Marker

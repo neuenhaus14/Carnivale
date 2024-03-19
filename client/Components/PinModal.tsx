@@ -1,9 +1,13 @@
 import React, {useState, useContext} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import axios from 'axios'
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 import Photos from './Photos'
 import CreatePinMap from './CreatePinMap'
 import { ThemeContext, RunModeContext } from './Context'
+
 interface Props {
   setShowModal: any
   markers: any
@@ -108,6 +112,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
                   selectedPin.map((pin: any) => (
                     <div key={pin.id}>
                       <p><b>Submitted by: </b>{pin.firstName} {pin.lastName}</p>
+                      <p><i>{dayjs(pin.createdAt.toString()).format('ddd, MMM D, YYYY h:mm A')}</i></p>
                       <img src={pin.photoURL} alt="Pin Photo" style={{ maxWidth: "100%", height: "auto",  marginTop: "10px"}}/>
                       <br /><p>{pin.description}</p>
                     </div>
