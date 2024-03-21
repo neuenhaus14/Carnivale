@@ -234,8 +234,10 @@ feedRouter.post(
             },
             { where: { voter_userId: userId, pinId: pinId } }
           );
+
           await Pin.increment({ upvotes: 2 }, { where: { id: pinId } });
           res.json({ success: true });
+
         } else {
           res
             .status(400)
@@ -253,7 +255,6 @@ feedRouter.post(
         res.json({ success: true });
       }
     } catch (error) {
-      console.error(`Error handling pin vote:`, error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   }

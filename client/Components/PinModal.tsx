@@ -19,12 +19,13 @@ interface Props {
   isPinSelected: boolean
   setIsPinSelected: any
   selectedPin: any
+  setSelectedPin: any
   userId: number
   userLocation: [number, number]
   setConfirmActionBundle: any
 }
 
-const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers, setMarkers, isPinSelected, setIsPinSelected, userLocation, setConfirmActionBundle} ) => {
+const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelectedPin, markers, setMarkers, isPinSelected, setIsPinSelected, userLocation, setConfirmActionBundle} ) => {
   const theme = useContext(ThemeContext)
   const [isShow, setShow] = useState(true);
   const [isToilet, setIsToilet] =useState(false);
@@ -121,7 +122,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     }
   }
 
-  const handleUpvote = async (pin) => {
+  const handleUpvote = async (photo) => { //the id on pin param is the photo id
     // if demo mode, display toast
     if (isDemoMode) {
       toast('🎭 Post upvoted! 🎭', {
@@ -138,9 +139,10 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
     // else run upvote logic
     else {
       try {
-        await axios.post(`/api/feed/upvote-pin/${userId}/${pin.id}`);
+        await axios.post(`/api/feed/upvote-photo/${userId}/${photo.id}`); //218 Feed.ts
         if (commentVotingStatus !== 'upvoted') {
           setCommentVotingStatus('upvoted');
+          updateSelectedPhoto(photo);
         }
       } catch (err) {
         toast.warning("You've already upvoted this post!");
@@ -181,6 +183,25 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
   };
 
 
+  const updateSelectedPhoto = async (photo: any) => {
+    try {
+      const { data } = await axios.get(`/api/pins/get-pin-photo/${photo.id}`);
+
+      data.forEach((pinPhoto) => {
+
+        selectedPin.forEach((pin) => {
+          if (pinPhoto.id === pin.id){
+            pin.upvotes = pinPhoto.upvotes
+          }
+        });
+
+        setSelectedPin((prevPin) => [...prevPin]);
+      });
+      
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <>
@@ -191,13 +212,13 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
             <Modal.Title > {pinCategory(selectedPin[0].pinCategory)} Pins</Modal.Title>
           </Modal.Header>
           { showPhoto ? (
-          <div>
+            <div>
           <Modal.Body>
             <div id="pin-photos">
-              {console.log(selectedPin)}
                 {
                   selectedPin.map((pin: any) => (
                     <div key={pin.id} className="pin-post-card">
+                      {console.log(selectedPin)}
                       <div className="post-card-sender">Via {pin.firstName} {pin.lastName}<br/>
                       <i>{dayjs(pin.createdAt.toString()).format('ddd, MMM D, YYYY h:mm A')}</i></div>
                       <div className="pin-post-card-image"><img src={pin.photoURL} alt="Pin Photo" style={{ maxWidth: "100%", height: "auto",  marginTop: "10px"}}/></div>
@@ -223,12 +244,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
                             disabled={commentVotingStatus === 'upvoted'}
                           >
                             <IoArrowUpCircle
-                              style={{
-                                color:
-                                  commentVotingStatus === 'upvoted' ? 'green' : 'black',
-                                fontSize: '25px',
-                              }}
-                            />
+                              style={{color: commentVotingStatus === 'upvoted' ? 'green' : 'black', fontSize: '25px', }} />
                           </Button>
                           <span className='mx-2'>{pin.upvotes}</span>
                           <Button

@@ -468,6 +468,7 @@ const MapPage: React.FC<MapProps> = ({
           setMarkers={setMarkers}
           isPinSelected={isPinSelected}
           selectedPin={selectedPin}
+          setSelectedPin={setSelectedPin}
           setIsPinSelected={setIsPinSelected}
           userLocation={userLocation}
           setConfirmActionBundle={setConfirmActionBundle}

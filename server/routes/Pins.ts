@@ -86,4 +86,26 @@ Pins.get('/get-clicked-friend-marker/:lng/:lat', async (req: Request, res: Respo
   }
 })
 
+Pins.delete('/delete-pic/:postId', async (req: Request, res: Response) => {
+
+})
+
+
+Pins.get('/get-pin-photo/:photoId', async (req: Request, res: Response) => {
+  const {photoId} = req.params;
+
+  try { 
+    const pinPhotos = await Photo.findAll({where: {id: photoId}});
+
+    console.log('pinPhotos', pinPhotos);
+    res.status(200).send(pinPhotos)
+
+  } catch (err) {
+    console.error('SERVER ERROR: could not GET pin photo', err);
+    res.status(500).send(err);
+  }
+
+})
+
+
 export default Pins
