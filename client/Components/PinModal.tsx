@@ -122,7 +122,9 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelec
     }
   }
 
-  const handleUpvote = async (photo) => { //the id on pin param is the photo id
+  // handle the upvotes on the pin PHOTO. Can't use upvotes on Pin bc there are multiple pics on each Pin...
+  // the selectedPin on pin param is the photo id. So we are passing in the Pin but calling it photo to be ~clear
+  const handleUpvote = async (photo) => { 
     // if demo mode, display toast
     if (isDemoMode) {
       toast('🎭 Post upvoted! 🎭', {
@@ -142,7 +144,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelec
         await axios.post(`/api/feed/upvote-photo/${userId}/${photo.id}`); //218 Feed.ts
         if (commentVotingStatus !== 'upvoted') {
           setCommentVotingStatus('upvoted');
-          updateSelectedPhoto(photo);
+          updateSelectedPhotoVotes(photo);
         }
       } catch (err) {
         toast.warning("You've already upvoted this post!");
@@ -150,7 +152,9 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelec
     }
   };
 
-  const handleDownvote = async (pin) => {
+  
+  // handle the upvotes on the pin PHOTO. Can't use upvotes on Pin bc there are multiple pics on each Pin...
+  const handleDownvote = async (photo) => {
     // if demo mode, display toast
     if (isDemoMode) {
       toast('🎭 Post downvoted! 🎭', {
@@ -167,12 +171,12 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelec
     // if not demo mode, run downvote logic
     else {
       try {
-        await axios.post(`/api/feed/downvote-pin}/${userId}/${pin.id}`);
-
+        await axios.post(`/api/feed/downvote-photo/${userId}/${photo.id}`); //392 Feed.ts
         if (commentVotingStatus !== 'downvoted') {
           setCommentVotingStatus('downvoted');
+          updateSelectedPhotoVotes(photo);
 
-          if (pin.upvotes - 1 <= -5) {
+          if (photo.upvotes - 1 <= -5) {
             toast.error('Post deleted due to too many downvotes!');
           }
         }
@@ -183,18 +187,17 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelec
   };
 
 
-  const updateSelectedPhoto = async (photo: any) => {
+  // after up or downvote, get request gets the updated pin/photo and updates selectedPin with new vote count
+  const updateSelectedPhotoVotes = async (photo: any) => {
     try {
       const { data } = await axios.get(`/api/pins/get-pin-photo/${photo.id}`);
-
+      
       data.forEach((pinPhoto) => {
-
         selectedPin.forEach((pin) => {
           if (pinPhoto.id === pin.id){
             pin.upvotes = pinPhoto.upvotes
           }
         });
-
         setSelectedPin((prevPin) => [...prevPin]);
       });
       
@@ -218,7 +221,6 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelec
                 {
                   selectedPin.map((pin: any) => (
                     <div key={pin.id} className="pin-post-card">
-                      {console.log(selectedPin)}
                       <div className="post-card-sender">Via {pin.firstName} {pin.lastName}<br/>
                       <i>{dayjs(pin.createdAt.toString()).format('ddd, MMM D, YYYY h:mm A')}</i></div>
                       <div className="pin-post-card-image"><img src={pin.photoURL} alt="Pin Photo" style={{ maxWidth: "100%", height: "auto",  marginTop: "10px"}}/></div>
@@ -352,6 +354,18 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelec
         </Modal.Footer>
       </Modal>)
       }
+      <ToastContainer
+        position='top-right'
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+        theme='light'
+      />
     </>
   )
 }
