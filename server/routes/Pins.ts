@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 const Pins = express.Router()
 import {Photo, Pin} from '../db/index';
 import { Join_pin_photo } from "../db/index";
+import { Join_shared_post } from "../db/index";
+import { Join_photo_vote } from "../db/index";
 import { User } from '../db/index';
 
 // => api/pins/get-pins
@@ -86,9 +88,57 @@ Pins.get('/get-clicked-friend-marker/:lng/:lat', async (req: Request, res: Respo
   }
 })
 
-Pins.delete('/delete-pic/:postId', async (req: Request, res: Response) => {
+Pins.delete(  "/delete-photo/:postId", async (req: Request, res: Response) => {
+  const { postId } = req.params;
+  const { userId, lat, lng } = req.body;
 
-})
+  try {
+    const photo = await Photo.findByPk(postId);
+    console.log(photo)
+
+    if (!photo) {
+      return res.status(404).json({ error: "Photo not found" });
+    }
+
+    if (photo.dataValues.ownerId !== userId) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized to delete this photo" });
+    }
+
+    const clickedPin = await Pin.findOne({where: {longitude: lng, latitude: lat}});
+    console.log("clicked pin", clickedPin)
+    console.log("clicked pin length" )
+
+    const howManyPhotosOnPin = await Join_pin_photo.findAll({where: {pinId: clickedPin.dataValues.id}})
+    console.log('howManyPhotosOnPin', howManyPhotosOnPin);
+    console.log('howManyPhotosOnPin', howManyPhotosOnPin.length)
+
+    await Join_pin_photo.destroy({
+      where: { photoId: postId },
+    });
+
+    await Join_shared_post.destroy({
+      where: { shared_photoId: postId },
+    });
+
+    await Join_photo_vote.destroy({
+      where: { photoId: postId },
+    });
+
+    if (howManyPhotosOnPin.length === 1){
+      await clickedPin.destroy()    
+    }
+ 
+    await photo.destroy();
+
+    return res.status(200).json({ message: "Photo deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+);
 
 
 Pins.get('/get-pin-photo/:photoId', async (req: Request, res: Response) => {

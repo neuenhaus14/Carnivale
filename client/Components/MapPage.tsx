@@ -472,6 +472,7 @@ const MapPage: React.FC<MapProps> = ({
           setIsPinSelected={setIsPinSelected}
           userLocation={userLocation}
           setConfirmActionBundle={setConfirmActionBundle}
+          getPins={getPins}
         />
       ) : null}
       <Form.Switch

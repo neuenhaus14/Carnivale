@@ -23,9 +23,10 @@ interface Props {
   userId: number
   userLocation: [number, number]
   setConfirmActionBundle: any
+  getPins: any
 }
 
-const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelectedPin, markers, setMarkers, isPinSelected, setIsPinSelected, userLocation, setConfirmActionBundle} ) => {
+const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelectedPin, markers, setMarkers, isPinSelected, setIsPinSelected, userLocation, setConfirmActionBundle, getPins} ) => {
   const theme = useContext(ThemeContext)
   const [isShow, setShow] = useState(true);
   const [isToilet, setIsToilet] =useState(false);
@@ -105,15 +106,17 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelec
     return categoryMapping[category]
   }
 
-  const handleDeletePinPic = async (pin) => {
+  const handleDeletePinPic = async (photo) => {
     if (isDemoMode) {
       toast.success('Delete your post!');
     } else {
       try {
-        await axios.delete(`/api/home/delete-photo/${pin.id}`, {
-          data: { userId },
+        const response= await axios.delete(`/api/pins/delete-photo/${photo.id}`, {
+          data: {userId: photo.ownerId, lat: photo.latitude, lng: photo.longitude },
         });
+        console.log('response', response)
         toast.success('Post deleted successfully!');
+        getPins();
        
       } catch (error) {
         console.error('Error deleting post:', error);
@@ -231,7 +234,8 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelec
                             className='post-card-delete-button'
                             variant='danger'
                             onClick={async () => {
-                              await setConfirmActionBundle.setConfirmActionFunction(() => {handleDeletePinPic(pin);});
+                              await setConfirmActionBundle.setConfirmActionFunction(
+                                () => async () => { await handleDeletePinPic(pin); });
                               await setConfirmActionBundle.setConfirmActionText('delete your contribution');
                               await setConfirmActionBundle.setShowConfirmActionModal(true);
                             }}
