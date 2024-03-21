@@ -197,56 +197,55 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, markers,
               {console.log(selectedPin)}
                 {
                   selectedPin.map((pin: any) => (
-                    <div key={pin.id} className="post-card">
+                    <div key={pin.id} className="pin-post-card">
                       <div className="post-card-sender">Via {pin.firstName} {pin.lastName}<br/>
                       <i>{dayjs(pin.createdAt.toString()).format('ddd, MMM D, YYYY h:mm A')}</i></div>
-                      <div className="post-card-image"><img src={pin.photoURL} alt="Pin Photo" style={{ maxWidth: "100%", height: "auto",  marginTop: "10px"}}/></div>
+                      <div className="pin-post-card-image"><img src={pin.photoURL} alt="Pin Photo" style={{ maxWidth: "100%", height: "auto",  marginTop: "10px"}}/></div>
                       <div className="post-card-buttons">
-                      <div className="post-card-content">{pin.description}</div>
-                      {pin.ownerId === userId && (
-                        <Button
-                          className='post-card-delete-button'
-                          variant='danger'
-                          onClick={async () => {
-                            await setConfirmActionBundle.setConfirmActionFunction(() => {handleDeletePinPic(pin);});
-                            await setConfirmActionBundle.setConfirmActionText('delete your contribution');
-                            await setConfirmActionBundle.setShowConfirmActionModal(true);
-                          }}
-                        >
-                          <MdDelete />
-                        </Button>
-                      )}
-                      <div className='vote-buttons-container d-flex flex-row align-items-center'>
-                        <Button
-                          variant='outline-success'
-                          className='vote-button rounded-circle'
-                          onClick={() => handleUpvote(pin)}
-                          disabled={commentVotingStatus === 'upvoted'}
-                        >
-                          <IoArrowUpCircle
-                            style={{
-                              color:
-                                commentVotingStatus === 'upvoted' ? 'green' : 'black',
-                              fontSize: '25px',
+                        <div className="post-card-content">{pin.description}</div>
+                        {pin.ownerId === userId && (
+                          <Button
+                            className='post-card-delete-button'
+                            variant='danger'
+                            onClick={async () => {
+                              await setConfirmActionBundle.setConfirmActionFunction(() => {handleDeletePinPic(pin);});
+                              await setConfirmActionBundle.setConfirmActionText('delete your contribution');
+                              await setConfirmActionBundle.setShowConfirmActionModal(true);
                             }}
-                          />
-                        </Button>
-                        <span className='mx-2'>{pin.upvotes}</span>
-                        <Button
-                          variant='outline-danger'
-                          className='vote-button rounded-circle'
-                          onClick={() => handleDownvote(pin)}
-                          disabled={commentVotingStatus === 'downvoted'}
-                        >
-                          <IoArrowDownCircle
-                            style={{
-                              color:
-                                commentVotingStatus === 'downvoted' ? 'red' : 'black',
-                              fontSize: '25px',
-                            }}
-                          />
-                        </Button>
-                      </div>
+                          ><MdDelete />
+                          </Button>
+                        )}
+                        <div className='vote-buttons-container d-flex flex-row align-items-center'>
+                          <Button
+                            variant='outline-success'
+                            className='vote-button rounded-circle'
+                            onClick={() => handleUpvote(pin)}
+                            disabled={commentVotingStatus === 'upvoted'}
+                          >
+                            <IoArrowUpCircle
+                              style={{
+                                color:
+                                  commentVotingStatus === 'upvoted' ? 'green' : 'black',
+                                fontSize: '25px',
+                              }}
+                            />
+                          </Button>
+                          <span className='mx-2'>{pin.upvotes}</span>
+                          <Button
+                            variant='outline-danger'
+                            className='vote-button rounded-circle'
+                            onClick={() => handleDownvote(pin)}
+                            disabled={commentVotingStatus === 'downvoted'}
+                          >
+                            <IoArrowDownCircle
+                              style={{
+                                color:
+                                  commentVotingStatus === 'downvoted' ? 'red' : 'black',
+                                fontSize: '25px',
+                              }}
+                            />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))
