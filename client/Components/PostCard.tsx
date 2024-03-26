@@ -283,7 +283,7 @@ const PostCard: React.FC<PostCardProps> = ({
               </>
             </div>
           </Card.Text>
-          <div className='post-card-buttons mt-3'>
+          <div className='post-card-buttons mt-2'>
             <div className='vote-buttons-container d-flex flex-row align-items-center'>
               <Button
                 variant='outline-success'

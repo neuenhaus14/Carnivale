@@ -46,7 +46,7 @@ const HomePage: React.FC<HomePageProps> = ({
   const [showAboutModal, setShowAboutModal] = useState(true);
 
   const [key, setKey] = useState('posts');
-  const [order, setOrder] = useState('upvotes');
+  const [order, setOrder] = useState('createdAt');
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
@@ -160,6 +160,7 @@ const HomePage: React.FC<HomePageProps> = ({
     );
   };
 
+  console.log('homepage, order:', order)
   return (
     <Container
       className={`body-with-bottom-panel ${theme} home-page-container`}
@@ -236,7 +237,7 @@ const HomePage: React.FC<HomePageProps> = ({
                 checked={order === 'upvotes'}
               />
             </Form>
-            <div id='create-post-form' className='d-none d-lg-flex d-xl-flex d-xxl-flex w-50'>
+            <div id='create-post-form' className='d-none d-xl-flex d-xxl-flex w-50'>
               <CreateContentForm />
             </div>
           </div>
