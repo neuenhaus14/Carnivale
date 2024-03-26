@@ -237,7 +237,7 @@ const HomePage: React.FC<HomePageProps> = ({
                 checked={order === 'upvotes'}
               />
             </Form>
-            <div id='create-post-form' className='d-none d-lg-flex d-xl-flex d-xxl-flex w-50'>
+            <div id='create-post-form' className='d-none d-xl-flex d-xxl-flex w-50'>
               <CreateContentForm />
             </div>
           </div>
