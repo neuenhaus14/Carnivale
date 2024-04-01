@@ -15,7 +15,12 @@ const RUN_MODE: string = process.env.RUN_MODE;
 // NODE_ENV determines webpack build and the database connection string in db's index.ts
 const NODE_ENV: string = process.env.NODE_ENV;
 
+const TAB_CATEGORIES: string = process.env.TAB_CATEGORIES;
+const PIN_TYPES: string = process.env.PIN_TYPES;
+
 export {
+  TAB_CATEGORIES,
+  PIN_TYPES,
   NODE_ENV,
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
