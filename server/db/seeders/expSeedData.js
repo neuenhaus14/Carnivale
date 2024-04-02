@@ -41,8 +41,8 @@ module.exports = {
 
     // TAG id: 1
     await Tag.create({
-      tag: 'throws'
-    })
+      tag: 'throws',
+    });
 
     // CREATE CONTENT through contentables to take advantage of associations
 
@@ -65,12 +65,6 @@ module.exports = {
       { include: [Content] }
     );
 
-    // Adding tag to first content
-    await Content_tag.create({
-      tagId: 1,
-      contentId: 1
-    })
-
     // id: 2
     await Photo.create(
       {
@@ -88,6 +82,17 @@ module.exports = {
       },
       { include: [Content] }
     );
+
+    // Adding tags to content
+    await Content_tag.create({
+      tagId: 1,
+      contentId: 1,
+    });
+
+    await Content_tag.create({
+      tagId: 1,
+      contentId: 2,
+    });
 
     // id: 3
     await Comment.create(
@@ -130,12 +135,19 @@ module.exports = {
       }
     );
 
-      // SHARING CONTENT id: 1
+    // SHARING CONTENT id: 1
     await Shared_content.create({
       contentId: 1,
       senderId: 1,
-      recipientId: 2
-    })
+      recipientId: 2,
+    });
+
+    await Shared_content.create({
+      contentId: 2,
+      senderId: 1,
+      recipientId: 2,
+    });
+
   },
 
   down: async (queryInterface, Sequelize) => {

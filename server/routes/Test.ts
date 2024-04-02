@@ -26,7 +26,7 @@ Test.get('/getContent/:id', async (req: Request, res: Response) => {
     });
 
     contentResponse.dataValues.contentable = contentResponse.contentable;
-    console.log('HERE', contentResponse)
+    console.log('HERE', contentResponse);
     res.status(200).send(contentResponse);
   } catch (e) {
     console.error(e);
@@ -89,27 +89,30 @@ Test.get('/getSharedContent/:userId', async (req: Request, res: Response) => {
   const recipientId = Number(req.params.userId);
 
   try {
-    // const sharedContentResponse = await Shared_content.findAll({
-    //   where: {
-    //     recipientId,
-    //   },
-    //   include: [
-    //     { model: User, as: 'sender' },
-    //     { model: User, as: 'recipient' },
-    //     { model: Content, include: [Tag] },
-    //   ],
-    // });
+    // STEP 1: get all content shared with a user (recipient)
+    const sharedContentResponse = await Shared_content.findAll({
+      where: {
+        recipientId,
+      },
+      include: [
+        { model: User, as: 'sender' },
+        { model: Content, include: [Tag] },
+      ],
+    });
 
-    // console.log('HERE: ', sharedContentResponse[0]);
-    // res.status(200).send(sharedContentResponse);
+    // STEP 2: get the contentable associated with each item of shared content. TODO: figure out how to achieve this with getContentable, a method of the Content model
+    const sharedContentWithContentablesResponse = await Promise.all(
+      sharedContentResponse.map(async (sharedContent) => {
+        const contentId = sharedContent.dataValues.contentId;
+        const contentableResponse = await Content.findByPk(contentId, {
+          include: [Pin, Photo, Plan, Comment],
+        });
+        sharedContent.dataValues.contentable = contentableResponse.contentable;
+        return sharedContent;
+      })
+    );
 
-    const content1 = await Content.findByPk(1);
-
-    // const contentable1 = await content1.getContentable({where:{id:1}});
-
-    console.log('HEERE', Content.findByPk.toString())
-
-    res.status(200).send(content1)
+    res.status(200).json(sharedContentWithContentablesResponse);
   } catch (e) {
     console.error('SERVER ERROR, failed to get shared content', e);
     res.status(500).send(e);
