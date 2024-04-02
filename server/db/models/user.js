@@ -22,7 +22,9 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   User.associate = function (models) {
-    User.hasMany(models.content);
+    User.hasMany(models.content, {
+      foreignKey: 'userId'
+    });
   };
   return User;
 };

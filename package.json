@@ -11,7 +11,7 @@
     "start-prod": "ts-node server/index.ts",
     "seed-dev": "npx sequelize db:drop --env development && npx sequelize db:create --env development && ts-node server/db/seed.ts && npx sequelize db:seed --seed devSeedData.js",
     "seed-prod": "npx sequelize db:drop --env production && npx sequelize db:create --env production && ts-node server/db/seed.ts && npx sequelize db:seed --env production --seed prodSeedData.js",
-    "seed-exp": "ts-node server/db/seedExp.ts",
+    "seed-exp": "ts-node server/db/seedExp.ts && npx sequelize-cli db:seed  --env experimental --seed expSeedData.js",
     "scrape": "ts-node server/routes/scrapeEvents"
   },
   "repository": {
