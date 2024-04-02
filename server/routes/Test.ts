@@ -26,7 +26,7 @@ Test.get('/getContent/:id', async (req: Request, res: Response) => {
     });
 
     contentResponse.dataValues.contentable = contentResponse.contentable;
-
+    console.log('HERE', contentResponse)
     res.status(200).send(contentResponse);
   } catch (e) {
     console.error(e);
@@ -45,10 +45,7 @@ Test.get(
         include: [
           {
             model: Content,
-            include: [
-              { model: User },
-              { model: Tag },
-            ],
+            include: [{ model: User }, { model: Tag }],
           },
         ],
       };
@@ -89,20 +86,34 @@ Test.get(
 );
 
 Test.get('/getSharedContent/:userId', async (req: Request, res: Response) => {
-  const recipientId = Number(req.params.userId)
+  const recipientId = Number(req.params.userId);
 
   try {
-    const sharedContentResponse = await Shared_content.findAll({
-      where: {
-        recipientId
-      }
-    })
-    res.status(200).send(sharedContentResponse);
-  } catch (e) {
-    console.error('SERVER ERROR, failed to get shared content', e)
-    res.status(500).send(e)
-  }
+    // const sharedContentResponse = await Shared_content.findAll({
+    //   where: {
+    //     recipientId,
+    //   },
+    //   include: [
+    //     { model: User, as: 'sender' },
+    //     { model: User, as: 'recipient' },
+    //     { model: Content, include: [Tag] },
+    //   ],
+    // });
 
-})
+    // console.log('HERE: ', sharedContentResponse[0]);
+    // res.status(200).send(sharedContentResponse);
+
+    const content1 = await Content.findByPk(1);
+
+    // const contentable1 = await content1.getContentable({where:{id:1}});
+
+    console.log('HEERE', Content.findByPk.toString())
+
+    res.status(200).send(content1)
+  } catch (e) {
+    console.error('SERVER ERROR, failed to get shared content', e);
+    res.status(500).send(e);
+  }
+});
 
 export default Test;

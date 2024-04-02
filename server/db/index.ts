@@ -472,3 +472,19 @@ export {
   Join_shared_post,
   Join_user_event,
 };
+
+// REFERENCE FOR GETTING INCLUDES RIGHT
+// Join_shared_post.belongsTo(User, {
+//   as: 'senderUserId',
+//   foreignKey: {
+//     name: 'sender_userId',
+//   },
+// });
+
+// User.hasMany(Join_shared_post
+// , {
+// //   //as: 'senderUserId',
+//   foreignKey: {
+//     name: 'sender_userId',
+//   },
+// });
