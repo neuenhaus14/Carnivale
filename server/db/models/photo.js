@@ -11,11 +11,19 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   Photo.associate = function (models) {
+    // Photo.hasOne(models.content, {
+    //   foreignKey : {
+    //     name: 'photoId',
+    //   },
+    // });
+
     Photo.hasOne(models.content, {
-      foreignKey : {
-        name: 'photoId',
-      },
-    });
+      foreignKey: 'contentableId',
+      constraints: false,
+      scope: {
+        contentableType: 'photo'
+      }
+    })
   };
   return Photo;
 };

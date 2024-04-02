@@ -17,11 +17,19 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   Plan.associate = function (models) {
+    // Plan.hasOne(models.content, {
+    //   foreignKey : {
+    //     name: 'planId',
+    //   },
+    // });
+
     Plan.hasOne(models.content, {
-      foreignKey : {
-        name: 'planId',
-      },
-    });
+      foreignKey: 'contentableId',
+      constraints: false,
+      scope: {
+        contentableType: 'plan'
+      }
+    })
   };
   return Plan;
 };

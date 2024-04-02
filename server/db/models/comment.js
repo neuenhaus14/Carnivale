@@ -7,11 +7,19 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   Comment.associate = function (models) {
+    // Comment.hasOne(models.content, {
+    //   foreignKey : {
+    //     name: 'commentId',
+    //   },
+    // });
+
     Comment.hasOne(models.content, {
-      foreignKey : {
-        name: 'commentId',
-      },
-    });
+      foreignKey: 'contentableId',
+      constraints: false,
+      scope: {
+        contentableType: 'comment'
+      }
+    })
   };
   return Comment;
 };

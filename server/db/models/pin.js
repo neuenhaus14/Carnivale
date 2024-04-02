@@ -23,12 +23,21 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   Pin.associate = function (models) {
+    // Pin.hasOne(models.content, {
+    //   foreignKey : {
+    //     name: 'pinId',
+    //   },
+    // });
+    // NOT SURE IF THIS IS NEEDED
+    // Pin.Content = Pin.belongsTo(models.content)
+
     Pin.hasOne(models.content, {
-      foreignKey : {
-        name: 'pinId',
-      },
-    });
-    Pin.Content = Pin.belongsTo(models.content)
+      foreignKey: 'contentableId',
+      constraints: false,
+      scope: {
+        contentableType: 'pin'
+      }
+    })
   };
   return Pin;
 };
