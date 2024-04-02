@@ -9,12 +9,14 @@ const Photo = models.photo;
 const Comment = models.comment;
 const Plan = models.plan;
 const Tag = models.tag;
+const Content_tag = models.content_tag;
+const Shared_content = models.shared_content;
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert('users', [
       {
-        email: 'a@b.com',
+        email: 'Bob@Johnson.com',
         phone: '123-456-7890',
         firstName: 'Bob',
         lastName: 'Johnson',
@@ -24,9 +26,27 @@ module.exports = {
         updatedAt: new Date(),
         shareLoc: true,
       },
+      {
+        email: 'Marta@Smith.com',
+        phone: '321-654-0987',
+        firstName: 'Marta',
+        lastName: 'Smith',
+        latitude: 29.963864,
+        longitude: -90.05213,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        shareLoc: true,
+      },
     ]);
 
-    // create Pin through Content to take advantage of all Content's associations
+    // TAG id: 1
+    await Tag.create({
+      tag: 'throws'
+    })
+
+    // CREATE CONTENT through contentables to take advantage of associations
+
+    // id: 1
     await Pin.create(
       {
         pinType: 'EMT',
@@ -40,14 +60,18 @@ module.exports = {
           upvotes: 0,
           placement: 'public',
           userId: 1,
-          // TODO: figure out including the tags in adding an object
-          // tags: [{
-          //   tag: 'Throws',
-          // }],
         },
       },
       { include: [Content] }
     );
+
+    // Adding tag to first content
+    await Content_tag.create({
+      tagId: 1,
+      contentId: 1
+    })
+
+    // id: 2
     await Photo.create(
       {
         content: {
@@ -65,6 +89,7 @@ module.exports = {
       { include: [Content] }
     );
 
+    // id: 3
     await Comment.create(
       {
         content: {
@@ -81,6 +106,7 @@ module.exports = {
       { include: [Content] }
     );
 
+    // id: 4
     await Plan.create(
       {
         content: {
@@ -103,6 +129,13 @@ module.exports = {
         include: [Content],
       }
     );
+
+      // SHARING CONTENT id: 1
+    await Shared_content.create({
+      contentId: 1,
+      senderId: 1,
+      recipientId: 2
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

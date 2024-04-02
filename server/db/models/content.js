@@ -61,8 +61,10 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   Content.associate = function (models) {
+    // USER
     Content.belongsTo(models.user);
 
+    // CONTENTABLES
     Content.belongsTo(models.pin, {
       foreignKey: 'contentableId',
       constraints: false,
@@ -80,8 +82,12 @@ module.exports = (sequelize, Sequelize) => {
       constraints: false,
     });
 
-    Content.belongsToMany(models.tag, { through: 'Content_Tags' });
+    // TAGS
+    Content.belongsToMany(models.tag, { through: models.content_tag });
     Content.hasMany(models.content_tag);
+
+    // SHARED CONTENT
+    Content.hasMany(models.shared_content, { foreignKey: 'contentId'})
   };
   return Content;
 };

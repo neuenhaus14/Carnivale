@@ -25,6 +25,12 @@ module.exports = (sequelize, Sequelize) => {
     User.hasMany(models.content, {
       foreignKey: 'userId'
     });
+    User.hasMany(models.shared_content, {
+      foreignKey: 'senderId'
+    })
+    User.hasMany(models.shared_content, {
+      foreignKey: 'recipientId'
+    })
   };
   return User;
 };

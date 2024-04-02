@@ -4,7 +4,7 @@ module.exports = (sequelize, Sequelize) => {
   })
 
   Tag.associate = function(models) {
-    Tag.belongsToMany(models.content, {through : 'Content_Tags'});
+    Tag.belongsToMany(models.content, {through : models.content_tag});
     Tag.hasMany(models.content_tag);
   }
   return Tag;

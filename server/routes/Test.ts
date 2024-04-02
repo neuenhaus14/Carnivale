@@ -7,6 +7,9 @@ const Pin = models.pin;
 const Comment = models.comment;
 const Plan = models.plan;
 const User = models.user;
+const Tag = models.tag;
+const Content_tag = models.content_tag;
+const Shared_content = models.shared_content;
 
 const Test = Router();
 
@@ -22,13 +25,7 @@ Test.get('/getContent/:id', async (req: Request, res: Response) => {
       include: [User, Plan, Pin, Comment, Photo],
     });
 
-    console.log('response dataValues', contentResponse.dataValues);
-    console.log('response contentable', contentResponse.contentable);
-
     contentResponse.dataValues.contentable = contentResponse.contentable;
-
-    // const content = contentResponse.contentable;
-    // const responseObject = {...contentResponse, content};
 
     res.status(200).send(contentResponse);
   } catch (e) {
@@ -44,27 +41,42 @@ Test.get(
 
     try {
       let contentableResponse;
+      const includeOptions = {
+        include: [
+          {
+            model: Content,
+            include: [
+              { model: User },
+              { model: Tag },
+            ],
+          },
+        ],
+      };
 
       switch (contentableType) {
         case 'pin':
-          contentableResponse = await Pin.findByPk(Number(contentableId), {
-            include: {model: Content, include: [User]},
-          });
+          contentableResponse = await Pin.findByPk(
+            Number(contentableId),
+            includeOptions
+          );
           break;
         case 'photo':
-          contentableResponse = await Photo.findByPk(Number(contentableId), {
-            include: {model: Content, include: [User]},
-          });
+          contentableResponse = await Photo.findByPk(
+            Number(contentableId),
+            includeOptions
+          );
           break;
         case 'plan':
-          contentableResponse = await Plan.findByPk(Number(contentableId), {
-            include: {model: Content, include: [User]},
-          });
+          contentableResponse = await Plan.findByPk(
+            Number(contentableId),
+            includeOptions
+          );
           break;
         case 'comment':
-          contentableResponse = await Comment.findByPk(Number(contentableId), {
-            include: {model: Content, include: [User]},
-          });
+          contentableResponse = await Comment.findByPk(
+            Number(contentableId),
+            includeOptions
+          );
           break;
       }
 
@@ -75,5 +87,22 @@ Test.get(
     }
   }
 );
+
+Test.get('/getSharedContent/:userId', async (req: Request, res: Response) => {
+  const recipientId = Number(req.params.userId)
+
+  try {
+    const sharedContentResponse = await Shared_content.findAll({
+      where: {
+        recipientId
+      }
+    })
+    res.status(200).send(sharedContentResponse);
+  } catch (e) {
+    console.error('SERVER ERROR, failed to get shared content', e)
+    res.status(500).send(e)
+  }
+
+})
 
 export default Test;
