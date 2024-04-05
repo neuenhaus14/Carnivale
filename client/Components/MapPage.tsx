@@ -502,8 +502,10 @@ const MapPage: React.FC<MapProps> = ({
         mapStyle='mapbox://styles/mapbox/streets-v9'
       >
       {isDemoMode ?  
-        <Marker longitude={-90.0546585} latitude={29.9631183} anchor='bottom'>
-          BOB
+        <Marker longitude={-90.0546585} latitude={29.9631183} anchor='bottom' style={{color: "red"}}>
+          YOU<br/> 
+          ARE <br/>
+          HERE <br/>
         </Marker> : 
         <GeolocateControl
         positionOptions={{ enableHighAccuracy: true }}

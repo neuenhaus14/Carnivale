@@ -94,48 +94,33 @@ Pins.delete(  "/delete-photo/:postId", async (req: Request, res: Response) => {
 
   try {
     const photo = await Photo.findByPk(postId);
-    console.log(photo)
 
     if (!photo) {
-      return res.status(404).json({ error: "Photo not found" });
+      return res.sendStatus(404);
     }
 
     if (photo.dataValues.ownerId !== userId) {
-      return res
-        .status(403)
-        .json({ error: "Unauthorized to delete this photo" });
+      return res.sendStatus(403);
     }
 
     const clickedPin = await Pin.findOne({where: {longitude: lng, latitude: lat}});
-    console.log("clicked pin", clickedPin)
-    console.log("clicked pin length" )
+    const howManyPhotosOnPin = await Join_pin_photo.findAll({where: {pinId: clickedPin.dataValues.id}});
 
-    const howManyPhotosOnPin = await Join_pin_photo.findAll({where: {pinId: clickedPin.dataValues.id}})
-    console.log('howManyPhotosOnPin', howManyPhotosOnPin);
-    console.log('howManyPhotosOnPin', howManyPhotosOnPin.length)
-
-    await Join_pin_photo.destroy({
-      where: { photoId: postId },
-    });
-
-    await Join_shared_post.destroy({
-      where: { shared_photoId: postId },
-    });
-
-    await Join_photo_vote.destroy({
-      where: { photoId: postId },
-    });
+    await Join_pin_photo.destroy({where: { photoId: postId }});
+    await Join_shared_post.destroy({where: { shared_photoId: postId }});
+    await Join_photo_vote.destroy({where: { photoId: postId }});
 
     if (howManyPhotosOnPin.length === 1){
       await clickedPin.destroy()    
     }
  
     await photo.destroy();
+    return res.sendStatus(200);
 
-    return res.status(200).json({ message: "Photo deleted successfully" });
   } catch (err) {
+
     console.error(err);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.sendStatus(500);
   }
 }
 );
@@ -146,8 +131,6 @@ Pins.get('/get-pin-photo/:photoId', async (req: Request, res: Response) => {
 
   try { 
     const pinPhotos = await Photo.findAll({where: {id: photoId}});
-
-    console.log('pinPhotos', pinPhotos);
     res.status(200).send(pinPhotos)
 
   } catch (err) {

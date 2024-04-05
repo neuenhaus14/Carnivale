@@ -1,6 +1,7 @@
 import React, {useState, useContext, useEffect} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import { toast, ToastContainer } from 'react-toastify';
+import { Popup } from 'react-map-gl';
 import axios from 'axios'
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -233,7 +234,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelec
                           <Button
                             className='post-card-delete-button'
                             variant='danger'
-                            onClick={async () => {
+                            onClick={ isDemoMode? null : async () => {
                               await setConfirmActionBundle.setConfirmActionFunction(
                                 () => async () => { await handleDeletePinPic(pin); });
                               await setConfirmActionBundle.setConfirmActionText('delete your contribution');
@@ -246,7 +247,7 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelec
                           <Button
                             variant='outline-success'
                             className='vote-button rounded-circle'
-                            onClick={() => handleUpvote(pin)}
+                            onClick={() => {handleUpvote(pin)}}
                             disabled={commentVotingStatus === 'upvoted'}
                           >
                             <IoArrowUpCircle
@@ -280,27 +281,27 @@ const PinModal: React.FC<Props> = ( {userId, setShowModal, selectedPin, setSelec
             <Button className="btn" onClick={() => {setShowPhoto(false)}}> Add Photo </Button>
           </Modal.Footer>
           </div>
-            ) : (
-          <div>
-          <Modal.Body>
-            <Form.Group className="mb-3" controlId="picture spot" >
-            { selectedPin.map((pin: any) => (
-            <Photos
-            key={pin.id}
-            lat={pin.latitude}
-            lng={pin.longitude}
-            saveCreatedPin={saveCreatedPin}
-            latPost={null} lngPost={null} isThrow={null} isCostume={null} createPhoto={null} userId={userId}/>
-            ))}
-            </Form.Group>
-          </Modal.Body>
-          </div>
-              )
-            }
+            ) : ( 
+            <div>
+            <Modal.Body>
+              <Form.Group className="mb-3" controlId="picture spot" >
+              { selectedPin.map((pin: any) => (
+              <Photos
+              key={pin.id}
+              lat={pin.latitude}
+              lng={pin.longitude}
+              saveCreatedPin={saveCreatedPin}
+              latPost={null} lngPost={null} isThrow={null} isCostume={null} createPhoto={null} userId={userId}/>
+              ))}
+              </Form.Group>
+            </Modal.Body>
+            </div>
+                )
+              }
         </Modal>
       )
     :
-    (
+    ( 
       <Modal className={theme} show={isShow} onHide={initModal}>
         <Modal.Header id="modal-header" closeButton onClick={initModal}>
           <Modal.Title>Create a Pin</Modal.Title>
