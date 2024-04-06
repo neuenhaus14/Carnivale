@@ -22,11 +22,10 @@ Test.get('/getContent/:id', async (req: Request, res: Response) => {
 
   try {
     const contentResponse = await Content.findByPk(id, {
-      include: [User, Plan, Pin, Comment, Photo],
+      include: [User, Plan, Pin, Comment, Photo, Tag],
     });
 
     contentResponse.dataValues.contentable = contentResponse.contentable;
-    console.log('HERE', contentResponse);
     res.status(200).send(contentResponse);
   } catch (e) {
     console.error(e);

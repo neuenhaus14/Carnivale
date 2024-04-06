@@ -1,4 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
+  console.log('SHARED_CONTENT!')
+
   const Shared_content = sequelize.define('shared_content', {
     id: {
       type: Sequelize.INTEGER,

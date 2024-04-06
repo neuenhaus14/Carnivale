@@ -1,5 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
-  const Plan = sequelize.define("plan", {
+  console.log('PLAN!');
+  const Plan = sequelize.define('plan', {
     name: Sequelize.STRING,
     description: Sequelize.STRING,
     address: Sequelize.STRING,
@@ -27,9 +28,9 @@ module.exports = (sequelize, Sequelize) => {
       foreignKey: 'contentableId',
       constraints: false,
       scope: {
-        contentableType: 'plan'
-      }
-    })
+        contentableType: 'plan',
+      },
+    });
   };
   return Plan;
 };

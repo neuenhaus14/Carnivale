@@ -1,4 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
+  console.log('CONTENT!')
   const Content = sequelize.define('content', {
     latitude: Sequelize.DECIMAL,
     longitude: Sequelize.DECIMAL,
@@ -10,11 +11,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.ENUM('public', 'private', 'ad', 'system'),
       allowNull: false,
     },
-    // photoId: Sequelize.INTEGER,
-    // commentId: Sequelize.INTEGER,
-    // planId: Sequelize.INTEGER,
-    // pinId: Sequelize.INTEGER,
-    contentableType: Sequelize.STRING,
+    contentableType: Sequelize.ENUM('photo', 'comment', 'plan', 'pin'),
     contentableId: Sequelize.INTEGER,
   });
 
@@ -87,7 +84,13 @@ module.exports = (sequelize, Sequelize) => {
     Content.hasMany(models.content_tag);
 
     // SHARED CONTENT
-    Content.hasMany(models.shared_content, { foreignKey: 'contentId'})
+    Content.hasMany(models.shared_content, { foreignKey: 'contentId'});
+
+    // // SHARED CONTENT STATUS
+    Content.hasMany(models.shared_content_status, {foreignKey: 'contentId'})
+
+    // // VOTES
+    Content.hasMany(models.user_vote, {foreignKey: 'contentId'})
   };
   return Content;
 };

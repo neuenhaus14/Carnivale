@@ -1,4 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
+  console.log('COMMENT!')
   const Comment = sequelize.define("comment", {
     description: {
       type: Sequelize.STRING,

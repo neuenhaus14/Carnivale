@@ -2,12 +2,12 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-
 const PIN_TYPES = process.env.PIN_TYPES;
-const PIN_TYPES_ARRAY = PIN_TYPES.split(' ')
+const PIN_TYPES_ARRAY = PIN_TYPES.split(' ');
 
 module.exports = (sequelize, Sequelize) => {
-  const Pin = sequelize.define("pin", {
+  console.log('PIN!');
+  const Pin = sequelize.define('pin', {
     pinType: {
       type: Sequelize.ENUM(...PIN_TYPES_ARRAY),
       allowNull: false,
@@ -35,9 +35,9 @@ module.exports = (sequelize, Sequelize) => {
       foreignKey: 'contentableId',
       constraints: false,
       scope: {
-        contentableType: 'pin'
-      }
-    })
+        contentableType: 'pin',
+      },
+    });
   };
   return Pin;
 };

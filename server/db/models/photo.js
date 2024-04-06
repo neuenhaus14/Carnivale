@@ -1,5 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
-  const Photo = sequelize.define("photo", {
+  console.log('PHOTO!');
+  const Photo = sequelize.define('photo', {
     photoURL: {
       type: Sequelize.STRING,
       allowNull: false,
@@ -21,9 +22,9 @@ module.exports = (sequelize, Sequelize) => {
       foreignKey: 'contentableId',
       constraints: false,
       scope: {
-        contentableType: 'photo'
-      }
-    })
+        contentableType: 'photo',
+      },
+    });
   };
   return Photo;
 };

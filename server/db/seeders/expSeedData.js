@@ -11,6 +11,7 @@ const Plan = models.plan;
 const Tag = models.tag;
 const Content_tag = models.content_tag;
 const Shared_content = models.shared_content;
+const Shared_content_status = models.shared_content_status;
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -135,18 +136,31 @@ module.exports = {
       }
     );
 
-    // SHARING CONTENT id: 1
+    // SHARING CONTENT id: 1 (the pin)
     await Shared_content.create({
       contentId: 1,
       senderId: 1,
       recipientId: 2,
     });
 
+    // sharing the photo
     await Shared_content.create({
       contentId: 2,
       senderId: 1,
       recipientId: 2,
     });
+
+    // marking if content is archived (defaults isArchived = false;)
+    // await Shared_content_status.create({
+    //   contentId: 1,
+    //   userId: 2
+    // })
+
+    // await Shared_content_status.create({
+    //   contentId: 1,
+    //   userId: 2,
+    //   isArchived: true,
+    // })
 
   },
 
