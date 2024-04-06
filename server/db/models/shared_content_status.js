@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  console.log('SHARED_CONTENT_STATUS!')
+  // console.log('SHARED_CONTENT_STATUS!')
 
   const Shared_content_status = sequelize.define('shared_content_status', {
     isArchived: { type: Sequelize.BOOLEAN, defaultValue: false },
@@ -13,4 +13,5 @@ module.exports = (sequelize, Sequelize) => {
       foreignKey: 'contentId',
     });
   };
+  return Shared_content_status;
 };

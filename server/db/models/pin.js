@@ -6,7 +6,7 @@ const PIN_TYPES = process.env.PIN_TYPES;
 const PIN_TYPES_ARRAY = PIN_TYPES.split(' ');
 
 module.exports = (sequelize, Sequelize) => {
-  console.log('PIN!');
+  // console.log('PIN!');
   const Pin = sequelize.define('pin', {
     pinType: {
       type: Sequelize.ENUM(...PIN_TYPES_ARRAY),

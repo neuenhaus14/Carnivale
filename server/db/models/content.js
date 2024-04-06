@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  console.log('CONTENT!')
+  // console.log('CONTENT!')
   const Content = sequelize.define('content', {
     latitude: Sequelize.DECIMAL,
     longitude: Sequelize.DECIMAL,

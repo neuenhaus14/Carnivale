@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  console.log('PLAN!');
+  // console.log('PLAN!');
   const Plan = sequelize.define('plan', {
     name: Sequelize.STRING,
     description: Sequelize.STRING,

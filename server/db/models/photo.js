@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  console.log('PHOTO!');
+  // console.log('PHOTO!');
   const Photo = sequelize.define('photo', {
     photoURL: {
       type: Sequelize.STRING,

@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  console.log('USER_PLAN!')
+  // console.log('USER_PLAN!')
 
   const User_plan = sequelize.define('user_plan', {
     status: Sequelize.ENUM('pending', 'accepted', 'denied')
@@ -15,4 +15,5 @@ module.exports = (sequelize, Sequelize) => {
       foreignKey: 'inviterId'
     })
   }
+  return User_plan;
 }

@@ -10,6 +10,7 @@ const User = models.user;
 const Tag = models.tag;
 const Content_tag = models.content_tag;
 const Shared_content = models.shared_content;
+const Shared_content_status = models.shared_content_status;
 
 const Test = Router();
 
@@ -95,7 +96,7 @@ Test.get('/getSharedContent/:userId', async (req: Request, res: Response) => {
       },
       include: [
         { model: User, as: 'sender' },
-        { model: Content, include: [Tag] },
+        { model: Content, include: [Tag, Shared_content_status] },
       ],
     });
 

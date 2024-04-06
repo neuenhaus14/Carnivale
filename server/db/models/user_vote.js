@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  console.log('USER_VOTE!');
+  // console.log('USER_VOTE!');
   const User_vote = sequelize.define('user_vote', {
     vote: Sequelize.ENUM('up', 'down', 'none'),
   });
@@ -12,4 +12,5 @@ module.exports = (sequelize, Sequelize) => {
       foreignKey: 'contentId'
     })
   }
+  return User_vote;
 };

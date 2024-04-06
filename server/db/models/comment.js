@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
-  console.log('COMMENT!')
-  const Comment = sequelize.define("comment", {
+  // console.log('COMMENT!');
+  const Comment = sequelize.define('comment', {
     description: {
       type: Sequelize.STRING,
       allowNull: false,
@@ -18,9 +18,9 @@ module.exports = (sequelize, Sequelize) => {
       foreignKey: 'contentableId',
       constraints: false,
       scope: {
-        contentableType: 'comment'
-      }
-    })
+        contentableType: 'comment',
+      },
+    });
   };
   return Comment;
 };

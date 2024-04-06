@@ -151,16 +151,16 @@ module.exports = {
     });
 
     // marking if content is archived (defaults isArchived = false;)
-    // await Shared_content_status.create({
-    //   contentId: 1,
-    //   userId: 2
-    // })
+    await Shared_content_status.create({
+      contentId: 1,
+      userId: 2
+    })
 
-    // await Shared_content_status.create({
-    //   contentId: 1,
-    //   userId: 2,
-    //   isArchived: true,
-    // })
+    await Shared_content_status.create({
+      contentId: 2,
+      userId: 2,
+      isArchived: true,
+    })
 
   },
 

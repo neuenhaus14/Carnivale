@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  console.log('USER_FRIEND!');
+  // console.log('USER_FRIEND!');
 
   const User_friend = sequelize.define('user_friend', {
     status: {
@@ -16,4 +16,5 @@ module.exports = (sequelize, Sequelize) => {
       foreignKey: 'recipientId',
     });
   };
+  return User_friend;
 };
