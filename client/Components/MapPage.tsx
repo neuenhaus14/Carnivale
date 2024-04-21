@@ -497,7 +497,7 @@ const MapPage: React.FC<MapProps> = ({
           position: 'relative',
           bottom: '0px',
           maxWidth: '100vw',
-          height: '50vh',
+          height: '80vh',
         }}
         mapStyle='mapbox://styles/mapbox/streets-v9'
       >
@@ -509,11 +509,11 @@ const MapPage: React.FC<MapProps> = ({
           showAccuracyCircle={false}
           ref={geoControlRef}
         /> */}
-        <Marker longitude={-90.0546585} latitude={29.9631183} anchor='bottom'>
+        {/* <Marker longitude={-90.0546585} latitude={29.9631183} anchor='bottom'>
           BOB
-        </Marker>
+        </Marker> */}
 
-        <div id='map-markers'>
+        {/* <div id='map-markers'>
           {renderMarkers.map((marker) => (
             <Marker
               key={marker.id}
@@ -529,8 +529,8 @@ const MapPage: React.FC<MapProps> = ({
               color={pinCategoryColor(marker)}
             ></Marker>
           ))}
-        </div>
-        <div id='friend-markers'>
+        </div> */}
+        {/* <div id='friend-markers'>
           {friends.map((friend) => (
             <Marker
               key={friend.id}
@@ -554,7 +554,7 @@ const MapPage: React.FC<MapProps> = ({
               </div>
             </Marker>
           ))}
-        </div>
+        </div> */}
         {/* <div id='event-markers'>
         {
           events.map((event) => (
@@ -626,7 +626,7 @@ const MapPage: React.FC<MapProps> = ({
             </Card.Body>
           </Card>
         )}
-        <button
+        {/* <button
           onClick={(e) => {
             dropPin(e);
           }}
@@ -643,9 +643,9 @@ const MapPage: React.FC<MapProps> = ({
               bottom: '8%',
             }}
           />
-        </button>
+        </button> */}
       </Map>
-      <div id='map-filter-container' className='container'>
+      {/* <div id='map-filter-container' className='container'>
         <p style={{ textAlign: 'center' }}>FILTER PINS</p>
         <div
           className='filter-buttons'
@@ -740,7 +740,7 @@ const MapPage: React.FC<MapProps> = ({
         >
           Clear Filter
         </Button>
-      </div>
+      </div> */}
     </Container>
   );
 };

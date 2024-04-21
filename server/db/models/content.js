@@ -13,6 +13,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     contentableType: Sequelize.ENUM('photo', 'comment', 'plan', 'pin'),
     contentableId: Sequelize.INTEGER,
+    parentId: Sequelize.INTEGER,
   });
 
   // For polymorphic loading. See: https://sequelize.org/docs/v6/advanced-association-concepts/polymorphic-associations/
@@ -58,6 +59,17 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   Content.associate = function (models) {
+    // PARENT ID FOR THREADING
+    Content.belongsTo(models.content, {
+      as: 'parent',
+      foreignKey: 'parentId',
+      constraints: false
+    })
+    Content.hasOne(models.content, {
+      foreignKey: 'parentId',
+      constraints: false
+    })
+
     // USER
     Content.belongsTo(models.user);
 

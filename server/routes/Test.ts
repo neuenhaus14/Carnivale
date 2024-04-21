@@ -21,13 +21,59 @@ Test.get('/getTest', (req: Request, res: Response) => {
 Test.get('/getContent/:id', async (req: Request, res: Response) => {
   const id = req.params.id;
 
-  try {
+  const getById = async (id) => {
     const contentResponse = await Content.findByPk(id, {
-      include: [User, Plan, Pin, Comment, Photo, Tag],
+      include: [
+        { model: User },
+        { model: Plan },
+        { model: Pin },
+        { model: Comment },
+        { model: Photo },
+        { model: Tag },
+      ],
     });
 
     contentResponse.dataValues.contentable = contentResponse.contentable;
-    res.status(200).send(contentResponse);
+    return contentResponse;
+  };
+
+  try {
+    // TODO: recursively lookup content with a parentId of the input Id and add that to the root object
+    const getContentWithChildren = async (id) => {
+      const root = await getById(id);
+
+      const getChildren = async (node: any) => {
+        // get children from Content table
+        const nodeChildren = await Content.findAll({
+          where: { parentId: node.id },
+        });
+
+        // if the node has children...
+        if (nodeChildren.length > 0) {
+
+          // console.log('node in question:', node, 'node children:', nodeChildrenResponse)
+          const nodeChildrenWithContentable = await Promise.all(
+            nodeChildren.map(
+              async (child) => await getById(child.dataValues.id)
+            )
+          );
+
+          console.log('node children with C', nodeChildrenWithContentable);
+          node.dataValues.children = nodeChildrenWithContentable;
+
+          for (const childNode of node.dataValues.children) {
+            await getChildren(childNode);
+          }
+        }
+      };
+
+      await getChildren(root);
+      return root;
+    };
+
+    const contentThread = await getContentWithChildren(id);
+
+    res.status(200).send(contentThread);
   } catch (e) {
     console.error(e);
     res.status(500).send('Error');

@@ -55,6 +55,7 @@ module.exports = {
         description: "There's an EMT over here",
         createdAt: new Date(),
         updatedAt: new Date(),
+        parentId: null,
         content: {
           latitude: 29.963864,
           longitude: -90.05213,
@@ -66,7 +67,7 @@ module.exports = {
       { include: [Content] }
     );
 
-    // id: 2
+    // id: 2, belongs to content id 1 (above)
     await Photo.create(
       {
         content: {
@@ -75,11 +76,12 @@ module.exports = {
           upvotes: 0,
           placement: 'public',
           userId: 1,
+          parentId: 1,
         },
         createdAt: new Date(),
         updatedAt: new Date(),
         photoURL: 'www.google2.com',
-        description: 'Photo description',
+        description: 'This photo is about the EMT pin',
       },
       { include: [Content] }
     );
@@ -104,10 +106,11 @@ module.exports = {
           upvotes: 0,
           placement: 'public',
           userId: 1,
+          parentId: 2,
         },
         createdAt: new Date(),
         updatedAt: new Date(),
-        description: 'This is the quintessential comment post',
+        description: 'This is a nested comment about a photo about a pin',
       },
       { include: [Content] }
     );
@@ -121,6 +124,7 @@ module.exports = {
           upvotes: 0,
           placement: 'public',
           userId: 1,
+          parentId: null,
         },
         name: 'Opening Party',
         description: 'Fire Breathing Dragons',
@@ -136,6 +140,25 @@ module.exports = {
       }
     );
 
+    // content id 5
+    await Comment.create(
+      {
+        content: {
+          latitude: 29.963864,
+          longitude: -90.05213,
+          upvotes: 0,
+          placement: 'public',
+          userId: 1,
+          parentId: 1,
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        description: 'This comment is about an EMT pin',
+      },
+      { include: [Content] }
+    );
+
+
     // SHARING CONTENT id: 1 (the pin)
     await Shared_content.create({
       contentId: 1,
@@ -145,19 +168,20 @@ module.exports = {
 
     // sharing the photo
     await Shared_content.create({
-      contentId: 2,
+      contentId: 3,
       senderId: 1,
       recipientId: 2,
     });
 
-    // marking if content is archived (defaults isArchived = false;)
+    // marking if content is archived
     await Shared_content_status.create({
       contentId: 1,
-      userId: 2
+      userId: 2,
+      isArchived: false,
     })
 
     await Shared_content_status.create({
-      contentId: 2,
+      contentId: 4,
       userId: 2,
       isArchived: true,
     })

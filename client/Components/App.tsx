@@ -186,7 +186,7 @@ const App = () => {
               <div>
                 <TopNavBar
                   title={
-                    user ? `Welcome, ${user.given_name}!` : 'Welcome, Friend!'
+                    user ? `Welcome, ${user.given_name}!` : 'Welcome to Pardi Gras!'
                   }
                   currWeather={currWeather}
                   currTemp={currTemp}
@@ -277,7 +277,7 @@ const App = () => {
                   lng={lng}
                   lat={lat}
                   setTheme={setTheme}
-                  setConfirmActionBundle={setConfirmActionBundle} 
+                  setConfirmActionBundle={setConfirmActionBundle}
                 />{' '}
                 <NavBar />
               </div>
