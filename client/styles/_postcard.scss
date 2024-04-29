@@ -13,6 +13,17 @@
   max-width: 400px;
 }
 
+// pin post card bc @media breakpoint does not work for this
+.pin-post-card {
+  padding: 15px;
+  box-shadow: 0.6px 1.1px 1.1px hsl(0deg 0% 0% / 0.48);;
+  margin: 4px auto;
+  border: 1.5px solid colors.$cardBorder;
+  // border: none;
+  background-color: colors.$cardBackground;
+  max-width: 400px;
+}
+
 // fonts
 .post-card-detail {
   display: flex;
@@ -38,6 +49,13 @@
 // image
 .post-card-image {
   margin-bottom: 5px;
+}
+
+// pin image
+.pin-post-card-image {
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: center;
 }
 
 // buttons

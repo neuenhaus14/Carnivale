@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 const Pins = express.Router()
 import {Photo, Pin} from '../db/index';
 import { Join_pin_photo } from "../db/index";
+import { Join_shared_post } from "../db/index";
+import { Join_photo_vote } from "../db/index";
 import { User } from '../db/index';
 
 // => api/pins/get-pins
@@ -85,5 +87,58 @@ Pins.get('/get-clicked-friend-marker/:lng/:lat', async (req: Request, res: Respo
     res.status(500).send(err);
   }
 })
+
+Pins.delete(  "/delete-photo/:postId", async (req: Request, res: Response) => {
+  const { postId } = req.params;
+  const { userId, lat, lng } = req.body;
+
+  try {
+    const photo = await Photo.findByPk(postId);
+
+    if (!photo) {
+      return res.sendStatus(404);
+    }
+
+    if (photo.dataValues.ownerId !== userId) {
+      return res.sendStatus(403);
+    }
+
+    const clickedPin = await Pin.findOne({where: {longitude: lng, latitude: lat}});
+    const howManyPhotosOnPin = await Join_pin_photo.findAll({where: {pinId: clickedPin.dataValues.id}});
+
+    await Join_pin_photo.destroy({where: { photoId: postId }});
+    await Join_shared_post.destroy({where: { shared_photoId: postId }});
+    await Join_photo_vote.destroy({where: { photoId: postId }});
+
+    if (howManyPhotosOnPin.length === 1){
+      await clickedPin.destroy()    
+    }
+ 
+    await photo.destroy();
+    return res.sendStatus(200);
+
+  } catch (err) {
+
+    console.error(err);
+    return res.sendStatus(500);
+  }
+}
+);
+
+
+Pins.get('/get-pin-photo/:photoId', async (req: Request, res: Response) => {
+  const {photoId} = req.params;
+
+  try { 
+    const pinPhotos = await Photo.findAll({where: {id: photoId}});
+    res.status(200).send(pinPhotos)
+
+  } catch (err) {
+    console.error('SERVER ERROR: could not GET pin photo', err);
+    res.status(500).send(err);
+  }
+
+})
+
 
 export default Pins
