@@ -63,7 +63,7 @@ This will be designated as your origin, so you'll push and pull to origin main. 
 
 Change your directory and run npm install to pull in the dependencies:
 
-> cd Carnivale
+> cd Carnivale OR cd Pardi-Gras
 > npm install
 
 ### 4. Install and configuring postgres
@@ -92,12 +92,10 @@ Then set a new password that's associated with the 'postgres' user/role situatio
 
 > ALTER USER postgres with encrypted password 'password';
 
-Just use 'password', it's super easy to remember.
+Next you're going to configure the app's access to the carnivale database via the 'postgres' user  by editing the postgres config file. From the project's root directory, do the following:
 
-Next you're going to configure the app's access to the carnivale database via the 'postgres' user and its ingenious password 'password' by editing the postgres config file. From the project's root directory, do the following:
-
-> cd config
-> sudo vi config.json
+> cd server/db/config
+> sudo vi postgresConfig.json
 
 Then change the username, password and database of the development server configuration to 'postgres', 'password' and 'carnivale', respectively. To save your changes by clicking the Escape key, then typing ':wq" and Enter. It stands for 'write-quit'.
 
@@ -147,11 +145,12 @@ Run that command on all items in the list below, or place the following in the i
 | CLOUDINARY_NAME| << string of alphanumerics >> | |
 | AUTH0_CLIENT_ID       |  << string of alphanumerics >> |  |
 | AUTH0_CLIENT_SECRET   |  << string of alphanumerics >> |  |
-| ISSUER | << web site>>| For Auth0|
+| ISSUER | << web site>>| For Auth0, get from Auth0 |
+| REDIRECT_URL | 'https://pardigras.org' | the address to redirect to after successful login, ie, the homepage |
 
 ### 5.5 Adding redirect links
 
-Change the redirect links in server/index.ts and client/index.tsx to the appropriate url.
+Change the redirect links in client/index.tsx to the appropriate url ('https://pardigras.org' or whatever).
 
 ### 6. Building & Running
 
