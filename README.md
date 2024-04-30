@@ -150,7 +150,12 @@ Run that command on all items in the list below, or place the following in the i
 
 ### 5.5 Adding redirect links
 
-Change the redirect links in client/index.tsx to the appropriate url ('https://pardigras.org' or whatever).
+Change the redirect links in client/index.tsx to the appropriate url ('https://pardigras.org:4000/homepage' or whatever).
+
+
+### 5.6 Whitelist IP address for MongoDB mail list db
+
+Add the IP address of the kernel to the MongoDb Atlas whitelist. In the side menu, SECURITY > Network Access, then add to the list.
 
 ### 6. Building & Running
 
@@ -164,19 +169,21 @@ Thus far we've done the following:
 
 Now run the build and start scripts:
 
-> npm run build
+> npm run build-prod // this script forgoes the 'watch' option
 > npm run start
 
 Next, navigate to the instance's public IPv4 address in your browser. From the instance panel in AWS, there's a link 'open address', which will take you to an 'https://...' address, so switch that to 'http://...' and add the port to the end of the url to access the site, like so:
 
 > http://some.AWS.address.numbers:4000
 
-Should be good.
+This, however, exposes that our Auth0 processes can only run on a secure connection, so we have to CertBot this thing. But in order to CertBot it, we have to add Nginx...
 
 ### NGINX & CertBot
 
-Nginx
+Nginx (do this first in order to install CertBot)
 https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04
+
+The domain name's DNS A record has to point to the kernel's IPv4 addresses.
 
 CertBot
 https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
@@ -185,11 +192,9 @@ You may have to create the certificate and install them separately. Run the comm
 
 After installing certificates, reconnect to the instance.
 
-Install NGINX with
+Install NGINX:
 
-FROM CAITY (validity not verified)
-
-this is a recap of the base config we just added to help y’all get started, but you may need to add additional things to work with all parts of your project (ex: adding websockets may require additional configuration with nginx)
+This is a recap of the base config we just added to help y’all get started, but you may need to add additional things to work with all parts of your project (ex: adding websockets may require additional configuration with nginx)
 it’s best practice to separate the reverse proxy config to a project-specific file (naming it clearly will remind you in the future that this file was not included in the original nginx install)
 example: /etc/nginx/conf.d/revprox-yourdomainname.conf
 there should already be a catchall include statement in the main config that will include any additional .conf files in that dir
@@ -202,9 +207,8 @@ server {
     }
 }
 80 is the nginx port, but you should replace the proxy_pass port with the port your project is running on. after nginx is set up, your traffic will be routed through nginx’s default port and you will no longer need to use a port to visit your app in the browser
-:caution-neon: note: any time you change the config, you will need to restart the service
-then we added certbot to get SSL after setting up nginx. if you peek back inside of the conf file you created, you should see some additional lines that were injected by certbot
-and y’all had already opened the necessary ports to traffic (80, 443) in your security rules :complete-checkbox-lg:
+Note: any time you change the config, you will need to restart the service.
+Then we added certbot to get SSL after setting up nginx. if you peek back inside of the conf file you created, you should see some additional lines that were injected by certbot and y’all had already opened the necessary ports to traffic (80, 443) in your security rules :complete-checkbox-lg:
 
 
 # Configuration files
