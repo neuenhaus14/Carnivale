@@ -73,7 +73,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
   const [isNewEvent, setIsNewEvent] = useState(false);
 
-  const [showGif, setShowGif] = useState(false);
+  // const [showGif, setShowGif] = useState(false);
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
@@ -466,17 +466,18 @@ const UserPage: React.FC<UserPageProps> = ({
   const handleNameOrPhoneInput = (e: any) => {
     setNameOrPhoneForFriendRequest(e.target.value);
   };
-  const handleDeepGrasMode = () => {
-    setTheme('pg-theme-deep');
 
-    setShowGif(true);
+  // const handleDeepGrasMode = () => {
+  //   setTheme('pg-theme-deep');
 
-    setTimeout(() => setShowGif(false), 5000);
-  };
+  //   setShowGif(true);
+
+  //   setTimeout(() => setShowGif(false), 5000);
+  // };
 
   return (
     <Container className={`body ${theme} user-page-container`}>
-      {showGif && (
+      {/* {showGif && (
         <img
           src='/img/mardi-gras.gif'
           alt='Mardi Gras GIF'
@@ -488,7 +489,7 @@ const UserPage: React.FC<UserPageProps> = ({
             zIndex: '1',
           }}
         />
-      )}
+      )} */}
 
       {isDemoMode && (
         <Modal show={showAboutModal} onHide={toggleAboutModal}>
