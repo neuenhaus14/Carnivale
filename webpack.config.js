@@ -35,18 +35,17 @@ module.exports = {
     filename: '[name].bundle.js',
     clean: true,
   },
-  mode: isDev ? 'development' : 'production',
-  devtool: isDev ? 'inline-source-map' : 'source-map',
+  mode: isDev ? 'development' : null,
+  devtool: isDev ? 'inline-source-map' : false,
 
-  plugins: isDev
-    ? allPlugins.concat([
+  plugins: allPlugins.concat([
         // Add plugins for development
         // Creates a loading bar
         new WebpackBar(),
         // Generates bundle analyzer
         // new BundleAnalyzerPlugin(),
       ])
-    : allPlugins,
+    ,
 
   module: {
     rules: [

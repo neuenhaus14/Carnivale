@@ -122,7 +122,7 @@ const MapPage: React.FC<MapProps> = ({
     useEffect(() => {
       geoControlRef.current?.trigger();
     }, [geoControlRef.current]);
-  
+
 
   //gets pins from database then removes all personal pins that don't match userId
   const getPins = async () => {
@@ -497,16 +497,16 @@ const MapPage: React.FC<MapProps> = ({
           position: 'relative',
           bottom: '0px',
           maxWidth: '100vw',
-          height: '50vh',
+          height: '80vh',
         }}
         mapStyle='mapbox://styles/mapbox/streets-v9'
       >
-      {isDemoMode ?  
+      {isDemoMode ?
         <Marker longitude={-90.0546585} latitude={29.9631183} anchor='bottom' style={{color: "red"}}>
-          YOU<br/> 
+          YOU<br/>
           ARE <br/>
           HERE <br/>
-        </Marker> : 
+        </Marker> :
         <GeolocateControl
         positionOptions={{ enableHighAccuracy: true }}
         trackUserLocation={true}
@@ -514,7 +514,7 @@ const MapPage: React.FC<MapProps> = ({
         showUserLocation={true}
         showAccuracyCircle={false}
         ref={geoControlRef}
-        /> 
+        />
       }
         <div id='map-markers'>
           {renderMarkers.map((marker) => (

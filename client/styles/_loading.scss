@@ -1,11 +1,12 @@
-.loader {
+#loader-container {
   display: flex;
   justify-content: center;
   align-items: center;
   align-content: center;
   position: relative;
-  margin-top: 100px;
+  height: 100vh;
   text-align: center;
   font-size: 3em;
   flex-direction: column;
+  background-color: rgba(247,252,255);
 }
