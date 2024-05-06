@@ -176,7 +176,7 @@ const LoginButton = () => {
                 Posts & pics keep event-goers in-the-know about the festivities.
               </p>
               <Image
-                src='../../img/screenshots/home.png'
+                src='https://res.cloudinary.com/dj5uxv8tg/image/upload/v1715004671/home_page_ejqnhd.png'
                 className='login-carousel-img'
               />
             </div>
@@ -189,7 +189,7 @@ const LoginButton = () => {
                 locations.
               </p>
               <Image
-                src='../../img/screenshots/map.png'
+                src='https://res.cloudinary.com/dj5uxv8tg/image/upload/v1715004671/map_tpflg6.png'
                 className='login-carousel-img'
               />
             </div>
@@ -201,7 +201,7 @@ const LoginButton = () => {
                 Plan your night out with an up-to-date NOLA live music calendar.
               </p>
               <Image
-                src='../../img/screenshots/gigs.png'
+                src='https://res.cloudinary.com/dj5uxv8tg/image/upload/v1715004671/gigs_jq9v4p.png'
                 className='login-carousel-img'
               />
             </div>
@@ -213,7 +213,7 @@ const LoginButton = () => {
                 Create geo-located events and invite your krewe to tag along.
               </p>
               <Image
-                src='../../img/screenshots/event.png'
+                src='https://res.cloudinary.com/dj5uxv8tg/image/upload/v1715004671/event_w2dt02.png'
                 className='login-carousel-img'
               />
             </div>

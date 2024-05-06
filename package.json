@@ -2,7 +2,7 @@
   "name": "carnivale",
   "description": "Thesis for Foxtrot Senior",
   "version": "1.0.0",
-  "main": "index.jsx",
+  "main": "client/index.jsx",
   "scripts": {
     "build-prod": "webpack --config webpack.config.js",
     "build": "webpack --config webpack.config.js --watch",
