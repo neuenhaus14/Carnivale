@@ -38,7 +38,7 @@ Test.get('/getContent/:id', async (req: Request, res: Response) => {
   };
 
   try {
-    // TODO: recursively lookup content with a parentId of the input Id and add that to the root object
+    // recursively lookup content with a parentId of the input Id and add that to the root object
     const getContentWithChildren = async (id) => {
       const root = await getById(id);
 
@@ -58,7 +58,7 @@ Test.get('/getContent/:id', async (req: Request, res: Response) => {
             )
           );
 
-          console.log('node children with C', nodeChildrenWithContentable);
+          // console.log('node children with C', nodeChildrenWithContentable);
           node.dataValues.children = nodeChildrenWithContentable;
 
           for (const childNode of node.dataValues.children) {

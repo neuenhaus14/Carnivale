@@ -166,20 +166,22 @@ module.exports = {
       recipientId: 2,
     });
 
-    // sharing the photo
+    // sharing the plan
     await Shared_content.create({
-      contentId: 3,
+      contentId: 4,
       senderId: 1,
       recipientId: 2,
     });
 
     // marking if content is archived
+    // the pin is NOT archived
     await Shared_content_status.create({
       contentId: 1,
       userId: 2,
       isArchived: false,
     })
 
+    // the plan is archived
     await Shared_content_status.create({
       contentId: 4,
       userId: 2,
