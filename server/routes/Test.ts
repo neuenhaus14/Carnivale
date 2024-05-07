@@ -1,6 +1,7 @@
 import { Request, Response, Router } from 'express';
 
 import models from '../db/models/index';
+import { CreatedAt } from 'sequelize-typescript';
 const Content = models.content;
 const Photo = models.photo;
 const Pin = models.pin;
@@ -21,6 +22,20 @@ Test.get('/getTest', (req: Request, res: Response) => {
 Test.get('/getContent/:id', async (req: Request, res: Response) => {
   const id = req.params.id;
 
+  const contentKeys = [
+    'id',
+    'latitude',
+    'longitude',
+    'upvotes',
+    'placement',
+    'contentableType',
+    'contentableId',
+    'parentId',
+    'createdAt',
+    'updatedAt',
+    'userId',
+  ];
+
   const getById = async (id) => {
     const contentResponse = await Content.findByPk(id, {
       include: [
@@ -31,9 +46,32 @@ Test.get('/getContent/:id', async (req: Request, res: Response) => {
         { model: Photo },
         { model: Tag },
       ],
+      as: 'content',
     });
 
+    // save fetched contentable to dataValues
     contentResponse.dataValues.contentable = contentResponse.contentable;
+
+    // save content data as new key on dataValues
+    contentResponse.dataValues.content = {
+      id: contentResponse.id,
+      latitude: contentResponse.latitude,
+      longitude: contentResponse.longitude,
+      upvotes: contentResponse.upvotes,
+      placement: contentResponse.placement,
+      contentableType: contentResponse.contentableType,
+      contentableId: contentResponse.contentableId,
+      parentId: contentResponse.parentId,
+      createdAt: contentResponse.createdAt,
+      updatedAt: contentResponse.updatedAt,
+      userId: contentResponse.userId,
+    };
+
+    // delete the original 'content' kv's after adding them to new 'content' key
+    for (const key of contentKeys) {
+      delete contentResponse.dataValues[key];
+    }
+
     return contentResponse;
   };
 
@@ -43,30 +81,29 @@ Test.get('/getContent/:id', async (req: Request, res: Response) => {
       const root = await getById(id);
 
       const getChildren = async (node: any) => {
-        // get children from Content table
+        // get children from Content table, using id of parent which has been added to "content" key
         const nodeChildren = await Content.findAll({
-          where: { parentId: node.id },
+          where: { parentId: node.dataValues.content.id },
         });
 
         // if the node has children...
         if (nodeChildren.length > 0) {
-
-          // console.log('node in question:', node, 'node children:', nodeChildrenResponse)
           const nodeChildrenWithContentable = await Promise.all(
             nodeChildren.map(
               async (child) => await getById(child.dataValues.id)
             )
           );
-
-          // console.log('node children with C', nodeChildrenWithContentable);
+          // assign new object to 'children' key
           node.dataValues.children = nodeChildrenWithContentable;
 
+          // recursive case
           for (const childNode of node.dataValues.children) {
             await getChildren(childNode);
           }
         }
       };
 
+      // start recursion
       await getChildren(root);
       return root;
     };
@@ -85,6 +122,61 @@ Test.get(
   async (req: Request, res: Response) => {
     const { contentableType, contentableId } = req.params;
 
+    const pinKeys = [
+      'id',
+      'pinType',
+      'photoURL',
+      'description',
+      'createdAt',
+      'updatedAt',
+    ];
+    const commentKeys = ['id', 'description', 'createdAt', 'updatedAt'];
+    const planKeys = [
+      'id',
+      'name',
+      'title',
+      'description',
+      'address',
+      'startTime',
+      'endTime',
+      'inviteCount',
+      'attendingCount',
+      'link',
+      'createdAt',
+      'updatedAt',
+    ];
+    const photoKeys = [
+      'id',
+      'description',
+      'photoURL',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    const organizeContentable = (contentableKeys, contentableResponse) => {
+      // add new key 'contentable', delete original standalone kv's
+      const contentableObject = {};
+      for (const key of contentableKeys) {
+        contentableObject[key] = contentableResponse.dataValues[key];
+        delete contentableResponse.dataValues[key];
+      }
+      contentableResponse.dataValues.contentable = contentableObject;
+
+      // add 'user' key from 'content' kv
+      contentableResponse.dataValues.user = {
+        ...contentableResponse.dataValues.content.user.dataValues,
+      };
+
+      // add 'tags' key from 'content' kv
+      contentableResponse.dataValues.tags = [
+        ...contentableResponse.dataValues.content.tags,
+      ];
+
+      delete contentableResponse.dataValues['content'].dataValues['user'];
+      delete contentableResponse.dataValues['content'].dataValues['tags'];
+      return contentableResponse;
+    };
+
     try {
       let contentableResponse;
       const includeOptions = {
@@ -102,11 +194,19 @@ Test.get(
             Number(contentableId),
             includeOptions
           );
+          contentableResponse = organizeContentable(
+            pinKeys,
+            contentableResponse
+          );
           break;
         case 'photo':
           contentableResponse = await Photo.findByPk(
             Number(contentableId),
             includeOptions
+          );
+          contentableResponse = organizeContentable(
+            photoKeys,
+            contentableResponse
           );
           break;
         case 'plan':
@@ -114,11 +214,19 @@ Test.get(
             Number(contentableId),
             includeOptions
           );
+          contentableResponse = organizeContentable(
+            planKeys,
+            contentableResponse
+          );
           break;
         case 'comment':
           contentableResponse = await Comment.findByPk(
             Number(contentableId),
             includeOptions
+          );
+          contentableResponse = organizeContentable(
+            commentKeys,
+            contentableResponse
           );
           break;
       }
@@ -142,12 +250,20 @@ Test.get('/getSharedContent/:userId', async (req: Request, res: Response) => {
       },
       include: [
         { model: User, as: 'sender' },
-        { model: Content, include: [Tag, Shared_content_status] },
+        {
+          model: Content,
+          include: [
+            { model: Tag },
+            { model: Shared_content_status },
+            { model: User },
+          ],
+        },
       ],
+      order: [['contentId', 'ASC']],
     });
 
-    // STEP 2: get the contentable associated with each item of shared content. TODO: figure out how to achieve this with getContentable, a method of the Content model
-    const sharedContentWithContentablesResponse = await Promise.all(
+    // STEP 2: get the contentable associated with each item of shared content. We can't include all contentable types in the previous db query because it returns a record from each contentable type with the contentableId of contentId TODO: figure out how to achieve this with getContentable, a method of the Content model
+    const sharedContentWithContentablesResponse: any = await Promise.all(
       sharedContentResponse.map(async (sharedContent) => {
         const contentId = sharedContent.dataValues.contentId;
         const contentableResponse = await Content.findByPk(contentId, {
@@ -157,6 +273,103 @@ Test.get('/getSharedContent/:userId', async (req: Request, res: Response) => {
         return sharedContent;
       })
     );
+
+    // iterate over each piece of shared content and organize
+    const sharedContentKeys = [
+      'id',
+      'contentId',
+      'senderId',
+      'recipientId',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    // organize each piece of shared content in the response
+
+    for (const [
+      index,
+      sharedContent,
+    ] of sharedContentWithContentablesResponse.entries()) {
+      // create new key containing info about contents' shares
+      sharedContent.dataValues.sharedContentDetails = {
+        senders: [
+          {
+            ...sharedContent.dataValues.sender.dataValues,
+            shareTimeStamp: {
+              id: sharedContent.dataValues.id,
+              contentId: sharedContent.dataValues.contentId,
+              senderId: sharedContent.dataValues.senderId,
+              recipientId: sharedContent.dataValues.recipientId,
+              createdAt: sharedContent.dataValues.createdAt,
+              updatedAt: sharedContent.dataValues.updatedAt,
+            },
+          },
+        ],
+        sharedContentStatus:
+          sharedContent.dataValues.content.dataValues
+            .shared_content_statuses[0],
+      };
+
+      // the shared contents response is ordered by the contentId, so check to see if next content object has the same contentId as the target object, in which case add the share details of the later object to the target object and delete the later
+      for (
+        let i = index + 1;
+        i < sharedContentWithContentablesResponse.length;
+        i++
+      ) {
+        const target = sharedContent.contentId;
+        const comp = sharedContentWithContentablesResponse[i].contentId;
+
+        if (target === comp) {
+          // add
+
+          const senderObject = {
+            ...sharedContentWithContentablesResponse[i].dataValues.sender
+              .dataValues,
+            shareTimeStamp: {
+              id: sharedContentWithContentablesResponse[i].dataValues.id,
+              contentId:
+                sharedContentWithContentablesResponse[i].dataValues.contentId,
+              senderId:
+                sharedContentWithContentablesResponse[i].dataValues.senderId,
+              recipientId:
+                sharedContentWithContentablesResponse[i].dataValues.recipientId,
+              createdAt:
+                sharedContentWithContentablesResponse[i].dataValues.createdAt,
+              updatedAt:
+                sharedContentWithContentablesResponse[i].dataValues.updatedAt,
+            },
+          };
+          // add details about the sender and timestamp from later shared content to target shared content's sender's array
+          sharedContent.dataValues.sharedContentDetails.senders.push(
+            senderObject
+          );
+          sharedContentWithContentablesResponse.splice(i, 1);
+          i--; // back i up to account for splice
+        } else if (target < comp) {
+          // go to next iteration if we hit a higher contentId
+          break;
+        }
+      }
+
+      // move tags to first level
+      sharedContent.dataValues.tags = [
+        ...sharedContent.dataValues.content.dataValues.tags,
+      ];
+
+      // move user to first level
+      sharedContent.dataValues.user =
+        sharedContent.dataValues.content.dataValues.user;
+
+      // delete old kv's
+      delete sharedContent.dataValues.sender.dataValues;
+      delete sharedContent.dataValues.content.dataValues
+        .shared_content_statuses;
+      delete sharedContent.dataValues.content.dataValues.tags;
+      delete sharedContent.dataValues.content.dataValues.user;
+      for (const key of sharedContentKeys) {
+        delete sharedContent.dataValues[key];
+      }
+    }
 
     res.status(200).json(sharedContentWithContentablesResponse);
   } catch (e) {

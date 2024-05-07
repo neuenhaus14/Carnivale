@@ -35,6 +35,7 @@ export interface Post {
   /*
   photos have 'description' and 'photoURL', comments have 'comment'
   */
+
   comment?: string;
   photoURL?: string;
   description?: string;
@@ -77,7 +78,6 @@ interface PostCardProps {
 const PostCard: React.FC<PostCardProps> = ({
   post,
   userId,
-
   eventKey,
   setConfirmActionBundle,
   setShareModalBundle,
@@ -246,6 +246,7 @@ const PostCard: React.FC<PostCardProps> = ({
     return className;
   };
 
+  console.log('POST', post)
   return (
     <>
       <Card className={createCardClassName()}>

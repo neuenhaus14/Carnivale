@@ -75,14 +75,14 @@ const FeedPage: React.FC<FeedPageProps> = ({
   const [sharedPosts, setSharedPosts] = useState<SharedPost[]>([]);
   // const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  const [userNames, setUserNames] = useState<{ [userId: number]: string }>({});
-  const [commentDetails, setCommentDetails] = useState<{
-    [postId: number]: Comment;
-  }>({});
+  // const [userNames, setUserNames] = useState<{ [userId: number]: string }>({});
+  // const [commentDetails, setCommentDetails] = useState<{
+  //   [postId: number]: Comment;
+  // }>({});
   // const [pinDetails, setPinDetails] = useState<{ [postId: number]: Pin }>({});
-  const [photoDetails, setPhotoDetails] = useState<{ [postId: number]: Photo }>(
-    {}
-  );
+  // const [photoDetails, setPhotoDetails] = useState<{ [postId: number]: Photo }>(
+  //   {}
+  // );
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
@@ -111,30 +111,31 @@ const FeedPage: React.FC<FeedPageProps> = ({
   const fetchData = async () => {
     console.log('fetching data!');
     try {
-      const [postsResponse, userResponse] = await Promise.all([
-        axios.get(`/api/feed/shared-posts/${userId}`),
-        axios.get(`/api/feed/user/${userId}`),
-        // Swap top and bottom comments for testing
-        // axios.get(`/api/feed/shared-posts/1`),
-        // axios.get(`/api/feed/user/1`),
-      ]);
+      // const [postsResponse, userResponse] = await Promise.all([
+      //   // axios.get(`/api/feed/shared-posts/${userId}`),
+      //   // axios.get(`/api/feed/user/${userId}`),
+      //   // Swap top and bottom comments for testing
+      //   // axios.get(`/api/feed/shared-posts/1`),
+      //   // axios.get(`/api/feed/user/1`),
+      // ]);
 
-      setSharedPosts(postsResponse.data);
+      const sharedPostResponse = await axios.get(`/api/test/getSharedContent/2`)
+      setSharedPosts(sharedPostResponse.data);
       // setCurrentUser(userResponse.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
-  const fetchSenderName = async (userId: number) => {
-    try {
-      const response = await axios.get(`/api/feed/user/${userId}`);
-      const senderName = `${response.data.firstName} ${response.data.lastName[0]}.`;
-      setUserNames((prevNames) => ({ ...prevNames, [userId]: senderName }));
-    } catch (error) {
-      console.error(`Error fetching sender ${userId} information:`, error);
-    }
-  };
+  // const fetchSenderName = async (userId: number) => {
+  //   try {
+  //     const response = await axios.get(`/api/feed/user/${userId}`);
+  //     const senderName = `${response.data.firstName} ${response.data.lastName[0]}.`;
+  //     setUserNames((prevNames) => ({ ...prevNames, [userId]: senderName }));
+  //   } catch (error) {
+  //     console.error(`Error fetching sender ${userId} information:`, error);
+  //   }
+  // };
 
   // When userId changes (ie, when user logs in), fetch user info (why?) and all posts that have been shared with that user, setting shared posts state.
   useEffect(() => {
@@ -144,6 +145,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
   }, [userId]);
 
   // After shared posts are fetched (see useEffect above), then for each post fetch who shared it with user and the posts content
+  /*
   useEffect(() => {
     // fetch details for a post, will run this on all posts shared with user
     const fetchDetails = async (postId: number, type: string) => {
@@ -270,6 +272,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
 
     fetchDataDetails();
   }, [sharedPosts, userNames]);
+  */
 
   /*
   NEXT THREE FUNCTIONS NOT USED FROM FEED PAGE; UPVOTING/DOWNVOTING TAKES PLACE IN POST-CARD
@@ -526,60 +529,62 @@ const FeedPage: React.FC<FeedPageProps> = ({
               <Tab eventKey='shared' title='Shared With Me'>
                 {
                   /* Conditional check for rendering post cards. Accounts for a sharedPost getting removed, as deleting a post does not get rid of the photo/comment details record TODO: set to render after all promises have been returned */
-                  sharedPosts.length <=
-                    Object.keys(photoDetails).length +
-                      Object.keys(commentDetails).length &&
-                    Object.keys(userNames).length > 0 &&
+
+
+                  // sharedPosts.length <=
+                  //   Object.keys(photoDetails).length +
+                  //     Object.keys(commentDetails).length &&
+                  //   Object.keys(userNames).length > 0 &&
                     sharedPosts.map((sharedPost, index) => {
                       // only accounts for comments and photo types, no pins yet
-                      const sharedPostType = sharedPost.shared_commentId
-                        ? 'comment'
-                        : 'photo';
+                      // const sharedPostType = sharedPost.shared_commentId
+                      //   ? 'comment'
+                      //   : 'photo';
 
-                      let post: Post;
+                      // let post: Post;
 
-                      if (sharedPostType === 'comment') {
-                        post = {
-                          id: commentDetails[sharedPost.shared_commentId]?.id,
-                          ownerId:
-                            commentDetails[sharedPost.shared_commentId]
-                              ?.ownerId,
-                          createdAt:
-                            commentDetails[sharedPost.shared_commentId]
-                              ?.createdAt,
-                          updatedAt:
-                            commentDetails[sharedPost.shared_commentId]
-                              ?.updatedAt,
-                          upvotes:
-                            commentDetails[sharedPost.shared_commentId]
-                              ?.upvotes,
-                          comment:
-                            commentDetails[sharedPost.shared_commentId].comment,
-                          senderName: userNames[sharedPost.sender_userId],
-                        };
-                      } else if (sharedPostType === 'photo') {
-                        post = {
-                          id: photoDetails[sharedPost.shared_photoId].id,
-                          ownerId:
-                            photoDetails[sharedPost.shared_photoId].ownerId,
-                          createdAt:
-                            photoDetails[sharedPost.shared_photoId].createdAt,
-                          updatedAt:
-                            photoDetails[sharedPost.shared_photoId].updatedAt,
-                          upvotes:
-                            photoDetails[sharedPost.shared_photoId].upvotes,
-                          photoURL:
-                            photoDetails[sharedPost.shared_photoId].photoUrl,
-                          description:
-                            photoDetails[sharedPost.shared_photoId].description,
-                          senderName: userNames[sharedPost.sender_userId],
-                        };
-                      }
+                      // if (sharedPostType === 'comment') {
+                      //   post = {
+                      //     id: commentDetails[sharedPost.shared_commentId]?.id,
+                      //     ownerId:
+                      //       commentDetails[sharedPost.shared_commentId]
+                      //         ?.ownerId,
+                      //     createdAt:
+                      //       commentDetails[sharedPost.shared_commentId]
+                      //         ?.createdAt,
+                      //     updatedAt:
+                      //       commentDetails[sharedPost.shared_commentId]
+                      //         ?.updatedAt,
+                      //     upvotes:
+                      //       commentDetails[sharedPost.shared_commentId]
+                      //         ?.upvotes,
+                      //     comment:
+                      //       commentDetails[sharedPost.shared_commentId].comment,
+                      //     senderName: userNames[sharedPost.sender_userId],
+                      //   };
+                      // } else if (sharedPostType === 'photo') {
+                      //   post = {
+                      //     id: photoDetails[sharedPost.shared_photoId].id,
+                      //     ownerId:
+                      //       photoDetails[sharedPost.shared_photoId].ownerId,
+                      //     createdAt:
+                      //       photoDetails[sharedPost.shared_photoId].createdAt,
+                      //     updatedAt:
+                      //       photoDetails[sharedPost.shared_photoId].updatedAt,
+                      //     upvotes:
+                      //       photoDetails[sharedPost.shared_photoId].upvotes,
+                      //     photoURL:
+                      //       photoDetails[sharedPost.shared_photoId].photoUrl,
+                      //     description:
+                      //       photoDetails[sharedPost.shared_photoId].description,
+                      //     senderName: userNames[sharedPost.sender_userId],
+                      //   };
+                      // }
 
                       return (
                         <PostCard
-                          key={`${post.id} + ${index}`}
-                          post={post}
+                          key={`${sharedPost.id} + ${index}`}
+                          post={sharedPost}
                           userId={userId}
                           setShareModalBundle={setShareModalBundle}
                           setConfirmActionBundle={setConfirmActionBundle}

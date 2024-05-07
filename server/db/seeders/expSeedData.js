@@ -38,6 +38,28 @@ module.exports = {
         updatedAt: new Date(),
         shareLoc: true,
       },
+      {
+        email: 'Helene@gmail.com',
+        phone: '531-994-0987',
+        firstName: 'Helene',
+        lastName: 'Van Damme',
+        latitude: 29.923864,
+        longitude: -90.01213,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        shareLoc: true,
+      },
+      {
+        email: 'PeterLF@gmail.com',
+        phone: '531-994-0987',
+        firstName: 'Peter',
+        lastName: 'LeFleur',
+        latitude: 29.9423864,
+        longitude: -90.06253,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        shareLoc: true,
+      },
     ]);
 
     // TAG id: 1
@@ -59,7 +81,7 @@ module.exports = {
         content: {
           latitude: 29.963864,
           longitude: -90.05213,
-          upvotes: 0,
+          upvotes: 3,
           placement: 'public',
           userId: 1,
         },
@@ -121,7 +143,7 @@ module.exports = {
         content: {
           latitude: 29.963864,
           longitude: -90.05213,
-          upvotes: 0,
+          upvotes: 2,
           placement: 'public',
           userId: 1,
           parentId: null,
@@ -165,11 +187,27 @@ module.exports = {
       senderId: 1,
       recipientId: 2,
     });
+    await Shared_content.create({
+      contentId: 1,
+      senderId: 3,
+      recipientId: 2,
+    });
+    await Shared_content.create({
+      contentId: 1,
+      senderId: 4,
+      recipientId: 2,
+    });
 
     // sharing the plan
     await Shared_content.create({
       contentId: 4,
       senderId: 1,
+      recipientId: 2,
+    });
+
+    await Shared_content.create({
+      contentId: 4,
+      senderId: 3,
       recipientId: 2,
     });
 
