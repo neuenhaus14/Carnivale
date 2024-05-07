@@ -82,7 +82,7 @@ module.exports = {
         content: {
           latitude: 29.963864,
           longitude: -90.05213,
-          upvotes: -1,
+          upvotes: 1,
           placement: 'public',
           userId: 2,
         },
@@ -144,7 +144,7 @@ module.exports = {
         content: {
           latitude: 29.963864,
           longitude: -90.05213,
-          upvotes: 1,
+          upvotes: 3,
           placement: 'public',
           userId: 2,
           parentId: null,

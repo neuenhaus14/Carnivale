@@ -6,39 +6,40 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Button, Container, Modal, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import { ThemeContext, RunModeContext, UserContext } from './Context';
 
-import { PostCard, Post } from './PostCard';
+import { PostCard } from './PostCard';
+import { Post } from '../types';
 
 /*
 A SharedPost is just the record from the join_shared_posts table PLUS upvotes to enable upvote downvote functionality for now
 */
-interface SharedPost {
-  id: number;
-  sender_userId: number;
-  recipient_userId: number;
-  shared_commentId: number | null;
-  shared_pinId: number | null;
-  shared_photoId: number | null;
-  createdAt: string;
-  updatedAt: string;
-  upvotes: number;
-}
+// interface SharedPost {
+//   id: number;
+//   sender_userId: number;
+//   recipient_userId: number;
+//   shared_commentId: number | null;
+//   shared_pinId: number | null;
+//   shared_photoId: number | null;
+//   createdAt: string;
+//   updatedAt: string;
+//   upvotes: number;
+// }
 
-interface User {
-  id: number;
-  email: string;
-  phone: string;
-  firstName: string;
-  lastName: string;
-}
+// interface User {
+//   id: number;
+//   email: string;
+//   phone: string;
+//   firstName: string;
+//   lastName: string;
+// }
 
-interface Comment {
-  id: number;
-  comment: string;
-  ownerId: number;
-  upvotes: number;
-  createdAt: string;
-  updatedAt: string;
-}
+// interface Comment {
+//   id: number;
+//   comment: string;
+//   ownerId: number;
+//   upvotes: number;
+//   createdAt: string;
+//   updatedAt: string;
+// }
 
 // interface Pin {
 //   ownerId: number;
@@ -51,15 +52,15 @@ interface Comment {
 /*
 This Photo interface does not include filtering booleans because we don't need it for displaying the content (similar to Post interface from PostCard.jsx)
 */
-interface Photo {
-  id: number;
-  description: string;
-  ownerId: number;
-  upvotes: number;
-  photoUrl: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// interface Photo {
+//   id: number;
+//   description: string;
+//   ownerId: number;
+//   upvotes: number;
+//   photoUrl: string;
+//   createdAt: string;
+//   updatedAt: string;
+// }
 
 interface FeedPageProps {
   userId: number;
@@ -72,7 +73,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
   setConfirmActionBundle,
   setShareModalBundle,
 }) => {
-  const [sharedPosts, setSharedPosts] = useState<SharedPost[]>([]);
+  const [sharedPosts, setSharedPosts] = useState<Post[]>([]);
   // const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   // const [userNames, setUserNames] = useState<{ [userId: number]: string }>({});
@@ -110,7 +111,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
     setShowAboutModal(!showAboutModal);
   };
 
-  const fetchData = async () => {
+  const getSharedPosts = async () => {
     console.log('fetching data!');
     try {
       // const [postsResponse, userResponse] = await Promise.all([
@@ -143,7 +144,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
   // When userId changes (ie, when user logs in), fetch user info (why?) and all posts that have been shared with that user, setting shared posts state.
   useEffect(() => {
     if (userId !== null) {
-      fetchData();
+      getSharedPosts();
     }
   }, [userId]);
 
@@ -468,6 +469,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
   };
   */
 
+  // handleArchive **
   const handleRemovePostFromFeed = async (postId: number) => {
     if (isDemoMode) {
       toast('🎭Hide post from your feed!🎭', {
@@ -482,10 +484,11 @@ const FeedPage: React.FC<FeedPageProps> = ({
       });
     } else {
       try {
+        // TODO: rewrite route to archive in experimental database
         await axios.delete(`/api/feed/shared-posts/${postId}`);
 
         setSharedPosts((prevPosts) =>
-          prevPosts.filter((post) => post.id !== postId)
+          prevPosts.filter((post) => post.content.id !== postId)
         );
       } catch (error) {
         console.error(`Error deleting post with ID ${postId}:`, error);
@@ -539,7 +542,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
                   //   Object.keys(photoDetails).length +
                   //     Object.keys(commentDetails).length &&
                   //   Object.keys(userNames).length > 0 &&
-                    sharedPosts.map((sharedPost, index) => {
+                    sharedPosts.map((post, index) => {
                       // only accounts for comments and photo types, no pins yet
                       // const sharedPostType = sharedPost.shared_commentId
                       //   ? 'comment'
@@ -587,14 +590,14 @@ const FeedPage: React.FC<FeedPageProps> = ({
 
                       return (
                         <PostCard
-                          key={`${sharedPost.id} + ${index}`}
-                          post={sharedPost}
+                          key={`${post.content.id} + ${index}`}
+                          post={post}
                           userId={userId}
                           setShareModalBundle={setShareModalBundle}
                           setConfirmActionBundle={setConfirmActionBundle}
                           childFunctions={{
                             handleRemovePostFromFeed: () =>
-                              handleRemovePostFromFeed(sharedPost.id),
+                              handleRemovePostFromFeed(post.content.id),
                           }}
                         />
                       );

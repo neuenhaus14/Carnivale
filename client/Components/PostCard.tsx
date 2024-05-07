@@ -19,32 +19,37 @@ import { BiHide } from '@react-icons/all-files/bi/BiHide';
 import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
 import { IoArrowUpCircle } from '@react-icons/all-files/io5/IoArrowUpCircle';
 import { RunModeContext } from './Context';
+import { Post } from '../types';
 
 dayjs.extend(relativeTime);
 
 /*
 A post is whatever goes into a PostCard. RN it is a record from the 'comments' or 'photos' tables in the DB, excluding the type of content it is (eg, isPin, isCostume, isThrow), plus optional extras for shared posts (senderName, remove). The posts are fetched server-side according to those content type filters, with the request for the content type stipulated by client-side state (ie, when the costume tab is selected, go get costumes). Once we have content client side we don't need to know what kind they are RN (maybe eventually; should also refactor for enums in database tables), so those filtering booleans don't make it into the interface.
 */
-export interface Post {
-  id: number;
-  ownerId: number;
-  createdAt: string;
-  updatedAt?: string;
-  upvotes: number;
+// export interface Post {
+//   content: any;
+//   contentable: any;
+//   user: any;
+//   tags: any;
+//   sharedContentDetails?: any;
 
-  /*
-  photos have 'description' and 'photoURL', comments have 'comment'
-  */
 
-  comment?: string;
-  photoURL?: string;
-  description?: string;
-
-  /*
-  for feed page posts, which have a sender
-  */
-  senderName?: string;
-}
+//   id: number;
+//   ownerId: number;
+//   createdAt: string;
+//   updatedAt?: string;
+//   upvotes: number;
+//   /*
+//   photos have 'description' and 'photoURL', comments have 'comment'
+//   */
+//   comment?: string;
+//   photoURL?: string;
+//   description?: string;
+//   /*
+//   for feed page posts, which have a sender
+//   */
+//   senderName?: string;
+// }
 
 interface PostCardProps {
   post: Post;
@@ -55,7 +60,7 @@ interface PostCardProps {
   /* Order is not being used */
   // order?: string;
 
-  /* used to fetch specific content on home page because of content tabs (gos, costumes, throws), not used on feed page rn */
+  /* used to fetch specific content on home page because of content tabs (gos, costumes, throws), not used on feed page rn TODO: get rid of this? */
   eventKey?: string;
 
   /* 2 share modal functions: only on home page rn */
@@ -70,7 +75,7 @@ interface PostCardProps {
   // confirmFunctions?: any;
 
   /*
-  childFunctions is an object that contains any functions that get passed from some page into the posts on that page. These include functions passed into the confirm action modal: for instance from the feed page, we'll pass "handleRemovePostFromFeed" into each post card that is shared (but won't bother to pass this function through for the home page feed)
+  childFunctions is an object that contains any functions that get passed from some page into the posts on that page. These include functions passed into the confirm action modal: for instance from the feed page, we'll pass "handleRemovePostFromFeed" (soon to be "archivePost") into each post card that is shared (but won't bother to pass this function through for the home page feed)
   */
   childFunctions?: any;
 }
@@ -96,9 +101,9 @@ const PostCard: React.FC<PostCardProps> = ({
   const isDemoMode = useContext(RunModeContext) === 'demo';
 
   // posts that are text-only have comments. Photo's have descriptions
-  const postType = post.photoURL ? 'photo' : 'comment';
-  const postText = postType === 'photo' ? post.description : post.comment;
-  const isSharedPost = post.senderName ? true : false;
+  const postType = post.content.contentableType;
+  const postText = post.contentable.description;
+  const isSharedPost = post.sharedContentDetails ? true : false;
 
   const [imgDimensions, setImgDimensions] = useState({
     width: null,
@@ -107,7 +112,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const getOwner = async () => {
     try {
-      const { data } = await axios.get(`api/home/post/${post.ownerId}`);
+      const { data } = await axios.get(`api/home/post/${post.user.id}`);
       setOwner(data.firstName + ' ' + data.lastName);
       setIsOwner(data.id === userId);
     } catch (err) {
@@ -132,7 +137,7 @@ const PostCard: React.FC<PostCardProps> = ({
     // else run upvote logic
     else {
       try {
-        await axios.post(`/api/feed/upvote-${postType}/${userId}/${post.id}`);
+        await axios.post(`/api/feed/upvote-${postType}/${userId}/${post.content.id}`);
         if (commentVotingStatus !== 'upvoted') {
           setCommentVotingStatus('upvoted');
         }
@@ -162,12 +167,12 @@ const PostCard: React.FC<PostCardProps> = ({
     // if not demo mode, run downvote logic
     else {
       try {
-        await axios.post(`/api/feed/downvote-${postType}/${userId}/${post.id}`);
+        await axios.post(`/api/feed/downvote-${postType}/${userId}/${post.content.id}`);
 
         if (commentVotingStatus !== 'downvoted') {
           setCommentVotingStatus('downvoted');
 
-          if (post.upvotes - 1 <= -5) {
+          if (post.content.upvotes - 1 <= -5) {
             toast.error('Post deleted due to too many downvotes!');
           }
         }
@@ -185,7 +190,7 @@ const PostCard: React.FC<PostCardProps> = ({
     // rendering the image, so as to orient the
     // card properly
     const postImg = new Image();
-    postImg.src = post.photoURL;
+    postImg.src = post.contentable.photoURL;
     postImg.onload = async () => {
       await setImgDimensions({
         height: postImg.height,
@@ -207,7 +212,7 @@ const PostCard: React.FC<PostCardProps> = ({
     } else {
       try {
         if (isOwner) {
-          await axios.delete(`/api/home/delete-${postType}/${post.id}`, {
+          await axios.delete(`/api/home/delete-${postType}/${post.content.id}`, {
             data: { userId },
           });
           toast.success('Post deleted successfully!');
@@ -227,7 +232,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const handleInitPostShare = () => {
     setShareModalBundle.setPostToShare({
-      id: post.id,
+      id: post.content.id,
       type: postType,
     });
     setShareModalBundle.setShowShareModal(true);
@@ -252,13 +257,13 @@ const PostCard: React.FC<PostCardProps> = ({
       <Card className={createCardClassName()}>
         {postType === 'photo' && (
           <>
-            <Card.Img className='post-card-image' src={post.photoURL} />
+            <Card.Img className='post-card-image' src={post.contentable.photoURL} />
           </>
         )}
         <Card.Body className='post-card-body'>
           <Card.Text className='post-card-text' as='div'>
             {isSharedPost && (
-              <div className='post-card-sender'>via {post.senderName}</div>
+              <p className='post-card-sender'>{`via ${post.sharedContentDetails.senders[0].firstName}`}</p>
             )}
             <div className='post-card-content'>{postText}</div>
             <div className='post-card-detail'>
@@ -300,7 +305,7 @@ const PostCard: React.FC<PostCardProps> = ({
                   }}
                 />
               </Button>
-              <span className='mx-2'>{post.upvotes}</span>
+              <span className='mx-2'>{post.content.upvotes}</span>
               <Button
                 variant='outline-danger'
                 className='vote-button rounded-circle'

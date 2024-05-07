@@ -320,8 +320,8 @@ Test.get('/getSharedContent/:userId', async (req: Request, res: Response) => {
         const comp = sharedContentWithContentablesResponse[i].contentId;
 
         if (target === comp) {
-          // add
 
+          // add comp's sender and timestamp to the target's sharedContentDetails.senders array
           const senderObject = {
             ...sharedContentWithContentablesResponse[i].dataValues.sender
               .dataValues,

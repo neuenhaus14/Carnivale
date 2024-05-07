@@ -91,6 +91,7 @@ const App = () => {
           family_name: 'Johnson',
       };
 
+      // this request gets both user info and an array of their votes
       const userResponse: any = await axios.post(`api/home/user/`, { user });
 
       // set id state after fetching data from users DB
