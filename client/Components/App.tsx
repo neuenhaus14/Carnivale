@@ -32,16 +32,18 @@ import TopNavBar from './TopNavBar';
 import ConfirmActionModal from './ConfirmActionModal';
 import ShareModal from './ShareModal';
 
-import { ThemeContext, RunModeContext } from './Context';
+import { ThemeContext, RunModeContext, UserContext } from './Context';
 
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
 
-
   // CONFIRM ACTION MODAL STATE
   const [confirmActionFunction, setConfirmActionFunction] = useState(null);
-  const [showConfirmActionModal, setShowConfirmActionModal] = useState<boolean>(false);
-  const [confirmActionText, setConfirmActionText] = useState<null | string>(null);
+  const [showConfirmActionModal, setShowConfirmActionModal] =
+    useState<boolean>(false);
+  const [confirmActionText, setConfirmActionText] = useState<null | string>(
+    null
+  );
   // Object that bundles confirm action functionality. Pass this to each page, so we don't need to have a unique modal sitting on each page.
   const setConfirmActionBundle = {
     setConfirmActionFunction,
@@ -50,21 +52,25 @@ const App = () => {
   };
 
   // SHARE MODAL STATE
-  const [postToShare, setPostToShare] = useState({id: null, type: null});
+  const [postToShare, setPostToShare] = useState({ id: null, type: null });
   const [showShareModal, setShowShareModal] = useState<boolean>(false);
 
   const setShareModalBundle = {
     setPostToShare,
     setShowShareModal,
-  }
+  };
 
   // WHAT DOES userData DO?
-  const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
   const [currWeather, setCurrWeather] = useState('');
   const [currTemp, setCurrTemp] = useState('');
 
   const [theme, setTheme] = useState('pg-theme-light');
+
+  const [userContextInfo, setUserContextInfo] = useState({
+    user: {},
+    votes: [],
+  });
 
   const isDemoMode = useContext(RunModeContext) === 'demo';
 
@@ -78,11 +84,23 @@ const App = () => {
   // on Auth0 login
   const getUser = async () => {
     try {
-      const { data } = await axios.post(`api/home/user/`, { user });
+      // Dummy: always fetch for Bob J. Would normally grab user from Auth state using the same kv's for request to server
+      const user = {
+          email: 'a@b.com',
+          given_name: 'Bob',
+          family_name: 'Johnson',
+      };
 
-      console.log('userId', data[0].id);
-      setUserData(data[0].id);
-      setUserId(data[0].id);
+      const userResponse: any = await axios.post(`api/home/user/`, { user });
+
+      // set id state after fetching data from users DB
+      setUserId(userResponse.data.userData[0].id);
+
+      // set user context info
+      setUserContextInfo({
+        user: userResponse.data.userData[0],
+        votes: userResponse.data.userVotes
+      })
     } catch (err) {
       console.error(err);
     }
@@ -141,7 +159,8 @@ const App = () => {
   useEffect(() => {
     user && getUser();
     if (isDemoMode) {
-      setUserId(1);
+      //setUserId(1);
+      getUser();
     }
   }, [isAuthenticated]);
 
@@ -186,12 +205,21 @@ const App = () => {
               <div>
                 <TopNavBar
                   title={
-                    user ? `Welcome, ${user.given_name}!` : 'Welcome to Pardi Gras!'
+                    user
+                      ? `Welcome, ${user.given_name}!`
+                      : 'Welcome to Pardi Gras!'
                   }
                   currWeather={currWeather}
                   currTemp={currTemp}
                 />
-                <HomePage userId={userId} lat={lat} lng={lng} setConfirmActionBundle={setConfirmActionBundle} setShareModalBundle={setShareModalBundle}/> <NavBar />
+                <HomePage
+                  userId={userId}
+                  lat={lat}
+                  lng={lng}
+                  setConfirmActionBundle={setConfirmActionBundle}
+                  setShareModalBundle={setShareModalBundle}
+                />{' '}
+                <NavBar />
               </div>
             }
           />
@@ -228,7 +256,12 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <FeedPage userId={userId} setConfirmActionBundle={setConfirmActionBundle} setShareModalBundle={setShareModalBundle}/> <NavBar />
+                <FeedPage
+                  userId={userId}
+                  setConfirmActionBundle={setConfirmActionBundle}
+                  setShareModalBundle={setShareModalBundle}
+                />{' '}
+                <NavBar />
               </div>
             }
           />
@@ -290,20 +323,28 @@ const App = () => {
   );
 
   return (
-    <RunModeContext.Provider value={process.env.RUN_MODE}>
-      <ThemeContext.Provider value={theme}>
-        <RouterProvider router={router} />
-        <ConfirmActionModal
-          showConfirmActionModal={showConfirmActionModal}
-          setShowConfirmActionModal={setShowConfirmActionModal}
-          confirmActionFunction={confirmActionFunction}
-          setConfirmActionFunction={setConfirmActionFunction}
-          confirmActionText={confirmActionText}
-          setConfirmActionText={setConfirmActionText}
-        />
-        <ShareModal postIdToShare={postToShare.id} userId={userId} postTypeToShare={postToShare.type} showShareModal={showShareModal} setShowShareModal={setShowShareModal} />
-      </ThemeContext.Provider>
-    </RunModeContext.Provider>
+    <UserContext.Provider value={userContextInfo}>
+      <RunModeContext.Provider value={process.env.RUN_MODE}>
+        <ThemeContext.Provider value={theme}>
+          <RouterProvider router={router} />
+          <ConfirmActionModal
+            showConfirmActionModal={showConfirmActionModal}
+            setShowConfirmActionModal={setShowConfirmActionModal}
+            confirmActionFunction={confirmActionFunction}
+            setConfirmActionFunction={setConfirmActionFunction}
+            confirmActionText={confirmActionText}
+            setConfirmActionText={setConfirmActionText}
+          />
+          <ShareModal
+            postIdToShare={postToShare.id}
+            userId={userId}
+            postTypeToShare={postToShare.type}
+            showShareModal={showShareModal}
+            setShowShareModal={setShowShareModal}
+          />
+        </ThemeContext.Provider>
+      </RunModeContext.Provider>
+    </UserContext.Provider>
   );
 };
 

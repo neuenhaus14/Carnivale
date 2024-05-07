@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Button, Container, Modal, Row, Col, Tabs, Tab } from 'react-bootstrap';
-import { ThemeContext, RunModeContext } from './Context';
+import { ThemeContext, RunModeContext, UserContext } from './Context';
 
 import { PostCard, Post } from './PostCard';
 
@@ -86,6 +86,8 @@ const FeedPage: React.FC<FeedPageProps> = ({
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
+  const userContextInfo = useContext(UserContext);
+
 
   /* THIS FUNCTIONALITY IS NOT USED BECAUSE ALL UPVOTING/DOWNVOTING HAPPENS IN POSTCARD
   const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
@@ -119,7 +121,8 @@ const FeedPage: React.FC<FeedPageProps> = ({
       //   // axios.get(`/api/feed/user/1`),
       // ]);
 
-      const sharedPostResponse = await axios.get(`/api/test/getSharedContent/2`)
+      const sharedPostResponse = await axios.get(`/api/test/getSharedContent/${userContextInfo.user.id}`)
+
       setSharedPosts(sharedPostResponse.data);
       // setCurrentUser(userResponse.data);
     } catch (error) {
@@ -490,6 +493,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
     }
   };
 
+  console.log('inside feed. UserContextInfo: ', userContextInfo)
   return (
     <Container className={`body ${theme} feed-page-container`}>
       {isDemoMode && (

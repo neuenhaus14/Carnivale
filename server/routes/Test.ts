@@ -262,7 +262,7 @@ Test.get('/getSharedContent/:userId', async (req: Request, res: Response) => {
       order: [['contentId', 'ASC']],
     });
 
-    // STEP 2: get the contentable associated with each item of shared content. We can't include all contentable types in the previous db query because it returns a record from each contentable type with the contentableId of contentId TODO: figure out how to achieve this with getContentable, a method of the Content model
+    // STEP 2: get the contentable associated with each item of shared content. We can't include all contentable types in the previous db query because it returns a record from each contentable type (pin, comment, photo, plan) with the contentableId of contentId TODO: figure out how to achieve this with getContentable, a method of the Content model
     const sharedContentWithContentablesResponse: any = await Promise.all(
       sharedContentResponse.map(async (sharedContent) => {
         const contentId = sharedContent.dataValues.contentId;

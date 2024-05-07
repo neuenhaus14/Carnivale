@@ -17,7 +17,7 @@ import { FaCamera } from '@react-icons/all-files/fa/FaCamera';
 import axios from 'axios';
 import HomeModal from './HomeModal';
 import { PostCard } from './PostCard';
-import { RunModeContext, ThemeContext } from './Context';
+import { RunModeContext, ThemeContext, UserContext } from './Context';
 import { useSearchParams } from 'react-router-dom';
 
 //PARENT OF HOMEMODAL
@@ -50,6 +50,7 @@ const HomePage: React.FC<HomePageProps> = ({
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
+  const userContextInfo = useContext(UserContext);
 
   const toggleAboutModal = () => {
     setShowAboutModal(!showAboutModal);

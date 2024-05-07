@@ -7,6 +7,10 @@ import {
   Join_comment_vote,
   Join_photo_vote,
 } from "../db";
+
+import models from '../db/models/index';
+const User_votes = models.user_vote;
+
 import { Op } from "sequelize";
 const HomeRoutes = Router();
 
@@ -163,16 +167,25 @@ HomeRoutes.get("/photo/:id", async (req: Request, res: Response) => {
 // });
 
 HomeRoutes.post("/user", async (req: Request, res: Response) => {
+  console.log('USER route', req.body)
   const { user } = req.body;
   try {
-    const userData = await User.findOrCreate({
+    const userData: any = await User.findOrCreate({
       where: {
         email: user.email,
         firstName: user.given_name,
         lastName: user.family_name,
       },
     });
-    res.status(200).send(userData);
+
+    console.log('userData', userData[0].dataValues.id)
+    const userVotes: any = await User_votes.findAll({
+      where: {
+        userId: userData[0].dataValues.id
+      }
+    })
+
+    res.status(200).send({userData, userVotes});
   } catch (err) {
     console.error(err);
     res.sendStatus(500);

@@ -246,7 +246,7 @@ const PostCard: React.FC<PostCardProps> = ({
     return className;
   };
 
-  console.log('POST', post)
+  // console.log('POST', post)
   return (
     <>
       <Card className={createCardClassName()}>
@@ -264,7 +264,7 @@ const PostCard: React.FC<PostCardProps> = ({
             <div className='post-card-detail'>
               <div className='post-card-user-name'>{owner}</div>
               <>
-                <OverlayTrigger
+                {/* <OverlayTrigger
                   placement='top'
                   overlay={
                     <Tooltip id={`tooltip-${post.id}`}>
@@ -280,7 +280,7 @@ const PostCard: React.FC<PostCardProps> = ({
                   >
                     {dayjs(post.createdAt.toString()).fromNow()}
                   </div>
-                </OverlayTrigger>
+                </OverlayTrigger> */}
               </>
             </div>
           </Card.Text>

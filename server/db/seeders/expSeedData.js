@@ -12,13 +12,14 @@ const Tag = models.tag;
 const Content_tag = models.content_tag;
 const Shared_content = models.shared_content;
 const Shared_content_status = models.shared_content_status;
+const User_vote = models.user_vote;
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert('users', [
       {
-        email: 'Bob@Johnson.com',
-        phone: '123-456-7890',
+        email: 'a@b.com',
+        phone: "123-456-7890",
         firstName: 'Bob',
         lastName: 'Johnson',
         latitude: 29.963864,
@@ -81,9 +82,9 @@ module.exports = {
         content: {
           latitude: 29.963864,
           longitude: -90.05213,
-          upvotes: 3,
+          upvotes: -1,
           placement: 'public',
-          userId: 1,
+          userId: 2,
         },
       },
       { include: [Content] }
@@ -143,9 +144,9 @@ module.exports = {
         content: {
           latitude: 29.963864,
           longitude: -90.05213,
-          upvotes: 2,
+          upvotes: 1,
           placement: 'public',
-          userId: 1,
+          userId: 2,
           parentId: null,
         },
         name: 'Opening Party',
@@ -153,7 +154,7 @@ module.exports = {
         address: '54 S. South Long Lake Rd, Traverse City, MI, 49685',
         startTime: '2024-04-01T18:00',
         endTime: '2024-04-01T18:00',
-        inviteCount: 0,
+        inviteCount: 1,
         attendingCount: 0,
         link: 'www.link.com',
       },
@@ -184,46 +185,84 @@ module.exports = {
     // SHARING CONTENT id: 1 (the pin)
     await Shared_content.create({
       contentId: 1,
-      senderId: 1,
-      recipientId: 2,
+      senderId: 2,
+      recipientId: 1,
     });
+
     await Shared_content.create({
       contentId: 1,
       senderId: 3,
-      recipientId: 2,
+      recipientId: 1,
     });
+
     await Shared_content.create({
       contentId: 1,
       senderId: 4,
-      recipientId: 2,
+      recipientId: 1,
     });
 
     // sharing the plan
     await Shared_content.create({
       contentId: 4,
-      senderId: 1,
-      recipientId: 2,
+      senderId: 2,
+      recipientId: 1,
     });
 
     await Shared_content.create({
       contentId: 4,
       senderId: 3,
-      recipientId: 2,
+      recipientId: 1,
     });
 
-    // marking if content is archived
+    // marking if shared content is archived for user 1
     // the pin is NOT archived
     await Shared_content_status.create({
       contentId: 1,
-      userId: 2,
+      userId: 1,
       isArchived: false,
     })
 
     // the plan is archived
     await Shared_content_status.create({
       contentId: 4,
-      userId: 2,
+      userId: 1,
       isArchived: true,
+    })
+
+    // up/downvotes from user 1
+    await User_vote.create({
+      vote: 'up',
+      userId: 1,
+      contentId: 4,
+    })
+    await User_vote.create({
+      vote: 'down',
+      userId: 1,
+      contentId: 1,
+    })
+
+    // up/downvotes from user 2
+    await User_vote.create({
+      vote: 'up',
+      userId: 2,
+      contentId: 4,
+    })
+    await User_vote.create({
+      vote: 'up',
+      userId: 2,
+      contentId: 1,
+    })
+
+    // up/downvotes from user 3
+    await User_vote.create({
+      vote: 'up',
+      userId: 3,
+      contentId: 4,
+    })
+    await User_vote.create({
+      vote: 'up',
+      userId: 3,
+      contentId: 1,
     })
 
   },
