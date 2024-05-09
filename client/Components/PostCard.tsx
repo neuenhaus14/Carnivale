@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {
-  Button,
-  Card,
-  OverlayTrigger,
-  Tooltip,
-} from 'react-bootstrap';
+import { Button, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -15,9 +10,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FaShareSquare } from '@react-icons/all-files/fa/FaShareSquare';
 import { MdDelete } from '@react-icons/all-files/md/MdDelete';
 import { BiHide } from '@react-icons/all-files/bi/BiHide';
-
 import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
 import { IoArrowUpCircle } from '@react-icons/all-files/io5/IoArrowUpCircle';
+import { IoMdPin } from '@react-icons/all-files/io/IoMdPin';
+import { IoMdCalendar } from '@react-icons/all-files/io/IoMdCalendar';
+import { IoMdPhotos } from '@react-icons/all-files/io/IoMdPhotos';
+import { IoMdText } from '@react-icons/all-files/io/IoMdText';
+
 import { RunModeContext } from './Context';
 import { Post } from '../types';
 
@@ -32,7 +31,6 @@ A post is whatever goes into a PostCard. RN it is a record from the 'comments' o
 //   user: any;
 //   tags: any;
 //   sharedContentDetails?: any;
-
 
 //   id: number;
 //   ownerId: number;
@@ -91,7 +89,8 @@ const PostCard: React.FC<PostCardProps> = ({
   /*
   THE UPVOTE/DOWNVOTE FUNCTIONALITY WORKS BUT THE COLORING OF THE VOTE BUTTONS DOES NOT WORK AFTER RELOAD. ORIGINALLY WE'D getPosts AFTER VOTING, BUT THIS WOULD MOVE THE POST AROUND AFTER VOTING PROVIDED THE NEW ORDER WHEN SORTING BY VOTES, SO THE POST WOULD DISAPPEAR FROM VIEW (WHICH I DON'T THINK WE WANT). THE getPosts FUNCTIONALITY IS COMMENTED OUT IN THE handleVotes FUNCTIONS
 */
-  const [owner, setOwner] = useState('');
+
+  // const [owner, setOwner] = useState('');
 
   const [commentVotingStatus, setCommentVotingStatus] = useState<
     'upvoted' | 'downvoted' | 'none'
@@ -110,15 +109,15 @@ const PostCard: React.FC<PostCardProps> = ({
     height: null,
   });
 
-  const getOwner = async () => {
-    try {
-      const { data } = await axios.get(`api/home/post/${post.user.id}`);
-      setOwner(data.firstName + ' ' + data.lastName);
-      setIsOwner(data.id === userId);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // const getOwner = async () => {
+  //   try {
+  //     // const { data } = await axios.get(`api/home/post/${post.user.id}`);
+  //     setOwner(data.firstName + ' ' + data.lastName);
+  //     setIsOwner(data.id === userId);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
   const handleUpvote = async () => {
     // if demo mode, display toast
@@ -137,7 +136,9 @@ const PostCard: React.FC<PostCardProps> = ({
     // else run upvote logic
     else {
       try {
-        await axios.post(`/api/feed/upvote-${postType}/${userId}/${post.content.id}`);
+        await axios.post(
+          `/api/feed/upvote-${postType}/${userId}/${post.content.id}`
+        );
         if (commentVotingStatus !== 'upvoted') {
           setCommentVotingStatus('upvoted');
         }
@@ -167,7 +168,9 @@ const PostCard: React.FC<PostCardProps> = ({
     // if not demo mode, run downvote logic
     else {
       try {
-        await axios.post(`/api/feed/downvote-${postType}/${userId}/${post.content.id}`);
+        await axios.post(
+          `/api/feed/downvote-${postType}/${userId}/${post.content.id}`
+        );
 
         if (commentVotingStatus !== 'downvoted') {
           setCommentVotingStatus('downvoted');
@@ -200,10 +203,10 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   useEffect(() => {
-    if (postType === 'photo') {
+    if (postType === 'photo' || postType === 'pin') {
       configurePhotoPost();
     }
-    getOwner();
+    setIsOwner(post.user.id === userId);
   }, []);
 
   const handleDeletePost = async () => {
@@ -212,9 +215,12 @@ const PostCard: React.FC<PostCardProps> = ({
     } else {
       try {
         if (isOwner) {
-          await axios.delete(`/api/home/delete-${postType}/${post.content.id}`, {
-            data: { userId },
-          });
+          await axios.delete(
+            `/api/home/delete-${postType}/${post.content.id}`,
+            {
+              data: { userId },
+            }
+          );
           toast.success('Post deleted successfully!');
         } else {
           toast.error(
@@ -241,7 +247,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const createCardClassName = () => {
     let className = `post-card ${postType}-post-card`;
 
-    if (postType === 'photo') {
+    if (postType === 'photo' || postType === 'pin') {
       if (imgDimensions.height >= imgDimensions.width) {
         className += ' portrait-photo-post-card';
       } else {
@@ -251,29 +257,58 @@ const PostCard: React.FC<PostCardProps> = ({
     return className;
   };
 
-  // console.log('POST', post)
+  const iconByContentType = (postType) => {
+    switch (postType) {
+      case 'pin':
+        return <IoMdPin  size={'24px'}/>;
+      case 'photo':
+        return <IoMdPhotos size={'24px'} />;
+      case 'plan':
+        return <IoMdCalendar  size={'24px'}/>;
+      case 'comment':
+        return <IoMdText size={'24px'}/>;
+    }
+  }
+
   return (
     <>
       <Card className={createCardClassName()}>
-        {postType === 'photo' && (
+        {(postType === 'photo' || postType === 'pin') && (
           <>
-            <Card.Img className='post-card-image' src={post.contentable.photoURL} />
+            <Card.Img
+              className='post-card-image'
+              src={post.contentable.photoURL}
+            />
           </>
         )}
         <Card.Body className='post-card-body'>
           <Card.Text className='post-card-text' as='div'>
-            {isSharedPost && (
-              <p className='post-card-sender'>{`via ${post.sharedContentDetails.senders[0].firstName}`}</p>
-            )}
+            <div className='d-flex flex-row justify-content-between align-content-center'>
+              {iconByContentType(postType)}
+              {isSharedPost && (
+                <p className='post-card-sender'>{`shared by ${post.sharedContentDetails.senders.reduce((acc, cur, index, array) => {
+                  if (index === 0){
+                    acc += cur.firstName;
+                  }
+                  else if (index === (array.length - 1)) {
+                    acc += ` & ${cur.firstName}`
+                  }
+                  else {
+                    acc += `, ${cur.firstName}`
+                  }
+                  return acc
+              }, '')}`}</p>
+              )}
+            </div>
             <div className='post-card-content'>{postText}</div>
             <div className='post-card-detail'>
-              <div className='post-card-user-name'>{owner}</div>
+              <div className='post-card-user-name'>{`${post.user.firstName} ${post.user.lastName}`}</div>
               <>
-                {/* <OverlayTrigger
+                <OverlayTrigger
                   placement='top'
                   overlay={
-                    <Tooltip id={`tooltip-${post.id}`}>
-                      {dayjs(post.createdAt.toString()).format(
+                    <Tooltip id={`tooltip-${post.content.id}`}>
+                      {dayjs(post.content.createdAt.toString()).format(
                         'dddd [at] h:mm A'
                       )}
                     </Tooltip>
@@ -283,9 +318,9 @@ const PostCard: React.FC<PostCardProps> = ({
                     className='post-card-created-at-text'
                     style={{ cursor: 'pointer' }}
                   >
-                    {dayjs(post.createdAt.toString()).fromNow()}
+                    {dayjs(post.content.createdAt.toString()).fromNow()}
                   </div>
-                </OverlayTrigger> */}
+                </OverlayTrigger>
               </>
             </div>
           </Card.Text>

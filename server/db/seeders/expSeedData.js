@@ -19,7 +19,7 @@ module.exports = {
     await queryInterface.bulkInsert('users', [
       {
         email: 'a@b.com',
-        phone: "123-456-7890",
+        phone: '123-456-7890',
         firstName: 'Bob',
         lastName: 'Johnson',
         latitude: 29.963864,
@@ -74,7 +74,8 @@ module.exports = {
     await Pin.create(
       {
         pinType: 'EMT',
-        photoURL: 'www.google.com',
+        photoURL:
+          'https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/oh8ugtya4ykz6d0ysl32.jpg',
         description: "There's an EMT over here",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -181,6 +182,60 @@ module.exports = {
       { include: [Content] }
     );
 
+    // content id 6
+    await Photo.create(
+      {
+        content: {
+          latitude: 29.343864,
+          longitude: -90.55213,
+          upvotes: 0,
+          placement: 'public',
+          userId: 1,
+          parentId: null,
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        photoURL: 'https://res.cloudinary.com/dj5uxv8tg/image/upload/c_limit,w_601,h_600/v1710963574/Carnivale/IMG_6107_gnrtou.jpg',
+        description: 'Go Saints',
+      },
+      { include: [Content] }
+    );
+
+    // content id 7
+    await Photo.create(
+      {
+        content: {
+          latitude: 29.243864,
+          longitude: -90.85213,
+          upvotes: 0,
+          placement: 'public',
+          userId: 3,
+          parentId: null,
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        photoURL: 'https://res.cloudinary.com/dj5uxv8tg/image/upload/c_auto,h_800,w_450/v1711477556/Easter_Sunday_in_New_Orleans_French_Quarter_2018_10_fywoy8.jpg',
+        description: 'My costume!',
+      },
+      { include: [Content] }
+    );
+    // content id 8
+    await Comment.create(
+      {
+        content: {
+          latitude: 29.864864,
+          longitude: -90.05713,
+          upvotes: 0,
+          placement: 'public',
+          userId: 4,
+          parentId: null,
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        description: 'This is a standalone comment',
+      },
+      { include: [Content] }
+    );
 
     // SHARING CONTENT id: 1 (the pin)
     await Shared_content.create({
@@ -220,51 +275,50 @@ module.exports = {
       contentId: 1,
       userId: 1,
       isArchived: false,
-    })
+    });
 
     // the plan is archived
     await Shared_content_status.create({
       contentId: 4,
       userId: 1,
       isArchived: true,
-    })
+    });
 
     // up/downvotes from user 1
     await User_vote.create({
       vote: 'up',
       userId: 1,
       contentId: 4,
-    })
+    });
     await User_vote.create({
       vote: 'down',
       userId: 1,
       contentId: 1,
-    })
+    });
 
     // up/downvotes from user 2
     await User_vote.create({
       vote: 'up',
       userId: 2,
       contentId: 4,
-    })
+    });
     await User_vote.create({
       vote: 'up',
       userId: 2,
       contentId: 1,
-    })
+    });
 
     // up/downvotes from user 3
     await User_vote.create({
       vote: 'up',
       userId: 3,
       contentId: 4,
-    })
+    });
     await User_vote.create({
       vote: 'up',
       userId: 3,
       contentId: 1,
-    })
-
+    });
   },
 
   down: async (queryInterface, Sequelize) => {

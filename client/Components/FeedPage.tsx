@@ -112,7 +112,6 @@ const FeedPage: React.FC<FeedPageProps> = ({
   };
 
   const getSharedPosts = async () => {
-    console.log('fetching data!');
     try {
       // const [postsResponse, userResponse] = await Promise.all([
       //   // axios.get(`/api/feed/shared-posts/${userId}`),
@@ -122,9 +121,9 @@ const FeedPage: React.FC<FeedPageProps> = ({
       //   // axios.get(`/api/feed/user/1`),
       // ]);
 
-      const sharedPostResponse = await axios.get(`/api/test/getSharedContent/${userContextInfo.user.id}`)
+      const sharedPostsResponse = await axios.get(`/api/content/getSharedContent/${userContextInfo.user.id}`)
 
-      setSharedPosts(sharedPostResponse.data);
+      setSharedPosts(sharedPostsResponse.data);
       // setCurrentUser(userResponse.data);
     } catch (error) {
       console.error('Error fetching data:', error);

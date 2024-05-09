@@ -40,12 +40,13 @@ const HomePage: React.FC<HomePageProps> = ({
   // const [searchParams] = useSearchParams();
   // const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [comment, setComment] = useState('');
+
   const [posts, setPosts] = useState(null);
 
   const [showHomeModal, setShowHomeModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(true);
 
-  const [key, setKey] = useState('posts');
+  const [key, setKey] = useState('main');
   const [order, setOrder] = useState('createdAt');
 
   const theme = useContext(ThemeContext);
@@ -93,25 +94,29 @@ const HomePage: React.FC<HomePageProps> = ({
   };
 
   // fetches all
-  const getPosts = async (contentType: string) => {
+  const getPosts = async () => {
     try {
-      const { data } = await axios.get(`/api/home/${contentType}`);
-      if (order === 'upvotes') {
-        setPosts(
-          data.sort(
-            (a: any, b: any) =>
-              (b[order as string] as number) - (a[order as string] as number)
-          )
-        );
-      } else {
-        setPosts(
-          data.sort(
-            (a: any, b: any) =>
-              (new Date(b[order as any]) as any) -
-              (new Date(a[order as any]) as any)
-          )
-        );
-      }
+
+      const postsResponse = await axios.get(`/api/content/getMainContent/userId=${userId}&order=${order}&category=${key}`)
+
+      setPosts(postsResponse.data)
+      // const { data } = await axios.get(`/api/home/${contentType}`);
+      // if (order === 'upvotes') {
+      //   setPosts(
+      //     data.sort(
+      //       (a: any, b: any) =>
+      //         (b[order as string] as number) - (a[order as string] as number)
+      //     )
+      //   );
+      // } else {
+      //   setPosts(
+      //     data.sort(
+      //       (a: any, b: any) =>
+      //         (new Date(b[order as any]) as any) -
+      //         (new Date(a[order as any]) as any)
+      //     )
+      //   );
+      // }
     } catch (err) {
       console.error(err);
     }
@@ -249,7 +254,7 @@ const HomePage: React.FC<HomePageProps> = ({
         <Col>
           <div className='home-page-tabs'>
             <Tabs activeKey={key} onSelect={handleSelect}>
-              <Tab eventKey='posts' title='Gossip'>
+              <Tab eventKey='main' title='Main'>
                 {posts
                   ? posts.map((post: any, index: number) => (
                       <PostCard

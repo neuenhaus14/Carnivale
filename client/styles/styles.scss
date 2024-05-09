@@ -115,7 +115,7 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
   }
 
   // COMMENT CARDS
-  .comment-post-card {
+  .comment-post-card, .plan-post-card {
     width: 220px;
     max-width: 450px;
     padding: 15px;
@@ -141,7 +141,7 @@ Large breakpoint is 992 px wide. It's at this point that posts will switch to gr
   }
 
   // PHOTO CARDS
-  .photo-post-card {
+  .photo-post-card, .pin-post-card {
     flex-direction: row;
     align-items: center;
 

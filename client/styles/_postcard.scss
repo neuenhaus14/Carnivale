@@ -14,15 +14,15 @@
 }
 
 // pin post card bc @media breakpoint does not work for this
-.pin-post-card {
-  padding: 15px;
-  box-shadow: 0.6px 1.1px 1.1px hsl(0deg 0% 0% / 0.48);;
-  margin: 4px auto;
-  border: 1.5px solid colors.$cardBorder;
-  // border: none;
-  background-color: colors.$cardBackground;
-  max-width: 400px;
-}
+// .pin-post-card {
+//   padding: 15px;
+//   box-shadow: 0.6px 1.1px 1.1px hsl(0deg 0% 0% / 0.48);;
+//   margin: 4px auto;
+//   border: 1.5px solid colors.$cardBorder;
+//   // border: none;
+//   background-color: colors.$cardBackground;
+//   max-width: 400px;
+// }
 
 // fonts
 .post-card-detail {
@@ -43,7 +43,7 @@
 .post-card-sender {
   font-size: 14px;
   font-weight: 100;
-  text-align: end;
+  margin: 0;
 }
 
 // image
