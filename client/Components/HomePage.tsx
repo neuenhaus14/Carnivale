@@ -19,6 +19,7 @@ import HomeModal from './HomeModal';
 import { PostCard } from './PostCard';
 import { RunModeContext, ThemeContext, UserContext } from './Context';
 import { useSearchParams } from 'react-router-dom';
+import { Post } from '../types';
 
 //PARENT OF HOMEMODAL
 
@@ -46,12 +47,14 @@ const HomePage: React.FC<HomePageProps> = ({
   const [showHomeModal, setShowHomeModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(true);
 
-  const [key, setKey] = useState('main');
+  const [key, setKey] = useState('all');
   const [order, setOrder] = useState('createdAt');
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
   const userContextInfo = useContext(UserContext);
+
+  const tabCategories = process.env.TAB_CATEGORIES.split(' ');
 
   const toggleAboutModal = () => {
     setShowAboutModal(!showAboutModal);
@@ -77,9 +80,14 @@ const HomePage: React.FC<HomePageProps> = ({
   }
 
   // when tab is changed, set tab key and getPost for that tab
-  function handleSelect(key: string) {
-    setKey(key);
-    getPosts(key);
+  function handleTabSelect(newKey: string) {
+    setKey(newKey);
+    getPosts(order, newKey);
+  }
+
+  function handleOrderSelect(newOrder: string) {
+    setOrder(newOrder);
+    getPosts(newOrder, key);
   }
 
   const handleSubmit = async () => {
@@ -89,17 +97,19 @@ const HomePage: React.FC<HomePageProps> = ({
     } catch (err) {
       console.error(err);
     } finally {
-      getPosts(key);
+      getPosts(order, key);
     }
   };
 
-  // fetches all
-  const getPosts = async () => {
+  // fetches content according to order and key
+  const getPosts = async (order: string, key: string) => {
     try {
+      const postsResponse = await axios.get(
+        `/api/content/getMainContent/userId=${userId}&order=${order}&category=${key}`
+      );
 
-      const postsResponse = await axios.get(`/api/content/getMainContent/userId=${userId}&order=${order}&category=${key}`)
-
-      setPosts(postsResponse.data)
+      setPosts(postsResponse.data);
+      /*
       // const { data } = await axios.get(`/api/home/${contentType}`);
       // if (order === 'upvotes') {
       //   setPosts(
@@ -116,21 +126,16 @@ const HomePage: React.FC<HomePageProps> = ({
       //         (new Date(a[order as any]) as any)
       //     )
       //   );
-      // }
+      // } */
     } catch (err) {
       console.error(err);
     }
   };
 
+  // get posts on first render
   useEffect(() => {
-    //on initial render, or tab click
-    //getPosts and setInterval for 5 sec
-    getPosts(key);
-    const interval = setTimeout(() => {
-      getPosts(key);
-    }, 15000);
-    return () => clearTimeout(interval);
-  }, [key, order]);
+    getPosts(order, key);
+  }, []);
 
   const CreateContentForm: React.FC = () => {
     return (
@@ -154,10 +159,7 @@ const HomePage: React.FC<HomePageProps> = ({
             >
               <FaCommentDots />
             </Button>
-            <Button
-              onClick={toggleHomeModal}
-              className='mx-1'
-            >
+            <Button onClick={toggleHomeModal} className='mx-1'>
               <FaCamera />
             </Button>
           </div>
@@ -166,7 +168,33 @@ const HomePage: React.FC<HomePageProps> = ({
     );
   };
 
-  console.log('homepage, order:', order)
+  tabCategories.unshift('All')
+  const tabComponents = tabCategories.map((category, index) => {
+    return (
+      <Tab
+        eventKey={category.toLowerCase()}
+        title={category}
+        key={`${category}-${index}`}
+      >
+        {posts ? posts.map((post: Post, index) => {
+          return (
+            <PostCard
+              key={`${post.content.id} + ${index}`}
+              post={post}
+              userId={userId}
+              eventKey={category}
+              setShareModalBundle={setShareModalBundle}
+              childFunctions={{
+                getPosts,
+              }}
+              setConfirmActionBundle={setConfirmActionBundle}
+            />
+          );
+        }) : ''}
+      </Tab>
+    );
+  });
+
   return (
     <Container
       className={`body-with-bottom-panel ${theme} home-page-container`}
@@ -231,7 +259,7 @@ const HomePage: React.FC<HomePageProps> = ({
                 type='radio'
                 name='Sort'
                 label='Newest'
-                onChange={() => setOrder('createdAt')}
+                onChange={() => handleOrderSelect('createdAt')}
                 checked={order === 'createdAt'}
               />
               <Form.Check
@@ -239,11 +267,14 @@ const HomePage: React.FC<HomePageProps> = ({
                 type='radio'
                 name='Sort'
                 label='Upvotes'
-                onChange={() => setOrder('upvotes')}
+                onChange={() => handleOrderSelect('upvotes')}
                 checked={order === 'upvotes'}
               />
             </Form>
-            <div id='create-post-form' className='d-none d-xl-flex d-xxl-flex w-50'>
+            <div
+              id='create-post-form'
+              className='d-none d-xl-flex d-xxl-flex w-50'
+            >
               <CreateContentForm />
             </div>
           </div>
@@ -253,58 +284,8 @@ const HomePage: React.FC<HomePageProps> = ({
       <Row>
         <Col>
           <div className='home-page-tabs'>
-            <Tabs activeKey={key} onSelect={handleSelect}>
-              <Tab eventKey='main' title='Main'>
-                {posts
-                  ? posts.map((post: any, index: number) => (
-                      <PostCard
-                        key={`${post.id} + ${index}`}
-                        post={post}
-                        userId={userId}
-                        eventKey={'posts'}
-                        setShareModalBundle={setShareModalBundle}
-                        childFunctions={{
-                          getPosts,
-                        }}
-                        setConfirmActionBundle={setConfirmActionBundle}
-                      />
-                    ))
-                  : ''}
-              </Tab>
-              <Tab eventKey='costumes' title='Costumes'>
-                {posts
-                  ? posts.map((item: any, index: number) => (
-                      <PostCard
-                        key={`${item.id} + ${index}`}
-                        post={item}
-                        userId={userId}
-                        eventKey={'costumes'}
-                        childFunctions={{
-                          getPosts,
-                        }}
-                        setShareModalBundle={setShareModalBundle}
-                        setConfirmActionBundle={setConfirmActionBundle}
-                      />
-                    ))
-                  : ''}
-              </Tab>
-              <Tab eventKey='throws' title='Throws'>
-                {posts
-                  ? posts.map((item: any, index: number) => (
-                      <PostCard
-                        key={`${item.id} + ${index}`}
-                        post={item}
-                        userId={userId}
-                        eventKey={'throws'}
-                        childFunctions={{
-                          getPosts,
-                        }}
-                        setShareModalBundle={setShareModalBundle}
-                        setConfirmActionBundle={setConfirmActionBundle}
-                      />
-                    ))
-                  : ''}
-              </Tab>
+            <Tabs activeKey={key} onSelect={(key) => handleTabSelect(key)}>
+              {tabComponents}
             </Tabs>
           </div>
         </Col>

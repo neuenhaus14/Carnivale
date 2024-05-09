@@ -2,7 +2,9 @@ import { Request, Response, Router } from 'express';
 
 import models from '../db/models/index';
 import content_tag from '../db/models/content_tag';
+import content from '../db/models/content';
 const Content = models.content;
+
 const Photo = models.photo;
 const Pin = models.pin;
 const Comment = models.comment;
@@ -19,7 +21,7 @@ ContentRouter.get('/getTest', (req: Request, res: Response) => {
   res.status(200).send('Booyah');
 });
 
-const fixContentItem = (contentItem) => {
+const organizeContent = (contentItem) => {
   const contentKeys = [
     'id',
     'latitude',
@@ -113,7 +115,7 @@ ContentRouter.get('/getContent/:id', async (req: Request, res: Response) => {
     //   delete contentResponse.dataValues[key];
     // }
 
-    return fixContentItem(contentResponse);
+    return organizeContent(contentResponse);
   };
 
   try {
@@ -331,7 +333,6 @@ ContentRouter.get(
       ];
 
       // organize each piece of shared content in the response
-
       for (const [
         index,
         sharedContent,
@@ -432,50 +433,81 @@ ContentRouter.get(
     // eventually we'll be getting content based on who and where the user is
     const { userId, order, category } = req.params;
 
-    if (category === 'main') {
-      const contentResponse = await Content.findAll({
-        where: { parentId: null },
-        include: [
-          { model: User },
-          { model: Tag },
-          { model: Plan },
-          { model: Pin },
-          { model: Comment },
-          { model: Photo },
-        ],
-        order: [[order, order === 'createdAt' ? 'ASC' : 'DESC']],
-      });
+    try {
+      console.log('req params', req.params);
+      if (category === 'all') {
+        const contentResponse = await Content.findAll({
+          where: { parentId: null },
+          include: [
+            { model: User },
+            { model: Tag },
+            { model: Plan },
+            { model: Pin },
+            { model: Comment },
+            { model: Photo },
+          ],
+          order: [[order, order === 'createdAt' ? 'ASC' : 'DESC']],
+        });
 
-      contentResponse.forEach((contentItem) => {
-        fixContentItem(contentItem);
-      });
+        contentResponse.forEach((contentItem) => {
+          organizeContent(contentItem);
+        });
 
-      res.send(contentResponse);
-    } else if (category !== 'main') {
-      const tagResponse = await Tag.findOne({
-        where: {
-          tag: category,
-        },
-        include: [
-          {
-            model: Content_tag,
-            include: [
-              {
-                model: Content,
-                include: [
-                  { model: User },
-                  // { model: Plan },
-                  // { model: Pin },
-                  // { model: Comment },
-                  // { model: Photo },
-                ],
-              },
-            ],
+        res.send(contentResponse);
+      } else if (category !== 'main') {
+        // find the tag, include all records from content_tag join table
+        const tagResponse = await Tag.findOne({
+          where: {
+            tag: category,
           },
-        ],
-      });
+          include: [
+            {
+              model: Content_tag,
+              include: [
+                {
+                  model: Content,
+                  include: [
+                    { model: User },
+                    { model: Tag },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
 
-      res.send(tagResponse);
+        // Go get contentable for each piece of content from content_tag join table
+        await Promise.all(
+          tagResponse.dataValues.content_tags.map(async (contentItem) => {
+            console.log('contentItem', contentItem.dataValues);
+            const contentableResponse = await Content.findByPk(contentItem.contentId, {
+              include: [Pin, Photo, Plan, Comment],
+            });
+            contentItem.dataValues.contentable =
+            contentableResponse.contentable;
+
+            // move nested user and tags out
+            contentItem.dataValues.user = contentItem.dataValues.content.dataValues.user;
+            contentItem.dataValues.tags = [...contentItem.dataValues.content.dataValues.tags]
+
+            // delete content item's unneeded kv's
+            delete contentItem.dataValues.content.dataValues.user;
+            delete contentItem.dataValues.content.dataValues.tags;
+            delete contentItem.dataValues.contentId;
+            delete contentItem.dataValues.id
+            delete contentItem.dataValues.tagId;
+            delete contentItem.dataValues.createdAt;
+            delete contentItem.dataValues.updatedAt;
+
+          return contentItem;
+          })
+        );
+
+        res.send(tagResponse.content_tags);
+      }
+    } catch (e) {
+      console.error(e);
+      res.send(501);
     }
   }
 );

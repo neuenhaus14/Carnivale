@@ -67,6 +67,14 @@ module.exports = {
     await Tag.create({
       tag: 'throws',
     });
+    // TAG id: 2
+    await Tag.create({
+      tag: 'costumes',
+    });
+    // TAG id: 3
+    await Tag.create({
+      tag: 'food',
+    });
 
     // CREATE CONTENT through contentables to take advantage of associations
 
@@ -109,17 +117,6 @@ module.exports = {
       },
       { include: [Content] }
     );
-
-    // Adding tags to content
-    await Content_tag.create({
-      tagId: 1,
-      contentId: 1,
-    });
-
-    await Content_tag.create({
-      tagId: 1,
-      contentId: 2,
-    });
 
     // id: 3
     await Comment.create(
@@ -195,11 +192,17 @@ module.exports = {
         },
         createdAt: new Date(),
         updatedAt: new Date(),
-        photoURL: 'https://res.cloudinary.com/dj5uxv8tg/image/upload/c_limit,w_601,h_600/v1710963574/Carnivale/IMG_6107_gnrtou.jpg',
+        photoURL:
+          'https://res.cloudinary.com/dj5uxv8tg/image/upload/c_limit,w_601,h_600/v1710963574/Carnivale/IMG_6107_gnrtou.jpg',
         description: 'Go Saints',
       },
       { include: [Content] }
     );
+    // photo of parade is tagged throws
+    await Content_tag.create({
+      tagId: 1,
+      contentId: 6,
+    });
 
     // content id 7
     await Photo.create(
@@ -214,11 +217,19 @@ module.exports = {
         },
         createdAt: new Date(),
         updatedAt: new Date(),
-        photoURL: 'https://res.cloudinary.com/dj5uxv8tg/image/upload/c_auto,h_800,w_450/v1711477556/Easter_Sunday_in_New_Orleans_French_Quarter_2018_10_fywoy8.jpg',
+        photoURL:
+          'https://res.cloudinary.com/dj5uxv8tg/image/upload/c_auto,h_800,w_450/v1711477556/Easter_Sunday_in_New_Orleans_French_Quarter_2018_10_fywoy8.jpg',
         description: 'My costume!',
       },
       { include: [Content] }
     );
+
+    // photo of woman in costume gets costume tag
+    await Content_tag.create({
+      tagId: 2,
+      contentId: 7,
+    });
+
     // content id 8
     await Comment.create(
       {
@@ -232,10 +243,41 @@ module.exports = {
         },
         createdAt: new Date(),
         updatedAt: new Date(),
-        description: 'This is a standalone comment',
+        description: 'Where are the oysters?',
       },
       { include: [Content] }
     );
+
+    await Content_tag.create({
+      tagId: 3,
+      contentId: 8,
+    });
+
+    // content id 9
+    await Photo.create(
+      {
+        content: {
+          latitude: 29.346864,
+          longitude: -90.55283,
+          upvotes: 0,
+          placement: 'public',
+          userId: 4,
+          parentId: null,
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        photoURL:
+          'https://upload.wikimedia.org/wikipedia/commons/c/c1/Oak_Street_Po-Boy_Fest_New_Orleans_2016_41.jpg',
+        description: 'Wild Boar Poboy, yum!',
+      },
+      { include: [Content] }
+    );
+
+    // photo of poboy is tagged food
+    await Content_tag.create({
+      tagId: 3,
+      contentId: 9,
+    });
 
     // SHARING CONTENT id: 1 (the pin)
     await Shared_content.create({
