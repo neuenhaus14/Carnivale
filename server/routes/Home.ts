@@ -188,15 +188,26 @@ HomeRoutes.post('/user', async (req: Request, res: Response) => {
       },
     });
 
-    const userFriends: any = await User_friend.findAll({
+    // get user's relationships that have been accepted
+    const unorganizedUserFriends: any = await User_friend.findAll({
       where: {
         status: 'accepted',
         [Op.or]: {
           requesterId: userData[0].dataValues.id,
           recipientId: userData[0].dataValues.id,
         },
-      }, include: [{model: expUser}],
+      },
+      include: [{ association: 'recipient' }, {association: 'requester'}],
     });
+
+
+    const userFriends = unorganizedUserFriends.map((friendship)=> {
+      if (friendship.dataValues.recipientId===userData[0].dataValues.id){
+        return friendship.dataValues.requester;
+      } else {
+        return friendship.dataValues.recipient;
+      }
+    })
 
     res.status(200).send({ userData, userVotes, userFriends });
   } catch (err) {

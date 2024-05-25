@@ -6,9 +6,15 @@ import { MdShare } from '@react-icons/all-files/md/MdShare';
 import { FaMapMarkedAlt } from '@react-icons/all-files/fa/FaMapMarkedAlt';
 import { IoHomeOutline } from '@react-icons/all-files/io5/IoHomeOutline';
 import { IoPeople } from '@react-icons/all-files/io5/IoPeople';
+import { FaPlusCircle } from '@react-icons/all-files/fa/FaPlusCircle';
 import { ThemeContext } from './Context';
 
-const NavBar = () => {
+
+interface NavBarProps {
+  setShowCreateContentModal: any
+}
+
+const NavBar:React.FC<NavBarProps> = ({setShowCreateContentModal}) => {
   const navigate = useNavigate();
   const handleNavigation = (path: To) => {
     navigate(path);
@@ -53,6 +59,14 @@ const NavBar = () => {
           onClick={() => handleNavigation('/userpage')}
         >
           <IoPeople />
+        </Button>
+        <Button
+          className='bottom-nav-button rounded-circle'
+          type='button'
+          id='contentModealButton'
+          onClick={() => setShowCreateContentModal(true)}
+        >
+          <FaPlusCircle />
         </Button>
       </Navbar>
     </div>

@@ -1,3 +1,5 @@
+// THIS MODEL IS NOT USED, THIS FUNCTIONALITY WAS SUBSUMED BY PARENTID FIELD IN CONTENT TABLE
+
 module.exports = (sequelize, Sequelize) => {
   const Content_relation = sequelize.define('content_relation', {
     parentId: {type: Sequelize.INTEGER, allowNull: false},

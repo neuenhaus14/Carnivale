@@ -11,9 +11,11 @@ module.exports = (sequelize, Sequelize) => {
   User_friend.associate = function (models) {
     User_friend.belongsTo(models.user, {
       foreignKey: 'requesterId',
+      as: 'requester'
     });
     User_friend.belongsTo(models.user, {
       foreignKey: 'recipientId',
+      as: 'recipient'
     });
   };
   return User_friend;

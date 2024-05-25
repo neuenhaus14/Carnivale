@@ -26,9 +26,12 @@ import ImageRouter from './routes/PhotoUpload';
 import ParadesRoutes from './routes/Parades';
 import GigsRoutes from './routes/ScrapeEvents';
 import MailListRoutes from './routes/MailList';
-//
+
+// Experimental routes
 import ContentRoutes from './routes/Content';
 import CommentRoutes from './routes/Comment';
+import TagRoutes from './routes/Tags';
+import SharedContentRoutes from './routes/SharedContent';
 import { User } from './db/index';
 
 // import { Sequelize } from "sequelize";
@@ -62,8 +65,12 @@ app.use('/api/images', ImageRouter);
 app.use('/api/parades', ParadesRoutes);
 app.use('/api/gigs', GigsRoutes);
 app.use('/api/mail', MailListRoutes);
+
 app.use('/api/content', ContentRoutes);
 app.use('/api/comment', CommentRoutes);
+app.use('/api/tags', TagRoutes);
+app.use('/api/sharedContent', SharedContentRoutes)
+
 app.use(
   cors({
     origin: ['http://localhost:4000'],

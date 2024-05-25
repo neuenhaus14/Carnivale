@@ -63,9 +63,9 @@ const App = () => {
 
   // CREATECONTENT MODAL STATE
   const [showCreateContentModal, setShowCreateContentModal] =
-    useState<boolean>(true);
+    useState<boolean>(false);
   const [parentContentId, setParentContentId] = useState<null|number>(null);
-  const [placement, setPlacement] = useState<'public'|'private'|'ad'|'system'>('public');
+
 
 
   // WHAT DOES userData DO?
@@ -230,7 +230,7 @@ const App = () => {
                   setConfirmActionBundle={setConfirmActionBundle}
                   setShareModalBundle={setShareModalBundle}
                 />{' '}
-                <NavBar />
+                <NavBar setShowCreateContentModal={setShowCreateContentModal}/>
               </div>
             }
           />
@@ -252,7 +252,7 @@ const App = () => {
                   getLocation={getLocation}
                   setConfirmActionBundle={setConfirmActionBundle}
                 />{' '}
-                <NavBar />
+                <NavBar setShowCreateContentModal={setShowCreateContentModal}/>
               </div>
             }
           />
@@ -272,7 +272,7 @@ const App = () => {
                   setConfirmActionBundle={setConfirmActionBundle}
                   setShareModalBundle={setShareModalBundle}
                 />{' '}
-                <NavBar />
+                <NavBar setShowCreateContentModal={setShowCreateContentModal}/>
               </div>
             }
           />
@@ -287,7 +287,7 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <Parades userId={userId} lng={lng} lat={lat} /> <NavBar />
+                <Parades userId={userId} lng={lng} lat={lat} /> <NavBar setShowCreateContentModal={setShowCreateContentModal}/>
               </div>
             }
           />
@@ -302,7 +302,7 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <EventPage userId={userId} lng={lng} lat={lat} /> <NavBar />
+                <EventPage userId={userId} lng={lng} lat={lat} /> <NavBar setShowCreateContentModal={setShowCreateContentModal}/>
               </div>
             }
           />
@@ -324,7 +324,7 @@ const App = () => {
                   setTheme={setTheme}
                   setConfirmActionBundle={setConfirmActionBundle}
                 />{' '}
-                <NavBar />
+                <NavBar setShowCreateContentModal={setShowCreateContentModal}/>
               </div>
             }
           />
@@ -360,7 +360,6 @@ const App = () => {
             parentContentId={parentContentId} // defaults to null
             lat={lat}
             lng={lng}
-            placement={placement} // defaults to public
           />
         </ThemeContext.Provider>
       </RunModeContext.Provider>

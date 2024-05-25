@@ -21,10 +21,10 @@ interface CreateContentModalProps {
   defaultTab: 'comment' | 'photo' | 'pin' | 'plan'; // indicates what tab defaults to open (ie, 'pin' for map page ,'photo' for feed page)
   lat: number;
   lng: number;
-  placement: 'public' | 'system' | 'private' | 'ad'
+
 }
 
-const CreateContentModal: React.FC<CreateContentModalProps> = ({showCreateContentModal, setShowCreateContentModal, defaultTab, parentContentId, lat, lng, placement}) => {
+const CreateContentModal: React.FC<CreateContentModalProps> = ({showCreateContentModal, setShowCreateContentModal, defaultTab, parentContentId, lat, lng}) => {
 
   const toggleShowCreateContentModal = () => setShowCreateContentModal(!showCreateContentModal);
 
@@ -36,7 +36,7 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({showCreateConten
 <Modal.Body>
     <Tabs>
       <Tab eventKey='comment' title='Comment' >
-    <CreateComment parentContentId={parentContentId} lat={lat} lng={lng} placement={placement} toggleShowCreateContentModal={toggleShowCreateContentModal}/>
+    <CreateComment parentContentId={parentContentId} lat={lat} lng={lng} toggleShowCreateContentModal={toggleShowCreateContentModal}/>
       </Tab>
       <Tab eventKey='photo' title='Photo'>
 

@@ -260,15 +260,15 @@ const PostCard: React.FC<PostCardProps> = ({
   const iconByContentType = (postType) => {
     switch (postType) {
       case 'pin':
-        return <IoMdPin  size={'24px'}/>;
+        return <IoMdPin size={'24px'} />;
       case 'photo':
         return <IoMdPhotos size={'24px'} />;
       case 'plan':
-        return <IoMdCalendar  size={'24px'}/>;
+        return <IoMdCalendar size={'24px'} />;
       case 'comment':
-        return <IoMdText size={'24px'}/>;
+        return <IoMdText size={'24px'} />;
     }
-  }
+  };
 
   return (
     <>
@@ -284,20 +284,40 @@ const PostCard: React.FC<PostCardProps> = ({
         <Card.Body className='post-card-body'>
           <Card.Text className='post-card-text' as='div'>
             <div className='d-flex flex-row justify-content-between align-content-center'>
+              {/* ICON */}
               {iconByContentType(postType)}
+              {/* if it's a shared post, who shared it */}
               {isSharedPost && (
-                <p className='post-card-sender'>{`shared by ${post.sharedContentDetails.senders.reduce((acc, cur, index, array) => {
-                  if (index === 0){
-                    acc += cur.firstName;
-                  }
-                  else if (index === (array.length - 1)) {
-                    acc += ` & ${cur.firstName}`
-                  }
-                  else {
-                    acc += `, ${cur.firstName}`
-                  }
-                  return acc
-              }, '')}`}</p>
+                <p className='post-card-sender'>{`shared by ${post.sharedContentDetails.senders.reduce(
+                  (acc, cur, index, array) => {
+                    if (index === 0) {
+                      acc += cur.firstName;
+                    } else if (index === array.length - 1) {
+                      acc += ` & ${cur.firstName}`;
+                    } else {
+                      acc += `, ${cur.firstName}`;
+                    }
+                    return acc;
+                  },
+                  ''
+                )}`}</p>
+              )}
+              {/* TAGS */}
+              {post.tags.length > 0 && (
+                <div className='post-card-detail'>
+                  {post.tags
+                    .map((tagObject) => tagObject.tag)
+                    .reduce((acc, cur, index, array) => {
+                      if (index === 0) {
+                        acc += cur;
+                      } else if (index === array.length - 1) {
+                        acc += ` & ${cur}`;
+                      } else {
+                        acc += `, ${cur}`;
+                      }
+                      return acc;
+                    }, '')}
+                </div>
               )}
             </div>
             <div className='post-card-content'>{postText}</div>

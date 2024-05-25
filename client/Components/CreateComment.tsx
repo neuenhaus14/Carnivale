@@ -5,7 +5,6 @@ import { ThemeContext, RunModeContext, UserContext } from './Context';
 import axios from 'axios';
 
 interface CreateCommentProps {
-  placement: 'ad' | 'public' | 'private' | 'system';
   parentContentId: null | number;
   lat: number;
   lng: number;
@@ -16,21 +15,24 @@ const CreateComment: React.FC<CreateCommentProps> = ({
   parentContentId,
   lat,
   lng,
-  placement,
   toggleShowCreateContentModal,
 }) => {
   const [comment, setComment] = useState('');
   const [tag, setTag] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
 
+  const [isCommentPrivate, setIsCommentPrivate] = useState<boolean>(false);
+
+  // just ids here
+  const [friendsToShareWith, setFriendsToShareWith] = useState<number[]>([]);
+
   const isDemoMode = useContext(RunModeContext) === 'demo';
   const { user, votes, friends } = useContext(UserContext);
   const tabCategories = process.env.TAB_CATEGORIES.split(' ');
 
-  const checkTag = (e: any) => {
+  const handleCheckedTag = (e: any) => {
     // console.log('e.target', e.target, e.target.value, e.target.name);
     const { value } = e.target;
-
     if (!tags.includes(value)) {
       setTags([...tags, value]);
     } else if (tags.includes(value)) {
@@ -46,10 +48,18 @@ const CreateComment: React.FC<CreateCommentProps> = ({
     }
   };
 
-  // add tag from input into tags
-  const addTag = () => {
-    if (!tags.includes(tag)) {
-      setTags([...tags, tag]);
+  // add tag from input into tags. TODO: update so inputting a tabCategory will check the checkbox for that specific category; right now it just doesn't get added
+  const addInputTag = () => {
+    // check to see if input tag is already in tags or if its one from the tabCategories (had to adjust for capitalizations)
+    if (
+      !tags.includes(tag.toLowerCase()) &&
+      !tabCategories
+        .map((category) => {
+          return category.toLowerCase();
+        })
+        .includes(tag.toLowerCase())
+    ) {
+      setTags([...tags, tag.toLowerCase()]);
       setTag('');
     } else {
       setTag(''); // might be nice to have a toast warning
@@ -72,10 +82,11 @@ const CreateComment: React.FC<CreateCommentProps> = ({
             longitude: lng,
             userId: user.id,
             parentId: parentContentId,
-            placement,
+            placement: isCommentPrivate ? 'private' : 'public',
           },
           description: comment,
           tags: tags,
+          friendsToShareWith,
         }
       );
       toggleShowCreateContentModal();
@@ -85,7 +96,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
   };
 
   // prevents hitting enter to send empty comments
-  function handleKeyDown(e: any) {
+  const handleKeyDown = (e: any) => {
     //if key is enter, prevent default
     if (e.key === 'Enter' && comment.length > 0) {
       //if comment is valid, submit comment
@@ -94,14 +105,27 @@ const CreateComment: React.FC<CreateCommentProps> = ({
     } else if (e.key === 'Enter') {
       e.preventDefault();
     }
-  }
+  };
 
-  console.log('tags', tags);
+  const toggleFriendToShareWith = (e: any) => {
+    const { value } = e.target;
+
+    if (!friendsToShareWith.includes(value)) {
+      setFriendsToShareWith([...friendsToShareWith, value]);
+    } else if (friendsToShareWith.includes(value)) {
+      setFriendsToShareWith(
+        friendsToShareWith.filter((friendId) => friendId !== value)
+      );
+    }
+  };
+
   return (
     <div>
       <Form style={{ width: '100%' }}>
         <Form.Group>
           <div className='d-flex flex-column'>
+          <h5>Write Your Comment</h5>
+            {/* COMMENT INPUT */}
             <Form.Control
               className='m-2'
               placeholder='Post a comment'
@@ -112,7 +136,29 @@ const CreateComment: React.FC<CreateCommentProps> = ({
               }}
               name='comment'
             />
-            <div className='d-flex flex-row'>
+
+            {/* PLACEMENT SWITCH */}
+            <div className='d-flex justify-content-center align-items-center'>
+              <p>Public post</p>
+            <Form.Switch
+              className='mx-2'
+              id='comment-placement-switch'
+              // label={
+              //   isCommentPrivate
+              //   ? 'Private post - switch for public'
+              //   : 'Public post - switch for private'
+              // }
+              defaultChecked={isCommentPrivate}
+              onChange={() => setIsCommentPrivate(!isCommentPrivate)}
+              />
+              <p>Friends only</p>
+              </div>
+
+
+
+            <h5>Add Tags</h5>
+            {/* TAGS FROM CATEGORY TABS */}
+            <div className='d-flex flex-wrap justify-content-around'>
               {tabCategories.map((category, index) => {
                 return (
                   <Form.Check
@@ -121,11 +167,14 @@ const CreateComment: React.FC<CreateCommentProps> = ({
                     label={`${category}`}
                     value={`${category.toLowerCase()}`}
                     key={`${index}-${category}`}
-                    onChange={checkTag}
+                    onChange={handleCheckedTag}
                   />
                 );
               })}
             </div>
+
+            {/* TAG INPUT */}
+
             <div className='d-flex flex-row'>
               <Form.Control
                 className='m-2'
@@ -134,20 +183,47 @@ const CreateComment: React.FC<CreateCommentProps> = ({
                 value={tag}
                 name='tag'
               />
-              <Button onClick={addTag} disabled={tag.length === 0}>
-                Add Tag
+              <Button className='w-25 my-auto' onClick={addInputTag} disabled={tag.length === 0}>
+                Add
               </Button>
             </div>
-            {tags.map((tag, index) => {
+
+            {/* LIST OF TAGS ADDED THRU INPUT */}
+            {tags
+              .filter((tag) => !tabCategories.includes(tag))
+              .map((tag, index) => {
+                return (
+                  <div className='d-flex flex-row' key={`${tag}-${index}`}>
+                    <p>{tag}</p>
+                    <Button
+                      variant='danger'
+                      name={`${tag}`}
+                      onClick={removeTag}
+                    >
+                      X
+                    </Button>
+                  </div>
+                );
+              })}
+
+            {/* SHARE WITH FRIENDS LIST */}
+            <h5>Share with your Friends</h5>
+            <div className='d-flex flex-wrap gap-2'>
+            {friends.map((friend, index) => {
               return (
-                <div className='d-flex flex-row' key={`${tag}-${index}`}>
-                  <p>{tag}</p>
-                  <Button variant='danger' name={`${tag}`} onClick={removeTag}>
-                    X
-                  </Button>
-                </div>
+                <Form.Check
+                type='checkbox'
+                title={`${friend.firstName} ${friend.lastName}`}
+                label={`${friend.firstName} ${friend.lastName}`}
+                value={`${friend.id}`}
+                key={`${index}-${friend.firstName}`}
+                onChange={toggleFriendToShareWith}
+                />
               );
             })}
+            </div>
+
+            {/* CREATE COMMENT BUTTON */}
             <Button
               variant='primary'
               onClick={handleSubmit}

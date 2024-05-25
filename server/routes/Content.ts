@@ -436,7 +436,7 @@ ContentRouter.get(
       console.log('req params', req.params);
       if (category === 'all') {
         const contentResponse = await Content.findAll({
-          where: { parentId: null },
+          where: { parentId: null, placement: 'public' },
           include: [
             { model: User },
             { model: Tag },
