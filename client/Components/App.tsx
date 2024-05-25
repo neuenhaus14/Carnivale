@@ -29,6 +29,7 @@ import Loading from './Loading';
 import Parades from './Parades';
 import TopNavBar from './TopNavBar';
 
+import CreateContentModal from './CreateContentModal';
 import ConfirmActionModal from './ConfirmActionModal';
 import ShareModal from './ShareModal';
 
@@ -60,6 +61,13 @@ const App = () => {
     setShowShareModal,
   };
 
+  // CREATECONTENT MODAL STATE
+  const [showCreateContentModal, setShowCreateContentModal] =
+    useState<boolean>(true);
+  const [parentContentId, setParentContentId] = useState<null|number>(null);
+  const [placement, setPlacement] = useState<'public'|'private'|'ad'|'system'>('public');
+
+
   // WHAT DOES userData DO?
   const [userId, setUserId] = useState(null);
   const [currWeather, setCurrWeather] = useState('');
@@ -86,9 +94,9 @@ const App = () => {
     try {
       // Dummy: always fetch for Bob J. Would normally grab user from Auth state using the same kv's for request to server
       const user = {
-          email: 'a@b.com',
-          given_name: 'Bob',
-          family_name: 'Johnson',
+        email: 'a@b.com',
+        given_name: 'Bob',
+        family_name: 'Johnson',
       };
 
       // this request gets both user info and an array of their votes
@@ -100,8 +108,8 @@ const App = () => {
       // set user context info
       setUserContextInfo({
         user: userResponse.data.userData[0],
-        votes: userResponse.data.userVotes
-      })
+        votes: userResponse.data.userVotes,
+      });
     } catch (err) {
       console.error(err);
     }
@@ -342,6 +350,15 @@ const App = () => {
             postTypeToShare={postToShare.type}
             showShareModal={showShareModal}
             setShowShareModal={setShowShareModal}
+          />
+          <CreateContentModal
+            showCreateContentModal={showCreateContentModal}
+            setShowCreateContentModal={setShowCreateContentModal}
+            defaultTab={'comment'}
+            parentContentId={parentContentId} // defaults to null
+            lat={lat}
+            lng={lng}
+            placement={placement} // defaults to public
           />
         </ThemeContext.Provider>
       </RunModeContext.Provider>

@@ -12,9 +12,14 @@ const ShareModal = (props: {
   postTypeToShare: string;
   showShareModal: boolean;
   setShowShareModal: any;
-
 }) => {
-  const { postIdToShare, userId, postTypeToShare, showShareModal, setShowShareModal } = props;
+  const {
+    postIdToShare,
+    userId,
+    postTypeToShare,
+    showShareModal,
+    setShowShareModal,
+  } = props;
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
@@ -68,30 +73,37 @@ const ShareModal = (props: {
   };
 
   return (
-    <Modal className={theme} show={showShareModal} onHide={toggleShowShareModal}>
+    <Modal
+      className={theme}
+      show={showShareModal}
+      onHide={toggleShowShareModal}
+    >
       <Modal.Header closeButton>
         <Modal.Title>Share Post</Modal.Title>
       </Modal.Header>
-
-      <Form>
-        <DropdownButton id='share-modal-dropdown' title={friendName || 'Krewe'}>
-          {friends.map((friend, index) => {
-            const name = `${friend.firstName} ${friend.lastName}`;
-            return (
-              <Dropdown.Item
-                key={`${friend.lastName} + ${index}`}
-                onClick={() => {
-                  setShareId(friend.id);
-                  setFriendName(name);
-                }}
-              >
-                {name}
-              </Dropdown.Item>
-            );
-          })}
-        </DropdownButton>
-      </Form>
-
+      <Modal.Body>
+        <Form>
+          <DropdownButton
+            id='share-modal-dropdown'
+            title={friendName || 'Krewe'}
+          >
+            {friends.map((friend, index) => {
+              const name = `${friend.firstName} ${friend.lastName}`;
+              return (
+                <Dropdown.Item
+                  key={`${friend.lastName} + ${index}`}
+                  onClick={() => {
+                    setShareId(friend.id);
+                    setFriendName(name);
+                  }}
+                >
+                  {name}
+                </Dropdown.Item>
+              );
+            })}
+          </DropdownButton>
+        </Form>
+      </Modal.Body>
       <Modal.Footer>
         <Button
           id='share-modal-button'

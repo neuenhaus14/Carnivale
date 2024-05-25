@@ -1,8 +1,8 @@
 module.exports = (sequelize, Sequelize) => {
   // console.log('CONTENT!')
   const Content = sequelize.define('content', {
-    latitude: Sequelize.DECIMAL,
-    longitude: Sequelize.DECIMAL,
+    latitude: { type: Sequelize.DECIMAL, allowNull: true },
+    longitude: { type: Sequelize.DECIMAL, allowNull: true },
     upvotes: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
@@ -63,12 +63,12 @@ module.exports = (sequelize, Sequelize) => {
     Content.belongsTo(models.content, {
       as: 'parent',
       foreignKey: 'parentId',
-      constraints: false
-    })
+      constraints: false,
+    });
     Content.hasOne(models.content, {
       foreignKey: 'parentId',
-      constraints: false
-    })
+      constraints: false,
+    });
 
     // USER
     Content.belongsTo(models.user);
@@ -96,13 +96,13 @@ module.exports = (sequelize, Sequelize) => {
     Content.hasMany(models.content_tag);
 
     // SHARED CONTENT
-    Content.hasMany(models.shared_content, { foreignKey: 'contentId'});
+    Content.hasMany(models.shared_content, { foreignKey: 'contentId' });
 
     // // SHARED CONTENT STATUS
-    Content.hasMany(models.shared_content_status, {foreignKey: 'contentId'})
+    Content.hasMany(models.shared_content_status, { foreignKey: 'contentId' });
 
     // // VOTES
-    Content.hasMany(models.user_vote, {foreignKey: 'contentId'})
+    Content.hasMany(models.user_vote, { foreignKey: 'contentId' });
   };
   return Content;
 };

@@ -1,8 +1,7 @@
 import { Request, Response, Router } from 'express';
 
 import models from '../db/models/index';
-import content_tag from '../db/models/content_tag';
-import content from '../db/models/content';
+
 const Content = models.content;
 
 const Photo = models.photo;
@@ -426,7 +425,7 @@ ContentRouter.get(
   }
 );
 
-// get all content without a parent (ie, all "root" content)
+// get all content without a parent (ie, all "root" content); this route is called for home page content fetch
 ContentRouter.get(
   '/getMainContent/userId=:userId&order=:order&category=:category',
   async (req: Request, res: Response) => {
