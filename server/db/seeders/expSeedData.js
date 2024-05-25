@@ -13,6 +13,7 @@ const Content_tag = models.content_tag;
 const Shared_content = models.shared_content;
 const Shared_content_status = models.shared_content_status;
 const User_vote = models.user_vote;
+const User_friend = models.user_friend;
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -360,6 +361,24 @@ module.exports = {
       vote: 'up',
       userId: 3,
       contentId: 1,
+    });
+
+
+    // Adding friends
+    await User_friend.create({
+      status: 'accepted',
+      requesterId: 1,
+      recipientId: 2,
+    });
+    await User_friend.create({
+      status: 'accepted',
+      requesterId: 1,
+      recipientId: 3,
+    });
+    await User_friend.create({
+      status: 'accepted',
+      requesterId: 4,
+      recipientId: 1,
     });
   },
 

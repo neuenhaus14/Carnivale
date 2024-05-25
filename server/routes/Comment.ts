@@ -10,7 +10,7 @@ const CommentRouter = Router();
 
 CommentRouter.post('/createComment', (req: Request, res: Response) => {
 
-  const { content, description } = req.body
+  const { content, description, tags } = req.body
   try {
     const createCommentResponse = Comment.create({
       content: {
@@ -19,6 +19,7 @@ CommentRouter.post('/createComment', (req: Request, res: Response) => {
       description
     },
     { include: [Content] })
+    // CREATE TAGS
     res.status(200).send(createCommentResponse)
   } catch (e) {
     console.error('SERVER ERROR: failed to create comment', e);

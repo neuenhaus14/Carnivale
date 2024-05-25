@@ -78,6 +78,7 @@ const App = () => {
   const [userContextInfo, setUserContextInfo] = useState({
     user: {},
     votes: [],
+    friends: [],
   });
 
   const isDemoMode = useContext(RunModeContext) === 'demo';
@@ -109,6 +110,7 @@ const App = () => {
       setUserContextInfo({
         user: userResponse.data.userData[0],
         votes: userResponse.data.userVotes,
+        friends: userResponse.data.userFriends,
       });
     } catch (err) {
       console.error(err);
