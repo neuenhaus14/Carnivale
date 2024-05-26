@@ -1,9 +1,13 @@
+// ROUTES IN THIS FILE ARE FOR MAKING COMMENTS WITH EXP DB WITH CREATECONTENT MODAL; ORIGINAL ROUTES FOR POSTING COMMENTS ARE IN Home.ts
+
 import { Request, Response, Router } from 'express';
 import axios from 'axios';
 
+import { createTags, shareContent } from '../utils/content_creation_helpers';
+
 import models from '../db/models';
 
-// TODO: we're using redirect url to tell axios where to go to make tags; not sure if this is the right way to do that
+// TODO: we're using redirect url to tell axios where to go to make tags and sharedContent records; not sure if this is the right way to do that
 import { REDIRECT_URL } from '../config';
 
 const Comment = models.comment;
@@ -32,23 +36,30 @@ CommentRouter.post('/createComment', async (req: Request, res: Response) => {
       }
     );
 
+    const contentId = createCommentResponse.dataValues.content.id;
+
     // Create tags
-    // TODO: is REDIRECT_URL the best way forward here? Is there something is axios config that allows us to set endpoint without writing it in?
-    await Promise.all(tags.map(async (tag) => {
+    await createTags(contentId, tags)
+
+    /** await Promise.all(tags.map(async (tag) => {
       await axios.post(`${REDIRECT_URL}/api/tags/addTag` , {
         contentId: createCommentResponse.dataValues.content.id,
         tag
       })
     }))
+    */
 
-    // Create shared_content records
-    await Promise.all(friendsToShareWith.map(async (friendId)=> {
+    // Create shared_content records; content.userId is creator of content
+    await shareContent(friendsToShareWith, contentId, content.userId)
+
+    /** await Promise.all(friendsToShareWith.map(async (friendId)=> {
       await axios.post(`${REDIRECT_URL}/api/sharedContent/addSharedContent`, {
         contentId: createCommentResponse.dataValues.content.id,
         senderId: content.userId,
         recipientId: friendId,
       })
     }))
+    */
 
     res.status(200).send(createCommentResponse);
   } catch (e) {

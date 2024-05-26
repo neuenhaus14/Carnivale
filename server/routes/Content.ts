@@ -433,7 +433,7 @@ ContentRouter.get(
     const { userId, order, category } = req.params;
 
     try {
-      console.log('req params', req.params);
+      // console.log('req params', req.params);
       if (category === 'all') {
         const contentResponse = await Content.findAll({
           where: { parentId: null, placement: 'public' },

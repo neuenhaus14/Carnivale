@@ -11,6 +11,7 @@ import { IoMdContacts } from '@react-icons/all-files/io/IoMdContacts';
 import { Modal, Tab, Tabs } from 'react-bootstrap';
 
 import CreateComment from './CreateComment';
+import CreatePhoto from './CreatePhoto';
 
 // Need to be able to create any content and instantly share it with your friends
 import { ThemeContext } from './Context';
@@ -33,17 +34,10 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
   lng,
 }) => {
   // this is for the modal's header
-  const [headerText, setHeaderText] =
-    useState<string>('Add a comment');
-
-  const [key, setKey] = useState('comment');
-
-  const toggleShowCreateContentModal = () =>
-    setShowCreateContentModal(!showCreateContentModal);
+  const [headerText, setHeaderText] = useState<string>('Add a comment');
 
   const changeHeaderText = (k) => {
-
-    switch (k){
+    switch (k) {
       case 'comment':
         setHeaderText('Write a comment');
         break;
@@ -63,8 +57,14 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
         setHeaderText('Default message. Did you add a new content type?');
         break;
     }
+  };
 
-  }
+  const [key, setKey] = useState('comment');
+
+  const toggleShowCreateContentModal = () =>
+    {
+      console.log('top of ToggleShow in CCM')
+      setShowCreateContentModal(!showCreateContentModal)};
 
   return (
     <Modal show={showCreateContentModal} onHide={toggleShowCreateContentModal}>
@@ -72,12 +72,14 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
         <Modal.Title>{headerText}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Tabs activeKey={key} onSelect={(k)=>{changeHeaderText(k); setKey(k);}}>
-          <Tab
-
-            eventKey='comment'
-            title={<IoMdText size='24px' />}
-          >
+        <Tabs
+          activeKey={key}
+          onSelect={(k) => {
+            changeHeaderText(k);
+            setKey(k);
+          }}
+        >
+          <Tab eventKey='comment' title={<IoMdText size='24px' />}>
             <CreateComment
               parentContentId={parentContentId}
               lat={lat}
@@ -85,10 +87,33 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
               toggleShowCreateContentModal={toggleShowCreateContentModal}
             />
           </Tab>
-          <Tab onClick={() => setHeaderText('Post a photo')} eventKey='photo' title={<IoMdPhotos size='24px' />}></Tab>
-          <Tab onClick={() => setHeaderText('Drop a pin')} eventKey='pin' title={<IoMdPin size='24px' />}></Tab>
-          <Tab onClick={() => setHeaderText('Make a plan')} eventKey='plan' title={<IoMdCalendar size='24px' />}></Tab>
-          <Tab onClick={() => setHeaderText('Add a friend')} eventKey='friend' title={<IoMdContacts size='24px' />}></Tab>
+          <Tab
+            onClick={() => setHeaderText('Post a photo')}
+            eventKey='photo'
+            title={<IoMdPhotos size='24px' />}
+          >
+            <CreatePhoto
+              parentContentId={parentContentId}
+              lat={lat}
+              lng={lng}
+              toggleShowCreateContentModal={toggleShowCreateContentModal}
+            />
+          </Tab>
+          <Tab
+            onClick={() => setHeaderText('Drop a pin')}
+            eventKey='pin'
+            title={<IoMdPin size='24px' />}
+          ></Tab>
+          <Tab
+            onClick={() => setHeaderText('Make a plan')}
+            eventKey='plan'
+            title={<IoMdCalendar size='24px' />}
+          ></Tab>
+          <Tab
+            onClick={() => setHeaderText('Add a friend')}
+            eventKey='friend'
+            title={<IoMdContacts size='24px' />}
+          ></Tab>
         </Tabs>
       </Modal.Body>
     </Modal>

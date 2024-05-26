@@ -56,6 +56,7 @@ const Upload: React.FC<Props> = ({
       setPreviewSource(res); //if set we want to display it
     };
   };
+  
   //set up a useEffect that makes an axios request
   const uploadFile = async (e: any) => {
     setLoading(true);

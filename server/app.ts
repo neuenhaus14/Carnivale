@@ -30,6 +30,7 @@ import MailListRoutes from './routes/MailList';
 // Experimental routes
 import ContentRoutes from './routes/Content';
 import CommentRoutes from './routes/Comment';
+import PhotoRoutes from './routes/Photo';
 import TagRoutes from './routes/Tags';
 import SharedContentRoutes from './routes/SharedContent';
 import { User } from './db/index';
@@ -66,8 +67,10 @@ app.use('/api/parades', ParadesRoutes);
 app.use('/api/gigs', GigsRoutes);
 app.use('/api/mail', MailListRoutes);
 
+// Experimental
 app.use('/api/content', ContentRoutes);
 app.use('/api/comment', CommentRoutes);
+app.use('/api/photo', PhotoRoutes);
 app.use('/api/tags', TagRoutes);
 app.use('/api/sharedContent', SharedContentRoutes)
 
