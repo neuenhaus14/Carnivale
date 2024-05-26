@@ -1,6 +1,6 @@
 import { FaCommentDots } from '@react-icons/all-files/fa/FaCommentDots';
 import React, { useState, useContext } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Accordion } from 'react-bootstrap';
 import { ThemeContext, RunModeContext, UserContext } from './Context';
 import axios from 'axios';
 
@@ -123,12 +123,11 @@ const CreateComment: React.FC<CreateCommentProps> = ({
     <div>
       <Form style={{ width: '100%' }}>
         <Form.Group>
-          <div className='d-flex flex-column'>
-          <h5>Write Your Comment</h5>
+          <div className='d-flex flex-column justify-content-center'>
             {/* COMMENT INPUT */}
             <Form.Control
-              className='m-2'
-              placeholder='Post a comment'
+              className='mt-2'
+              placeholder='Ok, Shakespeare, write it here...'
               onChange={handleInput}
               value={comment}
               onKeyDown={(e) => {
@@ -138,100 +137,116 @@ const CreateComment: React.FC<CreateCommentProps> = ({
             />
 
             {/* PLACEMENT SWITCH */}
+            <div className='d-flex flex-row align-items-center my-2'>
             <div className='d-flex justify-content-center align-items-center'>
-              <p>Public post</p>
-            <Form.Switch
-              className='mx-2'
-              id='comment-placement-switch'
-              // label={
-              //   isCommentPrivate
-              //   ? 'Private post - switch for public'
-              //   : 'Public post - switch for private'
-              // }
-              defaultChecked={isCommentPrivate}
-              onChange={() => setIsCommentPrivate(!isCommentPrivate)}
+              <p className='mb-0'>Public post</p>
+              <Form.Switch
+
+                id='comment-placement-switch'
+                // label={
+                //   isCommentPrivate
+                //   ? 'Private post - switch for public'
+                //   : 'Public post - switch for private'
+                // }
+                defaultChecked={isCommentPrivate}
+                onChange={() => setIsCommentPrivate(!isCommentPrivate)}
               />
-              <p>Friends only</p>
-              </div>
-
-
-
-            <h5>Add Tags</h5>
-            {/* TAGS FROM CATEGORY TABS */}
-            <div className='d-flex flex-wrap justify-content-around'>
-              {tabCategories.map((category, index) => {
-                return (
-                  <Form.Check
-                    type='checkbox'
-                    title={`${category}`}
-                    label={`${category}`}
-                    value={`${category.toLowerCase()}`}
-                    key={`${index}-${category}`}
-                    onChange={handleCheckedTag}
-                  />
-                );
-              })}
+              <p className='mb-0'>Friends only</p>
             </div>
-
-            {/* TAG INPUT */}
-
-            <div className='d-flex flex-row'>
-              <Form.Control
-                className='m-2'
-                placeholder='Custom tag goes here'
-                onChange={handleInput}
-                value={tag}
-                name='tag'
-              />
-              <Button className='w-25 my-auto' onClick={addInputTag} disabled={tag.length === 0}>
-                Add
-              </Button>
-            </div>
-
-            {/* LIST OF TAGS ADDED THRU INPUT */}
-            {tags
-              .filter((tag) => !tabCategories.includes(tag))
-              .map((tag, index) => {
-                return (
-                  <div className='d-flex flex-row' key={`${tag}-${index}`}>
-                    <p>{tag}</p>
-                    <Button
-                      variant='danger'
-                      name={`${tag}`}
-                      onClick={removeTag}
-                    >
-                      X
-                    </Button>
-                  </div>
-                );
-              })}
-
-            {/* SHARE WITH FRIENDS LIST */}
-            <h5>Share with your Friends</h5>
-            <div className='d-flex flex-wrap gap-2'>
-            {friends.map((friend, index) => {
-              return (
-                <Form.Check
-                type='checkbox'
-                title={`${friend.firstName} ${friend.lastName}`}
-                label={`${friend.firstName} ${friend.lastName}`}
-                value={`${friend.id}`}
-                key={`${index}-${friend.firstName}`}
-                onChange={toggleFriendToShareWith}
-                />
-              );
-            })}
-            </div>
-
-            {/* CREATE COMMENT BUTTON */}
+             {/* CREATE COMMENT BUTTON */}
             <Button
               variant='primary'
               onClick={handleSubmit}
               disabled={isDemoMode || comment.length <= 0}
               className='mx-auto my-2'
             >
-              Create
+              Post It
             </Button>
+
+            </div>
+            <Accordion>
+              <Accordion.Item eventKey='0'>
+                <Accordion.Header>Tag and Share Options</Accordion.Header>
+                <Accordion.Body>
+                  <h5>Add Tags</h5>
+                  {/* TAGS FROM CATEGORY TABS */}
+                  <div className='d-flex flex-wrap justify-content-around'>
+                    {tabCategories.map((category, index) => {
+                      return (
+                        <Form.Check
+                          type='checkbox'
+                          title={`${category}`}
+                          label={`${category}`}
+                          value={`${category.toLowerCase()}`}
+                          key={`${index}-${category}`}
+                          onChange={handleCheckedTag}
+                        />
+                      );
+                    })}
+                  </div>
+
+                  {/* TAG INPUT */}
+
+                  <div className='d-flex flex-row'>
+                    <Form.Control
+                      className='m-2'
+                      placeholder='Custom tag goes here'
+                      onChange={handleInput}
+                      value={tag}
+                      name='tag'
+                    />
+                    <Button
+                      className='w-25 my-auto'
+                      onClick={addInputTag}
+                      disabled={tag.length === 0}
+                    >
+                      Add
+                    </Button>
+                  </div>
+
+                  {/* LIST OF TAGS ADDED THRU INPUT */}
+                  {tags
+                    .filter((tag) => !tabCategories.includes(tag))
+                    .map((tag, index) => {
+                      return (
+                        <div
+                          className='d-flex flex-row align-items-center'
+                          key={`${tag}-${index}`}
+                        >
+                          <p className='mb-0'>{tag}</p>
+                          <Button
+                          className='btn-sm'
+                            variant='danger'
+                            name={`${tag}`}
+                            onClick={removeTag}
+                          >
+                            X
+                          </Button>
+                        </div>
+                      );
+                    })}
+
+                  {/* SHARE WITH FRIENDS LIST */}
+                  <h5>Share with your Friends</h5>
+                  <div className='d-flex flex-wrap gap-2'>
+                    {friends.map((friend, index) => {
+                      return (
+                        <Form.Check
+                          type='checkbox'
+                          title={`${friend.firstName} ${friend.lastName}`}
+                          label={`${friend.firstName} ${friend.lastName}`}
+                          value={`${friend.id}`}
+                          key={`${index}-${friend.firstName}`}
+                          onClick={toggleFriendToShareWith}
+                        />
+                      );
+                    })}
+                  </div>
+                </Accordion.Body>
+              </Accordion.Item>
+            </Accordion>
+
+
           </div>
         </Form.Group>
       </Form>
