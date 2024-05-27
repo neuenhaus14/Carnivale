@@ -88,4 +88,14 @@ interface ShareTimeStamp {
   updatedAt: string;
 }
 
-export { Post };
+interface FriendRequest {
+  id: number;
+  status: 'pending' | 'approved' | 'denied' | 'blocked';
+  createdAt: string;
+  updatedAt: string;
+  requesterId: number;
+  recipientId: number;
+  requester: User;
+}
+
+export { Post, FriendRequest };

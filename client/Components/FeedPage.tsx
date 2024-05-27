@@ -7,7 +7,8 @@ import { Button, Container, Modal, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import { ThemeContext, RunModeContext, UserContext } from './Context';
 
 import { PostCard } from './PostCard';
-import { Post } from '../types';
+import { Post, FriendRequest } from '../types';
+import FriendCard from './FriendCard';
 
 /*
 A SharedPost is just the record from the join_shared_posts table PLUS upvotes to enable upvote downvote functionality for now
@@ -74,6 +75,13 @@ const FeedPage: React.FC<FeedPageProps> = ({
   setShareModalBundle,
 }) => {
   const [sharedPosts, setSharedPosts] = useState<Post[]>([]);
+  const [pendingFriendRequests, setPendingFriendRequests] = useState<FriendRequest[]>([])
+  const [friendsPosts, setFriendsPosts] = useState<Post[]>([]);
+  const [myPosts, setMyPosts] = useState<Post[]>([]);
+
+  const [key, setKey] = useState<string>('shared')
+
+
   // const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   // const [userNames, setUserNames] = useState<{ [userId: number]: string }>({});
@@ -88,7 +96,6 @@ const FeedPage: React.FC<FeedPageProps> = ({
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
   const userContextInfo = useContext(UserContext);
-
 
   /* THIS FUNCTIONALITY IS NOT USED BECAUSE ALL UPVOTING/DOWNVOTING HAPPENS IN POSTCARD
   const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
@@ -111,7 +118,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
     setShowAboutModal(!showAboutModal);
   };
 
-  const getSharedPosts = async () => {
+  const getPosts = async () => {
     try {
       // const [postsResponse, userResponse] = await Promise.all([
       //   // axios.get(`/api/feed/shared-posts/${userId}`),
@@ -121,9 +128,15 @@ const FeedPage: React.FC<FeedPageProps> = ({
       //   // axios.get(`/api/feed/user/1`),
       // ]);
 
-      const sharedPostsResponse = await axios.get(`/api/content/getSharedContent/${userContextInfo.user.id}`)
+      const postsResponse = await axios.get(
+        `/api/content/getFeedPageContent/${userContextInfo.user.id}`
+      );
 
-      setSharedPosts(sharedPostsResponse.data);
+      setSharedPosts(postsResponse.data.sharedContent);
+      setFriendsPosts(postsResponse.data.friendsContent);
+      setMyPosts(postsResponse.data.myContent);
+      setPendingFriendRequests(postsResponse.data.friendRequests)
+
       // setCurrentUser(userResponse.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -143,7 +156,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
   // When userId changes (ie, when user logs in), fetch user info (why?) and all posts that have been shared with that user, setting shared posts state.
   useEffect(() => {
     if (userId !== null) {
-      getSharedPosts();
+      getPosts();
     }
   }, [userId]);
 
@@ -468,7 +481,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
   };
   */
 
-  // handleArchive **
+  // TODO: handleArchive **
   const handleRemovePostFromFeed = async (postId: number) => {
     if (isDemoMode) {
       toast('🎭Hide post from your feed!🎭', {
@@ -495,7 +508,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
     }
   };
 
-  console.log('inside feed. UserContextInfo: ', userContextInfo)
+  console.log('inside feed. UserContextInfo: ', userContextInfo);
   return (
     <Container className={`body ${theme} feed-page-container`}>
       {isDemoMode && (
@@ -531,77 +544,111 @@ const FeedPage: React.FC<FeedPageProps> = ({
       <Row>
         <Col>
           <div className='feed-page-tabs my-3'>
-            <Tabs activeKey='shared'>
-              <Tab eventKey='shared' title='Shared With Me'>
+            <Tabs activeKey={key} onSelect={(key)=>setKey(key)}>
+              <Tab eventKey='shared' title='Shared'>
                 {
                   /* Conditional check for rendering post cards. Accounts for a sharedPost getting removed, as deleting a post does not get rid of the photo/comment details record TODO: set to render after all promises have been returned */
-
 
                   // sharedPosts.length <=
                   //   Object.keys(photoDetails).length +
                   //     Object.keys(commentDetails).length &&
                   //   Object.keys(userNames).length > 0 &&
-                    sharedPosts.map((post, index) => {
-                      // only accounts for comments and photo types, no pins yet
-                      // const sharedPostType = sharedPost.shared_commentId
-                      //   ? 'comment'
-                      //   : 'photo';
+                  sharedPosts.map((post, index) => {
+                    // only accounts for comments and photo types, no pins yet
+                    // const sharedPostType = sharedPost.shared_commentId
+                    //   ? 'comment'
+                    //   : 'photo';
 
-                      // let post: Post;
+                    // let post: Post;
 
-                      // if (sharedPostType === 'comment') {
-                      //   post = {
-                      //     id: commentDetails[sharedPost.shared_commentId]?.id,
-                      //     ownerId:
-                      //       commentDetails[sharedPost.shared_commentId]
-                      //         ?.ownerId,
-                      //     createdAt:
-                      //       commentDetails[sharedPost.shared_commentId]
-                      //         ?.createdAt,
-                      //     updatedAt:
-                      //       commentDetails[sharedPost.shared_commentId]
-                      //         ?.updatedAt,
-                      //     upvotes:
-                      //       commentDetails[sharedPost.shared_commentId]
-                      //         ?.upvotes,
-                      //     comment:
-                      //       commentDetails[sharedPost.shared_commentId].comment,
-                      //     senderName: userNames[sharedPost.sender_userId],
-                      //   };
-                      // } else if (sharedPostType === 'photo') {
-                      //   post = {
-                      //     id: photoDetails[sharedPost.shared_photoId].id,
-                      //     ownerId:
-                      //       photoDetails[sharedPost.shared_photoId].ownerId,
-                      //     createdAt:
-                      //       photoDetails[sharedPost.shared_photoId].createdAt,
-                      //     updatedAt:
-                      //       photoDetails[sharedPost.shared_photoId].updatedAt,
-                      //     upvotes:
-                      //       photoDetails[sharedPost.shared_photoId].upvotes,
-                      //     photoURL:
-                      //       photoDetails[sharedPost.shared_photoId].photoUrl,
-                      //     description:
-                      //       photoDetails[sharedPost.shared_photoId].description,
-                      //     senderName: userNames[sharedPost.sender_userId],
-                      //   };
-                      // }
+                    // if (sharedPostType === 'comment') {
+                    //   post = {
+                    //     id: commentDetails[sharedPost.shared_commentId]?.id,
+                    //     ownerId:
+                    //       commentDetails[sharedPost.shared_commentId]
+                    //         ?.ownerId,
+                    //     createdAt:
+                    //       commentDetails[sharedPost.shared_commentId]
+                    //         ?.createdAt,
+                    //     updatedAt:
+                    //       commentDetails[sharedPost.shared_commentId]
+                    //         ?.updatedAt,
+                    //     upvotes:
+                    //       commentDetails[sharedPost.shared_commentId]
+                    //         ?.upvotes,
+                    //     comment:
+                    //       commentDetails[sharedPost.shared_commentId].comment,
+                    //     senderName: userNames[sharedPost.sender_userId],
+                    //   };
+                    // } else if (sharedPostType === 'photo') {
+                    //   post = {
+                    //     id: photoDetails[sharedPost.shared_photoId].id,
+                    //     ownerId:
+                    //       photoDetails[sharedPost.shared_photoId].ownerId,
+                    //     createdAt:
+                    //       photoDetails[sharedPost.shared_photoId].createdAt,
+                    //     updatedAt:
+                    //       photoDetails[sharedPost.shared_photoId].updatedAt,
+                    //     upvotes:
+                    //       photoDetails[sharedPost.shared_photoId].upvotes,
+                    //     photoURL:
+                    //       photoDetails[sharedPost.shared_photoId].photoUrl,
+                    //     description:
+                    //       photoDetails[sharedPost.shared_photoId].description,
+                    //     senderName: userNames[sharedPost.sender_userId],
+                    //   };
+                    // }
 
-                      return (
-                        <PostCard
-                          key={`${post.content.id} + ${index}`}
-                          post={post}
-                          userId={userId}
-                          setShareModalBundle={setShareModalBundle}
-                          setConfirmActionBundle={setConfirmActionBundle}
-                          childFunctions={{
-                            handleRemovePostFromFeed: () =>
-                              handleRemovePostFromFeed(post.content.id),
-                          }}
-                        />
-                      );
-                    })
+                    return (
+                      <PostCard
+                        key={`${post.content.id} + ${index}`}
+                        post={post}
+                        userId={userId}
+                        setShareModalBundle={setShareModalBundle}
+                        setConfirmActionBundle={setConfirmActionBundle}
+                        childFunctions={{
+                          handleRemovePostFromFeed: () =>
+                            handleRemovePostFromFeed(post.content.id),
+                        }}
+                      />
+                    );
+                  })
                 }
+              </Tab>
+              <Tab eventKey={'friends'} title={'Friends'}>
+                {/* PENDING FRIEND REQUESTS */}
+                {pendingFriendRequests.map((friendRequest: FriendRequest, index: number) => {
+                  return (
+                    <FriendCard key={`${index}-${friendRequest.id}`} friendRequest={friendRequest}/>
+                  )
+                })}
+                {/* FRIENDS CONTENT */}
+                {friendsPosts.map((post, index) => {
+                  return (
+                    <PostCard
+                      key={`${post.content.id} + ${index}`}
+                      post={post}
+                      userId={userId}
+                      setShareModalBundle={setShareModalBundle}
+                      setConfirmActionBundle={setConfirmActionBundle}
+                      childFunctions={{}}
+                    />
+                  );
+                })}
+              </Tab>
+              <Tab eventKey={'mine'} title={'Mine'}>
+              {myPosts.map((post, index) => {
+                  return (
+                    <PostCard
+                      key={`${post.content.id} + ${index}`}
+                      post={post}
+                      userId={userId}
+                      setShareModalBundle={setShareModalBundle}
+                      setConfirmActionBundle={setConfirmActionBundle}
+                      childFunctions={{}}
+                    />
+                  );
+                })}
               </Tab>
             </Tabs>
           </div>
@@ -619,7 +666,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
         draggable
         pauseOnHover
         theme='light'
-        />
+      />
     </Container>
   );
 };

@@ -1,6 +1,7 @@
 import { Request, Response, Router } from 'express';
 
 import models from '../db/models/index';
+import { Op } from 'sequelize';
 
 const Content = models.content;
 
@@ -13,6 +14,7 @@ const Tag = models.tag;
 const Content_tag = models.content_tag;
 const Shared_content = models.shared_content;
 const Shared_content_status = models.shared_content_status;
+const User_friend = models.user_friend;
 
 const ContentRouter = Router();
 
@@ -20,6 +22,7 @@ ContentRouter.get('/getTest', (req: Request, res: Response) => {
   res.status(200).send('Booyah');
 });
 
+// This function organizes any record returned from the Content table that has its Contentable included
 const organizeContent = (contentItem) => {
   const contentKeys = [
     'id',
@@ -282,17 +285,21 @@ ContentRouter.get(
   }
 );
 
-// get all content shared with a user
+// get all content for feed page
 ContentRouter.get(
-  '/getSharedContent/:userId',
+  '/getFeedPageContent/:userId',
   async (req: Request, res: Response) => {
-    const recipientId = Number(req.params.userId);
+    const userId = Number(req.params.userId);
 
     try {
+      ///////////////////////////////////
+      // CHAPTER 1: GET SHARED CONTENT
+      ///////////////////////////////////
+
       // STEP 1: get all content shared with a user (recipient)
       const sharedContentResponse = await Shared_content.findAll({
         where: {
-          recipientId,
+          recipientId: userId,
         },
         include: [
           { model: User, as: 'sender' },
@@ -321,15 +328,7 @@ ContentRouter.get(
         })
       );
 
-      // iterate over each piece of shared content and organize
-      const sharedContentKeys = [
-        'id',
-        'contentId',
-        'senderId',
-        'recipientId',
-        'createdAt',
-        'updatedAt',
-      ];
+      // STEP 3: Iterate over each piece of shared content and organize
 
       // organize each piece of shared content in the response
       for (const [
@@ -412,12 +411,103 @@ ContentRouter.get(
           .shared_content_statuses;
         delete sharedContent.dataValues.content.dataValues.tags;
         delete sharedContent.dataValues.content.dataValues.user;
+        const sharedContentKeys = [
+          'id',
+          'contentId',
+          'senderId',
+          'recipientId',
+          'createdAt',
+          'updatedAt',
+        ];
         for (const key of sharedContentKeys) {
           delete sharedContent.dataValues[key];
         }
       }
 
-      res.status(200).json(sharedContentWithContentablesResponse);
+      ///////////////////////////////////
+      // CHAPTER 2: GET FRIENDS' CONTENT
+      ///////////////////////////////////
+
+      // Step1: get friendships
+      const userFriendships = await User_friend.findAll({
+        where: {
+          [Op.or]: {
+            requesterId: userId,
+            recipientId: userId,
+          },
+          status: 'accepted',
+        },
+      });
+
+      // sort out to get just friend ids
+      const userFriendIds = userFriendships.map((friendship) => {
+        if (friendship.dataValues.recipientId === userId) {
+          return friendship.dataValues.requesterId;
+        } else {
+          return friendship.dataValues.recipientId;
+        }
+      });
+
+      // get the content of those friends
+      const friendsContent = await Content.findAll({
+        where: {
+          userId: { [Op.in]: userFriendIds },
+        },
+        include: [
+          { model: User },
+          { model: Tag },
+          { model: Plan },
+          { model: Pin },
+          { model: Comment },
+          { model: Photo },
+        ],
+      });
+
+      friendsContent.forEach((contentItem) => {
+        organizeContent(contentItem);
+      });
+
+      // go get the pending friendships that user needs to respond to
+      const pendingFriendships = await User_friend.findAll({
+        where: {
+          recipientId: userId,
+          status: 'pending',
+        },
+        include: [{association: 'requester'}]
+      });
+
+      ///////////////////////////////////
+      // CHAPTER 3: GET MY CONTENT
+      // (INCLUDING FRIEND INVITE INFO)
+      ///////////////////////////////////
+
+      const myContent = await Content.findAll({
+        where: {
+          userId,
+        },
+        include: [
+          { model: User },
+          { model: Tag },
+          { model: Plan },
+          { model: Pin },
+          { model: Comment },
+          { model: Photo },
+        ],
+      });
+
+      myContent.forEach((contentItem) => {
+        organizeContent(contentItem);
+      });
+
+      const responseObject = {
+        sharedContent: sharedContentWithContentablesResponse,
+        friendsContent: friendsContent,
+        friendRequests: pendingFriendships,
+
+        myContent,
+      };
+
+      res.status(200).json(responseObject);
     } catch (e) {
       console.error('SERVER ERROR, failed to get shared content', e);
       res.status(500).send(e);
@@ -433,7 +523,6 @@ ContentRouter.get(
     const { userId, order, category } = req.params;
 
     try {
-      // console.log('req params', req.params);
       if (category === 'all') {
         const contentResponse = await Content.findAll({
           where: { parentId: null, placement: 'public' },
@@ -453,7 +542,7 @@ ContentRouter.get(
         });
 
         res.send(contentResponse);
-      } else if (category !== 'main') {
+      } else if (category !== 'all') {
         // find the tag, include all records from content_tag join table
         const tagResponse = await Tag.findOne({
           where: {
@@ -465,10 +554,7 @@ ContentRouter.get(
               include: [
                 {
                   model: Content,
-                  include: [
-                    { model: User },
-                    { model: Tag },
-                  ],
+                  include: [{ model: User }, { model: Tag }],
                 },
               ],
             },
@@ -478,27 +564,32 @@ ContentRouter.get(
         // Go get contentable for each piece of content from content_tag join table
         await Promise.all(
           tagResponse.dataValues.content_tags.map(async (contentItem) => {
-            console.log('contentItem', contentItem.dataValues);
-            const contentableResponse = await Content.findByPk(contentItem.contentId, {
-              include: [Pin, Photo, Plan, Comment],
-            });
+            const contentableResponse = await Content.findByPk(
+              contentItem.contentId,
+              {
+                include: [Pin, Photo, Plan, Comment],
+              }
+            );
             contentItem.dataValues.contentable =
-            contentableResponse.contentable;
+              contentableResponse.contentable;
 
             // move nested user and tags out
-            contentItem.dataValues.user = contentItem.dataValues.content.dataValues.user;
-            contentItem.dataValues.tags = [...contentItem.dataValues.content.dataValues.tags]
+            contentItem.dataValues.user =
+              contentItem.dataValues.content.dataValues.user;
+            contentItem.dataValues.tags = [
+              ...contentItem.dataValues.content.dataValues.tags,
+            ];
 
             // delete content item's unneeded kv's
             delete contentItem.dataValues.content.dataValues.user;
             delete contentItem.dataValues.content.dataValues.tags;
             delete contentItem.dataValues.contentId;
-            delete contentItem.dataValues.id
+            delete contentItem.dataValues.id;
             delete contentItem.dataValues.tagId;
             delete contentItem.dataValues.createdAt;
             delete contentItem.dataValues.updatedAt;
 
-          return contentItem;
+            return contentItem;
           })
         );
 

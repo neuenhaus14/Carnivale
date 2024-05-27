@@ -62,6 +62,28 @@ module.exports = {
         updatedAt: new Date(),
         shareLoc: true,
       },
+      {
+        email: 'AbbyDooby@gmail.com',
+        phone: '534-995-0987',
+        firstName: 'Abby',
+        lastName: 'Graham',
+        latitude: 29.7823864,
+        longitude: -90.09853,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        shareLoc: true,
+      },
+      {
+        email: 'mPants@gmail.com',
+        phone: '124-995-0987',
+        firstName: 'Michael',
+        lastName: 'Pants',
+        latitude: 29.7563864,
+        longitude: -90.06753,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        shareLoc: true,
+      },
     ]);
 
     // TAG id: 1
@@ -380,6 +402,17 @@ module.exports = {
       requesterId: 4,
       recipientId: 1,
     });
+    await User_friend.create({
+      status: 'pending',
+      requesterId: 1,
+      recipientId: 5,
+    })
+    await User_friend.create({
+      status: 'pending',
+      requesterId: 6,
+      recipientId: 1,
+    })
+
   },
 
   down: async (queryInterface, Sequelize) => {
