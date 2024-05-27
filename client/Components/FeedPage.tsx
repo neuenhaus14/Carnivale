@@ -472,42 +472,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
                 })}
               </Tab>
               <Tab eventKey={'friends'} title={'Friends'}>
-                <FriendManager />
-                {/* <Accordion>
-                  <Accordion.Item eventKey='0'>
-                  <Accordion.Header>Friends</Accordion.Header>
-                    <Accordion.Body>
-                      {
-                        friends.map((friend: User, index)=>{
-                          return (<FriendCard key={`${index}-${friend.id}`} friend={friend} />)
-                        })
-                      }
-
-                    </Accordion.Body>
-                  </Accordion.Item>
-                  <Accordion.Item eventKey='1'>
-                    <Accordion.Header>Pending Requests</Accordion.Header>
-                    <Accordion.Body>
-
-                      {friendRequests.map(
-                        (friendRequest: FriendRequest, index: number) => {
-                          return (
-                            <FriendRequestCard
-                              key={`${index}-${friendRequest.id}`}
-                              friendRequest={friendRequest}
-                            />
-                          );
-                        }
-                      )}
-                    </Accordion.Body>
-                  </Accordion.Item>
-                  <Accordion.Item eventKey='2'>
-                    <Accordion.Header>Add a Friend</Accordion.Header>
-                    <Accordion.Body>
-                      <CreateFriend />
-                    </Accordion.Body>
-                  </Accordion.Item>
-                </Accordion> */}
+                <FriendManager setConfirmActionBundle={setConfirmActionBundle}/>
 
                 {/* FRIENDS CONTENT */}
                 {friendsPosts.map((post, index) => {

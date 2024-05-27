@@ -360,6 +360,7 @@ const App = () => {
             parentContentId={parentContentId} // defaults to null
             lat={lat}
             lng={lng}
+            setConfirmActionBundle={setConfirmActionBundle}
           />
         </ThemeContext.Provider>
       </RunModeContext.Provider>

@@ -26,8 +26,6 @@ interface RelationshipModel extends Model {
 Friends.post('/createFriendRequest', async (req: Request, res: Response) => {
   const { requesterId, email } = req.body;
 
-  console.log('reqId type', typeof requesterId);
-
   try {
     const recipient = await expUser.findOne({
       where: {
@@ -64,6 +62,7 @@ Friends.post('/createFriendRequest', async (req: Request, res: Response) => {
   }
 });
 
+// get pending friend requests to send to FriendManager component
 Friends.get('/getRequests/:userId', async (req: Request, res: Response) => {
   const { userId } = req.params;
 
@@ -81,6 +80,41 @@ Friends.get('/getRequests/:userId', async (req: Request, res: Response) => {
     res.status(500).send(e);
   }
 });
+
+// used to end approved friendship and revoke friend request
+Friends.delete(
+  '/revokeFriendship/:userId1&:userId2',
+  async (req: Request, res: Response) => {
+    const { userId1, userId2 } = req.params;
+
+    try {
+      const revocationResponse = await User_friend.destroy({
+        where: {
+          recipientId: [userId1, userId2],
+          requesterId: [userId1, userId2],
+        },
+      });
+      res.status(200).send(revocationResponse)
+    } catch (e) {
+      console.error('SERVER ERROR: failed to revoke a friend request');
+      res.status(500).send(e);
+    }
+  }
+);
+
+Friends.patch('/respondToFriendRequest', async (req:Request, res:Response)=> {
+  const { friendRequestId, answer } = req.body;
+  try {
+    const updateFriendRequestResponse = await User_friend.update(
+    {status: answer},
+    {where: {id: friendRequestId}}
+  );
+  res.status(200).send(updateFriendRequestResponse)
+  } catch (e) {
+    console.error('SERVER ERROR: failed to patch friend request')
+    res.status(500).send(e)
+  }
+})
 
 ////////////////////////////////////
 // NORMAL

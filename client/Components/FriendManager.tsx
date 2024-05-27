@@ -7,9 +7,11 @@ import FriendRequestCard from './FriendRequestCard';
 import CreateFriend from './CreateFriend';
 import axios from 'axios';
 
-interface FriendManagerProps {}
+interface FriendManagerProps {
+  setConfirmActionBundle: any; // sending to friend card
+}
 
-const FriendManager: React.FC<FriendManagerProps> = ({}) => {
+const FriendManager: React.FC<FriendManagerProps> = ({setConfirmActionBundle}) => {
   const { user, friends, votes } = useContext(UserContext);
 
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
@@ -34,7 +36,7 @@ const FriendManager: React.FC<FriendManagerProps> = ({}) => {
         <Accordion.Header>Friends</Accordion.Header>
         <Accordion.Body>
           {friends.map((friend: User, index) => {
-            return <FriendCard key={`${index}-${friend.id}`} friend={friend} />;
+            return <FriendCard key={`${index}-${friend.id}`} friend={friend} setConfirmActionBundle={setConfirmActionBundle}/>;
           })}
         </Accordion.Body>
       </Accordion.Item>
@@ -47,6 +49,7 @@ const FriendManager: React.FC<FriendManagerProps> = ({}) => {
               <FriendRequestCard
                 key={`${index}-${friendRequest.id}`}
                 friendRequest={friendRequest}
+                setConfirmActionBundle={setConfirmActionBundle}
               />
             );
           })}

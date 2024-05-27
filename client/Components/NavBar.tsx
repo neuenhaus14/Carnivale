@@ -11,7 +11,7 @@ import { ThemeContext } from './Context';
 
 
 interface NavBarProps {
-  setShowCreateContentModal: any
+  setShowCreateContentModal: any;
 }
 
 const NavBar:React.FC<NavBarProps> = ({setShowCreateContentModal}) => {

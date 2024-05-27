@@ -24,6 +24,7 @@ interface CreateContentModalProps {
   defaultTab: 'comment' | 'photo' | 'pin' | 'plan'; // indicates what tab defaults to open (ie, 'pin' for map page ,'photo' for feed page)
   lat: number;
   lng: number;
+  setConfirmActionBundle: any; // getting sent along to FriendManager
 }
 
 const CreateContentModal: React.FC<CreateContentModalProps> = ({
@@ -33,6 +34,7 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
   parentContentId,
   lat,
   lng,
+  setConfirmActionBundle,
 }) => {
   // this is for the modal's header
   const [headerText, setHeaderText] = useState<string>('Add a comment');
@@ -111,7 +113,7 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
             eventKey='friend'
             title={<IoMdContacts size='24px' />}
           >
-            <FriendManager />
+            <FriendManager setConfirmActionBundle={setConfirmActionBundle}/>
           </Tab>
         </Tabs>
       </Modal.Body>
