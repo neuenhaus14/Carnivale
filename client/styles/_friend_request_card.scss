@@ -1,7 +1,6 @@
-@use 'colors2' as colors;
-@use 'mixin_utils';
 
-.friend-card {
+
+.friend-request-card{
   padding: 15px;
   box-shadow: 0.6px 1.1px 1.1px hsl(0deg 0% 0% / 0.48);
   margin: 4px auto;
@@ -9,6 +8,7 @@
   // border: none;
   background-color: colors.$cardBackground;
   max-width: 400px;
+
   .icon-btn {
     @include mixin_utils.flex-col-center-content;
     padding-top: 10px;

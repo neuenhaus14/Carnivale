@@ -3,65 +3,24 @@ import axios from 'axios';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Button, Container, Modal, Row, Col, Tabs, Tab } from 'react-bootstrap';
+import {
+  Button,
+  Container,
+  Modal,
+  Row,
+  Col,
+  Tabs,
+  Tab,
+  Accordion,
+} from 'react-bootstrap';
 import { ThemeContext, RunModeContext, UserContext } from './Context';
 
+import CreateFriend from './CreateFriend';
 import { PostCard } from './PostCard';
-import { Post, FriendRequest } from '../types';
+import { Post, FriendRequest, User } from '../types';
+import FriendManager from './FriendManager';
+import FriendRequestCard from './FriendRequestCard';
 import FriendCard from './FriendCard';
-
-/*
-A SharedPost is just the record from the join_shared_posts table PLUS upvotes to enable upvote downvote functionality for now
-*/
-// interface SharedPost {
-//   id: number;
-//   sender_userId: number;
-//   recipient_userId: number;
-//   shared_commentId: number | null;
-//   shared_pinId: number | null;
-//   shared_photoId: number | null;
-//   createdAt: string;
-//   updatedAt: string;
-//   upvotes: number;
-// }
-
-// interface User {
-//   id: number;
-//   email: string;
-//   phone: string;
-//   firstName: string;
-//   lastName: string;
-// }
-
-// interface Comment {
-//   id: number;
-//   comment: string;
-//   ownerId: number;
-//   upvotes: number;
-//   createdAt: string;
-//   updatedAt: string;
-// }
-
-// interface Pin {
-//   ownerId: number;
-//   isToilet: boolean;
-//   isFood: boolean;
-//   isPersonal: boolean;
-//   upvotes: number;
-// }
-
-/*
-This Photo interface does not include filtering booleans because we don't need it for displaying the content (similar to Post interface from PostCard.jsx)
-*/
-// interface Photo {
-//   id: number;
-//   description: string;
-//   ownerId: number;
-//   upvotes: number;
-//   photoUrl: string;
-//   createdAt: string;
-//   updatedAt: string;
-// }
 
 interface FeedPageProps {
   userId: number;
@@ -75,42 +34,15 @@ const FeedPage: React.FC<FeedPageProps> = ({
   setShareModalBundle,
 }) => {
   const [sharedPosts, setSharedPosts] = useState<Post[]>([]);
-  const [pendingFriendRequests, setPendingFriendRequests] = useState<FriendRequest[]>([])
+  const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
   const [friendsPosts, setFriendsPosts] = useState<Post[]>([]);
   const [myPosts, setMyPosts] = useState<Post[]>([]);
 
-  const [key, setKey] = useState<string>('shared')
-
-
-  // const [currentUser, setCurrentUser] = useState<User | null>(null);
-
-  // const [userNames, setUserNames] = useState<{ [userId: number]: string }>({});
-  // const [commentDetails, setCommentDetails] = useState<{
-  //   [postId: number]: Comment;
-  // }>({});
-  // const [pinDetails, setPinDetails] = useState<{ [postId: number]: Pin }>({});
-  // const [photoDetails, setPhotoDetails] = useState<{ [postId: number]: Photo }>(
-  //   {}
-  // );
+  const [key, setKey] = useState<string>('shared');
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
-  const userContextInfo = useContext(UserContext);
-
-  /* THIS FUNCTIONALITY IS NOT USED BECAUSE ALL UPVOTING/DOWNVOTING HAPPENS IN POSTCARD
-  const [deletedPosts, setDeletedPosts] = useState<number[]>([]);
-  const [commentVotingStatus, setCommentVotingStatus] = useState<{
-    [commentId: number]: 'upvoted' | 'downvoted' | 'none';
-  }>({});
-
-  const [photoVotingStatus, setPhotoVotingStatus] = useState<{
-    [photoId: number]: 'upvoted' | 'downvoted' | 'none';
-  }>({});
-
-  const [pinVotingStatus, setPinVotingStatus] = useState<{
-    [pinId: number]: 'upvoted' | 'downvoted' | 'none';
-  }>({});
-*/
+  const {user,friends, votes} = useContext(UserContext);
 
   const [showAboutModal, setShowAboutModal] = useState(true);
 
@@ -120,40 +52,18 @@ const FeedPage: React.FC<FeedPageProps> = ({
 
   const getPosts = async () => {
     try {
-      // const [postsResponse, userResponse] = await Promise.all([
-      //   // axios.get(`/api/feed/shared-posts/${userId}`),
-      //   // axios.get(`/api/feed/user/${userId}`),
-      //   // Swap top and bottom comments for testing
-      //   // axios.get(`/api/feed/shared-posts/1`),
-      //   // axios.get(`/api/feed/user/1`),
-      // ]);
-
       const postsResponse = await axios.get(
-        `/api/content/getFeedPageContent/${userContextInfo.user.id}`
+        `/api/content/getFeedPageContent/${user.id}`
       );
-
       setSharedPosts(postsResponse.data.sharedContent);
       setFriendsPosts(postsResponse.data.friendsContent);
       setMyPosts(postsResponse.data.myContent);
-      setPendingFriendRequests(postsResponse.data.friendRequests)
-
-      // setCurrentUser(userResponse.data);
+      setFriendRequests(postsResponse.data.friendRequests);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
-  // const fetchSenderName = async (userId: number) => {
-  //   try {
-  //     const response = await axios.get(`/api/feed/user/${userId}`);
-  //     const senderName = `${response.data.firstName} ${response.data.lastName[0]}.`;
-  //     setUserNames((prevNames) => ({ ...prevNames, [userId]: senderName }));
-  //   } catch (error) {
-  //     console.error(`Error fetching sender ${userId} information:`, error);
-  //   }
-  // };
-
-  // When userId changes (ie, when user logs in), fetch user info (why?) and all posts that have been shared with that user, setting shared posts state.
   useEffect(() => {
     if (userId !== null) {
       getPosts();
@@ -498,7 +408,6 @@ const FeedPage: React.FC<FeedPageProps> = ({
       try {
         // TODO: rewrite route to archive in experimental database
         await axios.delete(`/api/feed/shared-posts/${postId}`);
-
         setSharedPosts((prevPosts) =>
           prevPosts.filter((post) => post.content.id !== postId)
         );
@@ -508,7 +417,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
     }
   };
 
-  console.log('inside feed. UserContextInfo: ', userContextInfo);
+  console.log('inside feed. UserContextInfo: ', user, friends, votes);
   return (
     <Container className={`body ${theme} feed-page-container`}>
       {isDemoMode && (
@@ -544,84 +453,62 @@ const FeedPage: React.FC<FeedPageProps> = ({
       <Row>
         <Col>
           <div className='feed-page-tabs my-3'>
-            <Tabs activeKey={key} onSelect={(key)=>setKey(key)}>
+            <Tabs activeKey={key} onSelect={(key) => setKey(key)}>
               <Tab eventKey='shared' title='Shared'>
-                {
-                  /* Conditional check for rendering post cards. Accounts for a sharedPost getting removed, as deleting a post does not get rid of the photo/comment details record TODO: set to render after all promises have been returned */
-
-                  // sharedPosts.length <=
-                  //   Object.keys(photoDetails).length +
-                  //     Object.keys(commentDetails).length &&
-                  //   Object.keys(userNames).length > 0 &&
-                  sharedPosts.map((post, index) => {
-                    // only accounts for comments and photo types, no pins yet
-                    // const sharedPostType = sharedPost.shared_commentId
-                    //   ? 'comment'
-                    //   : 'photo';
-
-                    // let post: Post;
-
-                    // if (sharedPostType === 'comment') {
-                    //   post = {
-                    //     id: commentDetails[sharedPost.shared_commentId]?.id,
-                    //     ownerId:
-                    //       commentDetails[sharedPost.shared_commentId]
-                    //         ?.ownerId,
-                    //     createdAt:
-                    //       commentDetails[sharedPost.shared_commentId]
-                    //         ?.createdAt,
-                    //     updatedAt:
-                    //       commentDetails[sharedPost.shared_commentId]
-                    //         ?.updatedAt,
-                    //     upvotes:
-                    //       commentDetails[sharedPost.shared_commentId]
-                    //         ?.upvotes,
-                    //     comment:
-                    //       commentDetails[sharedPost.shared_commentId].comment,
-                    //     senderName: userNames[sharedPost.sender_userId],
-                    //   };
-                    // } else if (sharedPostType === 'photo') {
-                    //   post = {
-                    //     id: photoDetails[sharedPost.shared_photoId].id,
-                    //     ownerId:
-                    //       photoDetails[sharedPost.shared_photoId].ownerId,
-                    //     createdAt:
-                    //       photoDetails[sharedPost.shared_photoId].createdAt,
-                    //     updatedAt:
-                    //       photoDetails[sharedPost.shared_photoId].updatedAt,
-                    //     upvotes:
-                    //       photoDetails[sharedPost.shared_photoId].upvotes,
-                    //     photoURL:
-                    //       photoDetails[sharedPost.shared_photoId].photoUrl,
-                    //     description:
-                    //       photoDetails[sharedPost.shared_photoId].description,
-                    //     senderName: userNames[sharedPost.sender_userId],
-                    //   };
-                    // }
-
-                    return (
-                      <PostCard
-                        key={`${post.content.id} + ${index}`}
-                        post={post}
-                        userId={userId}
-                        setShareModalBundle={setShareModalBundle}
-                        setConfirmActionBundle={setConfirmActionBundle}
-                        childFunctions={{
-                          handleRemovePostFromFeed: () =>
-                            handleRemovePostFromFeed(post.content.id),
-                        }}
-                      />
-                    );
-                  })
-                }
+                {sharedPosts.map((post, index) => {
+                  return (
+                    <PostCard
+                      key={`${post.content.id} + ${index}`}
+                      post={post}
+                      userId={userId}
+                      setShareModalBundle={setShareModalBundle}
+                      setConfirmActionBundle={setConfirmActionBundle}
+                      childFunctions={{
+                        handleRemovePostFromFeed: () =>
+                          handleRemovePostFromFeed(post.content.id),
+                      }}
+                    />
+                  );
+                })}
               </Tab>
               <Tab eventKey={'friends'} title={'Friends'}>
-                {/* PENDING FRIEND REQUESTS */}
-                {pendingFriendRequests.map((friendRequest: FriendRequest, index: number) => {
-                  return (
-                    <FriendCard key={`${index}-${friendRequest.id}`} friendRequest={friendRequest}/>
-                  )
-                })}
+                <FriendManager />
+                {/* <Accordion>
+                  <Accordion.Item eventKey='0'>
+                  <Accordion.Header>Friends</Accordion.Header>
+                    <Accordion.Body>
+                      {
+                        friends.map((friend: User, index)=>{
+                          return (<FriendCard key={`${index}-${friend.id}`} friend={friend} />)
+                        })
+                      }
+
+                    </Accordion.Body>
+                  </Accordion.Item>
+                  <Accordion.Item eventKey='1'>
+                    <Accordion.Header>Pending Requests</Accordion.Header>
+                    <Accordion.Body>
+
+                      {friendRequests.map(
+                        (friendRequest: FriendRequest, index: number) => {
+                          return (
+                            <FriendRequestCard
+                              key={`${index}-${friendRequest.id}`}
+                              friendRequest={friendRequest}
+                            />
+                          );
+                        }
+                      )}
+                    </Accordion.Body>
+                  </Accordion.Item>
+                  <Accordion.Item eventKey='2'>
+                    <Accordion.Header>Add a Friend</Accordion.Header>
+                    <Accordion.Body>
+                      <CreateFriend />
+                    </Accordion.Body>
+                  </Accordion.Item>
+                </Accordion> */}
+
                 {/* FRIENDS CONTENT */}
                 {friendsPosts.map((post, index) => {
                   return (
@@ -637,7 +524,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
                 })}
               </Tab>
               <Tab eventKey={'mine'} title={'Mine'}>
-              {myPosts.map((post, index) => {
+                {myPosts.map((post, index) => {
                   return (
                     <PostCard
                       key={`${post.content.id} + ${index}`}

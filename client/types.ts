@@ -96,6 +96,7 @@ interface FriendRequest {
   requesterId: number;
   recipientId: number;
   requester: User;
+  recipient: User;
 }
 
-export { Post, FriendRequest };
+export { Post, FriendRequest, User };

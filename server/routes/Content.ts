@@ -448,10 +448,11 @@ ContentRouter.get(
         }
       });
 
-      // get the content of those friends
+      // get the public content of those friends
       const friendsContent = await Content.findAll({
         where: {
           userId: { [Op.in]: userFriendIds },
+          placement: 'public'
         },
         include: [
           { model: User },
@@ -470,10 +471,10 @@ ContentRouter.get(
       // go get the pending friendships that user needs to respond to
       const pendingFriendships = await User_friend.findAll({
         where: {
-          recipientId: userId,
+          [Op.or] : [{recipientId: userId}, {requesterId: userId}],
           status: 'pending',
         },
-        include: [{association: 'requester'}]
+        include: [{association: 'requester'}, {association: 'recipient'}]
       });
 
       ///////////////////////////////////

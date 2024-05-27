@@ -12,6 +12,7 @@ import { Modal, Tab, Tabs } from 'react-bootstrap';
 
 import CreateComment from './CreateComment';
 import CreatePhoto from './CreatePhoto';
+import FriendManager from './FriendManager';
 
 // Need to be able to create any content and instantly share it with your friends
 import { ThemeContext } from './Context';
@@ -51,7 +52,7 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
         setHeaderText('Make a plan');
         break;
       case 'friend':
-        setHeaderText('Add a friend');
+        setHeaderText('Manage friends');
         break;
       default:
         setHeaderText('Default message. Did you add a new content type?');
@@ -88,7 +89,6 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
             />
           </Tab>
           <Tab
-            onClick={() => setHeaderText('Post a photo')}
             eventKey='photo'
             title={<IoMdPhotos size='24px' />}
           >
@@ -100,20 +100,19 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
             />
           </Tab>
           <Tab
-            onClick={() => setHeaderText('Drop a pin')}
             eventKey='pin'
             title={<IoMdPin size='24px' />}
           ></Tab>
           <Tab
-            onClick={() => setHeaderText('Make a plan')}
             eventKey='plan'
             title={<IoMdCalendar size='24px' />}
           ></Tab>
           <Tab
-            onClick={() => setHeaderText('Add a friend')}
             eventKey='friend'
             title={<IoMdContacts size='24px' />}
-          ></Tab>
+          >
+            <FriendManager />
+          </Tab>
         </Tabs>
       </Modal.Body>
     </Modal>

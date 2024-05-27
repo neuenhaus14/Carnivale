@@ -5,6 +5,7 @@ module.exports = (sequelize, Sequelize) => {
     status: {
       type: Sequelize.ENUM('pending', 'accepted', 'denied', 'blocked'),
       allowNull: false,
+      default: 'pending'
     },
   });
 

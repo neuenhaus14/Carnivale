@@ -1,30 +1,24 @@
 import React from 'react';
-import { Button, Card } from 'react-bootstrap';
-import { FriendRequest } from '../types';
-
+import { Card, Button } from 'react-bootstrap';
+import { User } from '../types';
+import { FaUserAltSlash } from '@react-icons/all-files/Fa/FaUserAltSlash';
 interface FriendCardProps {
-  friendRequest: FriendRequest;
+  friend: User;
 }
 
-const FriendCard : React.FC<FriendCardProps> = ({friendRequest}) => {
-
+const FriendCard: React.FC<FriendCardProps> = ({ friend }) => {
   return (
     <Card className='friend-card'>
-      <Card.Body>
-        <Card.Text className='post-card-text text-center' as='div'>
-<b>{friendRequest.requester.firstName} {friendRequest.requester.lastName}</b> wants to add you as a friend.
+      <Card.Body className='d-flex flex-row justify-content-between align-items-center'>
+        <Card.Text className='mb-0'>
+          {friend.firstName} {friend.lastName}
         </Card.Text>
-<div className='d-flex  justify-content-center my-2'>
-<Button className='mx-2'>
-    Confirm
-</Button>
-<Button className='mx-2' variant='danger'>
-    Deny
-</Button>
-</div>
+        <Button className='icon-btn' variant='danger'>
+          <FaUserAltSlash />
+        </Button>
       </Card.Body>
     </Card>
-  )
-}
+  );
+};
 
 export default FriendCard;

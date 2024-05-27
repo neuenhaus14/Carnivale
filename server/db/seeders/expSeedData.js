@@ -84,6 +84,28 @@ module.exports = {
         updatedAt: new Date(),
         shareLoc: true,
       },
+      {
+        email: 'debrahands@gmail.com',
+        phone: '176-995-0987',
+        firstName: 'Debra',
+        lastName: 'Hands',
+        latitude: 29.7873864,
+        longitude: -90.09853,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        shareLoc: true,
+      },
+      {
+        email: 'donny@gmail.com',
+        phone: '176-995-0987',
+        firstName: 'Donny',
+        lastName: 'Moore',
+        latitude: 29.7823864,
+        longitude: -90.05353,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        shareLoc: true,
+      },
     ]);
 
     // TAG id: 1
