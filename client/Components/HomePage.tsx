@@ -29,6 +29,7 @@ interface HomePageProps {
   userId: number;
   setShareModalBundle: any;
   setConfirmActionBundle: any;
+  setCreateContentModalBundle: any;
 }
 
 const HomePage: React.FC<HomePageProps> = ({
@@ -37,6 +38,7 @@ const HomePage: React.FC<HomePageProps> = ({
   lat,
   lng,
   userId,
+  setCreateContentModalBundle,
 }) => {
   // const [searchParams] = useSearchParams();
   // const [userId] = useState(Number(searchParams.get('userid')) || 1);
@@ -188,6 +190,7 @@ const HomePage: React.FC<HomePageProps> = ({
                 getPosts,
               }}
               setConfirmActionBundle={setConfirmActionBundle}
+              setCreateContentModalBundle={setCreateContentModalBundle}
             />
           );
         }) : ''}

@@ -68,8 +68,9 @@
   //   margin-right: 10px;
   // }
   .share-delete-buttons-container {
-    width: 80px;
-    justify-content: space-between;
+    display: flex;
+    flex-grow: 1;
+    justify-content: flex-end;
     .post-card-share-button:only-child {
       margin-left: auto;
     }

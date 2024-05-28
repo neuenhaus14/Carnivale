@@ -1,34 +1,57 @@
 import { FaCommentDots } from '@react-icons/all-files/fa/FaCommentDots';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Button, Form, Accordion } from 'react-bootstrap';
 import { ThemeContext, RunModeContext, UserContext } from './Context';
 import axios from 'axios';
+import { Comment, Post } from '../types';
 
 interface CreateCommentProps {
-  parentContentId: null | number;
+  parentPost: null | Post;
+  postToEdit: null | Post;
   lat: number;
   lng: number;
   toggleShowCreateContentModal: any;
 }
 
 const CreateComment: React.FC<CreateCommentProps> = ({
-  parentContentId,
+  parentPost,
   lat,
   lng,
   toggleShowCreateContentModal,
+  postToEdit,
 }) => {
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState<Comment>({
+    id: null,
+    description: '',
+    createdAt: '',
+    updatedAt: '',
+  });
   const [tag, setTag] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
-
-  const [isCommentPrivate, setIsCommentPrivate] = useState<boolean>(false);
 
   // just ids here
   const [friendsToShareWith, setFriendsToShareWith] = useState<number[]>([]);
 
+  const [isCommentPrivate, setIsCommentPrivate] = useState<boolean>(false);
+
+  // if we're getting a postToEdit sent in and it's a comment, then we're in edit mode
+  const isEditMode =
+    postToEdit && postToEdit.content.contentableType === 'comment'
+      ? true
+      : false;
   const isDemoMode = useContext(RunModeContext) === 'demo';
+
   const { user, votes, friends } = useContext(UserContext);
   const tabCategories = process.env.TAB_CATEGORIES.split(' ');
+
+  useEffect(() => {
+    if (isEditMode) {
+      setComment(postToEdit.contentable);
+      setIsCommentPrivate(
+        postToEdit.content.placement === 'private' ? true : false
+      );
+    }
+  }, []);
 
   const handleCheckedTag = (e: any) => {
     // console.log('e.target', e.target, e.target.value, e.target.name);
@@ -43,7 +66,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
   const handleInput = (e: any) => {
     if (e.target.name === 'tag') {
       setTag(e.target.value);
-    } else if (e.target.name === 'comment') {
+    } else if (e.target.name === 'description') {
       setComment(e.target.value);
     }
   };
@@ -81,7 +104,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
             latitude: lat,
             longitude: lng,
             userId: user.id,
-            parentId: parentContentId,
+            parentPost: parentPost,
             placement: isCommentPrivate ? 'private' : 'public',
           },
           description: comment,
@@ -95,10 +118,12 @@ const CreateComment: React.FC<CreateCommentProps> = ({
     }
   };
 
+  const handleEdit = async () => {};
+
   // prevents hitting enter to send empty comments
   const handleKeyDown = (e: any) => {
     //if key is enter, prevent default
-    if (e.key === 'Enter' && comment.length > 0) {
+    if (e.key === 'Enter' && comment.description.length > 0) {
       //if comment is valid, submit comment
       e.preventDefault();
       handleSubmit();
@@ -129,39 +154,50 @@ const CreateComment: React.FC<CreateCommentProps> = ({
               className='mt-2'
               placeholder='Ok, Shakespeare, write it here...'
               onChange={handleInput}
-              value={comment}
+              value={comment.description}
               onKeyDown={(e) => {
                 handleKeyDown(e);
               }}
-              name='comment'
+              name='description'
             />
 
             {/* PLACEMENT SWITCH */}
-            <div className='d-flex flex-row align-items-center my-2'>
-            <div className='d-flex justify-content-center align-items-center'>
-              <p className='mb-0'>Public post</p>
-              <Form.Switch
-
-                id='comment-placement-switch'
-                defaultChecked={isCommentPrivate}
-                onChange={() => setIsCommentPrivate(!isCommentPrivate)}
-              />
-              <p className='mb-0'>Friends only</p>
-            </div>
-             {/* CREATE COMMENT BUTTON */}
-            <Button
-              variant='primary'
-              onClick={handleSubmit}
-              disabled={isDemoMode || comment.length <= 0}
-              className='mx-auto my-2'
-            >
-              Post It
-            </Button>
-
+            <div className='d-flex flex-row align-items-center justify-content-center my-2'>
+              <div className='d-flex justify-content-center align-items-center'>
+                <p className='mb-0'>Public post</p>
+                <Form.Switch
+                  id='comment-placement-switch'
+                  defaultChecked={isCommentPrivate}
+                  onChange={() => setIsCommentPrivate(!isCommentPrivate)}
+                />
+                <p className='mb-0'>Friends only</p>
+              </div>
+              {/* CREATE/EDIT COMMENT BUTTON */}
+              {isEditMode ? (
+                <Button
+                  variant='primary'
+                  onClick={handleEdit}
+                  disabled={isDemoMode || comment.description.length <= 0}
+                  className='mx-4'
+                >
+                  Update
+                </Button>
+              ) : (
+                <Button
+                  variant='primary'
+                  onClick={handleSubmit}
+                  disabled={isDemoMode || comment.description.length <= 0}
+                  className='mx-4'
+                >
+                  Post It
+                </Button>
+              )}
             </div>
             <Accordion>
               <Accordion.Item eventKey='0'>
-                <Accordion.Header>Tag and Share Options</Accordion.Header>
+                <Accordion.Header>
+                  {isEditMode ? 'Tag Options' : 'Tag and Share Options'}
+                </Accordion.Header>
                 <Accordion.Body>
                   <h5>Add Tags</h5>
                   {/* TAGS FROM CATEGORY TABS */}
@@ -210,7 +246,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
                         >
                           <p className='mb-0'>{tag}</p>
                           <Button
-                          className='btn-sm'
+                            className='btn-sm'
                             variant='danger'
                             name={`${tag}`}
                             onClick={removeTag}
@@ -222,26 +258,28 @@ const CreateComment: React.FC<CreateCommentProps> = ({
                     })}
 
                   {/* SHARE WITH FRIENDS LIST */}
-                  <h5>Share with your Friends</h5>
-                  <div className='d-flex flex-wrap gap-2'>
-                    {friends.map((friend, index) => {
-                      return (
-                        <Form.Check
-                          type='checkbox'
-                          title={`${friend.firstName} ${friend.lastName}`}
-                          label={`${friend.firstName} ${friend.lastName}`}
-                          value={`${friend.id}`}
-                          key={`${index}-${friend.firstName}`}
-                          onClick={toggleFriendToShareWith}
-                        />
-                      );
-                    })}
-                  </div>
+                  { !isEditMode &&
+                    <>
+                      <h5>Share with your Friends</h5>
+                      <div className='d-flex flex-wrap gap-2'>
+                        {friends.map((friend, index) => {
+                          return (
+                            <Form.Check
+                              type='checkbox'
+                              title={`${friend.firstName} ${friend.lastName}`}
+                              label={`${friend.firstName} ${friend.lastName}`}
+                              value={`${friend.id}`}
+                              key={`${index}-${friend.firstName}`}
+                              onClick={toggleFriendToShareWith}
+                            />
+                          );
+                        })}
+                      </div>
+                    </>
+                  }
                 </Accordion.Body>
               </Accordion.Item>
             </Accordion>
-
-
           </div>
         </Form.Group>
       </Form>

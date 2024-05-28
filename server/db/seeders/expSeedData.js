@@ -133,6 +133,8 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
         parentId: null,
+        latitude: 29.963864,
+        longitude: -90.05213,
         content: {
           latitude: 29.963864,
           longitude: -90.05213,
@@ -195,6 +197,8 @@ module.exports = {
         name: 'Opening Party',
         description: 'Fire Breathing Dragons',
         address: '54 S. South Long Lake Rd, Traverse City, MI, 49685',
+        latitude: 29.563864,
+        longitude: -90.35213,
         startTime: '2024-04-01T18:00',
         endTime: '2024-04-01T18:00',
         inviteCount: 1,

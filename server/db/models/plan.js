@@ -15,6 +15,14 @@ module.exports = (sequelize, Sequelize) => {
       defaultValue: 0,
     },
     link: Sequelize.STRING,
+    latitude: {
+      type: Sequelize.DECIMAL,
+      allowNull: false
+    },
+    longitude: {
+      type: Sequelize.DECIMAL,
+      allowNull: false
+    },
   });
 
   Plan.associate = function (models) {

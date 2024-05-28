@@ -1,4 +1,3 @@
-
 // shared posts will have sharedContentDetails, normal posts won't have sCD
 interface Post {
   content: Content;
@@ -22,6 +21,7 @@ interface Content {
   userId: number
 }
 
+// Covers all different content types (pin, plan, comment, photo) coming in from server
 interface Contentable {
   id: number;
   description: string;
@@ -35,11 +35,15 @@ interface Contentable {
   // Plans
   title?: string;
   address?: string;
-  startTime: string;
-  endTime: string;
-  inviteCount: number;
-  attendingCount: number;
-  link: string;
+  startTime?: string | Date;
+  endTime?: string | Date;
+  inviteCount?: number;
+  attendingCount?: number;
+  link?: string;
+
+  // Plan or Pin
+  latitude?: number | string; // should be a number but is coming back from db as a string for some reason
+  longitude?: number | string; // same as above
 }
 
 interface User {
@@ -48,9 +52,9 @@ interface User {
   lastName: string;
   email: string;
   phone: string | number; // TODO: currently this datum is a string but could/should change to numbers?
-  latitude: number | string // same as Content interface
-  longitude: number | string // same
-  shareLoc: boolean
+  latitude: number | string; // same as Content interface
+  longitude: number | string; // same
+  shareLoc: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -99,4 +103,47 @@ interface FriendRequest {
   recipient: User;
 }
 
-export { Post, FriendRequest, User };
+// Specific content types - type Contentable above covers all content types coming in from server, but content types below are used for creating/editing content in Create[ContentType].tsx component
+interface Pin {
+  id: number | null; // will not have id when creating
+  pinType: string;
+  photoUrl?: string; // only available after post is created (ie, this is not added by the user)
+  description: string;
+  latitude: number | string; // should be a number but is coming back from db as a string for some reason
+  longitude: number | string; // same as above
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Plan {
+  id: number | null; // will not have id when creating
+  title: string;
+  description: string;
+  address: string;
+  startTime: string | Date;
+  endTime: string | Date;
+  inviteCount: number;
+  attendingCount: number;
+  link: string;
+  latitude: number | string;
+  longitude: number | string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Comment {
+  id: number | null; // will not have id when creating
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Photo {
+  id: number | null; // will not have id when creating
+  description: string;
+  photoUrl?: string; // may not have one (gets returned from Cloudinary after posting)
+  createdAt: string;
+  updatedAt: string;
+}
+
+export { Post, FriendRequest, User, Comment, Photo, Pin, Plan };

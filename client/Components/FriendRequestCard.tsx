@@ -68,20 +68,30 @@ const FriendRequestCard: React.FC<FriendRequestCardProps> = ({
             Answer {friendRequest.requester.firstName}{' '}
             {friendRequest.requester.lastName}{' '}
           </Card.Text>
-          <Button className='icon-btn' variant='success' onClick={()=>respondToFriendRequest('accepted')}>
-            <FaThumbsUp />
-          </Button>
-          <Button className='icon-btn' variant='danger' onClick={async () => {
-              await setConfirmActionBundle.setConfirmActionFunction(
-                () => () => respondToFriendRequest('denied')
-              );
-              await setConfirmActionBundle.setConfirmActionText(
-                `deny friend invite from ${friendRequest.recipient.firstName}.`
-              );
-              await setConfirmActionBundle.setShowConfirmActionModal(true);
-            }}>
-            <FaThumbsDown />
-          </Button>
+          <div className='d-flex'>
+            <Button
+              className='icon-btn mx-2'
+              variant='success'
+              onClick={() => respondToFriendRequest('accepted')}
+            >
+              <FaThumbsUp />
+            </Button>
+            <Button
+              className='icon-btn'
+              variant='danger'
+              onClick={async () => {
+                await setConfirmActionBundle.setConfirmActionFunction(
+                  () => () => respondToFriendRequest('denied')
+                );
+                await setConfirmActionBundle.setConfirmActionText(
+                  `deny friend invite from ${friendRequest.recipient.firstName}.`
+                );
+                await setConfirmActionBundle.setShowConfirmActionModal(true);
+              }}
+            >
+              <FaThumbsDown />
+            </Button>
+          </div>
         </Card.Body>
       )}
     </Card>

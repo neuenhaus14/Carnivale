@@ -2,16 +2,19 @@ import React, { useContext, useState } from 'react';
 import { Accordion, Button, Form } from 'react-bootstrap';
 import { RunModeContext, UserContext } from './Context';
 import axios from 'axios';
+import { Post } from '../types';
 
 interface CreatePhotoProps {
-  parentContentId: null | number;
+  postToEdit: null | Post;
+  parentPost: null | Post;
   lat: number;
   lng: number;
   toggleShowCreateContentModal: any;
 }
 
 const CreatePhoto: React.FC<CreatePhotoProps> = ({
-  parentContentId,
+  postToEdit,
+  parentPost,
   lat,
   lng,
   toggleShowCreateContentModal,
@@ -106,7 +109,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
         latitude: lat,
         longitude: lng,
         userId: user.id,
-        parentId: parentContentId,
+        parentPost: parentPost,
         placement: isPhotoPrivate ? 'private' : 'public',
       },
       description,
@@ -145,7 +148,6 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
     };
   };
 
-  console.log('loading', loading)
   return (
     <div>
       <Form className='w-100'>
@@ -183,7 +185,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
             />
 
             {/* PLACEMENT SWITCH */}
-            <div className='d-flex flex-row align-items-center my-2'>
+            <div className='d-flex flex-row align-items-center justify-content-center my-2'>
               <div className='d-flex justify-content-center align-items-center'>
                 <p className='mb-0'>Public post</p>
                 <Form.Switch
@@ -198,7 +200,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
                 variant='primary'
                 onClick={handleSubmit}
                 disabled={isDemoMode || description.length <= 0}
-                className='mx-auto my-2'
+                className='mx-4'
               >
                {loading ? "Saving..." : "Post It"}
               </Button>

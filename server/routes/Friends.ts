@@ -20,7 +20,10 @@ interface RelationshipModel extends Model {
 
 ////////////////////////////////////
 // EXPERIMENTAL
+// TODO: add logic to block someone from friend requesting someone else
 ////////////////////////////////////
+
+
 
 // Add friend through email (for now)
 Friends.post('/createFriendRequest', async (req: Request, res: Response) => {

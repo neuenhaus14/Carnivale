@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { FaShareSquare } from '@react-icons/all-files/fa/FaShareSquare';
 import { MdDelete } from '@react-icons/all-files/md/MdDelete';
+import { MdEdit } from '@react-icons/all-files/md/MdEdit'
 import { BiHide } from '@react-icons/all-files/bi/BiHide';
 import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
 import { IoArrowUpCircle } from '@react-icons/all-files/io5/IoArrowUpCircle';
@@ -70,7 +71,10 @@ interface PostCardProps {
   Hooks confirmActionModal into PostCard. setConfirmActionBundle comes from App. confirmFunctions are an object of functions passed from a page into its postCards that will be passed up to App that will run after a confirmation is made (eg, removing a shared post from a feed).
   */
   setConfirmActionBundle?: any;
-  // confirmFunctions?: any;
+
+
+  // used to edit a post that belongs to user, set parentPost for contentThreading and open CreateContentModal
+  setCreateContentModalBundle: any;
 
   /*
   childFunctions is an object that contains any functions that get passed from some page into the posts on that page. These include functions passed into the confirm action modal: for instance from the feed page, we'll pass "handleRemovePostFromFeed" (soon to be "archivePost") into each post card that is shared (but won't bother to pass this function through for the home page feed)
@@ -85,6 +89,7 @@ const PostCard: React.FC<PostCardProps> = ({
   setConfirmActionBundle,
   setShareModalBundle,
   childFunctions,
+  setCreateContentModalBundle
 }) => {
   /*
   THE UPVOTE/DOWNVOTE FUNCTIONALITY WORKS BUT THE COLORING OF THE VOTE BUTTONS DOES NOT WORK AFTER RELOAD. ORIGINALLY WE'D getPosts AFTER VOTING, BUT THIS WOULD MOVE THE POST AROUND AFTER VOTING PROVIDED THE NEW ORDER WHEN SORTING BY VOTES, SO THE POST WOULD DISAPPEAR FROM VIEW (WHICH I DON'T THINK WE WANT). THE getPosts FUNCTIONALITY IS COMMENTED OUT IN THE handleVotes FUNCTIONS
@@ -119,6 +124,7 @@ const PostCard: React.FC<PostCardProps> = ({
   //   }
   // };
 
+  // TODO: make work with exp db
   const handleUpvote = async () => {
     // if demo mode, display toast
     if (isDemoMode) {
@@ -150,7 +156,7 @@ const PostCard: React.FC<PostCardProps> = ({
       }
     }
   };
-
+  // TODO: make work with exp db
   const handleDownvote = async () => {
     // if demo mode, display toast
     if (isDemoMode) {
@@ -209,6 +215,7 @@ const PostCard: React.FC<PostCardProps> = ({
     setIsOwner(post.user.id === userId);
   }, []);
 
+  // TODO: update this to work with exp. db
   const handleDeletePost = async () => {
     if (isDemoMode) {
       toast.success('Delete your post!');
@@ -379,7 +386,7 @@ const PostCard: React.FC<PostCardProps> = ({
             <div className='share-delete-buttons-container d-flex flex-row'>
               {isSharedPost && (
                 <Button
-                  className='post-card-remove-shared-post-button'
+                  className='post-card-remove-shared-post-button mx-1'
                   variant='danger'
                   onClick={async () => {
                     await setConfirmActionBundle.setConfirmActionFunction(
@@ -400,8 +407,10 @@ const PostCard: React.FC<PostCardProps> = ({
               )}
 
               {isOwner && (
+                <>
+                {/* DELETE POST */}
                 <Button
-                  className='post-card-delete-button'
+                  className='post-card-delete-button mx-1'
                   variant='danger'
                   onClick={async () => {
                     await setConfirmActionBundle.setConfirmActionFunction(
@@ -418,11 +427,19 @@ const PostCard: React.FC<PostCardProps> = ({
                   }}
                 >
                   <MdDelete />
+                </Button >
+                {/* EDIT POST */}
+                <Button className='post-card-edit-button mx-1' onClick={()=> {
+                  setCreateContentModalBundle.setPostToEdit(post);
+                  setCreateContentModalBundle.setShowCreateContentModal(true);
+                }}>
+                  <MdEdit />
                 </Button>
+                </>
               )}
               <Button
                 variant='info'
-                className='post-card-share-button'
+                className='post-card-share-button mx-1'
                 onClick={handleInitPostShare}
               >
                 <FaShareSquare />

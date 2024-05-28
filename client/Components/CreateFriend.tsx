@@ -71,7 +71,7 @@ const CreateFriend: React.FC<CreateFriendProps> = ({}) => {
     <div >
       <Form className='d-flex flex-column justify-content-center'>
         <Form.Group >
-          <Form.Control placeholder='Add a friend by searching their email' type='text' onChange={handleEmail}/>
+          <Form.Control placeholder="Search by friend's e-mail" type='text' onChange={handleEmail}/>
         </Form.Group>
         <Button className= 'mx-auto mt-2' onClick={handleSubmit}>
           Add Friend

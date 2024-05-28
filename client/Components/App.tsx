@@ -34,6 +34,7 @@ import ConfirmActionModal from './ConfirmActionModal';
 import ShareModal from './ShareModal';
 
 import { ThemeContext, RunModeContext, UserContext } from './Context';
+import { Post } from '../types';
 
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
@@ -55,7 +56,6 @@ const App = () => {
   // SHARE MODAL STATE
   const [postToShare, setPostToShare] = useState({ id: null, type: null });
   const [showShareModal, setShowShareModal] = useState<boolean>(false);
-
   const setShareModalBundle = {
     setPostToShare,
     setShowShareModal,
@@ -64,9 +64,14 @@ const App = () => {
   // CREATECONTENT MODAL STATE
   const [showCreateContentModal, setShowCreateContentModal] =
     useState<boolean>(false);
-  const [parentContentId, setParentContentId] = useState<null|number>(null);
-
-
+  const [parentPost, setParentPost] = useState<null | Post>(null);
+  const [postToEdit, setPostToEdit] = useState<null | Post>(null);
+  const setCreateContentModalBundle = {
+    showCreateContentModal,
+    setShowCreateContentModal,
+    setParentPost,
+    setPostToEdit,
+  }
 
   // WHAT DOES userData DO?
   const [userId, setUserId] = useState(null);
@@ -100,7 +105,7 @@ const App = () => {
         family_name: 'Johnson',
       };
 
-      // this request gets both user info and an array of their votes
+      // this request gets user's info, votes and friends
       const userResponse: any = await axios.post(`api/home/user/`, { user });
 
       // set id state after fetching data from users DB
@@ -204,7 +209,7 @@ const App = () => {
     return <Loading />;
   }
 
-  console.log('isDemoMode', isDemoMode, 'user', userId);
+  console.log('postToEdit', postToEdit);
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
@@ -229,8 +234,9 @@ const App = () => {
                   lng={lng}
                   setConfirmActionBundle={setConfirmActionBundle}
                   setShareModalBundle={setShareModalBundle}
+                  setCreateContentModalBundle={setCreateContentModalBundle}
                 />{' '}
-                <NavBar setShowCreateContentModal={setShowCreateContentModal}/>
+                <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
             }
           />
@@ -252,7 +258,7 @@ const App = () => {
                   getLocation={getLocation}
                   setConfirmActionBundle={setConfirmActionBundle}
                 />{' '}
-                <NavBar setShowCreateContentModal={setShowCreateContentModal}/>
+                <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
             }
           />
@@ -271,8 +277,9 @@ const App = () => {
                   userId={userId}
                   setConfirmActionBundle={setConfirmActionBundle}
                   setShareModalBundle={setShareModalBundle}
+                  setCreateContentModalBundle={setCreateContentModalBundle}
                 />{' '}
-                <NavBar setShowCreateContentModal={setShowCreateContentModal}/>
+                <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
             }
           />
@@ -287,7 +294,8 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <Parades userId={userId} lng={lng} lat={lat} /> <NavBar setShowCreateContentModal={setShowCreateContentModal}/>
+                <Parades userId={userId} lng={lng} lat={lat} />{' '}
+                <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
             }
           />
@@ -302,7 +310,8 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <EventPage userId={userId} lng={lng} lat={lat} /> <NavBar setShowCreateContentModal={setShowCreateContentModal}/>
+                <EventPage userId={userId} lng={lng} lat={lat} />{' '}
+                <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
             }
           />
@@ -324,7 +333,7 @@ const App = () => {
                   setTheme={setTheme}
                   setConfirmActionBundle={setConfirmActionBundle}
                 />{' '}
-                <NavBar setShowCreateContentModal={setShowCreateContentModal}/>
+                <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
             }
           />
@@ -354,10 +363,10 @@ const App = () => {
             setShowShareModal={setShowShareModal}
           />
           <CreateContentModal
-            showCreateContentModal={showCreateContentModal}
-            setShowCreateContentModal={setShowCreateContentModal}
+            setCreateContentModalBundle={setCreateContentModalBundle}
             defaultTab={'comment'}
-            parentContentId={parentContentId} // defaults to null
+            parentPost={parentPost} // defaults to null
+            postToEdit={postToEdit} // default to null
             lat={lat}
             lng={lng}
             setConfirmActionBundle={setConfirmActionBundle}

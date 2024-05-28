@@ -1,6 +1,6 @@
 // This modal will be composed of 4 components, one for creating each content type.
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { IoMdPin } from '@react-icons/all-files/io/IoMdPin';
 import { IoMdCalendar } from '@react-icons/all-files/io/IoMdCalendar';
@@ -12,26 +12,28 @@ import { Modal, Tab, Tabs } from 'react-bootstrap';
 
 import CreateComment from './CreateComment';
 import CreatePhoto from './CreatePhoto';
+import CreatePlan from './CreatePlan';
 import FriendManager from './FriendManager';
 
 // Need to be able to create any content and instantly share it with your friends
 import { ThemeContext } from './Context';
+import { Post } from '../types';
 
 interface CreateContentModalProps {
-  showCreateContentModal: boolean;
-  setShowCreateContentModal: any;
-  parentContentId: null | number; // needed to nest content in threads
+  parentPost: null | Post; // needed to nest content in threads
+  postToEdit: null | Post;
   defaultTab: 'comment' | 'photo' | 'pin' | 'plan'; // indicates what tab defaults to open (ie, 'pin' for map page ,'photo' for feed page)
   lat: number;
   lng: number;
   setConfirmActionBundle: any; // getting sent along to FriendManager
+  setCreateContentModalBundle: any;
 }
 
 const CreateContentModal: React.FC<CreateContentModalProps> = ({
-  showCreateContentModal,
-  setShowCreateContentModal,
+  setCreateContentModalBundle,
   defaultTab,
-  parentContentId,
+  parentPost,
+  postToEdit,
   lat,
   lng,
   setConfirmActionBundle,
@@ -64,13 +66,29 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
 
   const [key, setKey] = useState('comment');
 
-  const toggleShowCreateContentModal = () =>
-    {
-      console.log('top of ToggleShow in CCM')
-      setShowCreateContentModal(!showCreateContentModal)};
+  useEffect(() => {
+    if (postToEdit) {
+      console.log('there is a post to edit')
+      setKey(postToEdit.content.contentableType);
+      changeHeaderText(postToEdit.content.contentableType);
+    }
+  }, [postToEdit]);
 
+  const toggleShowCreateContentModal = () => {
+    // close the modal
+    setCreateContentModalBundle.setShowCreateContentModal(
+      !setCreateContentModalBundle.showCreateContentModal
+    );
+    // set the postToEditBack to null
+    setCreateContentModalBundle.setPostToEdit(null);
+  };
+
+  console.log('key', key)
   return (
-    <Modal show={showCreateContentModal} onHide={toggleShowCreateContentModal}>
+    <Modal
+      show={setCreateContentModalBundle.showCreateContentModal}
+      onHide={toggleShowCreateContentModal}
+    >
       <Modal.Header closeButton>
         <Modal.Title>{headerText}</Modal.Title>
       </Modal.Header>
@@ -84,36 +102,34 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
         >
           <Tab eventKey='comment' title={<IoMdText size='24px' />}>
             <CreateComment
-              parentContentId={parentContentId}
+              postToEdit={postToEdit}
+              parentPost={parentPost}
               lat={lat}
               lng={lng}
               toggleShowCreateContentModal={toggleShowCreateContentModal}
             />
           </Tab>
-          <Tab
-            eventKey='photo'
-            title={<IoMdPhotos size='24px' />}
-          >
+          <Tab eventKey='photo' title={<IoMdPhotos size='24px' />}>
             <CreatePhoto
-              parentContentId={parentContentId}
+              postToEdit={postToEdit}
+              parentPost={parentPost}
               lat={lat}
               lng={lng}
               toggleShowCreateContentModal={toggleShowCreateContentModal}
             />
           </Tab>
-          <Tab
-            eventKey='pin'
-            title={<IoMdPin size='24px' />}
-          ></Tab>
-          <Tab
-            eventKey='plan'
-            title={<IoMdCalendar size='24px' />}
-          ></Tab>
-          <Tab
-            eventKey='friend'
-            title={<IoMdContacts size='24px' />}
-          >
-            <FriendManager setConfirmActionBundle={setConfirmActionBundle}/>
+          <Tab eventKey='pin' title={<IoMdPin size='24px' />}></Tab>
+          <Tab eventKey='plan' title={<IoMdCalendar size='24px' />}>
+            <CreatePlan
+              postToEdit={postToEdit}
+              parentPost={parentPost}
+              lat={lat}
+              lng={lng}
+              toggleShowCreateContentModal={toggleShowCreateContentModal}
+            />
+          </Tab>
+          <Tab eventKey='friend' title={<IoMdContacts size='24px' />}>
+            <FriendManager setConfirmActionBundle={setConfirmActionBundle} />
           </Tab>
         </Tabs>
       </Modal.Body>
