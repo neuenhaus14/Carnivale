@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { RunModeContext, UserContext } from './Context';
-import { Post } from '../types';
+import { RunModeContext, UserContext } from '../Context';
+import { Post } from '../../types';
 import { Form } from 'react-bootstrap';
 
 interface CreatePlanProps {
@@ -11,7 +11,7 @@ interface CreatePlanProps {
   toggleShowCreateContentModal: any;
 }
 
-const CreatePlan:React.FC<CreatePlanProps> = ({}) => {
+const CreatePlan: React.FC<CreatePlanProps> = ({}) => {
   const [plan, setPlan] = useState('');
   const [tag, setTag] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
@@ -27,13 +27,9 @@ const CreatePlan:React.FC<CreatePlanProps> = ({}) => {
 
   return (
     <div>
-      <Form>
-
-      </Form>
+      <Form></Form>
     </div>
-  )
-
-}
+  );
+};
 
 export default CreatePlan;
-

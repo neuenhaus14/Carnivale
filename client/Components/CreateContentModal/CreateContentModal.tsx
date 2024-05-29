@@ -13,11 +13,11 @@ import { Button, Modal, Tab, Tabs } from 'react-bootstrap';
 import CreateComment from './CreateComment';
 import CreatePhoto from './CreatePhoto';
 import CreatePlan from './CreatePlan';
-import FriendManager from './FriendManager';
+import FriendManager from '../FriendManager';
 
 // Need to be able to create any content and instantly share it with your friends
-import { ThemeContext } from './Context';
-import { Post } from '../types';
+import { ThemeContext } from '../Context';
+import { Post } from '../../types';
 import axios from 'axios';
 
 interface CreateContentModalProps {
@@ -71,9 +71,9 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
     'comment' | 'pin' | 'plan' | 'friend' | 'photo'
   >('comment');
 
+  // once a postToEdit comes through, then set the key and text for the tab
   useEffect(() => {
     if (postToEdit) {
-      console.log('there is a post to edit');
       setKey(postToEdit.content.contentableType);
       changeHeaderText(postToEdit.content.contentableType);
     }
@@ -90,7 +90,7 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
 
   const submitContent = async (
     contentType: 'plan' | 'pin' | 'comment' | 'photo',
-    payload,
+    payload
   ) => {
     try {
       let createContentResponse;

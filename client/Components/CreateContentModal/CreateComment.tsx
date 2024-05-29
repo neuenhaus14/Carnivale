@@ -1,57 +1,61 @@
-import React, { useContext, useState } from 'react';
-import { Accordion, Button, Form } from 'react-bootstrap';
-import { RunModeContext, UserContext } from './Context';
+import { FaCommentDots } from '@react-icons/all-files/fa/FaCommentDots';
+import React, { useState, useContext, useEffect } from 'react';
+import { Button, Form, Accordion } from 'react-bootstrap';
+import { ThemeContext, RunModeContext, UserContext } from '../Context';
 import axios from 'axios';
-import { Photo, Post } from '../types';
+import { Comment, Post } from '../../types';
 import CreateContentOptions from './CreateContentOptions';
 
-interface CreatePhotoProps {
-  postToEdit: null | Post;
+interface CreateCommentProps {
   parentPost: null | Post;
+  postToEdit: null | Post;
   lat: number;
   lng: number;
-  // toggleShowCreateContentModal: any;
+  //toggleShowCreateContentModal: any;
   submitContent: any;
 }
 
-const CreatePhoto: React.FC<CreatePhotoProps> = ({
-  postToEdit,
+const CreateComment: React.FC<CreateCommentProps> = ({
   parentPost,
   lat,
   lng,
-  // toggleShowCreateContentModal,
-  submitContent
+  //toggleShowCreateContentModal,
+  postToEdit,
+  submitContent,
 }) => {
-  // PHOTO-SPECIFIC STATE
-  const [previewSource, setPreviewSource] = useState();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [file, setFile] = useState(null);
-
-  const [photo, setPhoto] = useState<Photo>({
+  const [comment, setComment] = useState<Comment>({
     id: null,
-    photoURL: '',
     description: '',
     createdAt: '',
     updatedAt: '',
   });
-
-  // CONTENT STATE
-  const [isPhotoPrivate, setIsPhotoPrivate] = useState<boolean>(false);
-  const [tag, setTag] = useState<string>('');
+  // const [tag, setTag] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
+
+  // just ids here
   const [friendsToShareWith, setFriendsToShareWith] = useState<number[]>([]);
 
-  // CONTEXT & ENV
-  const isDemoMode = useContext(RunModeContext) === 'demo';
-  const { user, votes, friends } = useContext(UserContext);
-  const tabCategories = process.env.TAB_CATEGORIES.split(' ');
+  const [isCommentPrivate, setIsCommentPrivate] = useState<boolean>(false);
 
+  // if we're getting a postToEdit sent in and it's a comment, then we're in edit mode
   const isEditMode =
     postToEdit && postToEdit.content.contentableType === 'comment'
       ? true
       : false;
+  const isDemoMode = useContext(RunModeContext) === 'demo';
 
-  // FUNCTIONS FOR MANAGING CONTENT STATE
+  const { user, votes, friends } = useContext(UserContext);
+  // const tabCategories = process.env.TAB_CATEGORIES.split(' ');
+
+  useEffect(() => {
+    if (isEditMode) {
+      setComment(postToEdit.contentable);
+      setIsCommentPrivate(
+        postToEdit.content.placement === 'private' ? true : false
+      );
+    }
+  }, []);
+
   // const handleCheckedTag = (e: any) => {
   //   // console.log('e.target', e.target, e.target.value, e.target.name);
   //   const { value } = e.target;
@@ -59,6 +63,12 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
   //     setTags([...tags, value]);
   //   } else if (tags.includes(value)) {
   //     setTags(tags.filter((tag) => tag !== value));
+  //   }
+  // };
+
+  // const handleCommentInput = (e: any) => {
+  //   if (e.target.name === 'description') {
+  //     setComment(e.target.value);
   //   }
   // };
 
@@ -80,12 +90,45 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
   //   }
   // };
 
-  // // remove tag from list of added tags
+  // remove tag from list of added tags
   // const removeTag = (e: any) => {
   //   const { name } = e.target;
   //   setTags(tags.filter((tag) => tag !== name));
   // };
 
+  const handleSubmit = async () => {
+    try {
+      submitContent('comment', {
+        content: {
+          latitude: lat,
+          longitude: lng,
+          userId: user.id,
+          parentPost: parentPost,
+          placement: isCommentPrivate ? 'private' : 'public',
+        },
+        description: comment.description,
+        tags: tags,
+        friendsToShareWith,
+      });
+      //toggleShowCreateContentModal();
+    } catch (e) {
+      console.error('CLIENT ERROR: failed to create comment', e);
+    }
+  };
+
+  const handleEdit = async () => {};
+
+  // prevents hitting enter to send empty comments
+  const handleKeyDown = (e: any) => {
+    //if key is enter, prevent default
+    if (e.key === 'Enter' && comment.description.length > 0) {
+      //if comment is valid, submit comment
+      e.preventDefault();
+      handleSubmit();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
 
   // const toggleFriendToShareWith = (e: any) => {
   //   const { value } = e.target;
@@ -99,98 +142,20 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
   //   }
   // };
 
-  // prevents hitting enter to send empty comments
-  const handleKeyDown = (e: any) => {
-    //if key is enter, prevent default
-    if (e.key === 'Enter' && photo.description.length > 0) {
-      //if comment is valid, submit comment
-      e.preventDefault();
-      handleSubmit(e);
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-    }
-  };
-
-  //
-  const handleSubmit = async (e: any) => {
-    setLoading(true);
-    e.preventDefault();
-
-    const contentDetails = {
-      // TODO: add isEditMode? for routing in server
-      content: {
-        latitude: lat,
-        longitude: lng,
-        userId: user.id,
-        parentPost: parentPost,
-        placement: isPhotoPrivate ? 'private' : 'public',
-      },
-      description: photo.description,
-      tags: tags,
-      friendsToShareWith,
-    }
-
-    const payload = new FormData();
-    payload.append('imageFile', file);
-    payload.append('contentDetails', JSON.stringify(contentDetails))
-
-    try {
-      submitContent('photo', payload);
-    } catch (e) {
-      console.error('CLIENT ERROR: failed to create comment', e);
-    } finally {
-      setLoading(false);
-      // toggleShowCreateContentModal();
-    }
-  };
-
-  const handleSelectFile = (e: any) => {
-    const file = e.target.files[0];
-    e.preventDefault();
-    setFile(file);
-    previewFile(file);
-  };
-
-  const previewFile = (file: any) => {
-    const reader = new FileReader(); //built into JS API
-    reader.readAsDataURL(file); //convert image to a string
-    reader.onloadend = () => {
-      const result: any = reader.result;
-      setPreviewSource(result); // if set we want to display it
-    };
-  };
-
-  console.log('photo', photo)
+  console.log('comment', comment);
   return (
     <div>
       <Form className='w-100'>
         <Form.Group>
           <div className='d-flex flex-column justify-content-center'>
-
-            {/* IMAGE PREVIEW */}
-            {previewSource && (
-              <img
-                src={previewSource}
-                alt='Image selected for upload'
-                className='mx-auto mt-2 w-75 rounded'
-              />
-            )}
-            {/* IMAGE FILE SELECTOR */}
-            <input
-              className='mx-auto mt-2 w-75'
-              id='file'
-              type='file'
-              name='image'
-              onChange={handleSelectFile}
-              multiple={false}
-            />
-
-            {/* Description INPUT */}
+            {/* COMMENT INPUT */}
             <Form.Control
               className='mt-2'
-              placeholder='Add a description to your photo'
-              onChange={(e) => setPhoto({...photo, description: e.target.value})}
-              value={photo.description}
+              placeholder='Ok, Shakespeare, write it here...'
+              onChange={(e) =>
+                setComment({ ...comment, description: e.target.value })
+              }
+              value={comment.description}
               onKeyDown={(e) => {
                 handleKeyDown(e);
               }}
@@ -203,27 +168,48 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
                 <p className='mb-0'>Public post</p>
                 <Form.Switch
                   id='comment-placement-switch'
-                  defaultChecked={isPhotoPrivate}
-                  onChange={() => setIsPhotoPrivate(!isPhotoPrivate)}
+                  defaultChecked={isCommentPrivate}
+                  onChange={() => setIsCommentPrivate(!isCommentPrivate)}
                 />
                 <p className='mb-0'>Friends only</p>
               </div>
-              {/* CREATE COMMENT BUTTON */}
-              <Button
-                variant='primary'
-                onClick={handleSubmit}
-                disabled={isDemoMode || photo.description.length <= 0}
-                className='mx-4'
-              >
-               {loading ? "Saving..." : "Post It"}
-              </Button>
+              {/* CREATE/EDIT COMMENT BUTTON */}
+              {isEditMode ? (
+                <Button
+                  variant='primary'
+                  onClick={handleEdit}
+                  disabled={isDemoMode || comment.description.length <= 0}
+                  className='mx-4'
+                >
+                  Update
+                </Button>
+              ) : (
+                <Button
+                  variant='primary'
+                  onClick={handleSubmit}
+                  disabled={isDemoMode || comment.description.length <= 0}
+                  className='mx-4'
+                >
+                  Post It
+                </Button>
+              )}
             </div>
-            <CreateContentOptions postToEdit={postToEdit} isEditMode={isEditMode} setTags={setTags} setFriendsToShareWith={setFriendsToShareWith}
-            friendsToShareWith={friendsToShareWith} tags={tags}/>
+
+            {/* START OF CCO */}
+            <CreateContentOptions
+              postToEdit={postToEdit}
+              isEditMode={isEditMode}
+              setTags={setTags}
+              setFriendsToShareWith={setFriendsToShareWith}
+              friendsToShareWith={friendsToShareWith}
+              tags={tags}
+            />
 
             {/* <Accordion>
               <Accordion.Item eventKey='0'>
-                <Accordion.Header>Tag and Share Options</Accordion.Header>
+                <Accordion.Header>
+                  {isEditMode ? 'Tag Options' : 'Tag and Share Options'}
+                </Accordion.Header>
                 <Accordion.Body>
                   <h5>Add Tags</h5>
                   {/* TAGS FROM CATEGORY TABS
@@ -248,7 +234,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
                     <Form.Control
                       className='m-2'
                       placeholder='Custom tag goes here'
-                      onChange={handleInput}
+                      onChange={handleCommentInput}
                       value={tag}
                       name='tag'
                     />
@@ -284,21 +270,25 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
                     })}
 
                   {/* SHARE WITH FRIENDS LIST
-                  <h5>Share with your Friends</h5>
-                  <div className='d-flex flex-wrap gap-2'>
-                    {friends.map((friend, index) => {
-                      return (
-                        <Form.Check
-                          type='checkbox'
-                          title={`${friend.firstName} ${friend.lastName}`}
-                          label={`${friend.firstName} ${friend.lastName}`}
-                          value={`${friend.id}`}
-                          key={`${index}-${friend.firstName}`}
-                          onClick={toggleFriendToShareWith}
-                        />
-                      );
-                    })}
-                  </div>
+                  { !isEditMode &&
+                    <>
+                      <h5>Share with your Friends</h5>
+                      <div className='d-flex flex-wrap gap-2'>
+                        {friends.map((friend, index) => {
+                          return (
+                            <Form.Check
+                              type='checkbox'
+                              title={`${friend.firstName} ${friend.lastName}`}
+                              label={`${friend.firstName} ${friend.lastName}`}
+                              value={`${friend.id}`}
+                              key={`${index}-${friend.firstName}`}
+                              onClick={toggleFriendToShareWith}
+                            />
+                          );
+                        })}
+                      </div>
+                    </>
+                  }
                 </Accordion.Body>
               </Accordion.Item>
             </Accordion> */}
@@ -309,4 +299,4 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
   );
 };
 
-export default CreatePhoto;
+export default CreateComment;

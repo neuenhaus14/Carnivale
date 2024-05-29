@@ -15,7 +15,7 @@ import {
 } from 'react-bootstrap';
 import { ThemeContext, RunModeContext, UserContext } from './Context';
 
-import CreateFriend from './CreateFriend';
+import CreateFriend from './CreateContentModal/CreateFriend';
 import { PostCard } from './PostCard';
 import { Post, FriendRequest, User } from '../types';
 import FriendManager from './FriendManager';
@@ -33,7 +33,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
   userId,
   setConfirmActionBundle,
   setShareModalBundle,
-  setCreateContentModalBundle
+  setCreateContentModalBundle,
 }) => {
   const [sharedPosts, setSharedPosts] = useState<Post[]>([]);
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
@@ -44,7 +44,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
-  const {user,friends, votes} = useContext(UserContext);
+  const { user, friends, votes } = useContext(UserContext);
 
   const [showAboutModal, setShowAboutModal] = useState(true);
 
@@ -474,7 +474,9 @@ const FeedPage: React.FC<FeedPageProps> = ({
                 })}
               </Tab>
               <Tab eventKey={'friends'} title={'Friends'}>
-                <FriendManager setConfirmActionBundle={setConfirmActionBundle}/>
+                <FriendManager
+                  setConfirmActionBundle={setConfirmActionBundle}
+                />
 
                 {/* FRIENDS CONTENT */}
                 {friendsPosts.map((post, index) => {

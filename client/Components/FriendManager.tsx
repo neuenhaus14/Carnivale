@@ -4,14 +4,16 @@ import { UserContext, RunModeContext } from './Context';
 import { User, FriendRequest } from '../types';
 import FriendCard from './FriendCard';
 import FriendRequestCard from './FriendRequestCard';
-import CreateFriend from './CreateFriend';
+import CreateFriend from './CreateContentModal/CreateFriend';
 import axios from 'axios';
 
 interface FriendManagerProps {
   setConfirmActionBundle: any; // sending to friend card
 }
 
-const FriendManager: React.FC<FriendManagerProps> = ({setConfirmActionBundle}) => {
+const FriendManager: React.FC<FriendManagerProps> = ({
+  setConfirmActionBundle,
+}) => {
   const { user, friends, votes } = useContext(UserContext);
 
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
@@ -36,7 +38,13 @@ const FriendManager: React.FC<FriendManagerProps> = ({setConfirmActionBundle}) =
         <Accordion.Header>Friends</Accordion.Header>
         <Accordion.Body>
           {friends.map((friend: User, index) => {
-            return <FriendCard key={`${index}-${friend.id}`} friend={friend} setConfirmActionBundle={setConfirmActionBundle}/>;
+            return (
+              <FriendCard
+                key={`${index}-${friend.id}`}
+                friend={friend}
+                setConfirmActionBundle={setConfirmActionBundle}
+              />
+            );
           })}
         </Accordion.Body>
       </Accordion.Item>

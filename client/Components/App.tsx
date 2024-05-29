@@ -29,7 +29,7 @@ import Loading from './Loading';
 import Parades from './Parades';
 import TopNavBar from './TopNavBar';
 
-import CreateContentModal from './CreateContentModal';
+import CreateContentModal from './CreateContentModal/CreateContentModal';
 import ConfirmActionModal from './ConfirmActionModal';
 import ShareModal from './ShareModal';
 
