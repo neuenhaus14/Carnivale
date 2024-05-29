@@ -115,7 +115,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
                 <p className='mb-0'>Public post</p>
                 <Form.Switch
                   id='comment-placement-switch'
-                  defaultChecked={isCommentPrivate}
+                  checked={isCommentPrivate}
                   onChange={() => setIsCommentPrivate(!isCommentPrivate)}
                 />
                 <p className='mb-0'>Friends only</p>

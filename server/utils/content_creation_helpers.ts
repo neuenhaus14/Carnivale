@@ -1,5 +1,8 @@
 import axios from "axios";
 
+import { Response, Request } from "express";
+
+
 // TODO: is REDIRECT_URL the best way forward here? Is there something is axios config that allows us to set endpoint without writing it in?
 import { REDIRECT_URL } from "../config";
 
@@ -22,4 +25,15 @@ export const shareContent = async (friendsToShareWith, contentId, senderId) => {
       recipientId: friendId,
     })
   }))
+}
+
+export const runMiddleware = (req: Request, res: Response, fn: any) => {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result: any) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+      return resolve(result);
+    });
+  });
 }

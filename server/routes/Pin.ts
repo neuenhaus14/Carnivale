@@ -1,15 +1,12 @@
-// ROUTES IN THIS FILE ARE FOR POSTING PHOTOS WITH EXP DB WITH CREATECONTENT MODAL; ORIGINAL ROUTES FOR POSTING PHOTOS ARE IN PhotoUpload.ts
-
-import { Request, Response, Router } from 'express';
-import handleUpload from '../utils/cloudinary_helpers';
+import {Request, Response, Router } from 'express';
 import { createTags, shareContent, runMiddleware } from '../utils/content_creation_helpers';
+import handleUpload from '../utils/cloudinary_helpers';
+import models from '../db/models';
 import multer from 'multer';
-import models from '../db/models/index';
 
-const Photo = models.photo;
+const Pin = models.pin;
 const Content = models.content;
-
-const PhotoRouter = Router();
+const PinRouter = Router();
 
 //Multer provides us with two storage options: disk and memory storage. In the below snippet, we start by selecting the storage option we want for our Multer instance. We choose the memory storage option because we do not want to store parsed files on our server; instead, we want them temporarily stored on the RAM so that we can quickly upload them to Cloudinary.
 const storage = multer.memoryStorage();
@@ -25,7 +22,7 @@ const unpackFormData = upload.fields([
   { name: 'imageFile' },
 ]);
 
-PhotoRouter.post('/createPhoto', async (req: Request, res: Response) => {
+PinRouter.post('/createPin', async (req: Request, res: Response) => {
   try {
     // run thru mw to unpack the file and the details to be used to add photo db record
     await runMiddleware(req, res, unpackFormData);
@@ -39,10 +36,21 @@ PhotoRouter.post('/createPhoto', async (req: Request, res: Response) => {
 
     const cldRes = await handleUpload(dataURI);
     const photoURL = cldRes.secure_url;
+     // Then get url back from Cloudinary and add photo to database
 
-    // Then get url back from Cloudinary and add photo to database
-    const createPhotoResponse = await Photo.create(
-      {...contentDetails, photoURL},
+     const pinObject = {
+      content: contentDetails.content,
+      photoURL,
+      pinType: contentDetails.pinType,
+      latitude: contentDetails.latitude,
+      longitude: contentDetails.longitude,
+      description: contentDetails.description
+     }
+
+     console.log('pinObject', pinObject)
+
+     const createPhotoResponse = await Pin.create(
+      pinObject,
       { include: [Content] }
     );
 
@@ -55,9 +63,9 @@ PhotoRouter.post('/createPhoto', async (req: Request, res: Response) => {
 
     res.status(200).send(createPhotoResponse);
   } catch (e) {
-    console.error('SERVER ERROR: failed to post photo', e);
+    console.error('SERVER ERROR: failed to post pin', e);
     res.status(500).send(e);
   }
-});
+})
 
-export default PhotoRouter;
+export default PinRouter;

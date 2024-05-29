@@ -36,8 +36,8 @@ const CreatePlan: React.FC<CreatePlanProps> = ({
     attendingCount: 0,
     inviteCount: 0,
     link: '',
-    latitude: 0,
-    longitude: 0,
+    latitude: null,
+    longitude: null,
     createdAt: '',
     updatedAt: '',
   });
@@ -128,10 +128,10 @@ const CreatePlan: React.FC<CreatePlanProps> = ({
     }
   };
 
-  console.log('plan', plan);
+  console.log('plan', plan, 'isPlanPrivate', isPlanPrivate);
   return (
     <div>
-      <Form>
+      <Form className='w-100'>
         <Form.Group>
           {/* TITLE */}
           <Form.Control
@@ -184,7 +184,7 @@ const CreatePlan: React.FC<CreatePlanProps> = ({
               <p className='mb-0'>Public post</p>
               <Form.Switch
                 id='comment-placement-switch'
-                defaultChecked={isPlanPrivate}
+                checked={isPlanPrivate}
                 onChange={() => setIsPlanPrivate(!isPlanPrivate)}
               />
               <p className='mb-0'>Friends only</p>

@@ -101,6 +101,10 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
           createContentResponse = await axios.post('/api/plan/createPlan', payload)
           break;
         case 'pin':
+          createContentResponse = await axios.post(
+            '/api/pin/createPin',
+            payload
+          );
           break;
         case 'comment':
           createContentResponse = await axios.post(
@@ -160,7 +164,13 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
             />
           </Tab>
           <Tab eventKey='pin' title={<IoMdPin size='24px' />}>
-            <CreatePin />
+            <CreatePin
+              postToEdit={postToEdit}
+              parentPost={parentPost}
+              lat={lat}
+              lng={lng}
+              submitContent={submitContent}
+            />
           </Tab>
           <Tab eventKey='plan' title={<IoMdCalendar size='24px' />}>
             <CreatePlan

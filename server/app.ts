@@ -33,6 +33,7 @@ import CommentRoutes from './routes/Comment';
 import PhotoRoutes from './routes/Photo';
 import TagRoutes from './routes/Tags';
 import PlanRoutes from './routes/Plan';
+import PinRoutez from './routes/Pin';
 import SharedContentRoutes from './routes/SharedContent';
 
 
@@ -79,6 +80,7 @@ app.use('/api/photo', PhotoRoutes);
 app.use('/api/tags', TagRoutes);
 app.use('/api/sharedContent', SharedContentRoutes);
 app.use('/api/plan', PlanRoutes);
+app.use('/api/pin', PinRoutez) // TODO: note pin routez
 
 app.use(
   cors({

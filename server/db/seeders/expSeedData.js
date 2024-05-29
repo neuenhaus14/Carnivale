@@ -159,7 +159,7 @@ module.exports = {
         },
         createdAt: new Date(),
         updatedAt: new Date(),
-        photoURL: 'www.google2.com',
+        photoURL: 'https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/oh8ugtya4ykz6d0ysl32.jpg',
         description: 'This photo is about the EMT pin',
       },
       { include: [Content] }
@@ -194,13 +194,13 @@ module.exports = {
           userId: 2,
           parentId: null,
         },
-        title: 'Opening Party',
-        description: 'Fire Breathing Dragons',
-        address: '54 S. South Long Lake Rd, Traverse City, MI, 49685',
-        latitude: 29.563864,
-        longitude: -90.35213,
+        title: 'Lunch',
+        description: 'Paladar Lunch Special',
+        address: '511 Marigny St, New Orleans, LA 70117',
+        latitude: 29.963114361199445,
+        longitude: -90.05487604824603,
         startTime: '2024-04-01T18:00',
-        endTime: '2024-04-01T18:00',
+        endTime: '2024-04-01T18:30',
         inviteCount: 1,
         attendingCount: 0,
         link: 'www.link.com',
@@ -320,6 +320,33 @@ module.exports = {
         description: 'Wild Boar Poboy, yum!',
       },
       { include: [Content] }
+    );
+
+    // content id 10
+    await Plan.create(
+      {
+        content: {
+          latitude: 29.963864,
+          longitude: -90.05213,
+          upvotes: 0,
+          placement: 'private',
+          userId: 1,
+          parentId: null,
+        },
+        title: 'Opening Party',
+        description: 'Private! Pregame at Hotel Peter & Paul',
+        address: '2317 Burgundy St, New Orleans, LA 70117',
+        latitude: 29.967083194747136,
+        longitude: -90.05516562054513,
+        startTime: '2024-04-01T19:00',
+        endTime: '2024-04-01T19:30',
+        inviteCount: 0,
+        attendingCount: 0,
+        link: 'www.link2.com',
+      },
+      {
+        include: [Content],
+      }
     );
 
     // photo of poboy is tagged food

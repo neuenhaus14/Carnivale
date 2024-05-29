@@ -106,11 +106,11 @@ interface FriendRequest {
 // Specific content types - type Contentable above covers all content types coming in from server, but content types below are used for creating/editing content in Create[ContentType].tsx component
 interface Pin {
   id: number | null; // will not have id when creating
-  pinType: string;
-  photoUrl?: string; // only available after post is created (ie, this is not added by the user)
+  pinType?: string;
+  photoURL?: string; // only available after post is created (ie, this is not added by the user)
   description: string;
-  latitude: number | string; // should be a number but is coming back from db as a string for some reason
-  longitude: number | string; // same as above
+  latitude?: number | string | null; // should be a number but is coming back from db as a string for some reason
+  longitude?: number | string | null; // same as above
   createdAt: string;
   updatedAt: string;
 }
@@ -125,10 +125,10 @@ interface Plan {
   inviteCount?: number;
   attendingCount?: number;
   link?: string;
-  latitude?: number | string;
-  longitude?: number | string;
-  createdAt?: string;
-  updatedAt?: string;
+  latitude?: number | string | null;
+  longitude?: number | string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Comment {

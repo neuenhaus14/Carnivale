@@ -24,7 +24,6 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
   const [previewSource, setPreviewSource] = useState();
   const [loading, setLoading] = useState<boolean>(false);
   const [file, setFile] = useState(null);
-
   const [photo, setPhoto] = useState<Photo>({
     id: null,
     photoURL: '',
@@ -45,6 +44,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
     postToEdit && postToEdit.content.contentableType === 'photo'
       ? true
       : false;
+
   useEffect(() => {
     if (isEditMode) {
       setPhoto(postToEdit.contentable);
@@ -162,7 +162,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
                 <p className='mb-0'>Public post</p>
                 <Form.Switch
                   id='comment-placement-switch'
-                  defaultChecked={isPhotoPrivate}
+                  checked={isPhotoPrivate}
                   onChange={() => setIsPhotoPrivate(!isPhotoPrivate)}
                 />
                 <p className='mb-0'>Friends only</p>
