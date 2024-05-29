@@ -15,12 +15,8 @@ import {
 } from 'react-bootstrap';
 import { ThemeContext, RunModeContext, UserContext } from './Context';
 
-import CreateFriend from './CreateContentModal/CreateFriend';
-import { PostCard } from './PostCard';
+import { PostCard } from './Cards/PostCard';
 import { Post, FriendRequest, User } from '../types';
-import FriendManager from './FriendManager';
-import FriendRequestCard from './FriendRequestCard';
-import FriendCard from './FriendCard';
 
 interface FeedPageProps {
   userId: number;
@@ -474,10 +470,6 @@ const FeedPage: React.FC<FeedPageProps> = ({
                 })}
               </Tab>
               <Tab eventKey={'friends'} title={'Friends'}>
-                <FriendManager
-                  setConfirmActionBundle={setConfirmActionBundle}
-                />
-
                 {/* FRIENDS CONTENT */}
                 {friendsPosts.map((post, index) => {
                   return (

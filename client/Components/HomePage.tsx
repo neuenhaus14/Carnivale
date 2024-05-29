@@ -16,7 +16,7 @@ import { FaCamera } from '@react-icons/all-files/fa/FaCamera';
 
 import axios from 'axios';
 import HomeModal from './HomeModal';
-import { PostCard } from './PostCard';
+import { PostCard } from './Cards/PostCard';
 import { RunModeContext, ThemeContext, UserContext } from './Context';
 import { useSearchParams } from 'react-router-dom';
 import { Post } from '../types';
@@ -170,7 +170,7 @@ const HomePage: React.FC<HomePageProps> = ({
     );
   };
 
-  tabCategories.unshift('All')
+  tabCategories.unshift('All');
   const tabComponents = tabCategories.map((category, index) => {
     return (
       <Tab
@@ -178,22 +178,24 @@ const HomePage: React.FC<HomePageProps> = ({
         title={category}
         key={`${category}-${index}`}
       >
-        {posts ? posts.map((post: Post, index) => {
-          return (
-            <PostCard
-              key={`${post.content.id} + ${index}`}
-              post={post}
-              userId={userId}
-              eventKey={category}
-              setShareModalBundle={setShareModalBundle}
-              childFunctions={{
-                getPosts,
-              }}
-              setConfirmActionBundle={setConfirmActionBundle}
-              setCreateContentModalBundle={setCreateContentModalBundle}
-            />
-          );
-        }) : ''}
+        {posts
+          ? posts.map((post: Post, index) => {
+              return (
+                <PostCard
+                  key={`${post.content.id} + ${index}`}
+                  post={post}
+                  userId={userId}
+                  eventKey={category}
+                  setShareModalBundle={setShareModalBundle}
+                  childFunctions={{
+                    getPosts,
+                  }}
+                  setConfirmActionBundle={setConfirmActionBundle}
+                  setCreateContentModalBundle={setCreateContentModalBundle}
+                />
+              );
+            })
+          : ''}
       </Tab>
     );
   });

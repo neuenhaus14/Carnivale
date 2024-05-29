@@ -12,6 +12,14 @@ interface CreateContentOptionsProps {
   friendsToShareWith: number[];
 }
 
+
+/*
+TODO: 1) if we get a postToEdit, set state so the tags from the postToEdit show up as both checked boxes for tab categories and list of tags for non-tab categories.
+
+2) if a user inputs a tab category in the text input, then check the box of corresponding tab category. Right now inputting a tag that is a tab category will just not get added.
+
+3) In edit mode, figure out how to check the boxes of friends who have had the content shared with them. This may require another request to figure out which friends have had a piece of content shared with them, so this might not be an efficient feature; right now the 'Share with Friends' list only shows up when not in edit mode--since a fresh piece of content will not be shared with any friends before it's made.
+*/
 const CreateContentOptions: React.FC<CreateContentOptionsProps> = ({
   isEditMode,
   postToEdit,
@@ -28,7 +36,6 @@ const CreateContentOptions: React.FC<CreateContentOptionsProps> = ({
   const [tag, setTag] = useState<string>('');
 
   const handleCheckedTag = (e: any) => {
-    // console.log('e.target', e.target, e.target.value, e.target.name);
     const { value } = e.target;
     if (!tags.includes(value)) {
       setTags([...tags, value]);
@@ -37,7 +44,7 @@ const CreateContentOptions: React.FC<CreateContentOptionsProps> = ({
     }
   };
 
-  // add tag from input into tags. TODO: update so inputting a tabCategory will check the checkbox for that specific category; right now it just doesn't get added
+  // add tag from input into tags. This is number 2 from above todos
   const addInputTag = () => {
     // check to see if input tag is already in tags or if its one from the tabCategories (had to adjust for capitalizations)
     if (

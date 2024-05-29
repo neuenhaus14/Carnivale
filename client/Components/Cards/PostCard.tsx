@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { FaShareSquare } from '@react-icons/all-files/fa/FaShareSquare';
 import { MdDelete } from '@react-icons/all-files/md/MdDelete';
-import { MdEdit } from '@react-icons/all-files/md/MdEdit'
+import { MdEdit } from '@react-icons/all-files/md/MdEdit';
 import { BiHide } from '@react-icons/all-files/bi/BiHide';
 import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
 import { IoArrowUpCircle } from '@react-icons/all-files/io5/IoArrowUpCircle';
@@ -18,8 +18,8 @@ import { IoMdCalendar } from '@react-icons/all-files/io/IoMdCalendar';
 import { IoMdPhotos } from '@react-icons/all-files/io/IoMdPhotos';
 import { IoMdText } from '@react-icons/all-files/io/IoMdText';
 
-import { RunModeContext } from './Context';
-import { Post } from '../types';
+import { RunModeContext } from '../Context';
+import { Post } from '../../types';
 
 dayjs.extend(relativeTime);
 
@@ -72,7 +72,6 @@ interface PostCardProps {
   */
   setConfirmActionBundle?: any;
 
-
   // used to edit a post that belongs to user, set parentPost for contentThreading and open CreateContentModal
   setCreateContentModalBundle: any;
 
@@ -89,7 +88,7 @@ const PostCard: React.FC<PostCardProps> = ({
   setConfirmActionBundle,
   setShareModalBundle,
   childFunctions,
-  setCreateContentModalBundle
+  setCreateContentModalBundle,
 }) => {
   /*
   THE UPVOTE/DOWNVOTE FUNCTIONALITY WORKS BUT THE COLORING OF THE VOTE BUTTONS DOES NOT WORK AFTER RELOAD. ORIGINALLY WE'D getPosts AFTER VOTING, BUT THIS WOULD MOVE THE POST AROUND AFTER VOTING PROVIDED THE NEW ORDER WHEN SORTING BY VOTES, SO THE POST WOULD DISAPPEAR FROM VIEW (WHICH I DON'T THINK WE WANT). THE getPosts FUNCTIONALITY IS COMMENTED OUT IN THE handleVotes FUNCTIONS
@@ -408,33 +407,38 @@ const PostCard: React.FC<PostCardProps> = ({
 
               {isOwner && (
                 <>
-                {/* DELETE POST */}
-                <Button
-                  className='post-card-delete-button mx-1'
-                  variant='danger'
-                  onClick={async () => {
-                    await setConfirmActionBundle.setConfirmActionFunction(
-                      () => async () => {
-                        await handleDeletePost();
-                      }
-                    );
-                    await setConfirmActionBundle.setConfirmActionText(
-                      'delete your post'
-                    );
-                    await setConfirmActionBundle.setShowConfirmActionModal(
-                      true
-                    );
-                  }}
-                >
-                  <MdDelete />
-                </Button >
-                {/* EDIT POST */}
-                <Button className='post-card-edit-button mx-1' onClick={()=> {
-                  setCreateContentModalBundle.setPostToEdit(post);
-                  setCreateContentModalBundle.setShowCreateContentModal(true);
-                }}>
-                  <MdEdit />
-                </Button>
+                  {/* DELETE POST */}
+                  <Button
+                    className='post-card-delete-button mx-1'
+                    variant='danger'
+                    onClick={async () => {
+                      await setConfirmActionBundle.setConfirmActionFunction(
+                        () => async () => {
+                          await handleDeletePost();
+                        }
+                      );
+                      await setConfirmActionBundle.setConfirmActionText(
+                        'delete your post'
+                      );
+                      await setConfirmActionBundle.setShowConfirmActionModal(
+                        true
+                      );
+                    }}
+                  >
+                    <MdDelete />
+                  </Button>
+                  {/* EDIT POST */}
+                  <Button
+                    className='post-card-edit-button mx-1'
+                    onClick={() => {
+                      setCreateContentModalBundle.setPostToEdit(post);
+                      setCreateContentModalBundle.setShowCreateContentModal(
+                        true
+                      );
+                    }}
+                  >
+                    <MdEdit />
+                  </Button>
                 </>
               )}
               <Button

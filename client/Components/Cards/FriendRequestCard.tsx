@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import { UserContext } from './Context';
+import { UserContext } from '../Context';
 import { Button, Card } from 'react-bootstrap';
-import { FriendRequest } from '../types';
+import { FriendRequest } from '../../types';
 import { FaThumbsUp } from '@react-icons/all-files/fa/FaThumbsUp';
 import { FaUserAltSlash } from '@react-icons/all-files/Fa/FaUserAltSlash';
 import { FaThumbsDown } from '@react-icons/all-files/fa/FaThumbsDown';

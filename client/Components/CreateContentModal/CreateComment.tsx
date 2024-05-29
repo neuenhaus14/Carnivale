@@ -2,7 +2,7 @@ import { FaCommentDots } from '@react-icons/all-files/fa/FaCommentDots';
 import React, { useState, useContext, useEffect } from 'react';
 import { Button, Form, Accordion } from 'react-bootstrap';
 import { ThemeContext, RunModeContext, UserContext } from '../Context';
-import axios from 'axios';
+
 import { Comment, Post } from '../../types';
 import CreateContentOptions from './CreateContentOptions';
 
@@ -56,46 +56,6 @@ const CreateComment: React.FC<CreateCommentProps> = ({
     }
   }, []);
 
-  // const handleCheckedTag = (e: any) => {
-  //   // console.log('e.target', e.target, e.target.value, e.target.name);
-  //   const { value } = e.target;
-  //   if (!tags.includes(value)) {
-  //     setTags([...tags, value]);
-  //   } else if (tags.includes(value)) {
-  //     setTags(tags.filter((tag) => tag !== value));
-  //   }
-  // };
-
-  // const handleCommentInput = (e: any) => {
-  //   if (e.target.name === 'description') {
-  //     setComment(e.target.value);
-  //   }
-  // };
-
-  // add tag from input into tags. TODO: update so inputting a tabCategory will check the checkbox for that specific category; right now it just doesn't get added
-  // const addInputTag = () => {
-  //   // check to see if input tag is already in tags or if its one from the tabCategories (had to adjust for capitalizations)
-  //   if (
-  //     !tags.includes(tag.toLowerCase()) &&
-  //     !tabCategories
-  //       .map((category) => {
-  //         return category.toLowerCase();
-  //       })
-  //       .includes(tag.toLowerCase())
-  //   ) {
-  //     setTags([...tags, tag.toLowerCase()]);
-  //     setTag('');
-  //   } else {
-  //     setTag(''); // might be nice to have a toast warning
-  //   }
-  // };
-
-  // remove tag from list of added tags
-  // const removeTag = (e: any) => {
-  //   const { name } = e.target;
-  //   setTags(tags.filter((tag) => tag !== name));
-  // };
-
   const handleSubmit = async () => {
     try {
       submitContent('comment', {
@@ -110,7 +70,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
         tags: tags,
         friendsToShareWith,
       });
-      //toggleShowCreateContentModal();
+
     } catch (e) {
       console.error('CLIENT ERROR: failed to create comment', e);
     }
@@ -129,18 +89,6 @@ const CreateComment: React.FC<CreateCommentProps> = ({
       e.preventDefault();
     }
   };
-
-  // const toggleFriendToShareWith = (e: any) => {
-  //   const { value } = e.target;
-
-  //   if (!friendsToShareWith.includes(value)) {
-  //     setFriendsToShareWith([...friendsToShareWith, value]);
-  //   } else if (friendsToShareWith.includes(value)) {
-  //     setFriendsToShareWith(
-  //       friendsToShareWith.filter((friendId) => friendId !== value)
-  //     );
-  //   }
-  // };
 
   console.log('comment', comment);
   return (

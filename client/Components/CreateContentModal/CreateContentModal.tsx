@@ -13,7 +13,8 @@ import { Button, Modal, Tab, Tabs } from 'react-bootstrap';
 import CreateComment from './CreateComment';
 import CreatePhoto from './CreatePhoto';
 import CreatePlan from './CreatePlan';
-import FriendManager from '../FriendManager';
+import CreatePin from './CreatePin';
+import FriendManager from './FriendManager';
 
 // Need to be able to create any content and instantly share it with your friends
 import { ThemeContext } from '../Context';
@@ -27,7 +28,7 @@ interface CreateContentModalProps {
   lat: number;
   lng: number;
   setConfirmActionBundle: any; // getting sent along to FriendManager
-  setCreateContentModalBundle: any;
+  setCreateContentModalBundle: any; // comes from App level
 }
 
 const CreateContentModal: React.FC<CreateContentModalProps> = ({
@@ -145,7 +146,6 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
               parentPost={parentPost}
               lat={lat}
               lng={lng}
-              // toggleShowCreateContentModal={toggleShowCreateContentModal}
               submitContent={submitContent}
             />
           </Tab>
@@ -155,18 +155,19 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
               parentPost={parentPost}
               lat={lat}
               lng={lng}
-              // toggleShowCreateContentModal={toggleShowCreateContentModal}
               submitContent={submitContent}
             />
           </Tab>
-          <Tab eventKey='pin' title={<IoMdPin size='24px' />}></Tab>
+          <Tab eventKey='pin' title={<IoMdPin size='24px' />}>
+            <CreatePin />
+          </Tab>
           <Tab eventKey='plan' title={<IoMdCalendar size='24px' />}>
             <CreatePlan
               postToEdit={postToEdit}
               parentPost={parentPost}
               lat={lat}
               lng={lng}
-              toggleShowCreateContentModal={toggleShowCreateContentModal}
+              submitContent={submitContent}
             />
           </Tab>
           <Tab eventKey='friend' title={<IoMdContacts size='24px' />}>

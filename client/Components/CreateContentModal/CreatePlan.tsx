@@ -8,7 +8,7 @@ interface CreatePlanProps {
   parentPost: null | Post;
   lat: number;
   lng: number;
-  toggleShowCreateContentModal: any;
+  submitContent: any;
 }
 
 const CreatePlan: React.FC<CreatePlanProps> = ({}) => {
@@ -27,6 +27,7 @@ const CreatePlan: React.FC<CreatePlanProps> = ({}) => {
 
   return (
     <div>
+      CreatePlan goes here
       <Form></Form>
     </div>
   );

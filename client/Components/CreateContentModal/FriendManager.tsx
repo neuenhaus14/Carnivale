@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Accordion } from 'react-bootstrap';
-import { UserContext, RunModeContext } from './Context';
-import { User, FriendRequest } from '../types';
-import FriendCard from './FriendCard';
-import FriendRequestCard from './FriendRequestCard';
-import CreateFriend from './CreateContentModal/CreateFriend';
+import { UserContext, RunModeContext } from '../Context';
+import { User, FriendRequest } from '../../types';
+import FriendCard from '../Cards/FriendCard';
+import FriendRequestCard from '../Cards/FriendRequestCard';
+import CreateFriend from './CreateFriend';
 import axios from 'axios';
 
 interface FriendManagerProps {
