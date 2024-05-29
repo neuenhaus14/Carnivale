@@ -117,18 +117,18 @@ interface Pin {
 
 interface Plan {
   id: number | null; // will not have id when creating
-  title: string;
+  title?: string;
   description: string;
-  address: string;
-  startTime: string | Date;
-  endTime: string | Date;
-  inviteCount: number;
-  attendingCount: number;
-  link: string;
-  latitude: number | string;
-  longitude: number | string;
-  createdAt: string;
-  updatedAt: string;
+  address?: string;
+  startTime?: string | Date;
+  endTime?: string | Date;
+  inviteCount?: number;
+  attendingCount?: number;
+  link?: string;
+  latitude?: number | string;
+  longitude?: number | string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface Comment {

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Accordion, Button, Form } from 'react-bootstrap';
 import { RunModeContext, UserContext } from '../Context';
 
@@ -10,7 +10,6 @@ interface CreatePhotoProps {
   parentPost: null | Post;
   lat: number;
   lng: number;
-  // toggleShowCreateContentModal: any;
   submitContent: any;
 }
 
@@ -19,7 +18,6 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
   parentPost,
   lat,
   lng,
-  // toggleShowCreateContentModal,
   submitContent,
 }) => {
   // PHOTO-SPECIFIC STATE
@@ -37,39 +35,43 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
 
   // CONTENT STATE
   const [isPhotoPrivate, setIsPhotoPrivate] = useState<boolean>(false);
-  const [tag, setTag] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
-  const [friendsToShareWith, setFriendsToShareWith] = useState<number[]>([]);
+  const [friendsToShareWith, setFriendsToShareWith] = useState<number[]>([]); // just ids here
 
-  // CONTEXT & ENV
-  const isDemoMode = useContext(RunModeContext) === 'demo';
+  // CONTEXTS & INCOMING POST
   const { user, votes, friends } = useContext(UserContext);
-  const tabCategories = process.env.TAB_CATEGORIES.split(' ');
-
+  const isDemoMode = useContext(RunModeContext) === 'demo';
   const isEditMode =
-    postToEdit && postToEdit.content.contentableType === 'comment'
+    postToEdit && postToEdit.content.contentableType === 'photo'
       ? true
       : false;
+  useEffect(() => {
+    if (isEditMode) {
+      setPhoto(postToEdit.contentable);
+      setIsPhotoPrivate(
+        postToEdit.content.placement === 'private' ? true : false
+      );
+    }
+  }, []);
 
-  // prevents hitting enter to send empty comments
+  // COMPONENT FUNCTIONALITY
+  // prevents hitting enter and sending empty photo description
   const handleKeyDown = (e: any) => {
     //if key is enter, prevent default
     if (e.key === 'Enter' && photo.description.length > 0) {
       //if comment is valid, submit comment
       e.preventDefault();
-      handleSubmit(e);
+      handlePhotoSubmit(e);
     } else if (e.key === 'Enter') {
       e.preventDefault();
     }
   };
 
-  //
-  const handleSubmit = async (e: any) => {
+  const handlePhotoSubmit = async (e: any) => {
     setLoading(true);
     e.preventDefault();
 
     const contentDetails = {
-      // TODO: add isEditMode? for routing in server
       content: {
         latitude: lat,
         longitude: lng,
@@ -78,7 +80,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
         placement: isPhotoPrivate ? 'private' : 'public',
       },
       description: photo.description,
-      tags: tags,
+      tags,
       friendsToShareWith,
     };
 
@@ -92,8 +94,12 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
       console.error('CLIENT ERROR: failed to create comment', e);
     } finally {
       setLoading(false);
-      // toggleShowCreateContentModal();
     }
+  };
+
+  // TODO: create route on server to update photo record
+  const handlePhotoUpdate = async () => {
+    console.log('handlePhotoUpdate executed');
   };
 
   const handleSelectFile = (e: any) => {
@@ -136,7 +142,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
               multiple={false}
             />
 
-            {/* Description INPUT */}
+            {/* DESCRIPTION INPUT */}
             <Form.Control
               className='mt-2'
               placeholder='Add a description to your photo'
@@ -162,15 +168,27 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
                 <p className='mb-0'>Friends only</p>
               </div>
               {/* CREATE COMMENT BUTTON */}
-              <Button
-                variant='primary'
-                onClick={handleSubmit}
-                disabled={isDemoMode || photo.description.length <= 0}
-                className='mx-4'
-              >
-                {loading ? 'Saving...' : 'Post It'}
-              </Button>
+              {isEditMode ? (
+                <Button
+                  variant='primary'
+                  onClick={handlePhotoUpdate}
+                  disabled={isDemoMode || photo.description.length <= 0}
+                  className='mx-4'
+                >
+                  Update
+                </Button>
+              ) : (
+                <Button
+                  variant='primary'
+                  onClick={handlePhotoSubmit}
+                  disabled={isDemoMode || photo.description.length <= 0}
+                  className='mx-4'
+                >
+                  {loading ? 'Saving...' : 'Post It'}
+                </Button>
+              )}
             </div>
+
             <CreateContentOptions
               postToEdit={postToEdit}
               isEditMode={isEditMode}
@@ -179,88 +197,6 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
               friendsToShareWith={friendsToShareWith}
               tags={tags}
             />
-
-            {/* <Accordion>
-              <Accordion.Item eventKey='0'>
-                <Accordion.Header>Tag and Share Options</Accordion.Header>
-                <Accordion.Body>
-                  <h5>Add Tags</h5>
-                  {/* TAGS FROM CATEGORY TABS
-                  <div className='d-flex flex-wrap justify-content-around'>
-                    {tabCategories.map((category, index) => {
-                      return (
-                        <Form.Check
-                          type='checkbox'
-                          title={`${category}`}
-                          label={`${category}`}
-                          value={`${category.toLowerCase()}`}
-                          key={`${index}-${category}`}
-                          onChange={handleCheckedTag}
-                        />
-                      );
-                    })}
-                  </div>
-
-                  {/* TAG INPUT
-
-                  <div className='d-flex flex-row'>
-                    <Form.Control
-                      className='m-2'
-                      placeholder='Custom tag goes here'
-                      onChange={handleInput}
-                      value={tag}
-                      name='tag'
-                    />
-                    <Button
-                      className='w-25 my-auto'
-                      onClick={addInputTag}
-                      disabled={tag.length === 0}
-                    >
-                      Add
-                    </Button>
-                  </div>
-
-                  {/* LIST OF TAGS ADDED THRU INPUT
-                  {tags
-                    .filter((tag) => !tabCategories.includes(tag))
-                    .map((tag, index) => {
-                      return (
-                        <div
-                          className='d-flex flex-row align-items-center'
-                          key={`${tag}-${index}`}
-                        >
-                          <p className='mb-0'>{tag}</p>
-                          <Button
-                            className='btn-sm'
-                            variant='danger'
-                            name={`${tag}`}
-                            onClick={removeTag}
-                          >
-                            X
-                          </Button>
-                        </div>
-                      );
-                    })}
-
-                  {/* SHARE WITH FRIENDS LIST
-                  <h5>Share with your Friends</h5>
-                  <div className='d-flex flex-wrap gap-2'>
-                    {friends.map((friend, index) => {
-                      return (
-                        <Form.Check
-                          type='checkbox'
-                          title={`${friend.firstName} ${friend.lastName}`}
-                          label={`${friend.firstName} ${friend.lastName}`}
-                          value={`${friend.id}`}
-                          key={`${index}-${friend.firstName}`}
-                          onClick={toggleFriendToShareWith}
-                        />
-                      );
-                    })}
-                  </div>
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion> */}
           </div>
         </Form.Group>
       </Form>

@@ -20,7 +20,7 @@ const CommentRouter = Router();
 
 // creates comment, adds tags, shares with friends as stipulated
 CommentRouter.post('/createComment', async (req: Request, res: Response) => {
-  console.log('req.body', req.body)
+
   const { content, description, tags, friendsToShareWith } = req.body;
   try {
     const createCommentResponse = await Comment.create(
@@ -42,25 +42,8 @@ CommentRouter.post('/createComment', async (req: Request, res: Response) => {
     // Create tags
     await createTags(contentId, tags)
 
-    /** await Promise.all(tags.map(async (tag) => {
-      await axios.post(`${REDIRECT_URL}/api/tags/addTag` , {
-        contentId: createCommentResponse.dataValues.content.id,
-        tag
-      })
-    }))
-    */
-
     // Create shared_content records; content.userId is creator of content
     await shareContent(friendsToShareWith, contentId, content.userId)
-
-    /** await Promise.all(friendsToShareWith.map(async (friendId)=> {
-      await axios.post(`${REDIRECT_URL}/api/sharedContent/addSharedContent`, {
-        contentId: createCommentResponse.dataValues.content.id,
-        senderId: content.userId,
-        recipientId: friendId,
-      })
-    }))
-    */
 
     res.status(200).send(createCommentResponse);
   } catch (e) {

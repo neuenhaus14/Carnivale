@@ -98,6 +98,7 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
 
       switch (contentType) {
         case 'plan':
+          createContentResponse = await axios.post('/api/plan/createPlan', payload)
           break;
         case 'pin':
           break;

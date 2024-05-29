@@ -32,7 +32,12 @@ import ContentRoutes from './routes/Content';
 import CommentRoutes from './routes/Comment';
 import PhotoRoutes from './routes/Photo';
 import TagRoutes from './routes/Tags';
+import PlanRoutes from './routes/Plan';
 import SharedContentRoutes from './routes/SharedContent';
+
+
+
+
 import { User } from './db/index';
 
 // import { Sequelize } from "sequelize";
@@ -72,7 +77,8 @@ app.use('/api/content', ContentRoutes);
 app.use('/api/comment', CommentRoutes);
 app.use('/api/photo', PhotoRoutes);
 app.use('/api/tags', TagRoutes);
-app.use('/api/sharedContent', SharedContentRoutes)
+app.use('/api/sharedContent', SharedContentRoutes);
+app.use('/api/plan', PlanRoutes);
 
 app.use(
   cors({

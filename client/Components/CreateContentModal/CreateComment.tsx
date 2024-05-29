@@ -11,7 +11,6 @@ interface CreateCommentProps {
   postToEdit: null | Post;
   lat: number;
   lng: number;
-  //toggleShowCreateContentModal: any;
   submitContent: any;
 }
 
@@ -19,34 +18,30 @@ const CreateComment: React.FC<CreateCommentProps> = ({
   parentPost,
   lat,
   lng,
-  //toggleShowCreateContentModal,
   postToEdit,
   submitContent,
 }) => {
+  // COMMENT-SPECIFIC STATE
   const [comment, setComment] = useState<Comment>({
     id: null,
     description: '',
     createdAt: '',
     updatedAt: '',
   });
-  // const [tag, setTag] = useState<string>('');
-  const [tags, setTags] = useState<string[]>([]);
 
-  // just ids here
-  const [friendsToShareWith, setFriendsToShareWith] = useState<number[]>([]);
-
+  // CONTENT STATE
   const [isCommentPrivate, setIsCommentPrivate] = useState<boolean>(false);
+  const [tags, setTags] = useState<string[]>([]);
+  const [friendsToShareWith, setFriendsToShareWith] = useState<number[]>([]); // just ids here
 
-  // if we're getting a postToEdit sent in and it's a comment, then we're in edit mode
+
+  // CONTEXTS & INCOMING POST
   const isEditMode =
     postToEdit && postToEdit.content.contentableType === 'comment'
       ? true
       : false;
   const isDemoMode = useContext(RunModeContext) === 'demo';
-
   const { user, votes, friends } = useContext(UserContext);
-  // const tabCategories = process.env.TAB_CATEGORIES.split(' ');
-
   useEffect(() => {
     if (isEditMode) {
       setComment(postToEdit.contentable);
@@ -56,7 +51,20 @@ const CreateComment: React.FC<CreateCommentProps> = ({
     }
   }, []);
 
-  const handleSubmit = async () => {
+  // COMPONENT FUNCTIONALITY
+  // prevents hitting enter to send empty comment description
+  const handleKeyDown = (e: any) => {
+    //if key is enter, prevent default
+    if (e.key === 'Enter' && comment.description.length > 0) {
+      //if comment is valid, submit comment
+      e.preventDefault();
+      handleCommentSubmit();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
+
+  const handleCommentSubmit = async () => {
     try {
       submitContent('comment', {
         content: {
@@ -67,7 +75,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
           placement: isCommentPrivate ? 'private' : 'public',
         },
         description: comment.description,
-        tags: tags,
+        tags,
         friendsToShareWith,
       });
 
@@ -76,18 +84,9 @@ const CreateComment: React.FC<CreateCommentProps> = ({
     }
   };
 
-  const handleEdit = async () => {};
-
-  // prevents hitting enter to send empty comments
-  const handleKeyDown = (e: any) => {
-    //if key is enter, prevent default
-    if (e.key === 'Enter' && comment.description.length > 0) {
-      //if comment is valid, submit comment
-      e.preventDefault();
-      handleSubmit();
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-    }
+  // TODO: create route on server to update comment record
+  const handleCommentUpdate = async () => {
+    console.log('handleCommentUpdate executed')
   };
 
   console.log('comment', comment);
@@ -125,7 +124,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
               {isEditMode ? (
                 <Button
                   variant='primary'
-                  onClick={handleEdit}
+                  onClick={handleCommentUpdate}
                   disabled={isDemoMode || comment.description.length <= 0}
                   className='mx-4'
                 >
@@ -134,7 +133,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
               ) : (
                 <Button
                   variant='primary'
-                  onClick={handleSubmit}
+                  onClick={handleCommentSubmit}
                   disabled={isDemoMode || comment.description.length <= 0}
                   className='mx-4'
                 >
@@ -143,7 +142,6 @@ const CreateComment: React.FC<CreateCommentProps> = ({
               )}
             </div>
 
-            {/* START OF CCO */}
             <CreateContentOptions
               postToEdit={postToEdit}
               isEditMode={isEditMode}
@@ -152,94 +150,6 @@ const CreateComment: React.FC<CreateCommentProps> = ({
               friendsToShareWith={friendsToShareWith}
               tags={tags}
             />
-
-            {/* <Accordion>
-              <Accordion.Item eventKey='0'>
-                <Accordion.Header>
-                  {isEditMode ? 'Tag Options' : 'Tag and Share Options'}
-                </Accordion.Header>
-                <Accordion.Body>
-                  <h5>Add Tags</h5>
-                  {/* TAGS FROM CATEGORY TABS
-                  <div className='d-flex flex-wrap justify-content-around'>
-                    {tabCategories.map((category, index) => {
-                      return (
-                        <Form.Check
-                          type='checkbox'
-                          title={`${category}`}
-                          label={`${category}`}
-                          value={`${category.toLowerCase()}`}
-                          key={`${index}-${category}`}
-                          onChange={handleCheckedTag}
-                        />
-                      );
-                    })}
-                  </div>
-
-                  {/* TAG INPUT
-
-                  <div className='d-flex flex-row'>
-                    <Form.Control
-                      className='m-2'
-                      placeholder='Custom tag goes here'
-                      onChange={handleCommentInput}
-                      value={tag}
-                      name='tag'
-                    />
-                    <Button
-                      className='w-25 my-auto'
-                      onClick={addInputTag}
-                      disabled={tag.length === 0}
-                    >
-                      Add
-                    </Button>
-                  </div>
-
-                  {/* LIST OF TAGS ADDED THRU INPUT
-                  {tags
-                    .filter((tag) => !tabCategories.includes(tag))
-                    .map((tag, index) => {
-                      return (
-                        <div
-                          className='d-flex flex-row align-items-center'
-                          key={`${tag}-${index}`}
-                        >
-                          <p className='mb-0'>{tag}</p>
-                          <Button
-                            className='btn-sm'
-                            variant='danger'
-                            name={`${tag}`}
-                            onClick={removeTag}
-                          >
-                            X
-                          </Button>
-                        </div>
-                      );
-                    })}
-
-                  {/* SHARE WITH FRIENDS LIST
-                  { !isEditMode &&
-                    <>
-                      <h5>Share with your Friends</h5>
-                      <div className='d-flex flex-wrap gap-2'>
-                        {friends.map((friend, index) => {
-                          return (
-                            <Form.Check
-                              type='checkbox'
-                              title={`${friend.firstName} ${friend.lastName}`}
-                              label={`${friend.firstName} ${friend.lastName}`}
-                              value={`${friend.id}`}
-                              key={`${index}-${friend.firstName}`}
-                              onClick={toggleFriendToShareWith}
-                            />
-                          );
-                        })}
-                      </div>
-                    </>
-                  }
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion> */}
           </div>
         </Form.Group>
       </Form>

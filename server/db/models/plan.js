@@ -1,7 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
   // console.log('PLAN!');
   const Plan = sequelize.define('plan', {
-    name: Sequelize.STRING,
+    title: Sequelize.STRING,
     description: Sequelize.STRING,
     address: Sequelize.STRING,
     startTime: Sequelize.STRING,

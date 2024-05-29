@@ -179,7 +179,6 @@ ContentRouter.get(
     const commentKeys = ['id', 'description', 'createdAt', 'updatedAt'];
     const planKeys = [
       'id',
-      'name',
       'title',
       'description',
       'address',

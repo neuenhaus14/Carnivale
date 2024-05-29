@@ -194,7 +194,7 @@ module.exports = {
           userId: 2,
           parentId: null,
         },
-        name: 'Opening Party',
+        title: 'Opening Party',
         description: 'Fire Breathing Dragons',
         address: '54 S. South Long Lake Rd, Traverse City, MI, 49685',
         latitude: 29.563864,
