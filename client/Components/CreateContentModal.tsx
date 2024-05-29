@@ -8,7 +8,7 @@ import { IoMdPhotos } from '@react-icons/all-files/io/IoMdPhotos';
 import { IoMdText } from '@react-icons/all-files/io/IoMdText';
 import { IoMdContacts } from '@react-icons/all-files/io/IoMdContacts';
 
-import { Modal, Tab, Tabs } from 'react-bootstrap';
+import { Button, Modal, Tab, Tabs } from 'react-bootstrap';
 
 import CreateComment from './CreateComment';
 import CreatePhoto from './CreatePhoto';
@@ -18,6 +18,7 @@ import FriendManager from './FriendManager';
 // Need to be able to create any content and instantly share it with your friends
 import { ThemeContext } from './Context';
 import { Post } from '../types';
+import axios from 'axios';
 
 interface CreateContentModalProps {
   parentPost: null | Post; // needed to nest content in threads
@@ -64,11 +65,15 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
     }
   };
 
-  const [key, setKey] = useState('comment');
+  const isEditMode = postToEdit ? true : false;
+
+  const [key, setKey] = useState<
+    'comment' | 'pin' | 'plan' | 'friend' | 'photo'
+  >('comment');
 
   useEffect(() => {
     if (postToEdit) {
-      console.log('there is a post to edit')
+      console.log('there is a post to edit');
       setKey(postToEdit.content.contentableType);
       changeHeaderText(postToEdit.content.contentableType);
     }
@@ -83,7 +88,41 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
     setCreateContentModalBundle.setPostToEdit(null);
   };
 
-  console.log('key', key)
+  const submitContent = async (
+    contentType: 'plan' | 'pin' | 'comment' | 'photo',
+    payload,
+  ) => {
+    try {
+      let createContentResponse;
+
+      switch (contentType) {
+        case 'plan':
+          break;
+        case 'pin':
+          break;
+        case 'comment':
+          createContentResponse = await axios.post(
+            '/api/comment/createComment',
+            payload
+          );
+          break;
+        case 'photo':
+          createContentResponse = await axios.post(
+            '/api/photo/createPhoto',
+            payload
+          );
+          break;
+        default:
+          break;
+      }
+    } catch (e) {
+      console.error('CLIENT ERROR: failed to submit content', e);
+    } finally {
+      toggleShowCreateContentModal();
+    }
+  };
+
+  console.log('key', key, 'CCModal isEditMode', isEditMode);
   return (
     <Modal
       show={setCreateContentModalBundle.showCreateContentModal}
@@ -95,7 +134,7 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
       <Modal.Body>
         <Tabs
           activeKey={key}
-          onSelect={(k) => {
+          onSelect={(k: 'comment' | 'pin' | 'plan' | 'friend' | 'photo') => {
             changeHeaderText(k);
             setKey(k);
           }}
@@ -106,7 +145,8 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
               parentPost={parentPost}
               lat={lat}
               lng={lng}
-              toggleShowCreateContentModal={toggleShowCreateContentModal}
+              // toggleShowCreateContentModal={toggleShowCreateContentModal}
+              submitContent={submitContent}
             />
           </Tab>
           <Tab eventKey='photo' title={<IoMdPhotos size='24px' />}>
@@ -115,7 +155,8 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
               parentPost={parentPost}
               lat={lat}
               lng={lng}
-              toggleShowCreateContentModal={toggleShowCreateContentModal}
+              // toggleShowCreateContentModal={toggleShowCreateContentModal}
+              submitContent={submitContent}
             />
           </Tab>
           <Tab eventKey='pin' title={<IoMdPin size='24px' />}></Tab>

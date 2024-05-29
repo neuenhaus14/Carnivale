@@ -2,14 +2,16 @@ import React, { useContext, useState } from 'react';
 import { Accordion, Button, Form } from 'react-bootstrap';
 import { RunModeContext, UserContext } from './Context';
 import axios from 'axios';
-import { Post } from '../types';
+import { Photo, Post } from '../types';
+import CreateContentOptions from './CreateContentOptions';
 
 interface CreatePhotoProps {
   postToEdit: null | Post;
   parentPost: null | Post;
   lat: number;
   lng: number;
-  toggleShowCreateContentModal: any;
+  // toggleShowCreateContentModal: any;
+  submitContent: any;
 }
 
 const CreatePhoto: React.FC<CreatePhotoProps> = ({
@@ -17,13 +19,21 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
   parentPost,
   lat,
   lng,
-  toggleShowCreateContentModal,
+  // toggleShowCreateContentModal,
+  submitContent
 }) => {
   // PHOTO-SPECIFIC STATE
   const [previewSource, setPreviewSource] = useState();
   const [loading, setLoading] = useState<boolean>(false);
   const [file, setFile] = useState(null);
-  const [description, setDescription] = useState('');
+
+  const [photo, setPhoto] = useState<Photo>({
+    id: null,
+    photoURL: '',
+    description: '',
+    createdAt: '',
+    updatedAt: '',
+  });
 
   // CONTENT STATE
   const [isPhotoPrivate, setIsPhotoPrivate] = useState<boolean>(false);
@@ -36,61 +46,63 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
   const { user, votes, friends } = useContext(UserContext);
   const tabCategories = process.env.TAB_CATEGORIES.split(' ');
 
-  // FUNCTIONS FOR MANAGING CONTENT STATE
-  const handleCheckedTag = (e: any) => {
-    // console.log('e.target', e.target, e.target.value, e.target.name);
-    const { value } = e.target;
-    if (!tags.includes(value)) {
-      setTags([...tags, value]);
-    } else if (tags.includes(value)) {
-      setTags(tags.filter((tag) => tag !== value));
-    }
-  };
-  const handleInput = (e: any) => {
-    if (e.target.name === 'tag') {
-      setTag(e.target.value);
-    } else if (e.target.name === 'description') {
-      setDescription(e.target.value);
-    }
-  };
-  // add tag from input into tags. TODO: update so inputting a tabCategory will check the checkbox for that specific category; right now it just doesn't get added
-  const addInputTag = () => {
-    // check to see if input tag is already in tags or if its one from the tabCategories (had to adjust for capitalizations)
-    if (
-      !tags.includes(tag.toLowerCase()) &&
-      !tabCategories
-        .map((category) => {
-          return category.toLowerCase();
-        })
-        .includes(tag.toLowerCase())
-    ) {
-      setTags([...tags, tag.toLowerCase()]);
-      setTag('');
-    } else {
-      setTag(''); // might be nice to have a toast warning
-    }
-  };
-  // remove tag from list of added tags
-  const removeTag = (e: any) => {
-    const { name } = e.target;
-    setTags(tags.filter((tag) => tag !== name));
-  };
-  const toggleFriendToShareWith = (e: any) => {
-    const { value } = e.target;
+  const isEditMode =
+    postToEdit && postToEdit.content.contentableType === 'comment'
+      ? true
+      : false;
 
-    if (!friendsToShareWith.includes(value)) {
-      setFriendsToShareWith([...friendsToShareWith, value]);
-    } else if (friendsToShareWith.includes(value)) {
-      setFriendsToShareWith(
-        friendsToShareWith.filter((friendId) => friendId !== value)
-      );
-    }
-  };
+  // FUNCTIONS FOR MANAGING CONTENT STATE
+  // const handleCheckedTag = (e: any) => {
+  //   // console.log('e.target', e.target, e.target.value, e.target.name);
+  //   const { value } = e.target;
+  //   if (!tags.includes(value)) {
+  //     setTags([...tags, value]);
+  //   } else if (tags.includes(value)) {
+  //     setTags(tags.filter((tag) => tag !== value));
+  //   }
+  // };
+
+  // add tag from input into tags. TODO: update so inputting a tabCategory will check the checkbox for that specific category; right now it just doesn't get added
+  // const addInputTag = () => {
+  //   // check to see if input tag is already in tags or if its one from the tabCategories (had to adjust for capitalizations)
+  //   if (
+  //     !tags.includes(tag.toLowerCase()) &&
+  //     !tabCategories
+  //       .map((category) => {
+  //         return category.toLowerCase();
+  //       })
+  //       .includes(tag.toLowerCase())
+  //   ) {
+  //     setTags([...tags, tag.toLowerCase()]);
+  //     setTag('');
+  //   } else {
+  //     setTag(''); // might be nice to have a toast warning
+  //   }
+  // };
+
+  // // remove tag from list of added tags
+  // const removeTag = (e: any) => {
+  //   const { name } = e.target;
+  //   setTags(tags.filter((tag) => tag !== name));
+  // };
+
+
+  // const toggleFriendToShareWith = (e: any) => {
+  //   const { value } = e.target;
+
+  //   if (!friendsToShareWith.includes(value)) {
+  //     setFriendsToShareWith([...friendsToShareWith, value]);
+  //   } else if (friendsToShareWith.includes(value)) {
+  //     setFriendsToShareWith(
+  //       friendsToShareWith.filter((friendId) => friendId !== value)
+  //     );
+  //   }
+  // };
 
   // prevents hitting enter to send empty comments
   const handleKeyDown = (e: any) => {
     //if key is enter, prevent default
-    if (e.key === 'Enter' && description.length > 0) {
+    if (e.key === 'Enter' && photo.description.length > 0) {
       //if comment is valid, submit comment
       e.preventDefault();
       handleSubmit(e);
@@ -105,6 +117,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
     e.preventDefault();
 
     const contentDetails = {
+      // TODO: add isEditMode? for routing in server
       content: {
         latitude: lat,
         longitude: lng,
@@ -112,23 +125,22 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
         parentPost: parentPost,
         placement: isPhotoPrivate ? 'private' : 'public',
       },
-      description,
+      description: photo.description,
       tags: tags,
       friendsToShareWith,
     }
 
-    const photoData = new FormData();
-    photoData.append('imageFile', file);
-    photoData.append('contentDetails', JSON.stringify(contentDetails))
+    const payload = new FormData();
+    payload.append('imageFile', file);
+    payload.append('contentDetails', JSON.stringify(contentDetails))
 
     try {
-      const createPhotoResponse = await axios.post('/api/photo/createPhoto', photoData);
-
+      submitContent('photo', payload);
     } catch (e) {
       console.error('CLIENT ERROR: failed to create comment', e);
     } finally {
       setLoading(false);
-      toggleShowCreateContentModal();
+      // toggleShowCreateContentModal();
     }
   };
 
@@ -148,6 +160,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
     };
   };
 
+  console.log('photo', photo)
   return (
     <div>
       <Form className='w-100'>
@@ -176,8 +189,8 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
             <Form.Control
               className='mt-2'
               placeholder='Add a description to your photo'
-              onChange={handleInput}
-              value={description}
+              onChange={(e) => setPhoto({...photo, description: e.target.value})}
+              value={photo.description}
               onKeyDown={(e) => {
                 handleKeyDown(e);
               }}
@@ -199,18 +212,21 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
               <Button
                 variant='primary'
                 onClick={handleSubmit}
-                disabled={isDemoMode || description.length <= 0}
+                disabled={isDemoMode || photo.description.length <= 0}
                 className='mx-4'
               >
                {loading ? "Saving..." : "Post It"}
               </Button>
             </div>
-            <Accordion>
+            <CreateContentOptions postToEdit={postToEdit} isEditMode={isEditMode} setTags={setTags} setFriendsToShareWith={setFriendsToShareWith}
+            friendsToShareWith={friendsToShareWith} tags={tags}/>
+
+            {/* <Accordion>
               <Accordion.Item eventKey='0'>
                 <Accordion.Header>Tag and Share Options</Accordion.Header>
                 <Accordion.Body>
                   <h5>Add Tags</h5>
-                  {/* TAGS FROM CATEGORY TABS */}
+                  {/* TAGS FROM CATEGORY TABS
                   <div className='d-flex flex-wrap justify-content-around'>
                     {tabCategories.map((category, index) => {
                       return (
@@ -226,7 +242,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
                     })}
                   </div>
 
-                  {/* TAG INPUT */}
+                  {/* TAG INPUT
 
                   <div className='d-flex flex-row'>
                     <Form.Control
@@ -245,7 +261,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
                     </Button>
                   </div>
 
-                  {/* LIST OF TAGS ADDED THRU INPUT */}
+                  {/* LIST OF TAGS ADDED THRU INPUT
                   {tags
                     .filter((tag) => !tabCategories.includes(tag))
                     .map((tag, index) => {
@@ -267,7 +283,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
                       );
                     })}
 
-                  {/* SHARE WITH FRIENDS LIST */}
+                  {/* SHARE WITH FRIENDS LIST
                   <h5>Share with your Friends</h5>
                   <div className='d-flex flex-wrap gap-2'>
                     {friends.map((friend, index) => {
@@ -285,7 +301,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
                   </div>
                 </Accordion.Body>
               </Accordion.Item>
-            </Accordion>
+            </Accordion> */}
           </div>
         </Form.Group>
       </Form>

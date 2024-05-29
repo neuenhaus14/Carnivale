@@ -141,7 +141,7 @@ interface Comment {
 interface Photo {
   id: number | null; // will not have id when creating
   description: string;
-  photoUrl?: string; // may not have one (gets returned from Cloudinary after posting)
+  photoURL?: string; // may not have one (gets returned from Cloudinary after posting)
   createdAt: string;
   updatedAt: string;
 }

@@ -71,7 +71,7 @@ const App = () => {
     setShowCreateContentModal,
     setParentPost,
     setPostToEdit,
-  }
+  };
 
   // WHAT DOES userData DO?
   const [userId, setUserId] = useState(null);

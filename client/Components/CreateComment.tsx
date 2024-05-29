@@ -4,21 +4,24 @@ import { Button, Form, Accordion } from 'react-bootstrap';
 import { ThemeContext, RunModeContext, UserContext } from './Context';
 import axios from 'axios';
 import { Comment, Post } from '../types';
+import CreateContentOptions from './CreateContentOptions';
 
 interface CreateCommentProps {
   parentPost: null | Post;
   postToEdit: null | Post;
   lat: number;
   lng: number;
-  toggleShowCreateContentModal: any;
+  //toggleShowCreateContentModal: any;
+  submitContent: any;
 }
 
 const CreateComment: React.FC<CreateCommentProps> = ({
   parentPost,
   lat,
   lng,
-  toggleShowCreateContentModal,
+  //toggleShowCreateContentModal,
   postToEdit,
+  submitContent
 }) => {
   const [comment, setComment] = useState<Comment>({
     id: null,
@@ -26,7 +29,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
     createdAt: '',
     updatedAt: '',
   });
-  const [tag, setTag] = useState<string>('');
+  // const [tag, setTag] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
 
   // just ids here
@@ -42,7 +45,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
   const isDemoMode = useContext(RunModeContext) === 'demo';
 
   const { user, votes, friends } = useContext(UserContext);
-  const tabCategories = process.env.TAB_CATEGORIES.split(' ');
+  // const tabCategories = process.env.TAB_CATEGORIES.split(' ');
 
   useEffect(() => {
     if (isEditMode) {
@@ -53,52 +56,50 @@ const CreateComment: React.FC<CreateCommentProps> = ({
     }
   }, []);
 
-  const handleCheckedTag = (e: any) => {
-    // console.log('e.target', e.target, e.target.value, e.target.name);
-    const { value } = e.target;
-    if (!tags.includes(value)) {
-      setTags([...tags, value]);
-    } else if (tags.includes(value)) {
-      setTags(tags.filter((tag) => tag !== value));
-    }
-  };
+  // const handleCheckedTag = (e: any) => {
+  //   // console.log('e.target', e.target, e.target.value, e.target.name);
+  //   const { value } = e.target;
+  //   if (!tags.includes(value)) {
+  //     setTags([...tags, value]);
+  //   } else if (tags.includes(value)) {
+  //     setTags(tags.filter((tag) => tag !== value));
+  //   }
+  // };
 
-  const handleInput = (e: any) => {
-    if (e.target.name === 'tag') {
-      setTag(e.target.value);
-    } else if (e.target.name === 'description') {
-      setComment(e.target.value);
-    }
-  };
+  // const handleCommentInput = (e: any) => {
+  //   if (e.target.name === 'description') {
+  //     setComment(e.target.value);
+  //   }
+  // };
 
   // add tag from input into tags. TODO: update so inputting a tabCategory will check the checkbox for that specific category; right now it just doesn't get added
-  const addInputTag = () => {
-    // check to see if input tag is already in tags or if its one from the tabCategories (had to adjust for capitalizations)
-    if (
-      !tags.includes(tag.toLowerCase()) &&
-      !tabCategories
-        .map((category) => {
-          return category.toLowerCase();
-        })
-        .includes(tag.toLowerCase())
-    ) {
-      setTags([...tags, tag.toLowerCase()]);
-      setTag('');
-    } else {
-      setTag(''); // might be nice to have a toast warning
-    }
-  };
+  // const addInputTag = () => {
+  //   // check to see if input tag is already in tags or if its one from the tabCategories (had to adjust for capitalizations)
+  //   if (
+  //     !tags.includes(tag.toLowerCase()) &&
+  //     !tabCategories
+  //       .map((category) => {
+  //         return category.toLowerCase();
+  //       })
+  //       .includes(tag.toLowerCase())
+  //   ) {
+  //     setTags([...tags, tag.toLowerCase()]);
+  //     setTag('');
+  //   } else {
+  //     setTag(''); // might be nice to have a toast warning
+  //   }
+  // };
 
   // remove tag from list of added tags
-  const removeTag = (e: any) => {
-    const { name } = e.target;
-    setTags(tags.filter((tag) => tag !== name));
-  };
+  // const removeTag = (e: any) => {
+  //   const { name } = e.target;
+  //   setTags(tags.filter((tag) => tag !== name));
+  // };
 
   const handleSubmit = async () => {
     try {
-      const createCommentResponse = await axios.post(
-        '/api/comment/createComment',
+     submitContent(
+        'comment',
         {
           content: {
             latitude: lat,
@@ -107,12 +108,12 @@ const CreateComment: React.FC<CreateCommentProps> = ({
             parentPost: parentPost,
             placement: isCommentPrivate ? 'private' : 'public',
           },
-          description: comment,
+          description: comment.description,
           tags: tags,
           friendsToShareWith,
         }
       );
-      toggleShowCreateContentModal();
+      //toggleShowCreateContentModal();
     } catch (e) {
       console.error('CLIENT ERROR: failed to create comment', e);
     }
@@ -132,18 +133,19 @@ const CreateComment: React.FC<CreateCommentProps> = ({
     }
   };
 
-  const toggleFriendToShareWith = (e: any) => {
-    const { value } = e.target;
+  // const toggleFriendToShareWith = (e: any) => {
+  //   const { value } = e.target;
 
-    if (!friendsToShareWith.includes(value)) {
-      setFriendsToShareWith([...friendsToShareWith, value]);
-    } else if (friendsToShareWith.includes(value)) {
-      setFriendsToShareWith(
-        friendsToShareWith.filter((friendId) => friendId !== value)
-      );
-    }
-  };
+  //   if (!friendsToShareWith.includes(value)) {
+  //     setFriendsToShareWith([...friendsToShareWith, value]);
+  //   } else if (friendsToShareWith.includes(value)) {
+  //     setFriendsToShareWith(
+  //       friendsToShareWith.filter((friendId) => friendId !== value)
+  //     );
+  //   }
+  // };
 
+  console.log('comment', comment);
   return (
     <div>
       <Form className='w-100'>
@@ -153,7 +155,9 @@ const CreateComment: React.FC<CreateCommentProps> = ({
             <Form.Control
               className='mt-2'
               placeholder='Ok, Shakespeare, write it here...'
-              onChange={handleInput}
+              onChange={(e) =>
+                setComment({ ...comment, description: e.target.value })
+              }
               value={comment.description}
               onKeyDown={(e) => {
                 handleKeyDown(e);
@@ -193,14 +197,25 @@ const CreateComment: React.FC<CreateCommentProps> = ({
                 </Button>
               )}
             </div>
-            <Accordion>
+
+            {/* START OF CCO */}
+            <CreateContentOptions
+              postToEdit={postToEdit}
+              isEditMode={isEditMode}
+              setTags={setTags}
+              setFriendsToShareWith={setFriendsToShareWith}
+              friendsToShareWith={friendsToShareWith}
+              tags={tags}
+            />
+
+            {/* <Accordion>
               <Accordion.Item eventKey='0'>
                 <Accordion.Header>
                   {isEditMode ? 'Tag Options' : 'Tag and Share Options'}
                 </Accordion.Header>
                 <Accordion.Body>
                   <h5>Add Tags</h5>
-                  {/* TAGS FROM CATEGORY TABS */}
+                  {/* TAGS FROM CATEGORY TABS
                   <div className='d-flex flex-wrap justify-content-around'>
                     {tabCategories.map((category, index) => {
                       return (
@@ -216,13 +231,13 @@ const CreateComment: React.FC<CreateCommentProps> = ({
                     })}
                   </div>
 
-                  {/* TAG INPUT */}
+                  {/* TAG INPUT
 
                   <div className='d-flex flex-row'>
                     <Form.Control
                       className='m-2'
                       placeholder='Custom tag goes here'
-                      onChange={handleInput}
+                      onChange={handleCommentInput}
                       value={tag}
                       name='tag'
                     />
@@ -235,7 +250,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
                     </Button>
                   </div>
 
-                  {/* LIST OF TAGS ADDED THRU INPUT */}
+                  {/* LIST OF TAGS ADDED THRU INPUT
                   {tags
                     .filter((tag) => !tabCategories.includes(tag))
                     .map((tag, index) => {
@@ -257,7 +272,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
                       );
                     })}
 
-                  {/* SHARE WITH FRIENDS LIST */}
+                  {/* SHARE WITH FRIENDS LIST
                   { !isEditMode &&
                     <>
                       <h5>Share with your Friends</h5>
@@ -279,7 +294,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
                   }
                 </Accordion.Body>
               </Accordion.Item>
-            </Accordion>
+            </Accordion> */}
           </div>
         </Form.Group>
       </Form>

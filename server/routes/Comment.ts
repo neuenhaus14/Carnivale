@@ -20,6 +20,7 @@ const CommentRouter = Router();
 
 // creates comment, adds tags, shares with friends as stipulated
 CommentRouter.post('/createComment', async (req: Request, res: Response) => {
+  console.log('req.body', req.body)
   const { content, description, tags, friendsToShareWith } = req.body;
   try {
     const createCommentResponse = await Comment.create(
