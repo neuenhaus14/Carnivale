@@ -11,6 +11,7 @@ interface CreatePhotoProps {
   lat: number;
   lng: number;
   submitContent: any;
+  updateContent: any;
 }
 
 const CreatePhoto: React.FC<CreatePhotoProps> = ({
@@ -19,6 +20,7 @@ const CreatePhoto: React.FC<CreatePhotoProps> = ({
   lat,
   lng,
   submitContent,
+  updateContent,
 }) => {
   // PHOTO-SPECIFIC STATE
   const [previewSource, setPreviewSource] = useState();

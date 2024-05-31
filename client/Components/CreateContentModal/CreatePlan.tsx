@@ -16,6 +16,7 @@ interface CreatePlanProps {
   lat: number;
   lng: number;
   submitContent: any;
+  updateContent: any;
 }
 
 const CreatePlan: React.FC<CreatePlanProps> = ({
@@ -24,6 +25,7 @@ const CreatePlan: React.FC<CreatePlanProps> = ({
   lat,
   lng,
   submitContent,
+  updateContent
 }) => {
   // PLAN-SPECIFIC STATE
   const [plan, setPlan] = useState<Plan>({

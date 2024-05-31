@@ -17,7 +17,7 @@ import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
-import { ThemeContext, RunModeContext } from './Context';
+import { ThemeContext, RunModeContext, UserContext } from './Context';
 
 import { io } from 'socket.io-client';
 const socket = io();
@@ -71,6 +71,7 @@ const MapPage: React.FC<MapProps> = ({
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
+  const userContextInfo = useContext(UserContext)
 
   const [showDirections, setShowDirections] = useState<boolean>(false);
   const [showFriendPopup, setShowFriendPopup] = useState<boolean>(false);
@@ -127,7 +128,7 @@ const MapPage: React.FC<MapProps> = ({
 
   const getExperimentalPins = async () => {
     try {
-      const experimentalPinsResponse: any = await axios.get('/api/content/getAllPins');
+      const experimentalPinsResponse: any = await axios.get(`/api/content/getMapPageContent/${userContextInfo.user.id}`);
       console.log('ALL PINS FROM EXPERIMENTAL DB', experimentalPinsResponse.data)
     } catch (e) {
       console.error("CLIENT ERROR: failed to get all pins", e)

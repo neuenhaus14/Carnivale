@@ -209,7 +209,7 @@ const App = () => {
     return <Loading />;
   }
 
-  console.log('postToEdit', postToEdit);
+  console.log('postToEdit', postToEdit,'userContextInfo', userContextInfo);
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>

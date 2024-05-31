@@ -33,7 +33,7 @@ const FriendManager: React.FC<FriendManagerProps> = ({
   }, [user]);
 
   return (
-    <Accordion className='m-2'>
+    <Accordion defaultActiveKey='1' className='m-2'>
       <Accordion.Item eventKey='0'>
         <Accordion.Header>Friends</Accordion.Header>
         <Accordion.Body>

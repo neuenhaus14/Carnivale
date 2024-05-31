@@ -139,36 +139,36 @@ const HomePage: React.FC<HomePageProps> = ({
     getPosts(order, key);
   }, []);
 
-  const CreateContentForm: React.FC = () => {
-    return (
-      <Form style={{ width: '100%' }}>
-        <Form.Group>
-          <div className='d-flex flex-row'>
-            <Form.Control
-              className='mx-2'
-              placeholder='Post a comment or photo'
-              onChange={handleInput}
-              value={comment}
-              onKeyDown={(e) => {
-                handleKeyDown(e);
-              }}
-            />
-            <Button
-              variant='primary'
-              onClick={handleSubmit}
-              disabled={isDemoMode || comment.length <= 0}
-              className='mx-1'
-            >
-              <FaCommentDots />
-            </Button>
-            <Button onClick={toggleHomeModal} className='mx-1'>
-              <FaCamera />
-            </Button>
-          </div>
-        </Form.Group>
-      </Form>
-    );
-  };
+  // const CreateContentForm: React.FC = () => {
+  //   return (
+  //     <Form style={{ width: '100%' }}>
+  //       <Form.Group>
+  //         <div className='d-flex flex-row'>
+  //           <Form.Control
+  //             className='mx-2'
+  //             placeholder='Post a comment or photo'
+  //             onChange={handleInput}
+  //             value={comment}
+  //             onKeyDown={(e) => {
+  //               handleKeyDown(e);
+  //             }}
+  //           />
+  //           <Button
+  //             variant='primary'
+  //             onClick={handleSubmit}
+  //             disabled={isDemoMode || comment.length <= 0}
+  //             className='mx-1'
+  //           >
+  //             <FaCommentDots />
+  //           </Button>
+  //           <Button onClick={toggleHomeModal} className='mx-1'>
+  //             <FaCamera />
+  //           </Button>
+  //         </div>
+  //       </Form.Group>
+  //     </Form>
+  //   );
+  // };
 
   tabCategories.unshift('All');
   const tabComponents = tabCategories.map((category, index) => {
@@ -202,7 +202,7 @@ const HomePage: React.FC<HomePageProps> = ({
 
   return (
     <Container
-      className={`body-with-bottom-panel ${theme} home-page-container`}
+      className={`body ${theme} home-page-container`}
     >
       {showHomeModal && (
         <HomeModal
@@ -276,12 +276,12 @@ const HomePage: React.FC<HomePageProps> = ({
                 checked={order === 'upvotes'}
               />
             </Form>
-            <div
+            {/* <div
               id='create-post-form'
               className='d-none d-xl-flex d-xxl-flex w-50'
             >
               <CreateContentForm />
-            </div>
+            </div> */}
           </div>
         </Col>
       </Row>
@@ -296,11 +296,11 @@ const HomePage: React.FC<HomePageProps> = ({
         </Col>
       </Row>
 
-      <Row>
+      {/* <Row>
         <div className='page-bottom-panel' id='create-post-form'>
           <CreateContentForm />
         </div>
-      </Row>
+      </Row> */}
     </Container>
   );
 };

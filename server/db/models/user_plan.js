@@ -5,15 +5,15 @@ module.exports = (sequelize, Sequelize) => {
     status: Sequelize.ENUM('pending', 'accepted', 'denied')
   })
   User_plan.associate = function (models) {
-    User_plan.belongsTo(models.plan, {
-      foreignKey: 'planId'
+    User_plan.belongsTo(models.content, {
+      foreignKey: 'contentId'
     })
     User_plan.belongsTo(models.user, {
-      foreignKey: 'recipientId'
+      foreignKey: 'userId'
     })
-    User_plan.belongsTo(models.user, {
-      foreignKey: 'inviterId'
-    })
+    // User_plan.belongsTo(models.user, {
+    //   foreignKey: 'inviterId'
+    // })
   }
   return User_plan;
 }

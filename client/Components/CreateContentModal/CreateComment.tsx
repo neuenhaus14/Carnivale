@@ -12,6 +12,7 @@ interface CreateCommentProps {
   lat: number;
   lng: number;
   submitContent: any;
+  updateContent: any;
 }
 
 const CreateComment: React.FC<CreateCommentProps> = ({

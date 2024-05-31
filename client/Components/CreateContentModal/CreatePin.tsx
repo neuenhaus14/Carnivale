@@ -10,6 +10,7 @@ interface CreatePinProps {
   lat: number;
   lng: number;
   submitContent: any;
+  updateContent: any;
 }
 
 const CreatePin: React.FC<CreatePinProps> = ({
@@ -18,6 +19,7 @@ const CreatePin: React.FC<CreatePinProps> = ({
   lat,
   lng,
   submitContent,
+  updateContent,
 }) => {
   // PIN-SPECIFIC STATE
   const [previewSource, setPreviewSource] = useState();

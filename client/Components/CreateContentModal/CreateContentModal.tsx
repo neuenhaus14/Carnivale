@@ -128,6 +128,11 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
     }
   };
 
+  // TODO: write this function similarly to submitContent
+  const updateContent = async() => {
+    console.log('do this')
+  }
+
   console.log('key', key, 'CCModal isEditMode', isEditMode);
   return (
     <Modal
@@ -152,6 +157,7 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
               lat={lat}
               lng={lng}
               submitContent={submitContent}
+              updateContent={updateContent}
             />
           </Tab>
           <Tab eventKey='photo' title={<IoMdPhotos size='24px' />}>
@@ -161,6 +167,7 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
               lat={lat}
               lng={lng}
               submitContent={submitContent}
+              updateContent={updateContent}
             />
           </Tab>
           <Tab eventKey='pin' title={<IoMdPin size='24px' />}>
@@ -170,6 +177,7 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
               lat={lat}
               lng={lng}
               submitContent={submitContent}
+              updateContent={updateContent}
             />
           </Tab>
           <Tab eventKey='plan' title={<IoMdCalendar size='24px' />}>
@@ -179,6 +187,7 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
               lat={lat}
               lng={lng}
               submitContent={submitContent}
+              updateContent={updateContent}
             />
           </Tab>
           <Tab eventKey='friend' title={<IoMdContacts size='24px' />}>

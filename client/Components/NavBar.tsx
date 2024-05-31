@@ -52,14 +52,15 @@ const NavBar:React.FC<NavBarProps> = ({setShowCreateContentModal}) => {
           <MdShare />
         </Button>
 
-        <Button
+        {/* <Button
           className='bottom-nav-button rounded-circle'
           type='button'
           id='userButton'
           onClick={() => handleNavigation('/userpage')}
         >
           <IoPeople />
-        </Button>
+        </Button> */}
+        
         <Button
           className='bottom-nav-button rounded-circle'
           type='button'

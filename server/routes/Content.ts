@@ -15,13 +15,13 @@ const Content_tag = models.content_tag;
 const Shared_content = models.shared_content;
 const Shared_content_status = models.shared_content_status;
 const User_friend = models.user_friend;
+const User_plan = models.user_plan;
 
 const ContentRouter = Router();
 
 ContentRouter.get('/getTest', (req: Request, res: Response) => {
   res.status(200).send('Booyah');
 });
-
 
 /*
 All content needs to get organized for the front end like this:
@@ -83,45 +83,60 @@ const organizeContent = (contentObject) => {
   return contentObject;
 };
 
-// This function organizes a pin
-const organizePin = (pinObject) => {
-  const pinKeys = [
-    'id',
-    'pinType',
-    'description',
-    'latitude',
-    'longitude',
-    'createdAt',
-    'updatedAt',
-    'photoURL',
+// This function organizes a record returned from a contentable (Pin, Comment, Photo, Plan)
+const organizeContentable = (contentableObject) => {
+  const keys = {
+    comment: ['id', 'description', 'createdAt', 'updatedAt'],
+    plan: [
+      'id',
+      'title',
+      'description',
+      'address',
+      'startTime',
+      'endTime',
+      'inviteCount',
+      'attendingCount',
+      'link',
+      'createdAt',
+      'updatedAt',
+    ],
+    photo: ['id', 'description', 'photoURL', 'createdAt', 'updatedAt'],
+    pin: [
+      'id',
+      'pinType',
+      'description',
+      'latitude',
+      'longitude',
+      'createdAt',
+      'updatedAt',
+      'photoURL',
+    ],
+  };
+
+  const contentableType = contentableObject.content.dataValues.contentableType;
+
+  const tempContentableObject = {};
+
+  for (const key of keys[contentableType]) {
+    tempContentableObject[key] = contentableObject.dataValues[key];
+    delete contentableObject.dataValues[key];
+  }
+  contentableObject.dataValues.contentable = tempContentableObject;
+
+  // add 'user' key from 'content' kv
+  contentableObject.dataValues.user = {
+    ...contentableObject.dataValues.content.user.dataValues,
+  };
+
+  // add 'tags' key from 'content' kv
+  contentableObject.dataValues.tags = [
+    ...contentableObject.dataValues.content.tags,
   ];
 
-  // create 'contentable' k-v
-  pinObject.dataValues.contentable = {
-    id: pinObject.id,
-    pinType: pinObject.pinType,
-    description: pinObject.description,
-    latitude: pinObject.latitude,
-    longitude: pinObject.longitude,
-    createdAt: pinObject.createdAt,
-    upDatedAt: pinObject.updatedAt,
-    photoURL: pinObject.photoURL,
-  }
-
-  // delete the original 'pin' kv's after adding them to new 'contentable' key
-  for (const key of pinKeys) {
-    delete pinObject.dataValues[key];
-  }
-
-  // move user and tags from inside content property
-  pinObject.dataValues.user = pinObject.content.user;
-  pinObject.dataValues.tags = pinObject.content.tags;
-  delete pinObject.content.dataValues.tags;
-  delete pinObject.content.dataValues.user;
-
-
-  return pinObject;
-}
+  delete contentableObject.dataValues['content'].dataValues['user'];
+  delete contentableObject.dataValues['content'].dataValues['tags'];
+  return contentableObject;
+};
 
 // get single piece of content with nested thread
 ContentRouter.get('/getContent/:id', async (req: Request, res: Response) => {
@@ -228,60 +243,6 @@ ContentRouter.get(
   async (req: Request, res: Response) => {
     const { contentableType, contentableId } = req.params;
 
-    const pinKeys = [
-      'id',
-      'pinType',
-      'photoURL',
-      'description',
-      'createdAt',
-      'updatedAt',
-    ];
-    const commentKeys = ['id', 'description', 'createdAt', 'updatedAt'];
-    const planKeys = [
-      'id',
-      'title',
-      'description',
-      'address',
-      'startTime',
-      'endTime',
-      'inviteCount',
-      'attendingCount',
-      'link',
-      'createdAt',
-      'updatedAt',
-    ];
-    const photoKeys = [
-      'id',
-      'description',
-      'photoURL',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    const organizeContentable = (contentableKeys, contentableResponse) => {
-      // add new key 'contentable', delete original standalone kv's
-      const contentableObject = {};
-      for (const key of contentableKeys) {
-        contentableObject[key] = contentableResponse.dataValues[key];
-        delete contentableResponse.dataValues[key];
-      }
-      contentableResponse.dataValues.contentable = contentableObject;
-
-      // add 'user' key from 'content' kv
-      contentableResponse.dataValues.user = {
-        ...contentableResponse.dataValues.content.user.dataValues,
-      };
-
-      // add 'tags' key from 'content' kv
-      contentableResponse.dataValues.tags = [
-        ...contentableResponse.dataValues.content.tags,
-      ];
-
-      delete contentableResponse.dataValues['content'].dataValues['user'];
-      delete contentableResponse.dataValues['content'].dataValues['tags'];
-      return contentableResponse;
-    };
-
     try {
       let contentableResponse;
       const includeOptions = {
@@ -299,40 +260,28 @@ ContentRouter.get(
             Number(contentableId),
             includeOptions
           );
-          contentableResponse = organizeContentable(
-            pinKeys,
-            contentableResponse
-          );
+          contentableResponse = organizeContentable(contentableResponse);
           break;
         case 'photo':
           contentableResponse = await Photo.findByPk(
             Number(contentableId),
             includeOptions
           );
-          contentableResponse = organizeContentable(
-            photoKeys,
-            contentableResponse
-          );
+          contentableResponse = organizeContentable(contentableResponse);
           break;
         case 'plan':
           contentableResponse = await Plan.findByPk(
             Number(contentableId),
             includeOptions
           );
-          contentableResponse = organizeContentable(
-            planKeys,
-            contentableResponse
-          );
+          contentableResponse = organizeContentable(contentableResponse);
           break;
         case 'comment':
           contentableResponse = await Comment.findByPk(
             Number(contentableId),
             includeOptions
           );
-          contentableResponse = organizeContentable(
-            commentKeys,
-            contentableResponse
-          );
+          contentableResponse = organizeContentable(contentableResponse);
           break;
       }
 
@@ -511,7 +460,7 @@ ContentRouter.get(
       const friendsContent = await Content.findAll({
         where: {
           userId: { [Op.in]: userFriendIds },
-          placement: 'public'
+          placement: 'public',
         },
         include: [
           { model: User },
@@ -527,13 +476,13 @@ ContentRouter.get(
         organizeContent(contentObject);
       });
 
-      // go get the pending friendships that user needs to respond to
+      // go get the pending friendships that user needs to respond to or is awaiting
       const pendingFriendships = await User_friend.findAll({
         where: {
-          [Op.or] : [{recipientId: userId}, {requesterId: userId}],
+          [Op.or]: [{ recipientId: userId }, { requesterId: userId }],
           status: 'pending',
         },
-        include: [{association: 'requester'}, {association: 'recipient'}]
+        include: [{ association: 'requester' }, { association: 'recipient' }],
       });
 
       ///////////////////////////////////
@@ -563,7 +512,6 @@ ContentRouter.get(
         sharedContent: sharedContentWithContentablesResponse,
         friendsContent: friendsContent,
         friendRequests: pendingFriendships,
-
         myContent,
       };
 
@@ -663,19 +611,135 @@ ContentRouter.get(
 );
 
 // get all pins for map page
-ContentRouter.get('/getAllPins', async (req: Request, res:Response) => {
-  try {
-    const allPinsResponse = await Pin.findAll({include: [{ model: Content, include: [Tag, User] }]});
+ContentRouter.get(
+  '/getMapPageContent/:userId',
+  async (req: Request, res: Response) => {
+    const { userId } = req.params;
+    console.log('userId', userId);
+    try {
+      const allPinsResponse = await Pin.findAll({
+        include: [{ model: Content, include: [Tag, User] }],
+      });
 
-    allPinsResponse.forEach((pinObject) => {
-      organizePin(pinObject);
-    });
+      // organize properties and filter out private pins that don't belong to the user
+      const sortedOrganizedPins = allPinsResponse
+        .map((pinObject) => {
+          return organizeContentable(pinObject);
+        })
+        .filter((pin) => {
+          if (pin.content.placement === 'public') {
+            return true;
+          } else if (
+            pin.content.placement === 'private' &&
+            pin.content.userId === Number(userId)
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        });
 
-    res.status(200).send(allPinsResponse);
-  } catch (e) {
-    console.error('SERVER ERROR: failed to get all pins', e);
-    res.status(500).send(e);
+      /**
+ *
+ *
+ where: {
+          [Op.or]: [{ recipientId: userId }, { requesterId: userId }],
+          status: 'pending',
+        },
+ */
+
+      const allPublicPlansResponse = await Content.findAll({
+        where: {
+          contentableType: 'plan',
+          placement: 'public',
+        },
+        include: [
+          { model: User },
+          { model: Tag },
+          { model: Plan },
+          { model: Pin },
+          { model: Comment },
+          { model: Photo },
+        ],
+      });
+
+      const sortedOrganizedPublicPlans = allPublicPlansResponse.map(
+        (planObject) => {
+          return organizeContent(planObject);
+        }
+      );
+
+      // get all plans that user is invited to or owns thru User_plan table
+      const userPlans = await User_plan.findAll({
+        where: {
+          userId,
+        },
+        include: {
+          model: Content,
+          include: [User, Tag, Plan],
+        },
+      });
+
+      const organizeUserPlan = (userPlanObject) => {
+        const userPlanKeys = [
+          'id',
+          'status',
+          'createdAt',
+          'updatedAt',
+          'contentId',
+          'userId'
+        ];
+
+        const contentKeys = [
+          'id',
+          'latitude',
+          'longitude',
+          'upvotes',
+          'placement',
+          'contentableType',
+          'contentableId',
+          'parentId',
+          'createdAt',
+          'updatedAt',
+          'userId',
+        ];
+
+        // bring user, tags and plan up (plan assigned to key 'contentable')
+        userPlanObject.dataValues.user = userPlanObject.content.dataValues.user;
+        userPlanObject.dataValues.tags = userPlanObject.content.dataValues.tags;
+        userPlanObject.dataValues.contentable = userPlanObject.content.dataValues.plan
+        delete userPlanObject.content.dataValues.user;
+        delete userPlanObject.content.dataValues.tags;
+        delete userPlanObject.content.dataValues.plan;
+
+        // move userPlan properties into their own key
+        userPlanObject.dataValues.userPlanDetails = {}
+
+        for (const key of userPlanKeys) {
+          console.log(key);
+          userPlanObject.dataValues.userPlanDetails[key] = userPlanObject.dataValues[key];
+          delete userPlanObject.dataValues[key];
+        }
+
+        return userPlanObject;
+      };
+
+      const organizedUserPlans = userPlans.map((userPlan) => {
+        return organizeUserPlan(userPlan);
+      });
+
+      res
+        .status(200)
+        .send({
+          pins: sortedOrganizedPins,
+          publicPlans: sortedOrganizedPublicPlans,
+          userPlans: organizedUserPlans,
+        });
+    } catch (e) {
+      console.error('SERVER ERROR: failed to get all pins', e);
+      res.status(500).send(e);
+    }
   }
-})
+);
 
 export default ContentRouter;

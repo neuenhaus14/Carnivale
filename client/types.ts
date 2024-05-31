@@ -1,10 +1,12 @@
-// shared posts will have sharedContentDetails, normal posts won't have sCD
+// shared posts will have sharedContentDetails, normal posts won't have sCD. Posts with threads attached have children. A plan may have UserPlan details.
 interface Post {
   content: Content;
   contentable: Contentable;
   user: User;
   tags: Tag[];
   sharedContentDetails?: SharedContentDetails;
+  userPlanDetails?: UserPlanDetails;
+  children?: Post[];
 }
 
 interface Content {
@@ -75,6 +77,14 @@ interface ContentTag {
   tagId: number;
 }
 
+interface UserPlanDetails {
+  status: 'accepted' | 'denied' | 'pending';
+  userId: number;
+  contentId: number;
+  createdAt: string;
+  updatedAt: string;
+  id: number;
+}
 interface SharedContentDetails {
   senders: Sender[];
 }

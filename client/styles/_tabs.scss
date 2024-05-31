@@ -38,10 +38,10 @@
 
 // HOME PAGE TABS
 .home-page-tabs .tab-content .active {
-  padding: 15px;
+  padding: 5px;
   overflow: scroll;
-  // tab height is 42px
-  max-height: calc(62vh - 42px);
+  // tab is 42px tall, 71vh is what we have left after subtracting bottom nav, top nav and sorting switch
+  max-height: calc(71vh - 42px);
   // border-left: solid 1px colors.$tabSelectedBorder;
   // border-right: solid 1px colors.$tabSelectedBorder;
 }

@@ -14,6 +14,8 @@ const Shared_content = models.shared_content;
 const Shared_content_status = models.shared_content_status;
 const User_vote = models.user_vote;
 const User_friend = models.user_friend;
+const User_plan = models.user_plan;
+
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -548,6 +550,20 @@ module.exports = {
       senderId: 3,
       recipientId: 1,
     });
+
+    // two users shared event with user 1, but no answer yet
+    await User_plan.create({
+      status: 'pending',
+      contentId: 4,
+      userId: 1,
+    })
+
+    // user 1 is automatically goes to their own event
+    await User_plan.create({
+      status: 'accepted',
+      contentId: 10,
+      userId: 1,
+    })
 
     // marking if shared content is archived for user 1
     // the pin is NOT archived
