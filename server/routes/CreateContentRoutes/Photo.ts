@@ -1,10 +1,10 @@
 // ROUTES IN THIS FILE ARE FOR POSTING PHOTOS WITH EXP DB WITH CREATECONTENT MODAL; ORIGINAL ROUTES FOR POSTING PHOTOS ARE IN PhotoUpload.ts
 
 import { Request, Response, Router } from 'express';
-import handleUpload from '../utils/cloudinary_helpers';
-import { createTags, shareContent, runMiddleware } from '../utils/content_creation_helpers';
+import handleUpload from '../../utils/cloudinary_helpers';
+import { createTags, shareContent, runMiddleware } from '../../utils/content_creation_helpers';
 import multer from 'multer';
-import models from '../db/models/index';
+import models from '../../db/models/index';
 
 const Photo = models.photo;
 const Content = models.content;

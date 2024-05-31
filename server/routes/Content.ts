@@ -22,8 +22,28 @@ ContentRouter.get('/getTest', (req: Request, res: Response) => {
   res.status(200).send('Booyah');
 });
 
+
+/*
+All content needs to get organized for the front end like this:
+
+{
+  content: {
+    ...
+  }
+  contentable: {
+    ...
+  }
+  tags: [{...},{...}],
+  user: {
+    ...
+  }
+}
+
+Check the types file to see a further breakdown of what properties are contained in each key.
+*/
+
 // This function organizes any record returned from the Content table that has its Contentable included
-const organizeContent = (contentItem) => {
+const organizeContent = (contentObject) => {
   const contentKeys = [
     'id',
     'latitude',
@@ -38,32 +58,72 @@ const organizeContent = (contentItem) => {
     'userId',
   ];
 
-  contentItem.dataValues.contentable = contentItem.contentable;
+  contentObject.dataValues.contentable = contentObject.contentable;
 
   // save content data as new key on dataValues
-  contentItem.dataValues.content = {
-    id: contentItem.id,
-    latitude: contentItem.latitude,
-    longitude: contentItem.longitude,
-    upvotes: contentItem.upvotes,
-    placement: contentItem.placement,
-    contentableType: contentItem.contentableType,
-    contentableId: contentItem.contentableId,
-    parentId: contentItem.parentId,
-    createdAt: contentItem.createdAt,
-    updatedAt: contentItem.updatedAt,
-    userId: contentItem.userId,
+  contentObject.dataValues.content = {
+    id: contentObject.id,
+    latitude: contentObject.latitude,
+    longitude: contentObject.longitude,
+    upvotes: contentObject.upvotes,
+    placement: contentObject.placement,
+    contentableType: contentObject.contentableType,
+    contentableId: contentObject.contentableId,
+    parentId: contentObject.parentId,
+    createdAt: contentObject.createdAt,
+    updatedAt: contentObject.updatedAt,
+    userId: contentObject.userId,
   };
 
   // delete the original 'content' kv's after adding them to new 'content' key
   for (const key of contentKeys) {
-    delete contentItem.dataValues[key];
+    delete contentObject.dataValues[key];
   }
 
-  return contentItem;
+  return contentObject;
 };
 
-// get content with nested thread
+// This function organizes a pin
+const organizePin = (pinObject) => {
+  const pinKeys = [
+    'id',
+    'pinType',
+    'description',
+    'latitude',
+    'longitude',
+    'createdAt',
+    'updatedAt',
+    'photoURL',
+  ];
+
+  // create 'contentable' k-v
+  pinObject.dataValues.contentable = {
+    id: pinObject.id,
+    pinType: pinObject.pinType,
+    description: pinObject.description,
+    latitude: pinObject.latitude,
+    longitude: pinObject.longitude,
+    createdAt: pinObject.createdAt,
+    upDatedAt: pinObject.updatedAt,
+    photoURL: pinObject.photoURL,
+  }
+
+  // delete the original 'pin' kv's after adding them to new 'contentable' key
+  for (const key of pinKeys) {
+    delete pinObject.dataValues[key];
+  }
+
+  // move user and tags from inside content property
+  pinObject.dataValues.user = pinObject.content.user;
+  pinObject.dataValues.tags = pinObject.content.tags;
+  delete pinObject.content.dataValues.tags;
+  delete pinObject.content.dataValues.user;
+
+
+  return pinObject;
+}
+
+// get single piece of content with nested thread
 ContentRouter.get('/getContent/:id', async (req: Request, res: Response) => {
   const id = req.params.id;
 
@@ -463,8 +523,8 @@ ContentRouter.get(
         ],
       });
 
-      friendsContent.forEach((contentItem) => {
-        organizeContent(contentItem);
+      friendsContent.forEach((contentObject) => {
+        organizeContent(contentObject);
       });
 
       // go get the pending friendships that user needs to respond to
@@ -495,8 +555,8 @@ ContentRouter.get(
         ],
       });
 
-      myContent.forEach((contentItem) => {
-        organizeContent(contentItem);
+      myContent.forEach((contentObject) => {
+        organizeContent(contentObject);
       });
 
       const responseObject = {
@@ -537,8 +597,8 @@ ContentRouter.get(
           order: [[order, order === 'createdAt' ? 'ASC' : 'DESC']],
         });
 
-        contentResponse.forEach((contentItem) => {
-          organizeContent(contentItem);
+        contentResponse.forEach((contentObject) => {
+          organizeContent(contentObject);
         });
 
         res.send(contentResponse);
@@ -563,33 +623,33 @@ ContentRouter.get(
 
         // Go get contentable for each piece of content from content_tag join table
         await Promise.all(
-          tagResponse.dataValues.content_tags.map(async (contentItem) => {
+          tagResponse.dataValues.content_tags.map(async (contentObject) => {
             const contentableResponse = await Content.findByPk(
-              contentItem.contentId,
+              contentObject.contentId,
               {
                 include: [Pin, Photo, Plan, Comment],
               }
             );
-            contentItem.dataValues.contentable =
+            contentObject.dataValues.contentable =
               contentableResponse.contentable;
 
             // move nested user and tags out
-            contentItem.dataValues.user =
-              contentItem.dataValues.content.dataValues.user;
-            contentItem.dataValues.tags = [
-              ...contentItem.dataValues.content.dataValues.tags,
+            contentObject.dataValues.user =
+              contentObject.dataValues.content.dataValues.user;
+            contentObject.dataValues.tags = [
+              ...contentObject.dataValues.content.dataValues.tags,
             ];
 
             // delete content item's unneeded kv's
-            delete contentItem.dataValues.content.dataValues.user;
-            delete contentItem.dataValues.content.dataValues.tags;
-            delete contentItem.dataValues.contentId;
-            delete contentItem.dataValues.id;
-            delete contentItem.dataValues.tagId;
-            delete contentItem.dataValues.createdAt;
-            delete contentItem.dataValues.updatedAt;
+            delete contentObject.dataValues.content.dataValues.user;
+            delete contentObject.dataValues.content.dataValues.tags;
+            delete contentObject.dataValues.contentId;
+            delete contentObject.dataValues.id;
+            delete contentObject.dataValues.tagId;
+            delete contentObject.dataValues.createdAt;
+            delete contentObject.dataValues.updatedAt;
 
-            return contentItem;
+            return contentObject;
           })
         );
 
@@ -601,5 +661,21 @@ ContentRouter.get(
     }
   }
 );
+
+// get all pins for map page
+ContentRouter.get('/getAllPins', async (req: Request, res:Response) => {
+  try {
+    const allPinsResponse = await Pin.findAll({include: [{ model: Content, include: [Tag, User] }]});
+
+    allPinsResponse.forEach((pinObject) => {
+      organizePin(pinObject);
+    });
+
+    res.status(200).send(allPinsResponse);
+  } catch (e) {
+    console.error('SERVER ERROR: failed to get all pins', e);
+    res.status(500).send(e);
+  }
+})
 
 export default ContentRouter;

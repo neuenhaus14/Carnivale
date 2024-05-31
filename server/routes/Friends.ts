@@ -20,10 +20,8 @@ interface RelationshipModel extends Model {
 
 ////////////////////////////////////
 // EXPERIMENTAL
-// TODO: add logic to block someone from friend requesting someone else
+// TODO: add logic to block someone from friend-requesting someone else
 ////////////////////////////////////
-
-
 
 // Add friend through email (for now)
 Friends.post('/createFriendRequest', async (req: Request, res: Response) => {
@@ -97,7 +95,7 @@ Friends.delete(
           requesterId: [userId1, userId2],
         },
       });
-      res.status(200).send(revocationResponse)
+      res.status(200).send(revocationResponse);
     } catch (e) {
       console.error('SERVER ERROR: failed to revoke a friend request');
       res.status(500).send(e);
@@ -105,19 +103,22 @@ Friends.delete(
   }
 );
 
-Friends.patch('/respondToFriendRequest', async (req:Request, res:Response)=> {
-  const { friendRequestId, answer } = req.body;
-  try {
-    const updateFriendRequestResponse = await User_friend.update(
-    {status: answer},
-    {where: {id: friendRequestId}}
-  );
-  res.status(200).send(updateFriendRequestResponse)
-  } catch (e) {
-    console.error('SERVER ERROR: failed to patch friend request')
-    res.status(500).send(e)
+Friends.patch(
+  '/respondToFriendRequest',
+  async (req: Request, res: Response) => {
+    const { friendRequestId, answer } = req.body;
+    try {
+      const updateFriendRequestResponse = await User_friend.update(
+        { status: answer },
+        { where: { id: friendRequestId } }
+      );
+      res.status(200).send(updateFriendRequestResponse);
+    } catch (e) {
+      console.error('SERVER ERROR: failed to patch friend request');
+      res.status(500).send(e);
+    }
   }
-})
+);
 
 ////////////////////////////////////
 // NORMAL

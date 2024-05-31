@@ -141,6 +141,15 @@ const CreatePin: React.FC<CreatePinProps> = ({
                 className='mx-auto mt-2 w-75 rounded'
               />
             )}
+
+            {isEditMode && (
+              <img
+                src={pin.photoURL}
+                alt='Image selected for upload'
+                className='mx-auto mt-2 w-75 rounded'
+              />
+            )}
+
             {/* IMAGE FILE SELECTOR */}
             <input
               className='mx-auto mt-2 w-75'

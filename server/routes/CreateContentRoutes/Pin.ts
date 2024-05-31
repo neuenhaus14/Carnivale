@@ -1,7 +1,7 @@
 import {Request, Response, Router } from 'express';
-import { createTags, shareContent, runMiddleware } from '../utils/content_creation_helpers';
-import handleUpload from '../utils/cloudinary_helpers';
-import models from '../db/models';
+import { createTags, shareContent, runMiddleware } from '../../utils/content_creation_helpers';
+import handleUpload from '../../utils/cloudinary_helpers';
+import models from '../../db/models';
 import multer from 'multer';
 
 const Pin = models.pin;

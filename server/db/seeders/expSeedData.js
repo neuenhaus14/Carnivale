@@ -199,8 +199,8 @@ module.exports = {
         address: '511 Marigny St, New Orleans, LA 70117',
         latitude: 29.963114361199445,
         longitude: -90.05487604824603,
-        startTime: '2024-04-01T18:00',
-        endTime: '2024-04-01T18:30',
+        startTime: '2024-07-02T18:00',
+        endTime: '2024-07-02T18:30',
         inviteCount: 1,
         attendingCount: 0,
         link: 'www.link.com',
@@ -338,8 +338,8 @@ module.exports = {
         address: '2317 Burgundy St, New Orleans, LA 70117',
         latitude: 29.967083194747136,
         longitude: -90.05516562054513,
-        startTime: '2024-04-01T19:00',
-        endTime: '2024-04-01T19:30',
+        startTime: '2024-07-03T19:00',
+        endTime: '2024-07-03T19:30',
         inviteCount: 0,
         attendingCount: 0,
         link: 'www.link2.com',
@@ -347,6 +347,168 @@ module.exports = {
       {
         include: [Content],
       }
+    );
+
+    // A BUNCH OF PINS
+    // Content id 11
+    await Pin.create(
+      {
+        pinType: 'Free_Toilet',
+        photoURL:
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/yfpo9qrachrpizrgkt47.jpg",
+        description: "A free toilet",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        parentId: null,
+        latitude: 29.962828,
+        longitude: -90.053271,
+        content: {
+          latitude: 29.962828,
+          longitude: -90.053271,
+          upvotes: 0,
+          placement: 'public',
+          userId: 2,
+        },
+      },
+      { include: [Content] }
+    );
+
+    // Content id 12
+    await Pin.create(
+      {
+        pinType: 'Charge_Toilet',
+        photoURL:
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/ebsvvw2yy75mgdszogzl.jpg",
+        description: "$3 to use!",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        parentId: null,
+        latitude: 29.963333,
+        longitude: -90.051899,
+        content: {
+          latitude: 29.963333,
+          longitude:-90.051899,
+          upvotes: 0,
+          placement: 'public',
+          userId: 2,
+        },
+      },
+      { include: [Content] }
+    );
+
+    // Content id 13
+    await Pin.create(
+      {
+        pinType: 'Food',
+        photoURL:
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/ktpl4konvtsxeuy3mgi8.jpg",
+        description: "Hot sausage in the house... $10 ftw.",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        parentId: null,
+        latitude: 29.9636123,
+        longitude: -90.050777,
+        content: {
+          latitude: 29.9636123,
+          longitude:-90.050777,
+          upvotes: 0,
+          placement: 'public',
+          userId: 2,
+        },
+      },
+      { include: [Content] }
+    );
+
+    // Content id 14
+    await Pin.create(
+      {
+        pinType: 'Charging_Station',
+        photoURL:
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/dubvno2a2fr1ncbzeazk.jpg",
+        description: "Phone charger if you're outta juice.",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        parentId: null,
+        latitude: 29.9669162,
+        longitude: -90.051982,
+        content: {
+          latitude: 29.9669162,
+          longitude:-90.051982,
+          upvotes: 0,
+          placement: 'public',
+          userId: 2,
+        },
+      },
+      { include: [Content] }
+    );
+
+    // Content id 15
+    await Pin.create(
+      {
+        pinType: 'Police',
+        photoURL:
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/u3vgjan0n7ufckqbh7tt.jpg",
+        description: "Hot fuzz, 6 o'clock (that means they're behind you).",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        parentId: null,
+        latitude: 29.963603,
+        longitude: -90.056241,
+        content: {
+          latitude: 29.963603,
+          longitude:-90.056241,
+          upvotes: 0,
+          placement: 'public',
+          userId: 2,
+        },
+      },
+      { include: [Content] }
+    );
+
+    // Content id 15: private pin for user 2
+    await Pin.create(
+      {
+        pinType: 'Personal',
+        photoURL:
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/yrzmn9ssn6ysrnripdue.jpg",
+        description: "Marta: Left my bike here!",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        parentId: null,
+        latitude: 29.961779,
+        longitude: -90.056035,
+        content: {
+          latitude: 29.961779,
+          longitude:-90.056035,
+          upvotes: 0,
+          placement: 'private',
+          userId: 2,
+        },
+      },
+      { include: [Content] }
+    );
+
+    // Content id 16: private pin for user 1
+    await Pin.create(
+      {
+        pinType: 'Personal',
+        photoURL:
+        "https://res.cloudinary.com/dj5uxv8tg/image/upload/v1706028911/Carnivale/yrzmn9ssn6ysrnripdue.jpg",
+        description: "Bob: Left my bike here!",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        parentId: null,
+        latitude: 29.961723,
+        longitude: -90.056143,
+        content: {
+          latitude: 29.961723,
+          longitude:-90.056143,
+          upvotes: 0,
+          placement: 'private',
+          userId: 1,
+        },
+      },
+      { include: [Content] }
     );
 
     // photo of poboy is tagged food

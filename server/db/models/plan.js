@@ -1,5 +1,4 @@
 module.exports = (sequelize, Sequelize) => {
-  // console.log('PLAN!');
   const Plan = sequelize.define('plan', {
     title: Sequelize.STRING,
     description: Sequelize.STRING,
@@ -26,12 +25,6 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   Plan.associate = function (models) {
-    // Plan.hasOne(models.content, {
-    //   foreignKey : {
-    //     name: 'planId',
-    //   },
-    // });
-
     Plan.hasOne(models.content, {
       foreignKey: 'contentableId',
       constraints: false,

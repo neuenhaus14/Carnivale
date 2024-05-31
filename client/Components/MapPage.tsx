@@ -103,6 +103,7 @@ const MapPage: React.FC<MapProps> = ({
 
   //loads pins immediately on page render
   useEffect(() => {
+    getExperimentalPins() //
     getPins();
     getFriends();
     // getEvents();
@@ -123,6 +124,15 @@ const MapPage: React.FC<MapProps> = ({
       geoControlRef.current?.trigger();
     }, [geoControlRef.current]);
 
+
+  const getExperimentalPins = async () => {
+    try {
+      const experimentalPinsResponse: any = await axios.get('/api/content/getAllPins');
+      console.log('ALL PINS FROM EXPERIMENTAL DB', experimentalPinsResponse.data)
+    } catch (e) {
+      console.error("CLIENT ERROR: failed to get all pins", e)
+    }
+  }
 
   //gets pins from database then removes all personal pins that don't match userId
   const getPins = async () => {

@@ -1,8 +1,8 @@
 import { Request, Response, Router } from 'express';
 
-import models from '../db/models';
+import models from '../../db/models';
 import axios from 'axios';
-import { createTags, shareContent } from '../utils/content_creation_helpers';
+import { createTags, shareContent } from '../../utils/content_creation_helpers';
 const Content = models.content;
 const Plan = models.plan;
 

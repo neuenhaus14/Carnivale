@@ -29,11 +29,11 @@ import MailListRoutes from './routes/MailList';
 
 // Experimental routes
 import ContentRoutes from './routes/Content';
-import CommentRoutes from './routes/Comment';
-import PhotoRoutes from './routes/Photo';
+import CommentRoutes from './routes/CreateContentRoutes/Comment';
+import PhotoRoutes from './routes/CreateContentRoutes/Photo';
 import TagRoutes from './routes/Tags';
-import PlanRoutes from './routes/Plan';
-import PinRoutez from './routes/Pin';
+import PlanRoutes from './routes/CreateContentRoutes/Plan';
+import PinRoutez from './routes/CreateContentRoutes/Pin';
 import SharedContentRoutes from './routes/SharedContent';
 
 

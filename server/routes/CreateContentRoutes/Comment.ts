@@ -1,20 +1,14 @@
 // ROUTES IN THIS FILE ARE FOR MAKING COMMENTS WITH EXP DB WITH CREATECONTENT MODAL; ORIGINAL ROUTES FOR POSTING COMMENTS ARE IN Home.ts
 
 import { Request, Response, Router } from 'express';
-import axios from 'axios';
 
-import { createTags, shareContent } from '../utils/content_creation_helpers';
+import { createTags, shareContent } from '../../utils/content_creation_helpers';
 
-import models from '../db/models';
+import models from '../../db/models';
 
-// TODO: we're using redirect url to tell axios where to go to make tags and sharedContent records; not sure if this is the right way to do that
-import { REDIRECT_URL } from '../config';
 
 const Comment = models.comment;
 const Content = models.content;
-const Tag = models.tags;
-const Shared_content = models.shared_content;
-const Shared_content_status = models.shared_content_status;
 
 const CommentRouter = Router();
 

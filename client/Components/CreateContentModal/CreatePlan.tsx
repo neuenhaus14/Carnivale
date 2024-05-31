@@ -59,7 +59,7 @@ const CreatePlan: React.FC<CreatePlanProps> = ({
 
   useEffect(() => {
     if (isEditMode) {
-      setPlan(postToEdit.contentable);
+      setPlan({...postToEdit.contentable, startTime: new Date(postToEdit.contentable.startTime), endTime: new Date (postToEdit.contentable.endTime)});
       setIsPlanPrivate(
         postToEdit.content.placement === 'private' ? true : false
       );
