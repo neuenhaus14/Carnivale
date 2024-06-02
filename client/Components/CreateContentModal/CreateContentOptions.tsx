@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { RunModeContext, UserContext } from '../Context';
 import { Post } from '../../types';
 import { Accordion, Button, Form } from 'react-bootstrap';
+import ShareContent from '../ShareContent';
 
 interface CreateContentOptionsProps {
   isEditMode: boolean; // if it's edit mode, then we'll populate tag and friend state
@@ -11,7 +12,6 @@ interface CreateContentOptionsProps {
   tags: string[]; // need to look at tags to see whether we remove or add a new tag to it
   friendsToShareWith: number[];
 }
-
 
 /*
 TODO: 1) if we get a postToEdit, set state so the tags from the postToEdit show up as both checked boxes for tab categories and list of tags for non-tab categories.
@@ -149,20 +149,7 @@ const CreateContentOptions: React.FC<CreateContentOptionsProps> = ({
           {!isEditMode && (
             <>
               <h5>Share with your Friends</h5>
-              <div className='d-flex flex-wrap gap-2'>
-                {friends.map((friend, index) => {
-                  return (
-                    <Form.Check
-                      type='checkbox'
-                      title={`${friend.firstName} ${friend.lastName}`}
-                      label={`${friend.firstName} ${friend.lastName}`}
-                      value={`${friend.id}`}
-                      key={`${index}-${friend.firstName}`}
-                      onClick={toggleFriendToShareWith}
-                    />
-                  );
-                })}
-              </div>
+              <ShareContent toggleFriendToShareWith={toggleFriendToShareWith} />
             </>
           )}
         </Accordion.Body>

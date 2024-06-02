@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Navbar, Image, Container, Nav } from 'react-bootstrap/';
+import { Navbar, Image, Container, Nav, Button } from 'react-bootstrap/';
 import { ThemeContext } from './Context';
 import { To, useNavigate } from 'react-router-dom';
 
@@ -59,17 +59,17 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
             <div className='nav-bar-brand-text ms-1'>Pardi Gras</div>
           </Navbar.Brand>
           <Nav className='m-auto'>
-            <Nav.Link
-              role='button'
+            <Button
+              variant='link'
               onClick={() => handleNavigation('/homepage')}
             >
               Home
-            </Nav.Link>
-            <Nav.Link role='button' onClick={() => handleNavigation('/mappage')}>Map</Nav.Link>
-            <Nav.Link role='button' onClick={() => handleNavigation('/feedpage')}>Feed</Nav.Link>
-            <Nav.Link role='button' onClick={() => handleNavigation('/userpage')}>User</Nav.Link>
-            <Nav.Link role='button' onClick={() => handleNavigation('/eventpage')}>Live Music</Nav.Link>
-            <Nav.Link role='button' onClick={() => handleNavigation('/parades')}>Parades</Nav.Link>
+            </Button>
+            <Button variant='link' onClick={() => handleNavigation('/mappage')}>Map</Button>
+            <Button variant='link' onClick={() => handleNavigation('/feedpage')}>Feed</Button>
+            <Button variant='link' onClick={() => handleNavigation('/userpage')}>User</Button>
+            <Button variant='link' onClick={() => handleNavigation('/eventpage')}>Live Music</Button>
+            <Button variant='link' onClick={() => handleNavigation('/parades')}>Parades</Button>
           </Nav>
           <div style={{ display: 'inline-block' }}>
             <Image src={currWeather} style={{ height: '6vh', width: 'auto' }} />

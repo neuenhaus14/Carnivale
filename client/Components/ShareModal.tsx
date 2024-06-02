@@ -4,48 +4,27 @@ import { FaShareSquare } from '@react-icons/all-files/fa/FaShareSquare';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ThemeContext, RunModeContext } from './Context';
+import { ThemeContext, RunModeContext, ContentFunctionsContext, UserContext } from './Context';
 
-const ShareModal = (props: {
-  postIdToShare: number;
-  userId: number;
-  postTypeToShare: string;
-  showShareModal: boolean;
-  setShowShareModal: any;
-}) => {
-  const {
-    postIdToShare,
-    userId,
-    postTypeToShare,
-    showShareModal,
-    setShowShareModal,
-  } = props;
+import ShareContent from './ShareContent';
+
+interface ShareModalProps{
+
+}
+
+const ShareModal:React.FC<ShareModalProps> = () => {
+
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
+  const {setShareModalBundle} = useContext(ContentFunctionsContext);
+  const {user}  = useContext(UserContext);
 
-  const [friends, setFriends] = useState([]);
-  const [shareId, setShareId] = useState(null);
-  const [friendName, setFriendName] = useState(null);
+  const [friendsToShareWith, setFriendsToShareWith] = useState<number[]>([]); // just ids here
 
-  const toggleShowShareModal = () => setShowShareModal(!showShareModal);
+  const toggleShowShareModal = () => setShareModalBundle.setShowShareModal(!setShareModalBundle.showShareModal);
 
-  const getFriends = async () => {
-    try {
-      const friends = await axios.get(`/api/friends/getFriends/${userId}`);
-      setFriends(friends.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    if (userId !== null) {
-      getFriends();
-    }
-  }, [userId]);
-
-  const sharePost = async (share: string) => {
+  const sharePost = async () => {
     try {
       if (isDemoMode) {
         toast('🎭 Post shared! 🎭', {
@@ -59,10 +38,10 @@ const ShareModal = (props: {
           theme: 'light',
         });
       } else {
-        await axios.post(`api/home/share/${share}`, {
-          recipient_userId: shareId,
-          sender_userId: userId,
-          id: postIdToShare,
+        await axios.post(`api/sharedContent/addSharedContentArray`, {
+          friendsToShareWith,
+          contentId: setShareModalBundle.postToShare.content.id,
+          senderId: user.id,
         });
       }
     } catch (err) {
@@ -72,44 +51,39 @@ const ShareModal = (props: {
     }
   };
 
+  const toggleFriendToShareWith = (e: any) => {
+    const { value } = e.target;
+
+    if (!friendsToShareWith.includes(value)) {
+      setFriendsToShareWith([...friendsToShareWith, value]);
+    } else if (friendsToShareWith.includes(value)) {
+      setFriendsToShareWith(
+        friendsToShareWith.filter((friendId) => friendId !== value)
+      );
+    }
+  };
+
   return (
     <Modal
-      className={theme}
-      show={showShareModal}
+      className={`${theme}`}
+      show={setShareModalBundle.showShareModal}
       onHide={toggleShowShareModal}
     >
       <Modal.Header closeButton>
         <Modal.Title>Share Post</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
-          <DropdownButton
-            id='share-modal-dropdown'
-            title={friendName || 'Krewe'}
-          >
-            {friends.map((friend, index) => {
-              const name = `${friend.firstName} ${friend.lastName}`;
-              return (
-                <Dropdown.Item
-                  key={`${friend.lastName} + ${index}`}
-                  onClick={() => {
-                    setShareId(friend.id);
-                    setFriendName(name);
-                  }}
-                >
-                  {name}
-                </Dropdown.Item>
-              );
-            })}
-          </DropdownButton>
-        </Form>
+        <div>
+          {setShareModalBundle.post}
+        </div>
+       <ShareContent toggleFriendToShareWith={toggleFriendToShareWith}/>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className='d-flex justify-content-center'>
         <Button
           id='share-modal-button'
           variant='primary'
-          onClick={() => sharePost(postTypeToShare)}
-          disabled={!shareId}
+          onClick={() => sharePost()}
+          disabled={!setShareModalBundle.postToShare}
         >
           Share
         </Button>

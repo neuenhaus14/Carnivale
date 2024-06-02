@@ -17,8 +17,12 @@ const NODE_ENV: string = process.env.NODE_ENV;
 
 const TAB_CATEGORIES: string = process.env.TAB_CATEGORIES;
 const PIN_TYPES: string = process.env.PIN_TYPES;
+const EVENT_LATITUDE: number = Number(process.env.EVENT_LATITUDE);
+const EVENT_LONGITUDE: number= Number(process.env.EVENT_LONGITUDE);
 
 export {
+  EVENT_LONGITUDE,
+  EVENT_LATITUDE,
   TAB_CATEGORIES,
   PIN_TYPES,
   NODE_ENV,

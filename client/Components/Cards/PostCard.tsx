@@ -229,10 +229,9 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   const handleInitPostShare = () => {
-    setShareModalBundle.setPostToShare({
-      id: post.content.id,
-      type: postType,
-    });
+    setShareModalBundle.setPostToShare(
+      post
+    );
     setShareModalBundle.setShowShareModal(true);
   };
 

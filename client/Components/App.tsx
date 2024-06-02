@@ -2,8 +2,6 @@ import React, {
   useEffect,
   useState,
   useContext,
-  // createContext,
-  // useRef,
 } from 'react';
 import {
   Link,
@@ -11,7 +9,6 @@ import {
   RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
-  useLocation,
 } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import ProtectedRoute from './ProtectedRoutes';
@@ -54,10 +51,12 @@ const App = () => {
   };
 
   // SHARE MODAL STATE
-  const [postToShare, setPostToShare] = useState({ id: null, type: null });
+  const [postToShare, setPostToShare] = useState<Post|null>(null);
   const [showShareModal, setShowShareModal] = useState<boolean>(false);
   const setShareModalBundle = {
+    postToShare,
     setPostToShare,
+    showShareModal,
     setShowShareModal,
   };
 
@@ -74,18 +73,7 @@ const App = () => {
     setShowCreateContentModal,
     setParentPost,
     setPostToEdit,
-    consoleLogger: () => console.log('jeff')
   };
-
-  let location;
-
-  useEffect(()=>{
-    console.log('user?', user, 'isAuthenticated?', isAuthenticated)
-    if (user){
-      location = useLocation();
-      console.log('location', location)
-    }
-  }, [])
 
   // Context that sends functions that set state for modals that live in App.tsx
   const contentFunctions = {
@@ -120,6 +108,8 @@ const App = () => {
   const getUser = async () => {
     try {
       // Dummy: always fetch for Bob J. Would normally grab user from Auth state using the same kv's for request to server
+
+
       const user = {
         email: 'a@b.com',
         given_name: 'Bob',
@@ -231,7 +221,6 @@ const App = () => {
   if (isLoading || (isLoading && lng === 0 && user)) {
     return <Loading />;
   }
-
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -358,7 +347,7 @@ const App = () => {
     )
   );
 
-  
+  console.log('APP, user: ', userContextInfo)
   return (
     <ContentFunctionsContext.Provider value={contentFunctions}>
       <UserContext.Provider value={userContextInfo}>
@@ -374,18 +363,12 @@ const App = () => {
               setConfirmActionText={setConfirmActionText}
             />
             <ShareModal
-              postIdToShare={postToShare.id}
-              userId={userId}
-              postTypeToShare={postToShare.type}
-              showShareModal={showShareModal}
-              setShowShareModal={setShowShareModal}
             />
             <CreateContentModal
               parentPost={parentPost} // defaults to null
               postToEdit={postToEdit} // default to null
               lat={lat}
               lng={lng}
-
             />
           </ThemeContext.Provider>
         </RunModeContext.Provider>

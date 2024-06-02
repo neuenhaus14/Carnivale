@@ -54,7 +54,6 @@ const NavBar:React.FC<NavBarProps> = ({setShowCreateContentModal}) => {
           type='button'
           id='feedButton'
           onClick={() => {
-            setCreateContentModalBundle.consoleLogger()
             setCreateContentModalBundle.setCreateContentModalKey('friend');
             handleNavigation('/feedpage');
           }}

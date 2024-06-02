@@ -81,22 +81,16 @@ PlanRouter.post('/createPlan', async (req: Request, res: Response) => {
 
     // create tags
     await createTags(contentId, tags);
-    // share content (user who created is content.userId)
+
+    // share content (user who created is content.userId). User_plan record for each friendToShareWith is added through shareContent as needed
     await shareContent(friendsToShareWith, contentId, content.userId)
 
     // create userPlan records for friendsToShareWith ('pending') and for user who created the plan ('accepted')
-    await Promise.all([friendsToShareWith.map(async(friendId) => {
-      await User_plan.create({
-        userId: friendId,
-        contentId: contentId,
-        status: 'pending',
-      })
-    }), await User_plan.create({
+    await User_plan.create({
       userId: content.userId,
       contentId: contentId,
       status: 'accepted',
-    })])
-
+    })
 
     res.status(200).send(createPlanResponse);
   } catch (e) {

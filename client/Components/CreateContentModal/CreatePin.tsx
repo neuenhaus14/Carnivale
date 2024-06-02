@@ -172,7 +172,7 @@ const CreatePin: React.FC<CreatePinProps> = ({
                     name={`${pinType}`}
                     key={`${pinType}-${index}`}
                     checked={pin.pinType === pinType}
-                    onClick={() => setPin({ ...pin, pinType: pinType })}
+                    onChange={() => setPin({ ...pin, pinType: pinType })}
                     label={`${pinType.replace('_', ' ')}`}
                   />
                 );
