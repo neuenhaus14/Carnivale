@@ -13,6 +13,7 @@ import models from '../db/models/index';
 const User_vote = models.user_vote;
 const User_friend = models.user_friend;
 const expUser = models.user;
+const User_plan = models.user_plan;
 
 import { Op } from 'sequelize';
 const HomeRoutes = Router();
@@ -169,6 +170,8 @@ HomeRoutes.get('/photo/:id', async (req: Request, res: Response) => {
 //   }
 // });
 
+
+// This route populates user context on client side with user info, friends, and votes
 HomeRoutes.post('/user', async (req: Request, res: Response) => {
   const { user } = req.body;
   try {
@@ -181,20 +184,29 @@ HomeRoutes.post('/user', async (req: Request, res: Response) => {
       },
     });
 
-    // This draws on exp db
+    const userId = userData[0].dataValues.id
+
+    // VOTES: This draws on exp db
     const userVotes: any = await User_vote.findAll({
       where: {
-        userId: userData[0].dataValues.id,
+        userId
       },
     });
+
+    // USER_PLANS: What events is the user attending
+    const userPlans: any = await User_plan.findAll({
+      where: {
+        userId
+      }
+    })
 
     // get user's relationships that have been accepted
     const unorganizedUserFriends: any = await User_friend.findAll({
       where: {
         status: 'accepted',
         [Op.or]: {
-          requesterId: userData[0].dataValues.id,
-          recipientId: userData[0].dataValues.id,
+          requesterId: userId,
+          recipientId: userId,
         },
       },
       include: [{ association: 'recipient' }, {association: 'requester'}],
@@ -202,14 +214,14 @@ HomeRoutes.post('/user', async (req: Request, res: Response) => {
 
 
     const userFriends = unorganizedUserFriends.map((friendship)=> {
-      if (friendship.dataValues.recipientId===userData[0].dataValues.id){
+      if (friendship.dataValues.recipientId===userId){
         return friendship.dataValues.requester;
       } else {
         return friendship.dataValues.recipient;
       }
     })
 
-    res.status(200).send({ userData, userVotes, userFriends });
+    res.status(200).send({ userData, userVotes, userFriends, userPlans });
   } catch (err) {
     console.error(err);
     res.sendStatus(500);

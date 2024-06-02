@@ -129,7 +129,7 @@ const CreatePin: React.FC<CreatePinProps> = ({
     };
   };
 
-  console.log('pin', pin, 'pinTypes', pinTypes);
+  console.log('pin', pin);
   return (
     <div>
       <Form>

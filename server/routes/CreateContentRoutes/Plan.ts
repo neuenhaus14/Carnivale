@@ -5,6 +5,7 @@ import axios from 'axios';
 import { createTags, shareContent } from '../../utils/content_creation_helpers';
 const Content = models.content;
 const Plan = models.plan;
+const User_plan = models.user_plan;
 
 const PlanRouter = Router();
 
@@ -60,6 +61,7 @@ PlanRouter.post('/createPlan', async (req: Request, res: Response) => {
 
   console.log('createPlan plan', plan)
 
+  // create plan
   try {
     const createPlanResponse = await Plan.create(
       {
@@ -75,10 +77,26 @@ PlanRouter.post('/createPlan', async (req: Request, res: Response) => {
 
     const contentId = createPlanResponse.dataValues.content.id;
 
+
+
     // create tags
     await createTags(contentId, tags);
-    // share content
+    // share content (user who created is content.userId)
     await shareContent(friendsToShareWith, contentId, content.userId)
+
+    // create userPlan records for friendsToShareWith ('pending') and for user who created the plan ('accepted')
+    await Promise.all([friendsToShareWith.map(async(friendId) => {
+      await User_plan.create({
+        userId: friendId,
+        contentId: contentId,
+        status: 'pending',
+      })
+    }), await User_plan.create({
+      userId: content.userId,
+      contentId: contentId,
+      status: 'accepted',
+    })])
+
 
     res.status(200).send(createPlanResponse);
   } catch (e) {

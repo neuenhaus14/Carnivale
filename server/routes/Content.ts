@@ -24,8 +24,7 @@ ContentRouter.get('/getTest', (req: Request, res: Response) => {
 });
 
 /*
-All content needs to get organized for the front end like this:
-
+All content needs to get organized for the front end with these keys:
 {
   content: {
     ...
@@ -36,7 +35,8 @@ All content needs to get organized for the front end like this:
   tags: [{...},{...}],
   user: {
     ...
-  }
+  },
+  ...
 }
 
 Check the types file to see a further breakdown of what properties are contained in each key.

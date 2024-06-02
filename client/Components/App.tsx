@@ -11,7 +11,7 @@ import {
   RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
-  // useLoaderData,
+  useLocation,
 } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import ProtectedRoute from './ProtectedRoutes';
@@ -33,7 +33,7 @@ import CreateContentModal from './CreateContentModal/CreateContentModal';
 import ConfirmActionModal from './ConfirmActionModal';
 import ShareModal from './ShareModal';
 
-import { ThemeContext, RunModeContext, UserContext } from './Context';
+import { ThemeContext, RunModeContext, UserContext, ContentFunctionsContext } from './Context';
 import { Post } from '../types';
 
 const App = () => {
@@ -47,7 +47,7 @@ const App = () => {
     null
   );
   // Object that bundles confirm action functionality. Pass this to each page, so we don't need to have a unique modal sitting on each page.
-  const setConfirmActionBundle = {
+  const setConfirmActionModalBundle = {
     setConfirmActionFunction,
     setShowConfirmActionModal,
     setConfirmActionText,
@@ -66,24 +66,45 @@ const App = () => {
     useState<boolean>(false);
   const [parentPost, setParentPost] = useState<null | Post>(null);
   const [postToEdit, setPostToEdit] = useState<null | Post>(null);
+  const [createContentModalKey, setCreateContentModalKey] = useState<'comment' | 'pin' | 'plan' | 'friend' | 'photo'>('photo')
   const setCreateContentModalBundle = {
+    createContentModalKey,
+    setCreateContentModalKey,
     showCreateContentModal,
     setShowCreateContentModal,
     setParentPost,
     setPostToEdit,
+    consoleLogger: () => console.log('jeff')
   };
+
+  let location;
+
+  useEffect(()=>{
+    console.log('user?', user, 'isAuthenticated?', isAuthenticated)
+    if (user){
+      location = useLocation();
+      console.log('location', location)
+    }
+  }, [])
+
+  // Context that sends functions that set state for modals that live in App.tsx
+  const contentFunctions = {
+    setConfirmActionModalBundle,
+    setCreateContentModalBundle,
+    setShareModalBundle,
+  }
 
   // WHAT DOES userData DO?
   const [userId, setUserId] = useState(null);
   const [currWeather, setCurrWeather] = useState('');
   const [currTemp, setCurrTemp] = useState('');
-
   const [theme, setTheme] = useState('pg-theme-light');
 
   const [userContextInfo, setUserContextInfo] = useState({
     user: {},
     votes: [],
     friends: [],
+    plans: [],
   });
 
   const isDemoMode = useContext(RunModeContext) === 'demo';
@@ -116,6 +137,7 @@ const App = () => {
         user: userResponse.data.userData[0],
         votes: userResponse.data.userVotes,
         friends: userResponse.data.userFriends,
+        plans: userResponse.data.userPlans,
       });
     } catch (err) {
       console.error(err);
@@ -172,6 +194,7 @@ const App = () => {
   // logged in user's info from the database, setting userId
   // 3rd: provided a non-null userId, the user's location
   // is looked up and emitted to socket.io server
+  // TODO: sometimes the login runs twice and it may be because is authenticated changes. So getUser runs on first render, then again after it's actually authenticated
   useEffect(() => {
     user && getUser();
     if (isDemoMode) {
@@ -209,7 +232,7 @@ const App = () => {
     return <Loading />;
   }
 
-  console.log('postToEdit', postToEdit,'userContextInfo', userContextInfo);
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
@@ -232,9 +255,6 @@ const App = () => {
                   userId={userId}
                   lat={lat}
                   lng={lng}
-                  setConfirmActionBundle={setConfirmActionBundle}
-                  setShareModalBundle={setShareModalBundle}
-                  setCreateContentModalBundle={setCreateContentModalBundle}
                 />{' '}
                 <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
@@ -256,7 +276,6 @@ const App = () => {
                   userLng={lng}
                   userId={userId}
                   getLocation={getLocation}
-                  setConfirmActionBundle={setConfirmActionBundle}
                 />{' '}
                 <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
@@ -275,9 +294,6 @@ const App = () => {
                 </Link>
                 <FeedPage
                   userId={userId}
-                  setConfirmActionBundle={setConfirmActionBundle}
-                  setShareModalBundle={setShareModalBundle}
-                  setCreateContentModalBundle={setCreateContentModalBundle}
                 />{' '}
                 <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
@@ -331,7 +347,7 @@ const App = () => {
                   lng={lng}
                   lat={lat}
                   setTheme={setTheme}
-                  setConfirmActionBundle={setConfirmActionBundle}
+                  setConfirmActionBundle={setConfirmActionModalBundle}
                 />{' '}
                 <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
@@ -342,38 +358,39 @@ const App = () => {
     )
   );
 
+  
   return (
-    <UserContext.Provider value={userContextInfo}>
-      <RunModeContext.Provider value={process.env.RUN_MODE}>
-        <ThemeContext.Provider value={theme}>
-          <RouterProvider router={router} />
-          <ConfirmActionModal
-            showConfirmActionModal={showConfirmActionModal}
-            setShowConfirmActionModal={setShowConfirmActionModal}
-            confirmActionFunction={confirmActionFunction}
-            setConfirmActionFunction={setConfirmActionFunction}
-            confirmActionText={confirmActionText}
-            setConfirmActionText={setConfirmActionText}
-          />
-          <ShareModal
-            postIdToShare={postToShare.id}
-            userId={userId}
-            postTypeToShare={postToShare.type}
-            showShareModal={showShareModal}
-            setShowShareModal={setShowShareModal}
-          />
-          <CreateContentModal
-            setCreateContentModalBundle={setCreateContentModalBundle}
-            defaultTab={'comment'}
-            parentPost={parentPost} // defaults to null
-            postToEdit={postToEdit} // default to null
-            lat={lat}
-            lng={lng}
-            setConfirmActionBundle={setConfirmActionBundle}
-          />
-        </ThemeContext.Provider>
-      </RunModeContext.Provider>
-    </UserContext.Provider>
+    <ContentFunctionsContext.Provider value={contentFunctions}>
+      <UserContext.Provider value={userContextInfo}>
+        <RunModeContext.Provider value={process.env.RUN_MODE}>
+          <ThemeContext.Provider value={theme}>
+            <RouterProvider router={router} />
+            <ConfirmActionModal
+              showConfirmActionModal={showConfirmActionModal}
+              setShowConfirmActionModal={setShowConfirmActionModal}
+              confirmActionFunction={confirmActionFunction}
+              setConfirmActionFunction={setConfirmActionFunction}
+              confirmActionText={confirmActionText}
+              setConfirmActionText={setConfirmActionText}
+            />
+            <ShareModal
+              postIdToShare={postToShare.id}
+              userId={userId}
+              postTypeToShare={postToShare.type}
+              showShareModal={showShareModal}
+              setShowShareModal={setShowShareModal}
+            />
+            <CreateContentModal
+              parentPost={parentPost} // defaults to null
+              postToEdit={postToEdit} // default to null
+              lat={lat}
+              lng={lng}
+
+            />
+          </ThemeContext.Provider>
+        </RunModeContext.Provider>
+      </UserContext.Provider>
+    </ContentFunctionsContext.Provider>
   );
 };
 

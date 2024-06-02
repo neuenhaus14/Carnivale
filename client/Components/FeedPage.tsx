@@ -13,23 +13,17 @@ import {
   Tab,
   Accordion,
 } from 'react-bootstrap';
-import { ThemeContext, RunModeContext, UserContext } from './Context';
+import { ThemeContext, RunModeContext, UserContext, ContentFunctionsContext } from './Context';
 
 import { PostCard } from './Cards/PostCard';
 import { Post, FriendRequest, User } from '../types';
 
 interface FeedPageProps {
   userId: number;
-  setConfirmActionBundle: any;
-  setShareModalBundle: any;
-  setCreateContentModalBundle: any;
 }
 
 const FeedPage: React.FC<FeedPageProps> = ({
   userId,
-  setConfirmActionBundle,
-  setShareModalBundle,
-  setCreateContentModalBundle,
 }) => {
   const [sharedPosts, setSharedPosts] = useState<Post[]>([]);
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
@@ -40,7 +34,8 @@ const FeedPage: React.FC<FeedPageProps> = ({
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
-  const { user, friends, votes } = useContext(UserContext);
+  const { user, friends, votes, plans } = useContext(UserContext);
+  const {setConfirmActionModalBundle, setCreateContentModalBundle, setShareModalBundle} = useContext(ContentFunctionsContext)
 
   const [showAboutModal, setShowAboutModal] = useState(true);
 
@@ -68,326 +63,6 @@ const FeedPage: React.FC<FeedPageProps> = ({
     }
   }, [userId]);
 
-  // After shared posts are fetched (see useEffect above), then for each post fetch who shared it with user and the posts content
-  /*
-  useEffect(() => {
-    // fetch details for a post, will run this on all posts shared with user
-    const fetchDetails = async (postId: number, type: string) => {
-      try {
-        const response = await axios.get(`/api/feed/shared-${type}/${postId}`);
-
-        // Checking if the post has been deleted since being originally loaded.
-        if (response.data === null) {
-          if (type === 'comment') {
-            setCommentDetails((prevDetails) => ({
-              ...prevDetails,
-              [postId]: null,
-            }));
-            // } else if (type === "pin") {
-            //   setPinDetails((prevDetails) => ({
-            //     ...prevDetails,
-            //     [postId]: null,
-            //   }));
-          } else if (type === 'photo') {
-            setPhotoDetails((prevDetails) => ({
-              ...prevDetails,
-              [postId]: null,
-            }));
-          }
-          {
-            toast.error('Post deleted due to too many downvotes!');
-          }
-          setTimeout(() => {
-            window.location.reload();
-          }, 5000);
-
-          return;
-        }
-
-        const details = {
-          comment: {
-            id: response.data.id,
-            comment: response.data.comment,
-            ownerId: response.data.ownerId,
-            upvotes: response.data.upvotes,
-            createdAt: response.data.createdAt,
-            updatedAt: response.data.updatedAt,
-          },
-          // pin: {
-          //   ownerId: response.data.ownerId,
-          //   isToilet: response.data.isToilet,
-          //   isFood: response.data.isFood,
-          //   isPersonal: response.data.isPersonal,
-          //   upvotes: response.data.upvotes,
-          // },
-          photo: {
-            id: response.data.id,
-            description: response.data.description,
-            ownerId: response.data.ownerId,
-            upvotes: response.data.upvotes,
-            photoUrl: response.data.photoURL,
-            createdAt: response.data.createdAt,
-            updatedAt: response.data.updatedAt,
-          },
-        };
-
-        // adding each posts details to objects in state to keep track of posts on this page
-        if (type === 'comment') {
-          setCommentDetails((prevDetails) => ({
-            ...prevDetails,
-            [postId]: details.comment,
-          }));
-          // } else if (type === "pin") {
-          //   setPinDetails((prevDetails) => ({
-          //     ...prevDetails,
-          //     [postId]: details.pin,
-          //   }));
-        } else if (type === 'photo') {
-          setPhotoDetails((prevDetails) => ({
-            ...prevDetails,
-            [postId]: details.photo,
-          }));
-        }
-
-        // Fetch sharing user first name & last name if not already fetched
-        if (!userNames[response.data.ownerId]) {
-          const userResponse = await axios.get(
-            `/api/feed/user/${response.data.ownerId}`
-          );
-          setUserNames((prevNames) => ({
-            ...prevNames,
-            [response.data
-              .ownerId]: `${userResponse.data.firstName} ${userResponse.data.lastName}`,
-          }));
-        }
-      } catch (error) {
-        console.error(`Error fetching ${type} details:`, error);
-      }
-    };
-
-    // this function aggs all async requests for comment and photo content and sharer's name into one promiseAll
-    const fetchDataDetails = async () => {
-      const fetchPromises: Promise<void>[] = [];
-
-      sharedPosts.forEach((post) => {
-        if (post.sender_userId && !userNames[post.sender_userId]) {
-          fetchPromises.push(fetchSenderName(post.sender_userId));
-        }
-
-        if (post.shared_commentId) {
-          fetchPromises.push(fetchDetails(post.shared_commentId, 'comment'));
-        }
-
-        // if (post.shared_pinId) {
-        //   fetchPromises.push(fetchDetails(post.shared_pinId, "pin"));
-        // }
-
-        if (post.shared_photoId) {
-          fetchPromises.push(fetchDetails(post.shared_photoId, 'photo'));
-        }
-      });
-
-      try {
-        await Promise.all(fetchPromises);
-      } catch (error) {
-        console.error(`Error in Promise.all:`, error);
-      }
-    };
-
-    fetchDataDetails();
-  }, [sharedPosts, userNames]);
-  */
-
-  /*
-  NEXT THREE FUNCTIONS NOT USED FROM FEED PAGE; UPVOTING/DOWNVOTING TAKES PLACE IN POST-CARD
-
-  const handleUpvote = async (postId: number, type: string) => {
-    if (isDemoMode) {
-      toast('🎭Upvote post!🎭', {
-        position: 'top-right',
-        autoClose: 2500,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: 'light',
-      });
-    } else {
-      try {
-        await axios.post(
-          `/api/feed/${
-            type === 'comment'
-              ? `upvote-comment/${userId}/${postId}`
-              : type === 'pin'
-              ? `upvote-pin/${userId}/${postId}`
-              : `upvote-photo/${userId}/${postId}`
-          }`
-        );
-
-        // Update the voting status based on the type
-        if (type === 'comment') {
-          setCommentVotingStatus((prev) => ({ ...prev, [postId]: 'upvoted' }));
-        } else if (type === 'pin') {
-          setPinVotingStatus((prev) => ({ ...prev, [postId]: 'upvoted' }));
-        } else if (type === 'photo') {
-          setPhotoVotingStatus((prev) => ({ ...prev, [postId]: 'upvoted' }));
-        }
-
-        // Fetch updated post details
-        await fetchPostDetails(postId, type);
-
-        // Update the state using functional updates
-        setSharedPosts((prevSharedPosts) =>
-          prevSharedPosts.map((post) =>
-            post.id === postId
-              ? {
-                  ...post,
-                  upvotes: post.upvotes + 1,
-                }
-              : post
-          )
-        );
-      } catch (error) {
-        toast.warning("You've already upvoted this post!");
-      }
-    }
-  };
-
-
-  const handleDownvote = async (postId: number, type: string) => {
-    if (isDemoMode) {
-      toast('Downvote post!🎭', {
-        position: 'top-right',
-        autoClose: 2500,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: 'light',
-      });
-    } else {
-      try {
-        await axios.post(
-          `/api/feed/${
-            type === 'comment'
-              ? `downvote-comment/${userId}/${postId}`
-              : type === 'pin'
-              ? `downvote-pin/${userId}/${postId}`
-              : `downvote-photo/${userId}/${postId}`
-          }`
-        );
-
-        // Update the voting status based on the type
-        if (type === 'comment') {
-          setCommentVotingStatus((prev) => ({
-            ...prev,
-            [postId]: 'downvoted',
-          }));
-        } else if (type === 'pin') {
-          setPinVotingStatus((prev) => ({ ...prev, [postId]: 'downvoted' }));
-        } else if (type === 'photo') {
-          setPhotoVotingStatus((prev) => ({ ...prev, [postId]: 'downvoted' }));
-        }
-
-        // Fetch updated post details
-        await fetchPostDetails(postId, type);
-
-        // Update the state using functional updates
-        setSharedPosts((prevSharedPosts) =>
-          prevSharedPosts.map((post) =>
-            post.id === postId
-              ? {
-                  ...post,
-                  upvotes: post.upvotes - 1,
-                }
-              : post
-          )
-        );
-
-        // Check if the post has reached -5 upvotes
-        const updatedUpvotes = sharedPosts
-          .map((post) =>
-            post.id === postId ? { ...post, upvotes: post.upvotes - 1 } : post
-          )
-          .find((post) => post.id === postId)?.upvotes;
-
-        if (updatedUpvotes === -5) {
-          setDeletedPosts((prevDeletedPosts) => [...prevDeletedPosts, postId]);
-          // Show deletion toast
-          toast.error(`Post deleted due to too many downvotes: ID ${postId}`);
-          // Delay the page refresh by 2 seconds
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        }
-      } catch (error) {
-        toast.warning("You've already downvoted this post!");
-      }
-    }
-  };
-
-
-  const fetchPostDetails = async (postId: number, type: string) => {
-    try {
-      if (!sharedPosts.some((post) => post.id === postId)) {
-        return;
-      }
-
-      if (type === 'comment') {
-        const response = await axios.get(`/api/feed/shared-comment/${postId}`);
-
-        if (response.data !== null) {
-          setCommentDetails((prevDetails) => ({
-            ...prevDetails,
-            [postId]: {
-              id: response.data.id,
-              comment: response.data.comment,
-              ownerId: response.data.ownerId,
-              upvotes: response.data.upvotes,
-              createdAt: response.data.createdAt,
-              updatedAt: response.data.updatedAt,
-            },
-          }));
-        } else {
-          console.error(`Error: Comment with ID ${postId} not found.`);
-        }
-        // } else if (type === "pin") {
-        //   const response = await axios.get(`/api/feed/shared-pin/${postId}`);
-        //   setPinDetails((prevDetails) => ({
-        //     ...prevDetails,
-        //     [postId]: {
-        //       ownerId: null,
-        //       isToilet: null,
-        //       isFood: null,
-        //       isPersonal: null,
-        //       upvotes: null,
-        //     },
-        //   }));
-      } else if (type === 'photo') {
-        const response = await axios.get(`/api/feed/shared-photo/${postId}`);
-        setPhotoDetails((prevDetails) => ({
-          ...prevDetails,
-          [postId]: {
-            id: response.data.id,
-            description: response.data.description,
-            ownerId: response.data.ownerId,
-            upvotes: response.data.upvotes,
-            photoUrl: response.data.photoUrl,
-            createdAt: response.data.createdAt,
-            updatedAt: response.data.updatedAt,
-          },
-        }));
-      }
-    } catch (error) {
-      console.error(
-        `Error fetching updated details for ${type} with ID ${postId}:`,
-        error
-      );
-    }
-  };
-  */
 
   // TODO: change this to handleArchive **
   const handleRemovePostFromFeed = async (postId: number) => {
@@ -458,13 +133,10 @@ const FeedPage: React.FC<FeedPageProps> = ({
                       key={`${post.content.id} + ${index}`}
                       post={post}
                       userId={userId}
-                      setShareModalBundle={setShareModalBundle}
-                      setConfirmActionBundle={setConfirmActionBundle}
                       childFunctions={{
                         handleRemovePostFromFeed: () =>
                           handleRemovePostFromFeed(post.content.id),
                       }}
-                      setCreateContentModalBundle={setCreateContentModalBundle}
                     />
                   );
                 })}
@@ -477,10 +149,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
                       key={`${post.content.id} + ${index}`}
                       post={post}
                       userId={userId}
-                      setShareModalBundle={setShareModalBundle}
-                      setConfirmActionBundle={setConfirmActionBundle}
                       childFunctions={{}}
-                      setCreateContentModalBundle={setCreateContentModalBundle}
                     />
                   );
                 })}
@@ -492,10 +161,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
                       key={`${post.content.id} + ${index}`}
                       post={post}
                       userId={userId}
-                      setShareModalBundle={setShareModalBundle}
-                      setConfirmActionBundle={setConfirmActionBundle}
                       childFunctions={{}}
-                      setCreateContentModalBundle={setCreateContentModalBundle}
                     />
                   );
                 })}

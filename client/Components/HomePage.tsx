@@ -17,28 +17,22 @@ import { FaCamera } from '@react-icons/all-files/fa/FaCamera';
 import axios from 'axios';
 import HomeModal from './HomeModal';
 import { PostCard } from './Cards/PostCard';
-import { RunModeContext, ThemeContext, UserContext } from './Context';
+import { RunModeContext, ThemeContext, UserContext, ContentFunctionsContext } from './Context';
 import { useSearchParams } from 'react-router-dom';
 import { Post } from '../types';
 
-//PARENT OF HOMEMODAL
+// PARENT OF HOMEMODAL
 
 interface HomePageProps {
   lat: number;
   lng: number;
   userId: number;
-  setShareModalBundle: any;
-  setConfirmActionBundle: any;
-  setCreateContentModalBundle: any;
 }
 
 const HomePage: React.FC<HomePageProps> = ({
-  setConfirmActionBundle,
-  setShareModalBundle,
   lat,
   lng,
   userId,
-  setCreateContentModalBundle,
 }) => {
   // const [searchParams] = useSearchParams();
   // const [userId] = useState(Number(searchParams.get('userid')) || 1);
@@ -55,6 +49,7 @@ const HomePage: React.FC<HomePageProps> = ({
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
   const userContextInfo = useContext(UserContext);
+  const {setConfirmActionModalBundle, setCreateContentModalBundle, setShareModalBundle} = useContext(ContentFunctionsContext)
 
   const tabCategories = process.env.TAB_CATEGORIES.split(' ');
 
@@ -186,12 +181,9 @@ const HomePage: React.FC<HomePageProps> = ({
                   post={post}
                   userId={userId}
                   eventKey={category}
-                  setShareModalBundle={setShareModalBundle}
                   childFunctions={{
                     getPosts,
                   }}
-                  setConfirmActionBundle={setConfirmActionBundle}
-                  setCreateContentModalBundle={setCreateContentModalBundle}
                 />
               );
             })

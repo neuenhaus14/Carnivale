@@ -17,7 +17,7 @@ import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
-import { ThemeContext, RunModeContext, UserContext } from './Context';
+import { ThemeContext, RunModeContext, UserContext, ContentFunctionsContext } from './Context';
 
 import { io } from 'socket.io-client';
 const socket = io();
@@ -27,7 +27,7 @@ interface MapProps {
   userLng: number;
   userId: number;
   getLocation: any;
-  setConfirmActionBundle: any;
+
 }
 
 const MapPage: React.FC<MapProps> = ({
@@ -35,7 +35,6 @@ const MapPage: React.FC<MapProps> = ({
   userLng,
   getLocation,
   userId,
-  setConfirmActionBundle,
 }) => {
   // ADD userId BACK TO PROPS
 
@@ -71,7 +70,8 @@ const MapPage: React.FC<MapProps> = ({
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
-  const userContextInfo = useContext(UserContext)
+  const userContextInfo = useContext(UserContext);
+  const {setConfirmActionModalBundle, setCreateContentModalBundle, setShareModalBundle} = useContext(ContentFunctionsContext)
 
   const [showDirections, setShowDirections] = useState<boolean>(false);
   const [showFriendPopup, setShowFriendPopup] = useState<boolean>(false);
@@ -482,7 +482,7 @@ const MapPage: React.FC<MapProps> = ({
           setSelectedPin={setSelectedPin}
           setIsPinSelected={setIsPinSelected}
           userLocation={userLocation}
-          setConfirmActionBundle={setConfirmActionBundle}
+          setConfirmActionBundle={setConfirmActionModalBundle}
           getPins={getPins}
         />
       ) : null}

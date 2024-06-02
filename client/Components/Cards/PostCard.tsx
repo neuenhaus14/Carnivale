@@ -18,7 +18,7 @@ import { IoMdCalendar } from '@react-icons/all-files/io/IoMdCalendar';
 import { IoMdPhotos } from '@react-icons/all-files/io/IoMdPhotos';
 import { IoMdText } from '@react-icons/all-files/io/IoMdText';
 
-import { RunModeContext } from '../Context';
+import { RunModeContext, ContentFunctionsContext } from '../Context';
 import { Post } from '../../types';
 
 dayjs.extend(relativeTime);
@@ -62,19 +62,6 @@ interface PostCardProps {
   /* used to fetch specific content on home page because of content tabs (gos, costumes, throws), not used on feed page rn TODO: get rid of this? */
   eventKey?: string;
 
-  /* 2 share modal functions: only on home page rn */
-  //setPostToShare: any;
-  //setShowShareModal: any;
-  setShareModalBundle: any;
-
-  /*
-  Hooks confirmActionModal into PostCard. setConfirmActionBundle comes from App. confirmFunctions are an object of functions passed from a page into its postCards that will be passed up to App that will run after a confirmation is made (eg, removing a shared post from a feed).
-  */
-  setConfirmActionBundle?: any;
-
-  // used to edit a post that belongs to user, set parentPost for contentThreading and open CreateContentModal
-  setCreateContentModalBundle: any;
-
   /*
   childFunctions is an object that contains any functions that get passed from some page into the posts on that page. These include functions passed into the confirm action modal: for instance from the feed page, we'll pass "handleRemovePostFromFeed" (soon to be "archivePost") into each post card that is shared (but won't bother to pass this function through for the home page feed)
   */
@@ -85,10 +72,7 @@ const PostCard: React.FC<PostCardProps> = ({
   post,
   userId,
   eventKey,
-  setConfirmActionBundle,
-  setShareModalBundle,
   childFunctions,
-  setCreateContentModalBundle,
 }) => {
   /*
   THE UPVOTE/DOWNVOTE FUNCTIONALITY WORKS BUT THE COLORING OF THE VOTE BUTTONS DOES NOT WORK AFTER RELOAD. ORIGINALLY WE'D getPosts AFTER VOTING, BUT THIS WOULD MOVE THE POST AROUND AFTER VOTING PROVIDED THE NEW ORDER WHEN SORTING BY VOTES, SO THE POST WOULD DISAPPEAR FROM VIEW (WHICH I DON'T THINK WE WANT). THE getPosts FUNCTIONALITY IS COMMENTED OUT IN THE handleVotes FUNCTIONS
@@ -102,6 +86,8 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const [isOwner, setIsOwner] = useState(false);
   const isDemoMode = useContext(RunModeContext) === 'demo';
+  const {setConfirmActionModalBundle, setCreateContentModalBundle, setShareModalBundle} = useContext(ContentFunctionsContext)
+
 
   // posts that are text-only have comments. Photo's have descriptions
   const postType = post.content.contentableType;
@@ -388,15 +374,15 @@ const PostCard: React.FC<PostCardProps> = ({
                   className='post-card-remove-shared-post-button mx-1'
                   variant='danger'
                   onClick={async () => {
-                    await setConfirmActionBundle.setConfirmActionFunction(
+                    await setConfirmActionModalBundle.setConfirmActionFunction(
                       () => async () => {
                         await childFunctions.handleRemovePostFromFeed();
                       }
                     );
-                    await setConfirmActionBundle.setConfirmActionText(
+                    await setConfirmActionModalBundle.setConfirmActionText(
                       'remove the post form your feed.'
                     );
-                    await setConfirmActionBundle.setShowConfirmActionModal(
+                    await setConfirmActionModalBundle.setShowConfirmActionModal(
                       true
                     );
                   }}
@@ -412,15 +398,15 @@ const PostCard: React.FC<PostCardProps> = ({
                     className='post-card-delete-button mx-1'
                     variant='danger'
                     onClick={async () => {
-                      await setConfirmActionBundle.setConfirmActionFunction(
+                      await setConfirmActionModalBundle.setConfirmActionFunction(
                         () => async () => {
                           await handleDeletePost();
                         }
                       );
-                      await setConfirmActionBundle.setConfirmActionText(
+                      await setConfirmActionModalBundle.setConfirmActionText(
                         'delete your post'
                       );
-                      await setConfirmActionBundle.setShowConfirmActionModal(
+                      await setConfirmActionModalBundle.setShowConfirmActionModal(
                         true
                       );
                     }}

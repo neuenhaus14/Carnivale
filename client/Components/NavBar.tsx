@@ -7,7 +7,7 @@ import { FaMapMarkedAlt } from '@react-icons/all-files/fa/FaMapMarkedAlt';
 import { IoHomeOutline } from '@react-icons/all-files/io5/IoHomeOutline';
 import { IoPeople } from '@react-icons/all-files/io5/IoPeople';
 import { FaPlusCircle } from '@react-icons/all-files/fa/FaPlusCircle';
-import { ThemeContext } from './Context';
+import { ContentFunctionsContext, ThemeContext } from './Context';
 
 
 interface NavBarProps {
@@ -15,6 +15,7 @@ interface NavBarProps {
 }
 
 const NavBar:React.FC<NavBarProps> = ({setShowCreateContentModal}) => {
+  const {setCreateContentModalBundle} = useContext(ContentFunctionsContext)
   const navigate = useNavigate();
   const handleNavigation = (path: To) => {
     navigate(path);
@@ -29,7 +30,10 @@ const NavBar:React.FC<NavBarProps> = ({setShowCreateContentModal}) => {
           className='bottom-nav-button rounded-circle'
           type='button'
           id='homeButton'
-          onClick={() => handleNavigation('/homepage')}
+          onClick={() => {
+            setCreateContentModalBundle.setCreateContentModalKey('comment')
+            console.log('YEAH');
+            handleNavigation('/homepage')}}
         >
           <IoHomeOutline />
         </Button>
@@ -38,7 +42,9 @@ const NavBar:React.FC<NavBarProps> = ({setShowCreateContentModal}) => {
           className='bottom-nav-button rounded-circle'
           type='button'
           id='mapButton'
-          onClick={() => handleNavigation('/mappage')}
+          onClick={() => {
+            setCreateContentModalBundle.setCreateContentModalKey('pin');
+            handleNavigation('/mappage')}}
         >
           <FaMapMarkedAlt />
         </Button>
@@ -47,7 +53,11 @@ const NavBar:React.FC<NavBarProps> = ({setShowCreateContentModal}) => {
           className='bottom-nav-button rounded-circle'
           type='button'
           id='feedButton'
-          onClick={() => handleNavigation('/feedpage')}
+          onClick={() => {
+            setCreateContentModalBundle.consoleLogger()
+            setCreateContentModalBundle.setCreateContentModalKey('friend');
+            handleNavigation('/feedpage');
+          }}
         >
           <MdShare />
         </Button>
@@ -60,7 +70,7 @@ const NavBar:React.FC<NavBarProps> = ({setShowCreateContentModal}) => {
         >
           <IoPeople />
         </Button> */}
-        
+
         <Button
           className='bottom-nav-button rounded-circle'
           type='button'

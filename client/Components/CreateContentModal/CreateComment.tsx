@@ -42,7 +42,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
       ? true
       : false;
   const isDemoMode = useContext(RunModeContext) === 'demo';
-  const { user, votes, friends } = useContext(UserContext);
+  const { user, votes, friends, plans } = useContext(UserContext);
   useEffect(() => {
     if (isEditMode) {
       setComment(postToEdit.contentable);

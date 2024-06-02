@@ -1,6 +1,6 @@
 // This modal will be composed of 4 components, one for creating each content type.
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { IoMdPin } from '@react-icons/all-files/io/IoMdPin';
 import { IoMdCalendar } from '@react-icons/all-files/io/IoMdCalendar';
@@ -17,28 +17,22 @@ import CreatePin from './CreatePin';
 import FriendManager from './FriendManager';
 
 // Need to be able to create any content and instantly share it with your friends
-import { ThemeContext } from '../Context';
+import { ThemeContext, ContentFunctionsContext } from '../Context';
 import { Post } from '../../types';
 import axios from 'axios';
 
 interface CreateContentModalProps {
   parentPost: null | Post; // needed to nest content in threads
   postToEdit: null | Post;
-  defaultTab: 'comment' | 'photo' | 'pin' | 'plan'; // indicates what tab defaults to open (ie, 'pin' for map page ,'photo' for feed page)
   lat: number;
   lng: number;
-  setConfirmActionBundle: any; // getting sent along to FriendManager
-  setCreateContentModalBundle: any; // comes from App level
 }
 
 const CreateContentModal: React.FC<CreateContentModalProps> = ({
-  setCreateContentModalBundle,
-  defaultTab,
   parentPost,
   postToEdit,
   lat,
   lng,
-  setConfirmActionBundle,
 }) => {
   // this is for the modal's header
   const [headerText, setHeaderText] = useState<string>('Add a comment');
@@ -66,26 +60,32 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
     }
   };
 
+  const { setCreateContentModalBundle } =
+    useContext(ContentFunctionsContext);
+
   const isEditMode = postToEdit ? true : false;
 
-  const [key, setKey] = useState<
-    'comment' | 'pin' | 'plan' | 'friend' | 'photo'
-  >('comment');
 
-  // once a postToEdit comes through, then set the key and text for the tab
+  // once a postToEdit comes through, then set the key and header text for the tab. Otherwise the key is determined by state at the App level, which gets changed when opening the modal from a certain page (so opening the modal from map page opens pin tab)
   useEffect(() => {
     if (postToEdit) {
-      setKey(postToEdit.content.contentableType);
+      setCreateContentModalBundle.setCreateContentModalKey(postToEdit.content.contentableType);
       changeHeaderText(postToEdit.content.contentableType);
+    } else {
+      changeHeaderText(setCreateContentModalBundle.createContentModalKey);
     }
-  }, [postToEdit]);
+  }, [setCreateContentModalBundle.createContentModalKey]);
+
+  // useEffect(() => {
+  //   setKey(createContentModalKey)
+  // }, []);
 
   const toggleShowCreateContentModal = () => {
     // close the modal
     setCreateContentModalBundle.setShowCreateContentModal(
       !setCreateContentModalBundle.showCreateContentModal
     );
-    // set the postToEditBack to null
+    // always set the postToEditBack to null
     setCreateContentModalBundle.setPostToEdit(null);
   };
 
@@ -94,29 +94,18 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
     payload
   ) => {
     try {
-      let createContentResponse;
-
       switch (contentType) {
         case 'plan':
-          createContentResponse = await axios.post('/api/plan/createPlan', payload)
+          await axios.post('/api/plan/createPlan', payload);
           break;
         case 'pin':
-          createContentResponse = await axios.post(
-            '/api/pin/createPin',
-            payload
-          );
+          await axios.post('/api/pin/createPin', payload);
           break;
         case 'comment':
-          createContentResponse = await axios.post(
-            '/api/comment/createComment',
-            payload
-          );
+          await axios.post('/api/comment/createComment', payload);
           break;
         case 'photo':
-          createContentResponse = await axios.post(
-            '/api/photo/createPhoto',
-            payload
-          );
+          await axios.post('/api/photo/createPhoto', payload);
           break;
         default:
           break;
@@ -129,11 +118,10 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
   };
 
   // TODO: write this function similarly to submitContent
-  const updateContent = async() => {
-    console.log('do this')
-  }
+  const updateContent = async () => {
+    console.log('do this');
+  };
 
-  console.log('key', key, 'CCModal isEditMode', isEditMode);
   return (
     <Modal
       show={setCreateContentModalBundle.showCreateContentModal}
@@ -144,10 +132,10 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
       </Modal.Header>
       <Modal.Body>
         <Tabs
-          activeKey={key}
+          activeKey={setCreateContentModalBundle.createContentModalKey}
           onSelect={(k: 'comment' | 'pin' | 'plan' | 'friend' | 'photo') => {
             changeHeaderText(k);
-            setKey(k);
+            setCreateContentModalBundle.setCreateContentModalKey(k);
           }}
         >
           <Tab eventKey='comment' title={<IoMdText size='24px' />}>
@@ -191,7 +179,7 @@ const CreateContentModal: React.FC<CreateContentModalProps> = ({
             />
           </Tab>
           <Tab eventKey='friend' title={<IoMdContacts size='24px' />}>
-            <FriendManager setConfirmActionBundle={setConfirmActionBundle} />
+            <FriendManager />
           </Tab>
         </Tabs>
       </Modal.Body>

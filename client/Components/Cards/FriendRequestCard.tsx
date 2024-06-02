@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { UserContext } from '../Context';
+import { UserContext, ContentFunctionsContext } from '../Context';
 import { Button, Card } from 'react-bootstrap';
 import { FriendRequest } from '../../types';
 import { FaThumbsUp } from '@react-icons/all-files/fa/FaThumbsUp';
@@ -9,30 +9,37 @@ import axios from 'axios';
 
 interface FriendRequestCardProps {
   friendRequest: FriendRequest;
-  setConfirmActionBundle: any;
 }
 
 const FriendRequestCard: React.FC<FriendRequestCardProps> = ({
   friendRequest,
-  setConfirmActionBundle,
 }) => {
   const { user } = useContext(UserContext);
+  const { setConfirmActionModalBundle } = useContext(ContentFunctionsContext);
 
   // delete record in User_friends table
   const revokeFriendRequest = async () => {
-    const revokeFriendRequestResponse = await axios.delete(
-      `/api/friends/revokeFriendship/${friendRequest.recipientId}&${friendRequest.requesterId}`
-    );
+    try {
+      const revokeFriendRequestResponse = await axios.delete(
+        `/api/friends/revokeFriendship/${friendRequest.recipientId}&${friendRequest.requesterId}`
+      );
+    } catch (e) {
+      console.error('CLIENT ERROR: failed to revoke friend request', e);
+    }
   };
 
   const respondToFriendRequest = async (answer: 'accepted' | 'denied') => {
-    const respondToFriendRequestResponse = await axios.patch(
-      '/api/friends/respondToFriendRequest',
-      {
-        friendRequestId: friendRequest.id,
-        answer,
-      }
-    );
+    try {
+      const respondToFriendRequestResponse = await axios.patch(
+        '/api/friends/respondToFriendRequest',
+        {
+          friendRequestId: friendRequest.id,
+          answer,
+        }
+      );
+    } catch (e) {
+      console.error('CLIENT ERROR: failed to respond to friend request', e);
+    }
   };
 
   return (
@@ -49,13 +56,13 @@ const FriendRequestCard: React.FC<FriendRequestCardProps> = ({
             className='icon-btn'
             variant='danger'
             onClick={async () => {
-              await setConfirmActionBundle.setConfirmActionFunction(
+              await setConfirmActionModalBundle.setConfirmActionFunction(
                 () => () => revokeFriendRequest()
               );
-              await setConfirmActionBundle.setConfirmActionText(
+              await setConfirmActionModalBundle.setConfirmActionText(
                 `revoke friend invitation to ${friendRequest.recipient.firstName}.`
               );
-              await setConfirmActionBundle.setShowConfirmActionModal(true);
+              await setConfirmActionModalBundle.setShowConfirmActionModal(true);
             }}
           >
             <FaUserAltSlash />
@@ -80,13 +87,15 @@ const FriendRequestCard: React.FC<FriendRequestCardProps> = ({
               className='icon-btn'
               variant='danger'
               onClick={async () => {
-                await setConfirmActionBundle.setConfirmActionFunction(
+                await setConfirmActionModalBundle.setConfirmActionFunction(
                   () => () => respondToFriendRequest('denied')
                 );
-                await setConfirmActionBundle.setConfirmActionText(
-                  `deny friend invite from ${friendRequest.recipient.firstName}.`
+                await setConfirmActionModalBundle.setConfirmActionText(
+                  `deny friend invite from ${friendRequest.requester.firstName}.`
                 );
-                await setConfirmActionBundle.setShowConfirmActionModal(true);
+                await setConfirmActionModalBundle.setShowConfirmActionModal(
+                  true
+                );
               }}
             >
               <FaThumbsDown />

@@ -85,6 +85,7 @@ interface UserPlanDetails {
   updatedAt: string;
   id: number;
 }
+
 interface SharedContentDetails {
   senders: Sender[];
 }
