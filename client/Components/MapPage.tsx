@@ -17,7 +17,7 @@ import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import PinModal from './PinModal';
-import { ThemeContext, RunModeContext } from './Context';
+import { ThemeContext, RunModeContext, UserContext, ContentFunctionsContext } from './Context';
 
 import { io } from 'socket.io-client';
 const socket = io();
@@ -27,7 +27,7 @@ interface MapProps {
   userLng: number;
   userId: number;
   getLocation: any;
-  setConfirmActionBundle: any;
+
 }
 
 const MapPage: React.FC<MapProps> = ({
@@ -35,7 +35,6 @@ const MapPage: React.FC<MapProps> = ({
   userLng,
   getLocation,
   userId,
-  setConfirmActionBundle,
 }) => {
   // ADD userId BACK TO PROPS
 
@@ -71,6 +70,8 @@ const MapPage: React.FC<MapProps> = ({
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
+  const userContextInfo = useContext(UserContext);
+  const {setConfirmActionModalBundle, setCreateContentModalBundle, setShareModalBundle} = useContext(ContentFunctionsContext)
 
   const [showDirections, setShowDirections] = useState<boolean>(false);
   const [showFriendPopup, setShowFriendPopup] = useState<boolean>(false);
@@ -103,6 +104,7 @@ const MapPage: React.FC<MapProps> = ({
 
   //loads pins immediately on page render
   useEffect(() => {
+    getExperimentalPins() //
     getPins();
     getFriends();
     // getEvents();
@@ -123,6 +125,15 @@ const MapPage: React.FC<MapProps> = ({
       geoControlRef.current?.trigger();
     }, [geoControlRef.current]);
 
+
+  const getExperimentalPins = async () => {
+    try {
+      const experimentalPinsResponse: any = await axios.get(`/api/content/getMapPageContent/${userContextInfo.user.id}`);
+      console.log('ALL PINS FROM EXPERIMENTAL DB', experimentalPinsResponse.data)
+    } catch (e) {
+      console.error("CLIENT ERROR: failed to get all pins", e)
+    }
+  }
 
   //gets pins from database then removes all personal pins that don't match userId
   const getPins = async () => {
@@ -471,7 +482,7 @@ const MapPage: React.FC<MapProps> = ({
           setSelectedPin={setSelectedPin}
           setIsPinSelected={setIsPinSelected}
           userLocation={userLocation}
-          setConfirmActionBundle={setConfirmActionBundle}
+          setConfirmActionBundle={setConfirmActionModalBundle}
           getPins={getPins}
         />
       ) : null}

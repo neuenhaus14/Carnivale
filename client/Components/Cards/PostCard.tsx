@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {
-  Button,
-  Card,
-  OverlayTrigger,
-  Tooltip,
-} from 'react-bootstrap';
+import { Button, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -14,36 +9,46 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { FaShareSquare } from '@react-icons/all-files/fa/FaShareSquare';
 import { MdDelete } from '@react-icons/all-files/md/MdDelete';
+import { MdEdit } from '@react-icons/all-files/md/MdEdit';
 import { BiHide } from '@react-icons/all-files/bi/BiHide';
-
 import { IoArrowDownCircle } from '@react-icons/all-files/io5/IoArrowDownCircle';
 import { IoArrowUpCircle } from '@react-icons/all-files/io5/IoArrowUpCircle';
-import { RunModeContext } from './Context';
+import { IoMdPin } from '@react-icons/all-files/io/IoMdPin';
+import { IoMdCalendar } from '@react-icons/all-files/io/IoMdCalendar';
+import { IoMdPhotos } from '@react-icons/all-files/io/IoMdPhotos';
+import { IoMdText } from '@react-icons/all-files/io/IoMdText';
+
+import { RunModeContext, ContentFunctionsContext } from '../Context';
+import { Post } from '../../types';
 
 dayjs.extend(relativeTime);
 
 /*
 A post is whatever goes into a PostCard. RN it is a record from the 'comments' or 'photos' tables in the DB, excluding the type of content it is (eg, isPin, isCostume, isThrow), plus optional extras for shared posts (senderName, remove). The posts are fetched server-side according to those content type filters, with the request for the content type stipulated by client-side state (ie, when the costume tab is selected, go get costumes). Once we have content client side we don't need to know what kind they are RN (maybe eventually; should also refactor for enums in database tables), so those filtering booleans don't make it into the interface.
 */
-export interface Post {
-  id: number;
-  ownerId: number;
-  createdAt: string;
-  updatedAt?: string;
-  upvotes: number;
+// export interface Post {
+//   content: any;
+//   contentable: any;
+//   user: any;
+//   tags: any;
+//   sharedContentDetails?: any;
 
-  /*
-  photos have 'description' and 'photoURL', comments have 'comment'
-  */
-  comment?: string;
-  photoURL?: string;
-  description?: string;
-
-  /*
-  for feed page posts, which have a sender
-  */
-  senderName?: string;
-}
+//   id: number;
+//   ownerId: number;
+//   createdAt: string;
+//   updatedAt?: string;
+//   upvotes: number;
+//   /*
+//   photos have 'description' and 'photoURL', comments have 'comment'
+//   */
+//   comment?: string;
+//   photoURL?: string;
+//   description?: string;
+//   /*
+//   for feed page posts, which have a sender
+//   */
+//   senderName?: string;
+// }
 
 interface PostCardProps {
   post: Post;
@@ -54,22 +59,11 @@ interface PostCardProps {
   /* Order is not being used */
   // order?: string;
 
-  /* used to fetch specific content on home page because of content tabs (gos, costumes, throws), not used on feed page rn */
+  /* used to fetch specific content on home page because of content tabs (gos, costumes, throws), not used on feed page rn TODO: get rid of this? */
   eventKey?: string;
 
-  /* 2 share modal functions: only on home page rn */
-  //setPostToShare: any;
-  //setShowShareModal: any;
-  setShareModalBundle: any;
-
   /*
-  Hooks confirmActionModal into PostCard. setConfirmActionBundle comes from App. confirmFunctions are an object of functions passed from a page into its postCards that will be passed up to App that will run after a confirmation is made (eg, removing a shared post from a feed).
-  */
-  setConfirmActionBundle?: any;
-  // confirmFunctions?: any;
-
-  /*
-  childFunctions is an object that contains any functions that get passed from some page into the posts on that page. These include functions passed into the confirm action modal: for instance from the feed page, we'll pass "handleRemovePostFromFeed" into each post card that is shared (but won't bother to pass this function through for the home page feed)
+  childFunctions is an object that contains any functions that get passed from some page into the posts on that page. These include functions passed into the confirm action modal: for instance from the feed page, we'll pass "handleRemovePostFromFeed" (soon to be "archivePost") into each post card that is shared (but won't bother to pass this function through for the home page feed)
   */
   childFunctions?: any;
 }
@@ -77,16 +71,14 @@ interface PostCardProps {
 const PostCard: React.FC<PostCardProps> = ({
   post,
   userId,
-
   eventKey,
-  setConfirmActionBundle,
-  setShareModalBundle,
   childFunctions,
 }) => {
   /*
   THE UPVOTE/DOWNVOTE FUNCTIONALITY WORKS BUT THE COLORING OF THE VOTE BUTTONS DOES NOT WORK AFTER RELOAD. ORIGINALLY WE'D getPosts AFTER VOTING, BUT THIS WOULD MOVE THE POST AROUND AFTER VOTING PROVIDED THE NEW ORDER WHEN SORTING BY VOTES, SO THE POST WOULD DISAPPEAR FROM VIEW (WHICH I DON'T THINK WE WANT). THE getPosts FUNCTIONALITY IS COMMENTED OUT IN THE handleVotes FUNCTIONS
 */
-  const [owner, setOwner] = useState('');
+
+  // const [owner, setOwner] = useState('');
 
   const [commentVotingStatus, setCommentVotingStatus] = useState<
     'upvoted' | 'downvoted' | 'none'
@@ -94,27 +86,30 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const [isOwner, setIsOwner] = useState(false);
   const isDemoMode = useContext(RunModeContext) === 'demo';
+  const {setConfirmActionModalBundle, setCreateContentModalBundle, setShareModalBundle} = useContext(ContentFunctionsContext)
+
 
   // posts that are text-only have comments. Photo's have descriptions
-  const postType = post.photoURL ? 'photo' : 'comment';
-  const postText = postType === 'photo' ? post.description : post.comment;
-  const isSharedPost = post.senderName ? true : false;
+  const postType = post.content.contentableType;
+  const postText = post.contentable.description;
+  const isSharedPost = post.sharedContentDetails ? true : false;
 
   const [imgDimensions, setImgDimensions] = useState({
     width: null,
     height: null,
   });
 
-  const getOwner = async () => {
-    try {
-      const { data } = await axios.get(`api/home/post/${post.ownerId}`);
-      setOwner(data.firstName + ' ' + data.lastName);
-      setIsOwner(data.id === userId);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // const getOwner = async () => {
+  //   try {
+  //     // const { data } = await axios.get(`api/home/post/${post.user.id}`);
+  //     setOwner(data.firstName + ' ' + data.lastName);
+  //     setIsOwner(data.id === userId);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
+  // TODO: make work with exp db
   const handleUpvote = async () => {
     // if demo mode, display toast
     if (isDemoMode) {
@@ -132,7 +127,9 @@ const PostCard: React.FC<PostCardProps> = ({
     // else run upvote logic
     else {
       try {
-        await axios.post(`/api/feed/upvote-${postType}/${userId}/${post.id}`);
+        await axios.post(
+          `/api/feed/upvote-${postType}/${userId}/${post.content.id}`
+        );
         if (commentVotingStatus !== 'upvoted') {
           setCommentVotingStatus('upvoted');
         }
@@ -144,7 +141,7 @@ const PostCard: React.FC<PostCardProps> = ({
       }
     }
   };
-
+  // TODO: make work with exp db
   const handleDownvote = async () => {
     // if demo mode, display toast
     if (isDemoMode) {
@@ -162,12 +159,14 @@ const PostCard: React.FC<PostCardProps> = ({
     // if not demo mode, run downvote logic
     else {
       try {
-        await axios.post(`/api/feed/downvote-${postType}/${userId}/${post.id}`);
+        await axios.post(
+          `/api/feed/downvote-${postType}/${userId}/${post.content.id}`
+        );
 
         if (commentVotingStatus !== 'downvoted') {
           setCommentVotingStatus('downvoted');
 
-          if (post.upvotes - 1 <= -5) {
+          if (post.content.upvotes - 1 <= -5) {
             toast.error('Post deleted due to too many downvotes!');
           }
         }
@@ -185,7 +184,7 @@ const PostCard: React.FC<PostCardProps> = ({
     // rendering the image, so as to orient the
     // card properly
     const postImg = new Image();
-    postImg.src = post.photoURL;
+    postImg.src = post.contentable.photoURL;
     postImg.onload = async () => {
       await setImgDimensions({
         height: postImg.height,
@@ -195,21 +194,25 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   useEffect(() => {
-    if (postType === 'photo') {
+    if (postType === 'photo' || postType === 'pin') {
       configurePhotoPost();
     }
-    getOwner();
+    setIsOwner(post.user.id === userId);
   }, []);
 
+  // TODO: update this to work with exp. db
   const handleDeletePost = async () => {
     if (isDemoMode) {
       toast.success('Delete your post!');
     } else {
       try {
         if (isOwner) {
-          await axios.delete(`/api/home/delete-${postType}/${post.id}`, {
-            data: { userId },
-          });
+          await axios.delete(
+            `/api/home/delete-${postType}/${post.content.id}`,
+            {
+              data: { userId },
+            }
+          );
           toast.success('Post deleted successfully!');
         } else {
           toast.error(
@@ -226,17 +229,16 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   const handleInitPostShare = () => {
-    setShareModalBundle.setPostToShare({
-      id: post.id,
-      type: postType,
-    });
+    setShareModalBundle.setPostToShare(
+      post
+    );
     setShareModalBundle.setShowShareModal(true);
   };
 
   const createCardClassName = () => {
     let className = `post-card ${postType}-post-card`;
 
-    if (postType === 'photo') {
+    if (postType === 'photo' || postType === 'pin') {
       if (imgDimensions.height >= imgDimensions.width) {
         className += ' portrait-photo-post-card';
       } else {
@@ -246,28 +248,78 @@ const PostCard: React.FC<PostCardProps> = ({
     return className;
   };
 
+  const iconByContentType = (postType) => {
+    switch (postType) {
+      case 'pin':
+        return <IoMdPin size={'24px'} />;
+      case 'photo':
+        return <IoMdPhotos size={'24px'} />;
+      case 'plan':
+        return <IoMdCalendar size={'24px'} />;
+      case 'comment':
+        return <IoMdText size={'24px'} />;
+    }
+  };
+
   return (
     <>
       <Card className={createCardClassName()}>
-        {postType === 'photo' && (
+        {(postType === 'photo' || postType === 'pin') && (
           <>
-            <Card.Img className='post-card-image' src={post.photoURL} />
+            <Card.Img
+              className='post-card-image'
+              src={post.contentable.photoURL}
+            />
           </>
         )}
         <Card.Body className='post-card-body'>
           <Card.Text className='post-card-text' as='div'>
-            {isSharedPost && (
-              <div className='post-card-sender'>via {post.senderName}</div>
-            )}
+            <div className='d-flex flex-row justify-content-between align-content-center'>
+              {/* ICON */}
+              {iconByContentType(postType)}
+              {/* if it's a shared post, who shared it */}
+              {isSharedPost && (
+                <p className='post-card-sender'>{`shared by ${post.sharedContentDetails.senders.reduce(
+                  (acc, cur, index, array) => {
+                    if (index === 0) {
+                      acc += cur.firstName;
+                    } else if (index === array.length - 1) {
+                      acc += ` & ${cur.firstName}`;
+                    } else {
+                      acc += `, ${cur.firstName}`;
+                    }
+                    return acc;
+                  },
+                  ''
+                )}`}</p>
+              )}
+              {/* TAGS */}
+              {post.tags.length > 0 && (
+                <div className='post-card-detail'>
+                  {post.tags
+                    .map((tagObject) => tagObject.tag)
+                    .reduce((acc, cur, index, array) => {
+                      if (index === 0) {
+                        acc += cur;
+                      } else if (index === array.length - 1) {
+                        acc += ` & ${cur}`;
+                      } else {
+                        acc += `, ${cur}`;
+                      }
+                      return acc;
+                    }, '')}
+                </div>
+              )}
+            </div>
             <div className='post-card-content'>{postText}</div>
             <div className='post-card-detail'>
-              <div className='post-card-user-name'>{owner}</div>
+              <div className='post-card-user-name'>{`${post.user.firstName} ${post.user.lastName}`}</div>
               <>
                 <OverlayTrigger
                   placement='top'
                   overlay={
-                    <Tooltip id={`tooltip-${post.id}`}>
-                      {dayjs(post.createdAt.toString()).format(
+                    <Tooltip id={`tooltip-${post.content.id}`}>
+                      {dayjs(post.content.createdAt.toString()).format(
                         'dddd [at] h:mm A'
                       )}
                     </Tooltip>
@@ -277,7 +329,7 @@ const PostCard: React.FC<PostCardProps> = ({
                     className='post-card-created-at-text'
                     style={{ cursor: 'pointer' }}
                   >
-                    {dayjs(post.createdAt.toString()).fromNow()}
+                    {dayjs(post.content.createdAt.toString()).fromNow()}
                   </div>
                 </OverlayTrigger>
               </>
@@ -299,7 +351,7 @@ const PostCard: React.FC<PostCardProps> = ({
                   }}
                 />
               </Button>
-              <span className='mx-2'>{post.upvotes}</span>
+              <span className='mx-2'>{post.content.upvotes}</span>
               <Button
                 variant='outline-danger'
                 className='vote-button rounded-circle'
@@ -318,18 +370,18 @@ const PostCard: React.FC<PostCardProps> = ({
             <div className='share-delete-buttons-container d-flex flex-row'>
               {isSharedPost && (
                 <Button
-                  className='post-card-remove-shared-post-button'
+                  className='post-card-remove-shared-post-button mx-1'
                   variant='danger'
                   onClick={async () => {
-                    await setConfirmActionBundle.setConfirmActionFunction(
+                    await setConfirmActionModalBundle.setConfirmActionFunction(
                       () => async () => {
                         await childFunctions.handleRemovePostFromFeed();
                       }
                     );
-                    await setConfirmActionBundle.setConfirmActionText(
+                    await setConfirmActionModalBundle.setConfirmActionText(
                       'remove the post form your feed.'
                     );
-                    await setConfirmActionBundle.setShowConfirmActionModal(
+                    await setConfirmActionModalBundle.setShowConfirmActionModal(
                       true
                     );
                   }}
@@ -339,29 +391,44 @@ const PostCard: React.FC<PostCardProps> = ({
               )}
 
               {isOwner && (
-                <Button
-                  className='post-card-delete-button'
-                  variant='danger'
-                  onClick={async () => {
-                    await setConfirmActionBundle.setConfirmActionFunction(
-                      () => async () => {
-                        await handleDeletePost();
-                      }
-                    );
-                    await setConfirmActionBundle.setConfirmActionText(
-                      'delete your post'
-                    );
-                    await setConfirmActionBundle.setShowConfirmActionModal(
-                      true
-                    );
-                  }}
-                >
-                  <MdDelete />
-                </Button>
+                <>
+                  {/* DELETE POST */}
+                  <Button
+                    className='post-card-delete-button mx-1'
+                    variant='danger'
+                    onClick={async () => {
+                      await setConfirmActionModalBundle.setConfirmActionFunction(
+                        () => async () => {
+                          await handleDeletePost();
+                        }
+                      );
+                      await setConfirmActionModalBundle.setConfirmActionText(
+                        'delete your post'
+                      );
+                      await setConfirmActionModalBundle.setShowConfirmActionModal(
+                        true
+                      );
+                    }}
+                  >
+                    <MdDelete />
+                  </Button>
+                  {/* EDIT POST */}
+                  <Button
+                    className='post-card-edit-button mx-1'
+                    onClick={() => {
+                      setCreateContentModalBundle.setPostToEdit(post);
+                      setCreateContentModalBundle.setShowCreateContentModal(
+                        true
+                      );
+                    }}
+                  >
+                    <MdEdit />
+                  </Button>
+                </>
               )}
               <Button
                 variant='info'
-                className='post-card-share-button'
+                className='post-card-share-button mx-1'
                 onClick={handleInitPostShare}
               >
                 <FaShareSquare />

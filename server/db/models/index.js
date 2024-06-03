@@ -5,7 +5,7 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
-// will sync with experimental table configs
+// will sync with experimental database configs
 const env = 'experimental';
 const config = require(__dirname + '/../config/postgresConfig.json')[env];
 const db = {};

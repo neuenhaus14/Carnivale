@@ -2,8 +2,6 @@ import React, {
   useEffect,
   useState,
   useContext,
-  // createContext,
-  // useRef,
 } from 'react';
 import {
   Link,
@@ -11,7 +9,6 @@ import {
   RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
-  // useLoaderData,
 } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import ProtectedRoute from './ProtectedRoutes';
@@ -29,42 +26,74 @@ import Loading from './Loading';
 import Parades from './Parades';
 import TopNavBar from './TopNavBar';
 
+import CreateContentModal from './CreateContentModal/CreateContentModal';
 import ConfirmActionModal from './ConfirmActionModal';
 import ShareModal from './ShareModal';
 
-import { ThemeContext, RunModeContext } from './Context';
+import { ThemeContext, RunModeContext, UserContext, ContentFunctionsContext } from './Context';
+import { Post } from '../types';
 
 const App = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
 
-
   // CONFIRM ACTION MODAL STATE
   const [confirmActionFunction, setConfirmActionFunction] = useState(null);
-  const [showConfirmActionModal, setShowConfirmActionModal] = useState<boolean>(false);
-  const [confirmActionText, setConfirmActionText] = useState<null | string>(null);
+  const [showConfirmActionModal, setShowConfirmActionModal] =
+    useState<boolean>(false);
+  const [confirmActionText, setConfirmActionText] = useState<null | string>(
+    null
+  );
   // Object that bundles confirm action functionality. Pass this to each page, so we don't need to have a unique modal sitting on each page.
-  const setConfirmActionBundle = {
+  const setConfirmActionModalBundle = {
     setConfirmActionFunction,
     setShowConfirmActionModal,
     setConfirmActionText,
   };
 
   // SHARE MODAL STATE
-  const [postToShare, setPostToShare] = useState({id: null, type: null});
+  const [postToShare, setPostToShare] = useState<Post|null>(null);
   const [showShareModal, setShowShareModal] = useState<boolean>(false);
-
   const setShareModalBundle = {
+    postToShare,
     setPostToShare,
+    showShareModal,
     setShowShareModal,
+  };
+
+  // CREATECONTENT MODAL STATE
+  const [showCreateContentModal, setShowCreateContentModal] =
+    useState<boolean>(false);
+  const [parentPost, setParentPost] = useState<null | Post>(null);
+  const [postToEdit, setPostToEdit] = useState<null | Post>(null);
+  const [createContentModalKey, setCreateContentModalKey] = useState<'comment' | 'pin' | 'plan' | 'friend' | 'photo'>('photo')
+  const setCreateContentModalBundle = {
+    createContentModalKey,
+    setCreateContentModalKey,
+    showCreateContentModal,
+    setShowCreateContentModal,
+    setParentPost,
+    setPostToEdit,
+  };
+
+  // Context that sends functions that set state for modals that live in App.tsx
+  const contentFunctions = {
+    setConfirmActionModalBundle,
+    setCreateContentModalBundle,
+    setShareModalBundle,
   }
 
   // WHAT DOES userData DO?
-  const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
   const [currWeather, setCurrWeather] = useState('');
   const [currTemp, setCurrTemp] = useState('');
-
   const [theme, setTheme] = useState('pg-theme-light');
+
+  const [userContextInfo, setUserContextInfo] = useState({
+    user: {},
+    votes: [],
+    friends: [],
+    plans: [],
+  });
 
   const isDemoMode = useContext(RunModeContext) === 'demo';
 
@@ -78,11 +107,28 @@ const App = () => {
   // on Auth0 login
   const getUser = async () => {
     try {
-      const { data } = await axios.post(`api/home/user/`, { user });
+      // Dummy: always fetch for Bob J. Would normally grab user from Auth state using the same kv's for request to server
 
-      console.log('userId', data[0].id);
-      setUserData(data[0].id);
-      setUserId(data[0].id);
+
+      const user = {
+        email: 'a@b.com',
+        given_name: 'Bob',
+        family_name: 'Johnson',
+      };
+
+      // this request gets user's info, votes and friends
+      const userResponse: any = await axios.post(`api/home/user/`, { user });
+
+      // set id state after fetching data from users DB
+      setUserId(userResponse.data.userData[0].id);
+
+      // set user context info
+      setUserContextInfo({
+        user: userResponse.data.userData[0],
+        votes: userResponse.data.userVotes,
+        friends: userResponse.data.userFriends,
+        plans: userResponse.data.userPlans,
+      });
     } catch (err) {
       console.error(err);
     }
@@ -138,10 +184,12 @@ const App = () => {
   // logged in user's info from the database, setting userId
   // 3rd: provided a non-null userId, the user's location
   // is looked up and emitted to socket.io server
+  // TODO: sometimes the login runs twice and it may be because is authenticated changes. So getUser runs on first render, then again after it's actually authenticated
   useEffect(() => {
     user && getUser();
     if (isDemoMode) {
-      setUserId(1);
+      //setUserId(1);
+      getUser();
     }
   }, [isAuthenticated]);
 
@@ -174,7 +222,6 @@ const App = () => {
     return <Loading />;
   }
 
-  console.log('isDemoMode', isDemoMode, 'user', userId);
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
@@ -186,12 +233,19 @@ const App = () => {
               <div>
                 <TopNavBar
                   title={
-                    user ? `Welcome, ${user.given_name}!` : 'Welcome to Pardi Gras!'
+                    user
+                      ? `Welcome, ${user.given_name}!`
+                      : 'Welcome to Pardi Gras!'
                   }
                   currWeather={currWeather}
                   currTemp={currTemp}
                 />
-                <HomePage userId={userId} lat={lat} lng={lng} setConfirmActionBundle={setConfirmActionBundle} setShareModalBundle={setShareModalBundle}/> <NavBar />
+                <HomePage
+                  userId={userId}
+                  lat={lat}
+                  lng={lng}
+                />{' '}
+                <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
             }
           />
@@ -211,9 +265,8 @@ const App = () => {
                   userLng={lng}
                   userId={userId}
                   getLocation={getLocation}
-                  setConfirmActionBundle={setConfirmActionBundle}
                 />{' '}
-                <NavBar />
+                <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
             }
           />
@@ -228,7 +281,10 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <FeedPage userId={userId} setConfirmActionBundle={setConfirmActionBundle} setShareModalBundle={setShareModalBundle}/> <NavBar />
+                <FeedPage
+                  userId={userId}
+                />{' '}
+                <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
             }
           />
@@ -243,7 +299,8 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <Parades userId={userId} lng={lng} lat={lat} /> <NavBar />
+                <Parades userId={userId} lng={lng} lat={lat} />{' '}
+                <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
             }
           />
@@ -258,7 +315,8 @@ const App = () => {
                     currTemp={currTemp}
                   />
                 </Link>
-                <EventPage userId={userId} lng={lng} lat={lat} /> <NavBar />
+                <EventPage userId={userId} lng={lng} lat={lat} />{' '}
+                <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
             }
           />
@@ -278,9 +336,9 @@ const App = () => {
                   lng={lng}
                   lat={lat}
                   setTheme={setTheme}
-                  setConfirmActionBundle={setConfirmActionBundle}
+                  setConfirmActionBundle={setConfirmActionModalBundle}
                 />{' '}
-                <NavBar />
+                <NavBar setShowCreateContentModal={setShowCreateContentModal} />
               </div>
             }
           />
@@ -289,21 +347,33 @@ const App = () => {
     )
   );
 
+  console.log('APP, user: ', userContextInfo)
   return (
-    <RunModeContext.Provider value={process.env.RUN_MODE}>
-      <ThemeContext.Provider value={theme}>
-        <RouterProvider router={router} />
-        <ConfirmActionModal
-          showConfirmActionModal={showConfirmActionModal}
-          setShowConfirmActionModal={setShowConfirmActionModal}
-          confirmActionFunction={confirmActionFunction}
-          setConfirmActionFunction={setConfirmActionFunction}
-          confirmActionText={confirmActionText}
-          setConfirmActionText={setConfirmActionText}
-        />
-        <ShareModal postIdToShare={postToShare.id} userId={userId} postTypeToShare={postToShare.type} showShareModal={showShareModal} setShowShareModal={setShowShareModal} />
-      </ThemeContext.Provider>
-    </RunModeContext.Provider>
+    <ContentFunctionsContext.Provider value={contentFunctions}>
+      <UserContext.Provider value={userContextInfo}>
+        <RunModeContext.Provider value={process.env.RUN_MODE}>
+          <ThemeContext.Provider value={theme}>
+            <RouterProvider router={router} />
+            <ConfirmActionModal
+              showConfirmActionModal={showConfirmActionModal}
+              setShowConfirmActionModal={setShowConfirmActionModal}
+              confirmActionFunction={confirmActionFunction}
+              setConfirmActionFunction={setConfirmActionFunction}
+              confirmActionText={confirmActionText}
+              setConfirmActionText={setConfirmActionText}
+            />
+            <ShareModal
+            />
+            <CreateContentModal
+              parentPost={parentPost} // defaults to null
+              postToEdit={postToEdit} // default to null
+              lat={lat}
+              lng={lng}
+            />
+          </ThemeContext.Provider>
+        </RunModeContext.Provider>
+      </UserContext.Provider>
+    </ContentFunctionsContext.Provider>
   );
 };
 

@@ -26,7 +26,19 @@ import ImageRouter from './routes/PhotoUpload';
 import ParadesRoutes from './routes/Parades';
 import GigsRoutes from './routes/ScrapeEvents';
 import MailListRoutes from './routes/MailList';
-import TestRoutes from './routes/Test';
+
+// Experimental routes
+import ContentRoutes from './routes/Content';
+import CommentRoutes from './routes/CreateContentRoutes/Comment';
+import PhotoRoutes from './routes/CreateContentRoutes/Photo';
+import TagRoutes from './routes/Tags';
+import PlanRoutes from './routes/CreateContentRoutes/Plan';
+import PinRoutez from './routes/CreateContentRoutes/Pin';
+import SharedContentRoutes from './routes/SharedContent';
+
+
+
+
 import { User } from './db/index';
 
 // import { Sequelize } from "sequelize";
@@ -60,7 +72,16 @@ app.use('/api/images', ImageRouter);
 app.use('/api/parades', ParadesRoutes);
 app.use('/api/gigs', GigsRoutes);
 app.use('/api/mail', MailListRoutes);
-app.use('/api/test', TestRoutes);
+
+// Experimental
+app.use('/api/content', ContentRoutes);
+app.use('/api/comment', CommentRoutes);
+app.use('/api/photo', PhotoRoutes);
+app.use('/api/tags', TagRoutes);
+app.use('/api/sharedContent', SharedContentRoutes);
+app.use('/api/plan', PlanRoutes);
+app.use('/api/pin', PinRoutez) // TODO: note pin routez
+
 app.use(
   cors({
     origin: ['http://localhost:4000'],

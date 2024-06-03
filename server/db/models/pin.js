@@ -20,6 +20,14 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    latitude: {
+      type: Sequelize.DECIMAL,
+      allowNull: false
+    },
+    longitude: {
+      type: Sequelize.DECIMAL,
+      allowNull: false
+    },
   });
 
   Pin.associate = function (models) {

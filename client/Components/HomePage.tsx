@@ -16,23 +16,20 @@ import { FaCamera } from '@react-icons/all-files/fa/FaCamera';
 
 import axios from 'axios';
 import HomeModal from './HomeModal';
-import { PostCard } from './PostCard';
-import { RunModeContext, ThemeContext } from './Context';
+import { PostCard } from './Cards/PostCard';
+import { RunModeContext, ThemeContext, UserContext, ContentFunctionsContext } from './Context';
 import { useSearchParams } from 'react-router-dom';
+import { Post } from '../types';
 
-//PARENT OF HOMEMODAL
+// PARENT OF HOMEMODAL
 
 interface HomePageProps {
   lat: number;
   lng: number;
   userId: number;
-  setShareModalBundle: any;
-  setConfirmActionBundle: any;
 }
 
 const HomePage: React.FC<HomePageProps> = ({
-  setConfirmActionBundle,
-  setShareModalBundle,
   lat,
   lng,
   userId,
@@ -40,16 +37,21 @@ const HomePage: React.FC<HomePageProps> = ({
   // const [searchParams] = useSearchParams();
   // const [userId] = useState(Number(searchParams.get('userid')) || 1);
   const [comment, setComment] = useState('');
+
   const [posts, setPosts] = useState(null);
 
   const [showHomeModal, setShowHomeModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(true);
 
-  const [key, setKey] = useState('posts');
+  const [key, setKey] = useState('all');
   const [order, setOrder] = useState('createdAt');
 
   const theme = useContext(ThemeContext);
   const isDemoMode = useContext(RunModeContext) === 'demo';
+  const userContextInfo = useContext(UserContext);
+  const {setConfirmActionModalBundle, setCreateContentModalBundle, setShareModalBundle} = useContext(ContentFunctionsContext)
+
+  const tabCategories = process.env.TAB_CATEGORIES.split(' ');
 
   const toggleAboutModal = () => {
     setShowAboutModal(!showAboutModal);
@@ -75,9 +77,14 @@ const HomePage: React.FC<HomePageProps> = ({
   }
 
   // when tab is changed, set tab key and getPost for that tab
-  function handleSelect(key: string) {
-    setKey(key);
-    getPosts(key);
+  function handleTabSelect(newKey: string) {
+    setKey(newKey);
+    getPosts(order, newKey);
+  }
+
+  function handleOrderSelect(newOrder: string) {
+    setOrder(newOrder);
+    getPosts(newOrder, key);
   }
 
   const handleSubmit = async () => {
@@ -87,83 +94,107 @@ const HomePage: React.FC<HomePageProps> = ({
     } catch (err) {
       console.error(err);
     } finally {
-      getPosts(key);
+      getPosts(order, key);
     }
   };
 
-  // fetches all
-  const getPosts = async (contentType: string) => {
+  // fetches content according to order and key
+  const getPosts = async (order: string, key: string) => {
     try {
-      const { data } = await axios.get(`/api/home/${contentType}`);
-      if (order === 'upvotes') {
-        setPosts(
-          data.sort(
-            (a: any, b: any) =>
-              (b[order as string] as number) - (a[order as string] as number)
-          )
-        );
-      } else {
-        setPosts(
-          data.sort(
-            (a: any, b: any) =>
-              (new Date(b[order as any]) as any) -
-              (new Date(a[order as any]) as any)
-          )
-        );
-      }
+      const postsResponse = await axios.get(
+        `/api/content/getMainContent/userId=${userId}&order=${order}&category=${key}`
+      );
+
+      setPosts(postsResponse.data);
+      /*
+      // const { data } = await axios.get(`/api/home/${contentType}`);
+      // if (order === 'upvotes') {
+      //   setPosts(
+      //     data.sort(
+      //       (a: any, b: any) =>
+      //         (b[order as string] as number) - (a[order as string] as number)
+      //     )
+      //   );
+      // } else {
+      //   setPosts(
+      //     data.sort(
+      //       (a: any, b: any) =>
+      //         (new Date(b[order as any]) as any) -
+      //         (new Date(a[order as any]) as any)
+      //     )
+      //   );
+      // } */
     } catch (err) {
       console.error(err);
     }
   };
 
+  // get posts on first render
   useEffect(() => {
-    //on initial render, or tab click
-    //getPosts and setInterval for 5 sec
-    getPosts(key);
-    const interval = setTimeout(() => {
-      getPosts(key);
-    }, 15000);
-    return () => clearTimeout(interval);
-  }, [key, order]);
+    getPosts(order, key);
+  }, []);
 
-  const CreateContentForm: React.FC = () => {
+  // const CreateContentForm: React.FC = () => {
+  //   return (
+  //     <Form style={{ width: '100%' }}>
+  //       <Form.Group>
+  //         <div className='d-flex flex-row'>
+  //           <Form.Control
+  //             className='mx-2'
+  //             placeholder='Post a comment or photo'
+  //             onChange={handleInput}
+  //             value={comment}
+  //             onKeyDown={(e) => {
+  //               handleKeyDown(e);
+  //             }}
+  //           />
+  //           <Button
+  //             variant='primary'
+  //             onClick={handleSubmit}
+  //             disabled={isDemoMode || comment.length <= 0}
+  //             className='mx-1'
+  //           >
+  //             <FaCommentDots />
+  //           </Button>
+  //           <Button onClick={toggleHomeModal} className='mx-1'>
+  //             <FaCamera />
+  //           </Button>
+  //         </div>
+  //       </Form.Group>
+  //     </Form>
+  //   );
+  // };
+
+  tabCategories.unshift('All');
+  const tabComponents = tabCategories.map((category, index) => {
     return (
-      <Form style={{ width: '100%' }}>
-        <Form.Group>
-          <div className='d-flex flex-row'>
-            <Form.Control
-              className='mx-2'
-              placeholder='Post a comment or photo'
-              onChange={handleInput}
-              value={comment}
-              onKeyDown={(e) => {
-                handleKeyDown(e);
-              }}
-            />
-            <Button
-              variant='primary'
-              onClick={handleSubmit}
-              disabled={isDemoMode || comment.length <= 0}
-              className='mx-1'
-            >
-              <FaCommentDots />
-            </Button>
-            <Button
-              onClick={toggleHomeModal}
-              className='mx-1'
-            >
-              <FaCamera />
-            </Button>
-          </div>
-        </Form.Group>
-      </Form>
+      <Tab
+        eventKey={category.toLowerCase()}
+        title={category}
+        key={`${category}-${index}`}
+      >
+        {posts
+          ? posts.map((post: Post, index) => {
+              return (
+                <PostCard
+                  key={`${post.content.id} + ${index}`}
+                  post={post}
+                  userId={userId}
+                  eventKey={category}
+                  childFunctions={{
+                    getPosts,
+                  }}
+                />
+              );
+            })
+          : ''}
+      </Tab>
     );
-  };
+  });
 
-  console.log('homepage, order:', order)
   return (
     <Container
-      className={`body-with-bottom-panel ${theme} home-page-container`}
+      className={`body ${theme} home-page-container`}
     >
       {showHomeModal && (
         <HomeModal
@@ -225,7 +256,7 @@ const HomePage: React.FC<HomePageProps> = ({
                 type='radio'
                 name='Sort'
                 label='Newest'
-                onChange={() => setOrder('createdAt')}
+                onChange={() => handleOrderSelect('createdAt')}
                 checked={order === 'createdAt'}
               />
               <Form.Check
@@ -233,13 +264,16 @@ const HomePage: React.FC<HomePageProps> = ({
                 type='radio'
                 name='Sort'
                 label='Upvotes'
-                onChange={() => setOrder('upvotes')}
+                onChange={() => handleOrderSelect('upvotes')}
                 checked={order === 'upvotes'}
               />
             </Form>
-            <div id='create-post-form' className='d-none d-xl-flex d-xxl-flex w-50'>
+            {/* <div
+              id='create-post-form'
+              className='d-none d-xl-flex d-xxl-flex w-50'
+            >
               <CreateContentForm />
-            </div>
+            </div> */}
           </div>
         </Col>
       </Row>
@@ -247,68 +281,18 @@ const HomePage: React.FC<HomePageProps> = ({
       <Row>
         <Col>
           <div className='home-page-tabs'>
-            <Tabs activeKey={key} onSelect={handleSelect}>
-              <Tab eventKey='posts' title='Gossip'>
-                {posts
-                  ? posts.map((post: any, index: number) => (
-                      <PostCard
-                        key={`${post.id} + ${index}`}
-                        post={post}
-                        userId={userId}
-                        eventKey={'posts'}
-                        setShareModalBundle={setShareModalBundle}
-                        childFunctions={{
-                          getPosts,
-                        }}
-                        setConfirmActionBundle={setConfirmActionBundle}
-                      />
-                    ))
-                  : ''}
-              </Tab>
-              <Tab eventKey='costumes' title='Costumes'>
-                {posts
-                  ? posts.map((item: any, index: number) => (
-                      <PostCard
-                        key={`${item.id} + ${index}`}
-                        post={item}
-                        userId={userId}
-                        eventKey={'costumes'}
-                        childFunctions={{
-                          getPosts,
-                        }}
-                        setShareModalBundle={setShareModalBundle}
-                        setConfirmActionBundle={setConfirmActionBundle}
-                      />
-                    ))
-                  : ''}
-              </Tab>
-              <Tab eventKey='throws' title='Throws'>
-                {posts
-                  ? posts.map((item: any, index: number) => (
-                      <PostCard
-                        key={`${item.id} + ${index}`}
-                        post={item}
-                        userId={userId}
-                        eventKey={'throws'}
-                        childFunctions={{
-                          getPosts,
-                        }}
-                        setShareModalBundle={setShareModalBundle}
-                        setConfirmActionBundle={setConfirmActionBundle}
-                      />
-                    ))
-                  : ''}
-              </Tab>
+            <Tabs activeKey={key} onSelect={(key) => handleTabSelect(key)}>
+              {tabComponents}
             </Tabs>
           </div>
         </Col>
       </Row>
 
-      <Row>
+      {/* <Row>
         <div className='page-bottom-panel' id='create-post-form'>
           <CreateContentForm />
         </div>
-      </Row>
+      </Row> */}
     </Container>
   );
 };

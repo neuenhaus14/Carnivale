@@ -23,8 +23,9 @@
   color: white;
   font-size: 1em;
   font-weight: 200;
-  .nav-link{
-    color: colors.$lightText
+  .btn{
+    color: colors.$lightText;
+    text-decoration: none;
   }
   .nav-bar-brand-image {
     height: 6vh;

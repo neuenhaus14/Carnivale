@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response } from 'express';
 import {
   User,
   Comment,
@@ -6,12 +6,20 @@ import {
   Join_shared_post,
   Join_comment_vote,
   Join_photo_vote,
-} from "../db";
-import { Op } from "sequelize";
+} from '../db';
+
+// EXP
+import models from '../db/models/index';
+const User_vote = models.user_vote;
+const User_friend = models.user_friend;
+const expUser = models.user;
+const User_plan = models.user_plan;
+
+import { Op } from 'sequelize';
 const HomeRoutes = Router();
 
 HomeRoutes.delete(
-  "/delete-comment/:postId",
+  '/delete-comment/:postId',
   async (req: Request, res: Response) => {
     const { postId } = req.params;
     const { userId } = req.body;
@@ -20,13 +28,13 @@ HomeRoutes.delete(
       const comment = await Comment.findByPk(postId);
 
       if (!comment) {
-        return res.status(404).json({ error: "Comment not found" });
+        return res.status(404).json({ error: 'Comment not found' });
       }
 
       if (comment.dataValues.ownerId !== userId) {
         return res
           .status(403)
-          .json({ error: "Unauthorized to delete this comment" });
+          .json({ error: 'Unauthorized to delete this comment' });
       }
 
       await Join_shared_post.destroy({
@@ -39,16 +47,16 @@ HomeRoutes.delete(
 
       await comment.destroy();
 
-      return res.status(200).json({ message: "Comment deleted successfully" });
+      return res.status(200).json({ message: 'Comment deleted successfully' });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({ error: 'Internal server error' });
     }
   }
 );
 
 HomeRoutes.delete(
-  "/delete-photo/:postId",
+  '/delete-photo/:postId',
   async (req: Request, res: Response) => {
     const { postId } = req.params;
     const { userId } = req.body;
@@ -57,13 +65,13 @@ HomeRoutes.delete(
       const photo = await Photo.findByPk(postId);
 
       if (!photo) {
-        return res.status(404).json({ error: "Photo not found" });
+        return res.status(404).json({ error: 'Photo not found' });
       }
 
       if (photo.dataValues.ownerId !== userId) {
         return res
           .status(403)
-          .json({ error: "Unauthorized to delete this photo" });
+          .json({ error: 'Unauthorized to delete this photo' });
       }
 
       await Join_shared_post.destroy({
@@ -76,15 +84,15 @@ HomeRoutes.delete(
 
       await photo.destroy();
 
-      return res.status(200).json({ message: "Photo deleted successfully" });
+      return res.status(200).json({ message: 'Photo deleted successfully' });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({ error: 'Internal server error' });
     }
   }
 );
 
-HomeRoutes.post("/share/comment", async (req: Request, res: Response) => {
+HomeRoutes.post('/share/comment', async (req: Request, res: Response) => {
   const { recipient_userId, sender_userId, id } = req.body;
   try {
     const sharedComment = await Join_shared_post.create({
@@ -99,7 +107,7 @@ HomeRoutes.post("/share/comment", async (req: Request, res: Response) => {
   }
 });
 
-HomeRoutes.post("/share/photo", async (req: Request, res: Response) => {
+HomeRoutes.post('/share/photo', async (req: Request, res: Response) => {
   const { recipient_userId, sender_userId, id } = req.body;
   try {
     const sharedPhoto = await Join_shared_post.create({
@@ -114,7 +122,7 @@ HomeRoutes.post("/share/photo", async (req: Request, res: Response) => {
   }
 });
 
-HomeRoutes.post("/share/pin", async (req: Request, res: Response) => {
+HomeRoutes.post('/share/pin', async (req: Request, res: Response) => {
   const { recipient_userId, sender_userId, id } = req.body;
   try {
     const sharedComment = await Join_shared_post.create({
@@ -129,7 +137,7 @@ HomeRoutes.post("/share/pin", async (req: Request, res: Response) => {
   }
 });
 
-HomeRoutes.get("/post/:id", async (req: Request, res: Response) => {
+HomeRoutes.get('/post/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const owner = await User.findByPk(id);
@@ -140,7 +148,7 @@ HomeRoutes.get("/post/:id", async (req: Request, res: Response) => {
   }
 });
 
-HomeRoutes.get("/photo/:id", async (req: Request, res: Response) => {
+HomeRoutes.get('/photo/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const owner = await User.findByPk(id);
@@ -162,24 +170,65 @@ HomeRoutes.get("/photo/:id", async (req: Request, res: Response) => {
 //   }
 // });
 
-HomeRoutes.post("/user", async (req: Request, res: Response) => {
+
+// This route populates user context on client side with user info, friends, and votes
+HomeRoutes.post('/user', async (req: Request, res: Response) => {
   const { user } = req.body;
   try {
-    const userData = await User.findOrCreate({
+    // This draws on original db. TODO: switch to exp db
+    const userData: any = await User.findOrCreate({
       where: {
         email: user.email,
         firstName: user.given_name,
         lastName: user.family_name,
       },
     });
-    res.status(200).send(userData);
+
+    const userId = userData[0].dataValues.id
+
+    // VOTES: This draws on exp db
+    const userVotes: any = await User_vote.findAll({
+      where: {
+        userId
+      },
+    });
+
+    // USER_PLANS: What events is the user attending
+    const userPlans: any = await User_plan.findAll({
+      where: {
+        userId
+      }
+    })
+
+    // get user's relationships that have been accepted
+    const unorganizedUserFriends: any = await User_friend.findAll({
+      where: {
+        status: 'accepted',
+        [Op.or]: {
+          requesterId: userId,
+          recipientId: userId,
+        },
+      },
+      include: [{ association: 'recipient' }, {association: 'requester'}],
+    });
+
+
+    const userFriends = unorganizedUserFriends.map((friendship)=> {
+      if (friendship.dataValues.recipientId===userId){
+        return friendship.dataValues.requester;
+      } else {
+        return friendship.dataValues.recipient;
+      }
+    })
+
+    res.status(200).send({ userData, userVotes, userFriends, userPlans });
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
   }
 });
 
-HomeRoutes.get("/posts", async (req: Request, res: Response) => {
+HomeRoutes.get('/posts', async (req: Request, res: Response) => {
   try {
     const comments = await Comment.findAll();
     const photos = await Photo.findAll({
@@ -195,7 +244,7 @@ HomeRoutes.get("/posts", async (req: Request, res: Response) => {
   }
 });
 
-HomeRoutes.get("/costumes", async (req: Request, res: Response) => {
+HomeRoutes.get('/costumes', async (req: Request, res: Response) => {
   try {
     const costumes = await Photo.findAll({ where: { isCostume: true } });
     res.status(200).send(costumes);
@@ -205,7 +254,7 @@ HomeRoutes.get("/costumes", async (req: Request, res: Response) => {
   }
 });
 
-HomeRoutes.get("/throws", async (req: Request, res: Response) => {
+HomeRoutes.get('/throws', async (req: Request, res: Response) => {
   try {
     const throws = await Photo.findAll({ where: { isThrow: true } });
     res.status(200).send(throws);
@@ -215,7 +264,7 @@ HomeRoutes.get("/throws", async (req: Request, res: Response) => {
   }
 });
 
-HomeRoutes.post("/:ownerId", async (req: Request, res: Response) => {
+HomeRoutes.post('/:ownerId', async (req: Request, res: Response) => {
   const { ownerId } = req.params;
   const { comment } = req.body;
   try {

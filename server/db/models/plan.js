@@ -1,7 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
-  // console.log('PLAN!');
   const Plan = sequelize.define('plan', {
-    name: Sequelize.STRING,
+    title: Sequelize.STRING,
     description: Sequelize.STRING,
     address: Sequelize.STRING,
     startTime: Sequelize.STRING,
@@ -15,15 +14,17 @@ module.exports = (sequelize, Sequelize) => {
       defaultValue: 0,
     },
     link: Sequelize.STRING,
+    latitude: {
+      type: Sequelize.DECIMAL,
+      allowNull: false
+    },
+    longitude: {
+      type: Sequelize.DECIMAL,
+      allowNull: false
+    },
   });
 
   Plan.associate = function (models) {
-    // Plan.hasOne(models.content, {
-    //   foreignKey : {
-    //     name: 'planId',
-    //   },
-    // });
-
     Plan.hasOne(models.content, {
       foreignKey: 'contentableId',
       constraints: false,
